@@ -1,0 +1,267 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\newcommand{\w}{\textbf{w}}
+\newcommand{\x}{\textbf{x}}
+\newcommand{\X}{\textbf{X}}
+\newcommand{\Hist}{\mathcal{H}}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\indep}{\perp\!\!\!\perp}
+
+\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\Var}{Var}
+
+\title{Synthetic prediction methods for minimizing post shock forecasting error}
+\author{Daniel J. Eck and Soheil Eshghi}
+\date{May 2019}
+
+\begin{document}
+
+
+\maketitle
+\begin{abstract}
+    We seek to develop a forecasting methodology for time series data that is 
+    thought to have undergone a shock which has origins that have not been 
+    previously observed.  We still can provide credible forecasts for a time 
+    series in the presence of such systematic shocks by drawing from disparate 
+    time series that have undergone similar shocks for which post-shock 
+    outcome data is recorded.  These disparate time series are assumed to have 
+    mechanistic similarities to the time series under study but are otherwise 
+    independent (Granger noncausal).  The inferential goal of our forecasting 
+    methodology is to supplement observed time series data with post-shock 
+    data from the disparate time series in order to minimize average forecast 
+    risk. 
+\end{abstract}
+
+
+\section{Setting}
+Suppose that an analyst is interested in forecasting a real-valued time series 
+$y_1, y_2, \ldots$.  Given each time point $t \geq 1$, let $\x_t$ be the 
+(possibly multivariate) information variable vector revealed prior to the 
+observation of $y_t$.  To gauge the performance of a procedure that produces forecasts 
+$\{\hat y_t, t= 1,2,\ldots\}$ given time horizon $T$, we consider the average 
+forecast risk
+$$
+  R_T = \frac{1}{T}\sum_{t=1}^T\E(y_t - \hat y_t)^2
+$$
+in our analyses.
+
+
+\section{Dynamic panel model}
+\label{sec:dpm}
+We consider a dynamic panel data model similar with autoregressive structure.  
+For simplicity, we will consider the following simplified version with one covariate:
+\begin{equation} \label{DPM}
+  y_{i,t} = \eta_i + \alpha_iD_{i,t} + \phi_i y_{i,t-1} + \theta_i \x_{i,t} 
+    + \varepsilon_{i,t}, 
+\end{equation}
+where $i = 1,\ldots,J+1$ and $t = 1,\ldots,T$ and $D_{i,t} = 1(t > T_i^*)$, 
+$T_i^* < T$.  For simplicity we will assume that $T_i^* = T$ for all $i = 1$,
+$\ldots$, $J$.  We will consider a simple random effects structure where 
+\begin{align*}
+  \eta_i &\overset{iid}{\sim} N(0, \sigma_\eta^2), 
+    \qquad i = 1,\ldots J+1, \\
+  \alpha_i &\overset{iid}{\sim} N(\mu_\alpha, \sigma_\alpha^2), 
+    \qquad i = 1,\ldots J+1, \\
+  \phi_i &\overset{iid}{\sim} U(-1,1), 
+    \qquad i = 1,\ldots J+1, \\
+  \theta_i &\overset{iid}{\sim} U(-1,1), 
+    \qquad i = 1,\ldots J+1, \\
+  \varepsilon_{i,t} &\overset{iid}{\sim} N(0, \sigma^2), 
+    \qquad i = 1,\ldots J+1;\; t = 1, \ldots T, \\
+  \eta &\indep \alpha \indep \phi \indep \theta \indep \varepsilon;
+\end{align*}
+Without loss of generality, we will suppose that we want to forecast for 
+$y_{1, T^* + 1}$ where we have no observations for $y_{1,t}, t > T^*$. 
+Inference about the random effects parameters is not of interest in this  
+forecasting context.  Conditional on all regression parameters 
+(except $\alpha$?), previous responses, and covariates, model \eqref{DPM} 
+has distribution
+$$
+  y_{i,t} 
+    \sim N(\eta_i + \alpha_iD_{i,t} + \phi_i y_{i,t-1} + \theta_i\x_{i,t}, \sigma^2).
+$$
+All parameters will be estimated with OLS. In particular, let 
+$\hat{\alpha}_i$, $i = 2,\ldots,J+1$ be the OLS estimate of $\alpha_i$ 
+and define the adjusted $\alpha$ plugin estimator for time series $i=1$ by,
+\begin{equation} \label{adjusted}
+  \hat{\alpha}_{\text{adj}} = \frac{1}{J}\sum_{i=2}^{J+1}\hat{\alpha}_i
+\end{equation}
+where the $\hat{\alpha}_i$s are MLEs of all of the $\alpha_i$s.  
+We can use $\hat{\alpha}_{\text{adj}}$ as an estimator for the unknown 
+$\alpha_1$ term for which no meaningful estimation information otherwise 
+exists. 
+
+
+Consider the candidate forecasts: 
+\begin{align*}
+  &\text{Forecast 1}: \hat y_{1,T^*+1}^1 = \hat\eta_1 
+    + \hat\phi_1 y_{1,T^*} + \hat\theta_1 \x_{1,T^*+1}, \\
+  &\text{Forecast 2}: \hat y_{1,T^*+1}^2 = \hat\eta_1 
+    + \hat\phi_1 y_{1,T^*} + \hat\theta_1 \x_{1,T^*+1} + \hat{\alpha}_{\text{adj}},
+\end{align*}
+where $\hat\eta_1$, $\hat\phi_1$, and $\hat\theta_1$ are MLEs of 
+$\eta_1$, $\phi_1$, and $\theta_1$ respectively.  
+The two forecasts do not differ in their predictions for 
+$y_{t}$, $t = 1,\ldots T^*$.  They only differ in predicting $y_{T^*+1}$.  \\
+
+
+{\bf We want to determine when either $\hat y_{1,T^*+1}^1$ or 
+$\hat y_{1,T^*+1}^2$ minimizes the average forecast risk.}
+
+
+The two forecasts do not differ in their predictions for 
+$y_{t}$, $t = 1,\ldots T^*$.  They only differ in predicting 
+$y_{T^*+1}$.  The forecast risk for $y_{T+1,2}$ is: 
+\begin{align*}
+  %&R_{T^*+1, 2} - R_{T^*, 2} = 
+  &\E(\hat y_{1,T^*+1}^2 - y_{1,T^*+1}^2)^2 \\
+  &\qquad= \E\left\{ \hat\eta_1 + \hat\phi_1 y_{1,T^*} + \hat\theta_1 \x_{1,T^*+1} 
+    + \hat{\alpha}_{\text{adj}}
+      - (\eta_1 + \phi_1 y_{1,T^*} + \theta_1 \x_{1,T^*+1} + \alpha_1 + \varepsilon_{1,T^*+1}) \right\}^2 \\
+  &\qquad= \E\left\{ (\hat\eta_1 + \hat\phi_1 y_{1,T^*} + \hat\theta_1 \x_{1,T^*+1}     
+      -\eta_1 - \phi_1 y_{1,T^*} - \theta_1 \x_{1,T^*+1} - \alpha_1 - \varepsilon_{1,T^*+1}) 
+        + \hat{\alpha}_{\text{adj}} \right\}^2 \\      
+  &\qquad= R_{T, 1} + \E(\hat{\alpha}_{\text{adj}}^2) - 2\E\left\{(\hat\eta_1 + \hat\phi_1 y_{1,T^*} 
+    + \hat\theta_1 \x_{1,T^*+1} -\eta_1 - \phi_1 y_{1,T^*} - \theta_1 \x_{1,T^*+1} - \alpha_1 - \varepsilon_{1,T^*+1})
+      \hat{\alpha}_{\text{adj}} \right\} \\
+  &\qquad= R_{T, 1} + \E(\hat{\alpha}_{\text{adj}}^2) - 2\E(\hat{\alpha}_{\text{adj}})\E(\alpha_1) 
+    - 2\E\left\{(\hat\eta_1 + \hat\phi_1 y_{1,T^*} + \hat\theta_1 \x_{1,T^*+1} -\eta_1 - \phi_1 y_{1,T^*} 
+      - \theta_1 \x_{1,T^*+1})\hat{\alpha}_{\text{adj}} \right\} \\
+  &\qquad= R_{T, 1} + \Var(\hat{\alpha}_{\text{adj}}) - \mu_{\alpha}^2 
+    - 2\E\left(\hat\eta_1 + \hat\phi_1 y_{1,T^*} + \hat\theta_1 \x_{1,T^*+1} -\eta_1 - \phi_1 y_{1,T^*} 
+      - \theta_1 \x_{1,T^*+1}\right)\mu_{\alpha},
+\end{align*}
+where 
+$$
+  \E(\hat{\alpha}_{\text{adj}}) = \E\left\{\E(\hat{\alpha}_{\text{adj}}| \Hist )\right\}
+    = \E\left(\frac{1}{J}\sum_{i=2}^{J+1}\alpha_i\right) 
+    = \mu_{\alpha},
+$$
+and 
+$$
+  \Hist = \{(\eta_i, \phi_i, \theta_i, \alpha_i, \x_{i,t}, y_{i,t}); 
+    i = 2,\ldots,J+1, t = 1,\ldots,T\}.
+$$
+Define
+$$
+  \Hist_1 = \{\eta_1, \phi_1, \theta_1, \alpha_1, \x_{1,T^*+1}, (\x_{1,t}, y_{1,t});  
+    t = 1,\ldots,T^*\}.
+$$
+Notice that 
+\begin{align*}
+  &\E\left(\hat\eta_1 + \hat\phi_1 y_{1,T^*} + \hat\theta_1 \x_{1,T^*+1} -\eta_1 - \phi_1 y_{1,T^*} 
+    - \theta_1 \x_{1,T^*+1}\right) \\
+  &\qquad= \E\left\{\E\left(\hat\eta_1 + \hat\phi_1 y_{1,T^*} + \hat\theta_1 \x_{1,T^*+1} -\eta_1 - \phi_1 y_{1,T^*} 
+    - \theta_1 \x_{1,T^*+1}\right)|\Hist\cup\Hist_1\right\} = 0,
+\end{align*}
+(\textbf{is the above true?}) and that 
+\begin{align*}
+  \Var(\hat{\alpha}_{\text{adj}}) &= \E\left\{\Var(\hat{\alpha}_{\text{adj}}|\Hist)\right\} 
+    + \Var\left\{\E(\hat{\alpha}_{\text{adj}}|\Hist)\right\} \\
+  &= \E\left\{\Var(\hat{\alpha}_{\text{adj}}|\Hist)\right\} + \frac{\sigma_{\alpha}^2}{J} \\
+  &= \frac{1}{J^2} \sum_{i=2}^{J+1} \E\left\{\Var(\hat{\alpha}_j|\Hist)\right\} + \frac{\sigma_{\alpha}^2}{J} \\
+  &= \frac{1}{J^2(T-1)}\sum_{i=2}^{J+1} \E\left\{\frac{s_{e,j}^2}{(1-R^2_j)s_{\alpha_j}^2}\right\} 
+    + \frac{\sigma_{\alpha}^2}{J},
+\end{align*}
+where $s_{e,j}^2$ is the estimated variance of model $j$, $R^2_{\alpha_j}$ is 
+the multiple $R^2$ obtained from regressing the shock indicator $D$ on the 
+other regressors, and $s_j^2$ is... .
+
+Forecast 2 has lower forecast risk than Forecast 1 when,  
+\begin{equation} \label{risk}
+  \Var(\hat{\alpha}_{\text{adj}}) - \mu_{\alpha}^2 
+    - 2\E\left(\hat\eta_1 + \hat\phi_1 y_{1,T^*} + \hat\theta_1 \x_{1,T^*+1} -\eta_1 - \phi_1 y_{1,T^*} 
+      - \theta_1 \x_{1,T^*+1}\right)\mu_{\alpha} < 0.
+\end{equation}
+Putting everything together, we see that \eqref{risk} is equivalent to
+$$
+  \frac{1}{J^2(T-1)}\sum_{i=2}^{J+1} \E\left\{\frac{s_{e,j}^2}{(1-R^2_j)s_{\alpha_j}^2}\right\} 
+    + \frac{\sigma_{\alpha}^2}{J} < \mu_{\alpha}^2.
+$$
+Forecast 2 is preferable to Forecast 1 asymptotically in both $T$ and $J$ 
+whenever $\mu_{\alpha} \neq 0$. In finite samples, Forecast 2 is preferable to 
+Forecast 1 when the $\mu_{\alpha}$ is large relative to its variability and 
+overall regression variability.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Synthetic prediction via by synthetic control method}
+
+
+{\bf Taken from Soheil's notes (begin).}
+Assume we have covariate-observation pairs $(y_i, \x_i)$ for $n$ points, and 
+that $\x_1$, the covariates of the intervened unit, lies within the convex hull 
+of $(\x_i)_{i=1}^n$. One way to match covariates is to pick a vector $\w$ such 
+that $\w'1=1$ and $\norm{\x_1 - \X\w}$, where $\X$ is the matrix of available 
+covariates (arranged in column form), is minimized.
+
+One can incorporate a notion of locality by penalizing the use of covariates 
+far from the covariates of interest, through incorporating the following term 
+in either a constraint or as part of the objective:
+$\sum_{i=1}^n \w_i \norm{\x_1 - \x_i}$.
+
+The use of the transformed linear model (linking covariates to observations of 
+outcomes) to create the counterfactual show our belief in the model 
+specification. Under these conditions, the prediction of the model for the 
+outcome at covariates $\x_i$ based on all other observed covariates $\x_{-i}$ 
+(if it is within the convex hull) should closely match its observed outcome.  
+Any discrepancy should make us less confident in the observation of the 
+outcome (if we hold the model specification to be correct), so we would want 
+$y_i$ to play less of a role in the creation of the counterfactual in that 
+scenario.  Thus, we will put an upper limit on $\w_i$, the weight assigned to 
+the covariate-observation pair by a function of the discrepancy between $y_1$ 
+and the created synthetic prediction for it $\hat{y}_i$ from $\x_{-i}$.  
+{\bf Taken from Soheil's notes (end).} \\
+
+%The question of how to minimize variance in the $Yw$ can be addressed in 
+%multiple ways. One is to incorporate the weighted sample variance 
+%(weighted by $w$) into a constraint or as part of the objective.  However, 
+%this is not the right way to address this issue, as it abstracts out the 
+%dependence on the covariates. Thus, it is likely that we will need to create a 
+%covariate-weighted variance measure for the synthetic controls.
+%{\bf Taken from Soheil's notes (end).}
+
+Prediction via this synthetic control method can be applied to the dynamic 
+panel models in Section~\ref{sec:dpm}.  In this case, the individual level 
+shock effects $\alpha_i$ are correlated with the covariate information 
+$\x_i$.  We consider the model 
+\begin{equation} \label{shockmodel}
+  \alpha_{i} = \mu_{\alpha_i} + \beta\x_i + \gamma_{i}
+\end{equation}
+for the shock effects, where $\gamma_{i}$ are iid with 
+$\E(\gamma_i) = 0$ and $\Var(\gamma_i) = \sigma^2_\gamma$ and are 
+independent of all other random effects.  
+The specification in \eqref{shockmodel} can be substitutes into the dynamic 
+panel model \eqref{DPM} which yields,
+\begin{align*} 
+  y_{i,t} &= \eta_i + \alpha_iD_{i,t} + \phi_i y_{i,t-1} + \theta_i \x_{i,t} 
+    + \varepsilon_{i,t} \\
+  &= \eta_i + (\mu_{\alpha_i} + \beta\x_i + \gamma_{i})D_{i,t} 
+    + \phi_i y_{i,t-1} + \theta_i \x_{i,t} + \varepsilon_{i,t} \\
+  &= (\eta_i + \mu_{\alpha_i}D_{i,t}) + \phi_i y_{i,t-1} 
+    + (\theta_i + \beta D_{i,t})\x_{i,t} + (\gamma_{i}D_{i,t} 
+    + \varepsilon_{i,t}) \\
+  &= \tilde\eta_i + \phi_i y_{i,t-1} + \tilde\beta_{i,t}\x_{i,t} + \tilde\varepsilon_{i,t},
+\end{align*}
+where $\tilde\eta_i \sim N(\mu_{\alpha_i},\sigma^2_\eta)$ 
+and $\tilde\varepsilon_{i,t} \sim N(0, \sigma^2 + D_{i,t}\sigma^2_\gamma)$.
+
+\end{document}
+
