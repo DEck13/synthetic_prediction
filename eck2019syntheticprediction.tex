@@ -3,11 +3,13 @@
 \usepackage{amsmath}
 
 \usepackage{geometry}
+\usepackage[usenames]{color}
 \geometry{margin=1in}
 
 \newcommand{\w}{\textbf{w}}
 \newcommand{\x}{\textbf{x}}
 \newcommand{\X}{\textbf{X}}
+\newcommand{\Y}{\textbf{Y}}
 \newcommand{\Hist}{\mathcal{H}}
 
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
@@ -15,6 +17,8 @@
 
 \DeclareMathOperator{\E}{E}
 \DeclareMathOperator{\Var}{Var}
+
+\newcommand\red[1]{{\color{red}#1}}
 
 \title{Synthetic prediction methods for minimizing post shock forecasting error}
 \author{Daniel J. Eck and Soheil Eshghi}
@@ -116,7 +120,7 @@ $\hat y_{1,T^*+1}^2$ minimizes the average forecast risk.}
 
 
 The two forecasts do not differ in their predictions for 
-$y_{t}$, $t = 1,\ldots T^*$.  They only differ in predicting 
+$y_{t}$, $t = 1,\ldots T^*$. \red{repetition.}  They only differ in predicting 
 $y_{T^*+1}$.  The forecast risk for $y_{T+1,2}$ is: 
 \begin{align*}
   %&R_{T^*+1, 2} - R_{T^*, 2} = 
@@ -217,6 +221,23 @@ far from the covariates of interest, through incorporating the following term
 in either a constraint or as part of the objective:
 $\sum_{i=1}^n \w_i \norm{\x_1 - \x_i}$.
 
+This leads to the following optimization problem:
+\begin{align*}
+\min_{\w} ~~~& \norm{\x_1 - \X\w}\\
+\text{s.t.}~~~& \w'1=1,\\
+& \sum_{i=1}^n \w_i\norm{\x_1 - \x_i} \leq \delta, \\
+& \text{Var}(\Y\w)\leq \gamma,
+\end{align*}
+with $\delta$ and $\gamma$ being rightsizing parameters. 
+
+We can simplify the above using the following assumptions:
+
+\ldots
+\red{Once I have time I will write these out so that e can extract the fixed values mostly to one side.}
+
+
+\red{The rest is kind of bad as is, to be honest, and hard to justify. I still think we should weigh down the ones that are pretty far from the expected value, but it's not clear why the variance condition above will not be enough and we have to do a prediction model for all $(n-1)-$ tuples. Any ideas?}
+
 The use of the transformed linear model (linking covariates to observations of 
 outcomes) to create the counterfactual show our belief in the model 
 specification. Under these conditions, the prediction of the model for the 
@@ -227,7 +248,13 @@ outcome (if we hold the model specification to be correct), so we would want
 $y_i$ to play less of a role in the creation of the counterfactual in that 
 scenario.  Thus, we will put an upper limit on $\w_i$, the weight assigned to 
 the covariate-observation pair by a function of the discrepancy between $y_1$ 
-and the created synthetic prediction for it $\hat{y}_i$ from $\x_{-i}$.  
+and the created synthetic prediction for it $\hat{y}_i$ from $\x_{-i}$, i.e., 
+
+
+
+
+
+ 
 {\bf Taken from Soheil's notes (end).} \\
 
 %The question of how to minimize variance in the $Yw$ can be addressed in 
