@@ -16,8 +16,12 @@ risk.
 
 ## Avenues of research (so far)
 
-1) dynamic panel models with shock effects that are generated from some 
+1) Dynamic panel models with shock effects that are generated from some 
 common process.
 
-2) synthetic control methods with shock effects that are generated from 
+2) Synthetic control methods with shock effects that are generated from 
 some common process and are correlated with observed covariates.
+
+3) Bayesian risk minimization under general random effects model
+
+4) Minimax prediction from the frequentist perspective when shock effects are unknown scalars
