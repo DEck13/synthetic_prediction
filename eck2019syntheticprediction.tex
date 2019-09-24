@@ -1,6 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
+\usepackage{natbib}
 
 \usepackage{geometry}
 \usepackage[usenames]{color}
@@ -56,10 +57,14 @@ $$
 in our analyses.
 
 
-\section{Dynamic panel model}
+\section{Motivating example: Dynamic panel model}
 \label{sec:dpm}
-We consider a dynamic panel data model similar with autoregressive structure.  
-For simplicity, we will consider the following simplified version with one covariate:
+
+To fix ideas we consider a dynamic panel data model with autoregressive 
+structure in \citet{blundell1998initial} without present time period covariate 
+information and with a single covariate.  We consider an additional shock 
+effect whose presence is given by the binary variable $D_{i,t}$.  Our dynamic 
+panel model is  
 \begin{equation} \label{DPM}
   y_{i,t} = \eta_i + \alpha_iD_{i,t} + \phi_i y_{i,t-1} + \theta_i \x_{i,t} 
     + \varepsilon_{i,t}, 
@@ -80,17 +85,24 @@ $\ldots$, $J$.  We will consider a simple random effects structure where
     \qquad i = 1,\ldots J+1;\; t = 1, \ldots T, \\
   \eta &\indep \alpha \indep \phi \indep \theta \indep \varepsilon;
 \end{align*}
-Without loss of generality, we will suppose that we want to forecast for 
-$y_{1, T^* + 1}$ where we have no observations for $y_{1,t}, t > T^*$. 
-Inference about the random effects parameters is not of interest in this  
-forecasting context.  Conditional on all regression parameters 
+
+Our first goal is to evaluate the forecast risk of competing forecasts which 
+offer predicts for $y_{1, T^* + 1}$, the response observed after the first 
+post shock time period for subject 1.  The difficulty in this forecast stems 
+from not observing $\alpha_1$ and not having any readily infromation available 
+to estimate it directly.  We show that there is a balance between $\mu_\alpha$ 
+and $\sigma_\alpha^2$ that allows us to lower the forecast risk for 
+$y_{1, T^* + 1}$ by incorporating what is known about the other $\alpha_i$s 
+when such information is available.
+
+Conditional on all regression parameters 
 (except $\alpha$?), previous responses, and covariates, model \eqref{DPM} 
-has distribution
+has distribution 
 $$
   y_{i,t} 
     \sim N(\eta_i + \alpha_iD_{i,t} + \phi_i y_{i,t-1} + \theta_i\x_{i,t}, \sigma^2).
 $$
-All parameters will be estimated with OLS. In particular, let 
+All parameters in this model will be estimated with OLS. In particular, let 
 $\hat{\alpha}_i$, $i = 2,\ldots,J+1$ be the OLS estimate of $\alpha_i$ 
 and define the adjusted $\alpha$ plugin estimator for time series $i=1$ by,
 \begin{equation} \label{adjusted}
@@ -111,17 +123,18 @@ Consider the candidate forecasts:
 \end{align*}
 where $\hat\eta_1$, $\hat\phi_1$, and $\hat\theta_1$ are MLEs of 
 $\eta_1$, $\phi_1$, and $\theta_1$ respectively.  
-The two forecasts do not differ in their predictions for 
+The first forecast ignores the information about the distribution of 
+$\alpha_1$ while the second forecast incorporates an estimate of $\mu_\alpha$ 
+that is obtained from the other individual forecasts under study.  
+Note that the two forecasts do not differ in their predictions for 
 $y_{t}$, $t = 1,\ldots T^*$.  They only differ in predicting $y_{T^*+1}$.  \\
 
 
-{\bf We want to determine when either $\hat y_{1,T^*+1}^1$ or 
-$\hat y_{1,T^*+1}^2$ minimizes the average forecast risk.}
+We want to determine when either $\hat y_{1,T^*+1}^1$ or $\hat y_{1,T^*+1}^2$ 
+minimizes the forecast risk for $\hat y_{1,T^*+1}$.
 
 
-The two forecasts do not differ in their predictions for 
-$y_{t}$, $t = 1,\ldots T^*$. \red{repetition.}  They only differ in predicting 
-$y_{T^*+1}$.  The forecast risk for $y_{T+1,2}$ is: 
+The forecast risk for $y_{T+1,2}$ is: 
 \begin{align*}
   %&R_{T^*+1, 2} - R_{T^*, 2} = 
   &\E(\hat y_{1,T^*+1}^2 - y_{1,T^*+1}^2)^2 \\
@@ -289,6 +302,12 @@ panel model \eqref{DPM} which yields,
 \end{align*}
 where $\tilde\eta_i \sim N(\mu_{\alpha_i},\sigma^2_\eta)$ 
 and $\tilde\varepsilon_{i,t} \sim N(0, \sigma^2 + D_{i,t}\sigma^2_\gamma)$.
+
+
+
+\bibliographystyle{plainnat}
+\bibliography{synthetic-prediction-notes}
+
 
 \end{document}
 
