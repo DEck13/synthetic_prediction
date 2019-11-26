@@ -1,7 +1,15 @@
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
+
 \usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+%\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{mathtools}
 \usepackage{natbib}
+\usepackage{url}
 
 \usepackage{geometry}
 \usepackage[usenames]{color}
@@ -19,6 +27,12 @@
 \DeclareMathOperator{\E}{E}
 \DeclareMathOperator{\Var}{Var}
 
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+
 \newcommand\red[1]{{\color{red}#1}}
 
 \title{Minimizing post shock forecasting error using disparate information}
@@ -30,7 +44,7 @@
 
 \maketitle
 \begin{abstract}
-    We seek to develop a forecasting methodology for time series data that is 
+    We develop a forecasting methodology for time series data that is 
     thought to have undergone a shock which has origins that have not been 
     previously observed.  We still can provide credible forecasts for a time 
     series in the presence of such systematic shocks by drawing from disparate 
@@ -44,15 +58,47 @@
 \end{abstract}
 
 
+\section{Introduction}
+The technique of combining forecasts to lower forecast error has a rich 
+history \citep{bates1969combination, mundlak1978pooling, 
+  timmermann2006forecast, granger2014forecasting}.  
+The Introduction of \citet{timmermann2006forecast} provided several reasons 
+for combining forecasts.  In particular: 
+1) the information set underlying individual forecasts is often unobserved to 
+the forecast user; 2) different individual forecasts may be very differently 
+affected by non-stationarities and model misspecifications; 3) different 
+individual forecasts may be motivated by different loss functions 
+\citep[and references therein]{timmermann2006forecast}.
+
+
+In this article we propse a new setting for the classic forecast combination 
+problem.  We will suppose that a time series of interest has recently 
+undergone a structural shock that is not similar to anything observed in its 
+past, and we desire reliable post-shock forecasts in this setting.  It is 
+unlikely that any forecast that previously gave successful predictions for  
+the time series of interest will be able to accomondate the recent structural 
+shock.  However, it may be the case that disparate time series have previously 
+undergone similar structural shocks.  When this is so, one may be able to 
+aggreagate the post-shock information from these disparate time series to aid 
+the post-shock forecast for the time series under investigation.  
+
+
+
 \section{Setting}
-Suppose that an analyst is interested in forecasting a real-valued time series 
-$y_1, y_2, \ldots$.  Given each time point $t \geq 1$, let $\x_t$ be the 
-(possibly multivariate) information variable vector revealed prior to the 
-observation of $y_t$.  To gauge the performance of a procedure that produces forecasts 
-$\{\hat y_t, t= 1,2,\ldots\}$ given time horizon $T$, we consider the average 
-forecast risk
+
+We will suppose that an analyst has time series data ($y_{i,t}$,$\x_{i,t}$), 
+$t = 1$, $\ldots$, $T_i$, $i = 1$, $\ldots$, $n+1$, where $y_{i,t}$ is a 
+scalar response and $\x_{i,t}$ is a vector of covariates that revealed prior 
+to the observation of $y_{1,t}$.  Suppose that the analyst is interested in 
+forecasting $y_{1,t}$, the first time series in the collection.
+%$y_1, y_2, \ldots$.  
+%Given each time point $t \geq 1$, let $\x_{1,t}$ be a vector of covariates 
+%revealed prior to the observation of $y_{1,t}$.  
+To gauge the performance of a procedure that produces forecasts 
+$\{\hat y_{1,t}, t= 1,2,\ldots\}$ given time horizon $T_1$, we consider the 
+average forecast risk
 $$
-  R_T = \frac{1}{T}\sum_{t=1}^T\E(y_t - \hat y_t)^2
+  R_T = \frac{1}{T}\sum_{t=1}^T\E(\hat y_{1,t} - y_{1,t})^2
 $$
 in our analyses.
 
@@ -69,36 +115,36 @@ variable $D_{i,t}$.  Our dynamic panel model is
   y_{i,t} = \eta_i + \alpha_iD_{i,t} + \phi_i y_{i,t-1} + \theta_i' \x_{i,t} + 
     \beta_i' \x_{i,t-1} + \varepsilon_{i,t},  
 \end{equation}
-where $i = 1,\ldots,J+1$ and $t = 1,\ldots,T$ and $D_{i,t} = 1(t > T_i^*)$, 
-$T_i^* < T$.  We will consider a simple random effects structure where,  
+where $t = 1,\ldots,T_i$, $i = 1,\ldots, n+1$, and $D_{i,t} = 1(t > T_i^*)$, 
+$T_i^* < T_i$.  We will consider a simple random effects structure where,  
 %\begin{align*}
 %  \eta_i &\overset{iid}{\sim} N(0, \sigma_\eta^2), 
-%    \qquad i = 1,\ldots J+1, \\
+%    \qquad i = 1,\ldots n+1, \\
 %  \alpha_i &\overset{iid}{\sim} N(\mu_\alpha, \sigma_\alpha^2), 
-%    \qquad i = 1,\ldots J+1, \\
+%    \qquad i = 1,\ldots n+1, \\
 %  \phi_i &\overset{iid}{\sim} U(-1,1), 
-%    \qquad i = 1,\ldots J+1, \\
+%    \qquad i = 1,\ldots n+1, \\
 %  \theta_i &\overset{iid}{\sim} N(0, \Sigma_\theta), 
-%    \qquad i = 1,\ldots J+1, \\
+%    \qquad i = 1,\ldots n+1, \\
 %  \beta_i &\overset{iid}{\sim} N(0, \Sigma_\beta), 
-%    \qquad i = 1,\ldots J+1, \\
+%    \qquad i = 1,\ldots n+1, \\
 %  \varepsilon_{i,t} &\overset{iid}{\sim} N(0, \sigma^2), 
-%    \qquad i = 1,\ldots J+1;\; t = 1, \ldots T, \\
+%    \qquad i = 1,\ldots n+1;\; t = 1, \ldots T, \\
 %  \eta &\indep \alpha \indep \phi \indep \theta \indep \varepsilon;
 %\end{align*}
 \begin{align*}
   \eta_i &\overset{iid}{\sim} \eta,\; \text{where}\; \E(\eta) = 0,\; \Var(\eta) = \sigma_\eta^2, 
-    \qquad i = 1,\ldots J+1, \\
+    \qquad i = 1,\ldots n+1, \\
   \alpha_i &\overset{iid}{\sim} \alpha,\; \text{where}\; \E(\alpha) = \mu_\alpha,\; 
-    \Var(\alpha) = \sigma_\alpha^2, \qquad i = 1,\ldots J+1, \\
+    \Var(\alpha) = \sigma_\alpha^2, \qquad i = 1,\ldots n+1, \\
   \phi_i &\overset{iid}{\sim} \phi,\; \text{where}\; |\phi| < 1, 
-    \qquad i = 1,\ldots J+1, \\
+    \qquad i = 1,\ldots n+1, \\
   \theta_i &\overset{iid}{\sim} \theta,\; \text{where}\; \E(\theta) = 0,\; 
-    \Var(\theta) = \Sigma_\theta^2, \qquad i = 1,\ldots J+1, \\
+    \Var(\theta) = \Sigma_\theta^2, \qquad i = 1,\ldots n+1, \\
   \beta_i &\overset{iid}{\sim} \beta,\; \text{where}\; \E(\beta) = 0,\; 
-    \Var(\beta) = \Sigma_\beta^2, \qquad i = 1,\ldots J+1, \\    
+    \Var(\beta) = \Sigma_\beta^2, \qquad i = 1,\ldots n+1, \\    
   \varepsilon_{i,t} &\overset{iid}{\sim} N(0, \sigma^2), 
-    \qquad i = 1,\ldots J+1;\; t = 1, \ldots T, \\
+    \qquad t = 1, \ldots T_i,\; i = 1,\ldots n+1; \\
   \eta &\indep \alpha \indep \phi \indep \theta \indep \varepsilon;
 \end{align*}
 
@@ -112,23 +158,23 @@ $y_{1, T_1^* + 1}$ by incorporating what is known about the other $\alpha_i$s
 when such information is available.
 
 Conditional on all regression parameters, previous responses, and covariates, 
-model \eqref{DPM} has distribution 
+the response variable $y_{i,t}$ in model \eqref{DPM} has distribution 
 $$
   y_{i,t} 
     \sim N(\eta_i + \alpha_iD_{i,t} + \phi_i y_{i,t-1} + \theta_i'\x_{i,t} 
       + \beta_i'\x_{i,t-1}, \sigma^2).
 $$
-All parameters in this model will be estimated with OLS using historical data. 
-In particular, let $\hat{\alpha}_i$, $i = 2, \ldots, J+1$ be the OLS estimate 
-of $\alpha_i$ and define the adjusted $\alpha$ plugin estimator for time 
-series $i=1$ by,
+All parameters in this model will be estimated with ordinary least squares 
+(OLS) using historical data.  In particular, let $\hat{\alpha}_i$, 
+$i = 2, \ldots, n+1$ be the OLS estimate of $\alpha_i$ and define the 
+adjusted $\alpha$ plugin estimator for time series $i=1$ by,
 \begin{equation} \label{adjusted}
-  \hat{\alpha}_{\text{adj}} = \frac{1}{J}\sum_{i=2}^{J+1}\hat{\alpha}_i
+  \hat{\alpha}_{\text{adj}} = \frac{1}{n}\sum_{i=2}^{n+1}\hat{\alpha}_i
 \end{equation}
-where the $\hat{\alpha}_i$s are MLEs of all of the $\alpha_i$s.  
-We can use $\hat{\alpha}_{\text{adj}}$ as an estimator for the unknown 
-$\alpha_1$ term for which no meaningful estimation information otherwise 
-exists. 
+where the $\hat{\alpha}_i$s in \eqref{adjusted} are OLS estimators of all of 
+the $\alpha_i$s.  We can use $\hat{\alpha}_{\text{adj}}$ as an estimator for 
+the unknown $\alpha_1$ term for which no meaningful estimation information 
+otherwise exists. 
 
 
 Consider the candidate forecasts: 
@@ -140,8 +186,8 @@ Consider the candidate forecasts:
     + \hat\phi_1 y_{1,T_1^*} + \hat\theta_1'\x_{1,T_1^*+1} 
     + \hat\beta_1'\x_{1,T_1^*} + \hat{\alpha}_{\text{adj}},
 \end{align*}
-where $\hat\eta_1$, $\hat\phi_1$, $\hat\theta_1$, and $\hat\beta_1$ are MLEs 
-of $\eta_1$, $\phi_1$, $\theta_1$, and $\beta_1$ respectively.  
+where $\hat\eta_1$, $\hat\phi_1$, $\hat\theta_1$, and $\hat\beta_1$ are all 
+OLS estimators of $\eta_1$, $\phi_1$, $\theta_1$, and $\beta_1$ respectively.  
 The first forecast ignores the information about the distribution of 
 $\alpha_1$ while the second forecast incorporates an estimate of $\mu_\alpha$ 
 that is obtained from the other individual forecasts under study.  
@@ -149,10 +195,28 @@ Note that the two forecasts do not differ in their predictions for
 $y_{1,t}$, $t = 1,\ldots T_1^*$.  They only differ in predicting 
 $y_{1,T_1^*+1}$.  We want to determine when either $\hat y_{1,T_1^*+1}^1$ or 
 $\hat y_{1,T_1^*+1}^2$ minimizes the forecast risk for $\hat y_{1,T_1^*+1}$.  
-Let $R_{T_1^*+1, k} = \E(\hat y_{1,T_1^*+1}^k - y_{1,T_1^*+1}^k)^2$, 
-where $k = 1,2$.  \\
+Let $R_{T_1^*+1, k} = \E(\hat y_{1,T_1^*+1}^k - y_{1,T_1^*+1}^k)^2$, where 
+$k = 1,2$ and define the parameter sets 
+\begin{equation}
+\begin{split}
+  \Hist &= \{(\eta_i, \phi_i, \theta_i, \beta_i, \alpha_i, \x_{i,t}, y_{i,t}); 
+    t = 1,\ldots,T_i, i = 2,\ldots,n+1\}, \\
+  \Hist_1 &= \{(\eta_1, \phi_1, \theta_1, \beta_1, \alpha_1, 
+    \x_{1,T_1^*+1}, \x_{1,t}, y_{1,t});  t = 1,\ldots,T_1^*\}.
+\label{Hist}
+\end{split}
+\end{equation}
+Proposition~\ref{prop:R1R2} states when the incorporation of disparate 
+information improves forecasting.
 
-The forecast risk for $y_{1,T^*_1+1}^2$ is: 
+\begin{prop}
+We have that $R_{T_1^*+1, 2} < R_{T_1^*+1, 1}$ when 
+$\Var(\hat{\alpha}_{\text{adj}}) < \mu_{\alpha}^2$.
+\label{prop:R1R2}
+\end{prop}
+
+\begin{proof}
+The forecast risk for $y_{1,T^*_1+1}^2$ is
 \begin{align*}
   &R_{T_1^*+1, 2} = \E(\hat y_{1,T_1^*+1}^2 - y_{1,T_1^*+1}^2)^2 \\
     &\qquad= \E\left\{ \hat\eta_1 + \hat\phi_1 y_{1,T_1^*} 
@@ -182,20 +246,10 @@ The forecast risk for $y_{1,T^*_1+1}^2$ is:
 where 
 $$
   \E(\hat{\alpha}_{\text{adj}}) = \E\left\{\E(\hat{\alpha}_{\text{adj}}| \Hist )\right\}
-    = \E\left(\frac{1}{J}\sum_{i=2}^{J+1}\alpha_i\right) 
+    = \E\left(\frac{1}{n}\sum_{i=2}^{n+1}\alpha_i\right) 
     = \mu_{\alpha},
 $$
-and 
-$$
-  \Hist = \{(\eta_i, \phi_i, \theta_i, \beta_i, \alpha_i, \x_{i,t}, y_{i,t}); 
-    t = 1,\ldots,T_i, i = 2,\ldots,J+1\}.
-$$
-Define
-$$
-  \Hist_1 = \{\eta_1, \phi_1, \theta_1, \beta_1, \alpha_1, 
-    \x_{1,T_1^*+1}, (\x_{1,t}, y_{1,t});  t = 1,\ldots,T_1^*\},
-$$
-and observe that 
+and $\Hist$ defined in \eqref{Hist}.  Observe that 
 \begin{align*}
   &\E\left(\hat\eta_1 + \hat\phi_1 y_{1,T_1^*} + \hat\theta_1'\x_{1,T_1^*+1} 
     + \hat\beta_1'\x_{1,T_1^*} - \eta_1 - \phi_1 y_{1,T_1^*} 
@@ -204,25 +258,40 @@ and observe that
     + \hat\theta_1'\x_{1,T_1^*+1} + \hat\beta_1'\x_{1,T_1^*} - \eta_1 
     - \phi_1 y_{1,T_1^*} - \theta_1'\x_{1,T_1^*+1} 
     - \beta_1'\x_{1,T_1^*}\right)|\Hist_1\right\} \\
-  &= 0,
+  &= 0.
 \end{align*}
-and that 
-\begin{align*}
+Therefore,
+$$
+  R_{T_1^*+1, 2} = R_{T_1^*+1, 1} + \Var(\hat{\alpha}_{\text{adj}}) - \mu_{\alpha}^2,
+$$ 
+and we have that $R_{T_1^*+1, 2} < R_{T_1^*+1, 1}$ when 
+$\Var(\hat{\alpha}_{\text{adj}}) < \mu_{\alpha}^2$.
+\end{proof}
+
+
+
+When we estimate all of the parameters via OLS we can write 
+$\Var(\hat{\alpha}_{\text{adj}})$ as
+\begin{equation}
+\begin{split}
   &\Var(\hat{\alpha}_{\text{adj}}) = \E\left\{\Var(\hat{\alpha}_{\text{adj}}|\Hist)\right\} 
     + \Var\left\{\E(\hat{\alpha}_{\text{adj}}|\Hist)\right\} \\
     %= \E\left\{\Var(\hat{\alpha}_{\text{adj}}|\Hist)\right\} 
-    %+ \frac{\sigma_{\alpha}^2}{J} \\
-  &\qquad= \frac{1}{J^2} \sum_{i=2}^{J+1} \E\left\{\Var(\hat{\alpha}_i|\Hist)\right\} 
-    + \frac{\sigma_{\alpha}^2}{J} \\
-  &\qquad= \frac{1}{J^2(T-1)}\sum_{i=2}^{J+1} 
+    %+ \frac{\sigma_{\alpha}^2}{n} \\
+  &\qquad= \frac{1}{n^2} \sum_{i=2}^{n+1} \E\left\{\Var(\hat{\alpha}_i|\Hist)\right\} 
+    + \frac{\sigma_{\alpha}^2}{n} \\
+  &\qquad= \frac{1}{n^2(T-1)}\sum_{i=2}^{n+1} 
     \E\left\{\frac{s_{e,i}^2}{(1-R^2_i)s_{\alpha_i}^2}\right\} 
-      + \frac{\sigma_{\alpha}^2}{J},
-\end{align*}
+      + \frac{\sigma_{\alpha}^2}{n},
+\label{reg}
+\end{split}
+\end{equation}
 where $s_{e,i}^2$ is the estimated variance of model $i$, $R^2_{\alpha_i}$ is 
 the multiple $R^2$ obtained from regressing the shock indicator $D$ on the 
 other regressors, and $s_{\alpha_i}^2$ is... .
 
-Forecast 2 has lower forecast risk than Forecast 1 when,  
+Propostion~\ref{prop:R1R2} states that Forecast 2 has lower forecast risk 
+than Forecast 1 when  
 $
   \Var(\hat{\alpha}_{\text{adj}}) 
     %- 2\E\left(\hat\eta_1 + \hat\phi_1 y_{1,T^*} + \hat\theta_1'\x_{1,T^*+1} 
@@ -230,13 +299,13 @@ $
     %- \beta_1'\x_{1,T^*}\right)\mu_{\alpha} 
     < \mu_{\alpha}^2.
 $
-Putting everything together, we see that Forecast 2 has lower forecast risk 
-than Forecast 1 when 
+Combining this result with \eqref{reg}, we see that Forecast 2 has lower 
+forecast risk than Forecast 1 when 
 $$
-  \frac{1}{J^2(T-1)}\sum_{i=2}^{J+1} \E\left\{\frac{s_{e,j}^2}{(1-R^2_i)s_{\alpha_i}^2}\right\} 
-    + \frac{\sigma_{\alpha}^2}{J} < \mu_{\alpha}^2.
+  \frac{1}{n^2(T-1)}\sum_{i=2}^{n+1} \E\left\{\frac{s_{e,j}^2}{(1-R^2_i)s_{\alpha_i}^2}\right\} 
+    + \frac{\sigma_{\alpha}^2}{n} < \mu_{\alpha}^2.
 $$
-Forecast 2 is preferable to Forecast 1 asymptotically in both $T$ and $J$ 
+Forecast 2 is preferable to Forecast 1 asymptotically in both $T$ and $n$ 
 whenever $\mu_{\alpha} \neq 0$. In finite samples, Forecast 2 is preferable to 
 Forecast 1 when the $\mu_{\alpha}$ is large relative to its variability and 
 overall regression variability.  
