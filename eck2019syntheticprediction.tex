@@ -35,9 +35,10 @@
 
 \newcommand\red[1]{{\color{red}#1}}
 
+\allowdisplaybreaks
+
 \title{Minimizing post shock forecasting error using disparate information}
 \author{Daniel J. Eck}
-\date{May 2019}
 
 \begin{document}
 
@@ -58,20 +59,47 @@
 \end{abstract}
 
 
+{\bf Things to do}: \\
+
+  - get regression model interpretation of $\Var(\hat\alpha_j)$. \\
+
+  - simulations for simple model with normal errors; model with normal 
+    errors and $p > 1$; model where shock effect is Gamma. \\
+
+  - get references on time series pooling. \\
+
+  - investigate orthogonal parameterizations of regression model 
+    matrices in order to isolate estimation of $\Var(\hat\alpha_j)$, 
+    so that the asymptotic estimate of $\Var(\hat\alpha_j)$ is independent 
+    of other terms. \\
+
+  - expand method to weighted cases when the shock effect depends on the 
+    measured covariates. \\
+
+  - get a real dataset. \\ 
+
+
+
 \section{Introduction}
 The technique of combining forecasts to lower forecast error has a rich 
 history \citep{bates1969combination, mundlak1978pooling, 
   timmermann2006forecast, granger2014forecasting}.  
 The Introduction of \citet{timmermann2006forecast} provided several reasons 
-for combining forecasts.  In particular: 
+for combining forecasts.  In particular, combining forecasts may be 
+beneficial when: 
 1) the information set underlying individual forecasts is often unobserved to 
 the forecast user; 2) different individual forecasts may be very differently 
 affected by non-stationarities and model misspecifications; 3) different 
 individual forecasts may be motivated by different loss functions 
 \citep[and references therein]{timmermann2006forecast}.
+The setting for the forecast combination problem is that there are 
+competing forecasts for a single time series.  In this setting, one may 
+desire combining forecasts as a method for lowering overall forecast error.  
 
 
-In this article we propse a new setting for the classic forecast combination 
+
+
+In this article we propse a new setting for the forecast combination 
 problem.  We will suppose that a time series of interest has recently 
 undergone a structural shock that is not similar to anything observed in its 
 past, and we desire reliable post-shock forecasts in this setting.  It is 
@@ -100,23 +128,19 @@ average forecast risk
 $$
   R_T = \frac{1}{T}\sum_{t=1}^T\E(\hat y_{1,t} - y_{1,t})^2
 $$
-in our analyses.
-
-
-\section{Dynamic panel model}
-\label{sec:dpm}
-
-To fix ideas we consider a similar dynamic panel data model with autoregressive 
-structure in \citet{blundell1998initial} %without past time period covariate 
+in our analyses. In this article, we consider a similar dynamic panel data 
+model with autoregressive structure to that in \citet{blundell1998initial}. 
+%without past time period covariate 
 %information and with a single present time covariate.  
-We consider an additional shock effect whose presence is given by the binary 
-variable $D_{i,t}$.  Our dynamic panel model is  
+Our dynamic panel model includes an additional shock effect whose presence 
+or absence is given by the binary variable $D_{i,t}$.  Our dynamic panel 
+model is 
 \begin{equation} \label{DPM}
   y_{i,t} = \eta_i + \alpha_iD_{i,t} + \phi_i y_{i,t-1} + \theta_i' \x_{i,t} + 
     \beta_i' \x_{i,t-1} + \varepsilon_{i,t},  
 \end{equation}
 where $t = 1,\ldots,T_i$, $i = 1,\ldots, n+1$, and $D_{i,t} = 1(t > T_i^*)$, 
-$T_i^* < T_i$.  We will consider a simple random effects structure where,  
+$T_i^* < T_i$.  We will consider the following random effects structure:  
 %\begin{align*}
 %  \eta_i &\overset{iid}{\sim} N(0, \sigma_\eta^2), 
 %    \qquad i = 1,\ldots n+1, \\
@@ -145,14 +169,23 @@ $T_i^* < T_i$.  We will consider a simple random effects structure where,
     \Var(\beta) = \Sigma_\beta^2, \qquad i = 1,\ldots n+1, \\    
   \varepsilon_{i,t} &\overset{iid}{\sim} N(0, \sigma^2), 
     \qquad t = 1, \ldots T_i,\; i = 1,\ldots n+1; \\
-  \eta &\indep \alpha \indep \phi \indep \theta \indep \varepsilon;
+  \eta &\indep \alpha \indep \phi \indep \theta \indep \varepsilon.
 \end{align*}
+
+Throughout the rest of this article we show that the collection of 
+disparate time series $\{y_{i,t}, t = 2,\ldots,T_i, i = 1,\ldots,n\}$ has 
+the potential to improve the forecasts for $y_{1, t}$ when $t > T_1^*$ 
+and no observations arre made for these time periods.
+
+
+\section{Adjustment via disparate infromation in dynamic panel model}
 
 Our first goal is to evaluate the forecast risk of competing forecasts which 
 offer predicts for $y_{1, T_1^* + 1}$, the response observed after the first 
-post shock time period for subject 1.  The difficulty in this forecast stems 
-from not observing $\alpha_1$ and not having any readily infromation available 
-to estimate it directly.  We show that there is a balance between $\mu_\alpha$ 
+post shock time period for out ime series of interest.  
+The difficulty in this forecast stems from not observing $\alpha_1$ and not 
+having any readily infromation available to estimate it directly from 
+model \eqref{DPM}.  We show that there is a balance between $\mu_\alpha$ 
 and $\sigma_\alpha^2$ that allows us to lower the forecast risk for 
 $y_{1, T_1^* + 1}$ by incorporating what is known about the other $\alpha_i$s 
 when such information is available.
@@ -174,10 +207,19 @@ adjusted $\alpha$ plugin estimator for time series $i=1$ by,
 where the $\hat{\alpha}_i$s in \eqref{adjusted} are OLS estimators of all of 
 the $\alpha_i$s.  We can use $\hat{\alpha}_{\text{adj}}$ as an estimator for 
 the unknown $\alpha_1$ term for which no meaningful estimation information 
-otherwise exists. 
+otherwise exists.  
+
+It is important to note that the adjustment $\hat{\alpha}_{\text{adj}}$ 
+is a consistent estimator of $\mu_\alpha$, it is not an unbiased 
+estimator for $\alpha_1$, nor does it converge to $\alpha_1$.  
+Despite these inferential shortcomings, adjustment of the forecast for 
+$y_{1,T_1^*+1}$ through the addition of $\hat{\alpha}_{\text{adj}}$ has 
+the potential to lower forecast risk in settings where $\mu_\alpha$ is 
+large relative to $\sigma_\alpha$.  
 
 
-Consider the candidate forecasts: 
+We will consider the candidate 
+forecasts: 
 \begin{align*}
   &\text{Forecast 1}: \hat y_{1,T_1^*+1}^1 = \hat\eta_1 
     + \hat\phi_1 y_{1,T_1^*} + \hat\theta_1'\x_{1,T_1^*+1} 

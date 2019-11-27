@@ -1,0 +1,204 @@
+---
+title: "Post shock prediction simulations"
+author: "Daniel Eck"
+date: "November 26, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We load in the R packages that we need.
+
+```{r, message=FALSE}
+library(matrixStats)
+library(parallel)
+library(doParallel)
+library(foreach)
+library(tidyverse)
+```
+
+
+## Simulations with simple model
+
+
+```{r, echo = FALSE}
+simstudy_normal <- function(n = 20, T = 20, mu.alpha = 2, 
+                     sigma.alpha = 2, sigma.X = 1, sigma = 1){
+  
+  Tstar <- floor(T/2)
+  eta <- rnorm(n+1)
+  theta <- rnorm(n+1)
+  theta <- theta / as.vector(sqrt(crossprod(theta)))
+  beta <- rnorm(n+1)
+  beta <- beta / as.vector(sqrt(crossprod(beta)))
+  beta.X <- rnorm(n+1)
+  beta.X <- beta.X / as.vector(sqrt(crossprod(beta.X)))
+  alpha <- rnorm(n+1, mean = mu.alpha, sd = sigma.alpha)
+  
+  X <- matrix(0, nrow = T+1, ncol = n+1)
+  X[1, ] <- rnorm(n+1)
+  Y <- matrix(0, nrow = T+1, ncol = n+1)
+  Y[1, ] <- rnorm(n+1)
+  
+  for(i in 2:(T+1)){
+    X[i, ] <- beta.X * X[i-1, ] + rnorm(n+1, sd = sigma.X)
+    Y[i, ] <- eta + theta * Y[i-1, ] + beta * X[i, ] + 
+      alpha * ifelse(i-1 > Tstar, 1, 0) + rnorm(n+1, sd = sigma) 
+  }
+  
+  mu.alpha.hat <- rep(0, n)
+  for(j in 2:(n+1)){
+    m1 <- lm(Y[2:(T+1), j] ~ 1 + Y[1:T, j] + X[2:(T+1), j] + ifelse(1:T > Tstar,1,0))
+    mu.alpha.hat[j-1] <- coefficients(m1)[4]
+  }
+  
+  alpha.hat <- mean(mu.alpha.hat)
+  #alpha.hat
+  #sd(mu.alpha.hat) / sqrt(length(mu.alpha.hat))
+  
+  m1 <- lm(Y[2:(Tstar+1), 1] ~ 1 + Y[1:Tstar, 1] + X[2:(Tstar+1), 1])
+  beta.hat <- coefficients(m1)
+  Ypred.original <- as.vector(beta.hat %*% c(1, Y[Tstar+1,1], X[Tstar+2,1]))
+  Ypred.adjusted <- Ypred.original + alpha.hat
+  
+  R.original <- (Ypred.original - Y[Tstar+2,1])^2
+  R.adjusted <- (Ypred.adjusted - Y[Tstar+2,1])^2
+  
+  c(R.original, R.adjusted)
+}
+```
+
+We set the random seed and declare the number of cores that our multicore implementation will use.
+
+```{r}
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(13)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 2e3
+```
+
+
+## Simple model simulations with normal errors
+
+Combinations
+
+```{r simsetup}
+ns <- c(5, 1:4 * 10)
+Ts <- c(1:4 * 10)
+mus <- 1:5 / 2
+sds <- 1:4
+sim_params <- expand.grid(list(ns = ns, Ts = Ts, mus = mus, sds = sds))
+```
+
+
+```{r basicsims, cache = TRUE}
+system.time({
+  output_basic <- lapply(1:nrow(sim_params), FUN = function(j){
+      n <- sim_params[j, 1]
+      T <- sim_params[j, 2]
+      mu.alpha <- sim_params[j, 3]
+      sigma.alpha <- sim_params[j, 4]
+      out <- foreach(i = 1:nsim, .combine = rbind) %dopar% {
+        return(simstudy_normal(n = n, T = T, mu.alpha = mu.alpha, 
+        sigma.alpha = sigma.alpha, sigma.X = 1, sigma = 1))
+      }
+      out
+  })
+})
+```
+
+```{r basicsims_ferror}
+dat_basic <- cbind(sim_params, do.call(rbind, lapply(output_basic, colMeans)), 
+  do.call(rbind, lapply(output_basic, function(x) colSds(x) / sqrt(nsim) )))
+colnames(dat_basic)[5:8] <- c("mean_noadj", "mean_adj", "sd_noadj", "sd_adj") 
+ggplot(dat_basic, aes(x = mus, y = mean_noadj - mean_adj, 
+  group = as.factor(sds), color = as.factor(sds))) + 
+  labs(title="Performance of adjustment via disparate information", 
+    subtitle = "(rows increase in T, columns increase in n)",
+    x ="shock means", y = "error without adjusting minus error after adjusting", 
+    color = "shock sd") +
+  geom_line() + geom_hline(yintercept = 0, color = "red") +
+  theme_minimal() + 
+  scale_x_continuous(breaks=c(1,2), minor_breaks = NULL) + 
+  scale_y_continuous(minor_breaks = NULL) + 
+  facet_grid(Ts ~ ns)
+```
+
+
+
+```{r, eval = FALSE, echo = FALSE}
+n = 20 
+T = 20
+sigma.X = 1
+sigma = 1
+simstudy_gamma <- function(n = 20, T = 20, mu.alpha = 2, shape = 2, scale = 5, 
+  neg = TRUE, sigma.X = 1, sigma = 1){
+  
+  Tstar <- floor(T/2)
+  eta <- rnorm(n+1)
+  theta <- rnorm(n+1)
+  theta <- theta / as.vector(sqrt(crossprod(theta)))
+  beta <- rnorm(n+1)
+  beta <- beta / as.vector(sqrt(crossprod(beta)))
+  beta.X <- rnorm(n+1)
+  beta.X <- beta.X / as.vector(sqrt(crossprod(beta.X)))
+  
+  neg <- ifelse(neg, 1, -1)
+  alpha <- mu.alpha + shape*scale*neg - 
+    neg*rgamma(n = n+1, shape = shape, scale = scale)
+  
+  X <- matrix(0, nrow = T+1, ncol = n+1)
+  X[1, ] <- rnorm(n+1)
+  Y <- matrix(0, nrow = T+1, ncol = n+1)
+  Y[1, ] <- rnorm(n+1)
+  
+  for(i in 2:(T+1)){
+    X[i, ] <- beta.X * X[i-1, ] + rnorm(n+1, sd = sigma.X)
+    Y[i, ] <- eta + theta * Y[i-1, ] + beta * X[i, ] + 
+      alpha * ifelse(i-1 > Tstar, 1, 0) + rnorm(n+1, sd = sigma) 
+  }
+  
+  mu.alpha.hat <- rep(0, n)
+  for(j in 2:(n+1)){
+    m1 <- lm(Y[2:(T+1), j] ~ 1 + Y[1:T, j] + X[2:(T+1), j] + ifelse(1:T > Tstar,1,0))
+    mu.alpha.hat[j-1] <- coefficients(m1)[4]
+  }
+  
+  alpha.hat <- mean(mu.alpha.hat)
+  #alpha.hat
+  #sd(mu.alpha.hat) / sqrt(length(mu.alpha.hat))
+  
+  m1 <- lm(Y[2:(Tstar+1), 1] ~ 1 + Y[1:Tstar, 1] + X[2:(Tstar+1), 1])
+  beta.hat <- coefficients(m1)
+  Ypred.original <- as.vector(beta.hat %*% c(1, Y[Tstar+1,1], X[Tstar+2,1]))
+  Ypred.adjusted <- Ypred.original + alpha.hat
+  
+  R.original <- (Ypred.original - Y[Tstar+2,1])^2
+  R.adjusted <- (Ypred.adjusted - Y[Tstar+2,1])^2
+  
+  c(R.original, R.adjusted)
+}
+
+test2 <- sapply(1:n.sim, FUN = function(j) 
+  simstudy_gamma(n = 100, T = 100,  mu.alpha = 2, shape = 2, scale = 4, 
+    neg = FALSE, sigma.X = 1, sigma = 1))
+rowMeans(test2) # average forecast error for each forecast
+rowSds(test2) / sqrt(n.sim) # Monte Carlo standard errors corresponding to the above averages
+
+mean(apply(test2, 2, which.min) - 1) # proportion that adjusting wins
+diffs2 <- apply(test2, 2, diff)
+
+# average reduction achieved from adjustment
+mean(diffs2)
+
+# Monte Carlo standard error corresponding to the above average
+sd(diffs2) / sqrt(n.sim) 
+```
+
+
+
+
+
