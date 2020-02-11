@@ -15,6 +15,7 @@
 \usepackage[usenames]{color}
 \geometry{margin=1in}
 
+\newcommand{\R}{\mathbb{R}}
 \newcommand{\w}{\textbf{w}}
 \newcommand{\x}{\textbf{x}}
 \newcommand{\X}{\textbf{X}}
@@ -66,6 +67,8 @@
   - simulations for simple model with normal errors; model with normal 
     errors and $p > 1$; model where shock effect is Gamma. \\
 
+  - more general panel model where covariates may be different. \\
+
   - get references on time series pooling. \\
 
   - investigate orthogonal parameterizations of regression model 
@@ -76,7 +79,8 @@
   - expand method to weighted cases when the shock effect depends on the 
     measured covariates. \\
 
-  - get a real dataset. \\ 
+  - get a real dataset. Air conditiong units in hot humid summer vs salt sales 
+  	in very icy/snoy winters and portable generators for hurricane/fires/tornados  \\ 
 
 
 
@@ -139,8 +143,9 @@ model is
   y_{i,t} = \eta_i + \alpha_iD_{i,t} + \phi_i y_{i,t-1} + \theta_i' \x_{i,t} + 
     \beta_i' \x_{i,t-1} + \varepsilon_{i,t},  
 \end{equation}
-where $t = 1,\ldots,T_i$, $i = 1,\ldots, n+1$, and $D_{i,t} = 1(t > T_i^*)$, 
-$T_i^* < T_i$.  We will consider the following random effects structure:  
+$t = 1,\ldots,T_i$ and $i = 1,\ldots, n+1$, where $D_{i,t} = 1(t > T_i^*)$, 
+$T_i^* < T_i$ and $\x_{i,t} \in \R^{p}$, $p \geq 1$.  We will consider 
+the following random effects structure:  
 %\begin{align*}
 %  \eta_i &\overset{iid}{\sim} N(0, \sigma_\eta^2), 
 %    \qquad i = 1,\ldots n+1, \\
@@ -351,6 +356,9 @@ Forecast 2 is preferable to Forecast 1 asymptotically in both $T$ and $n$
 whenever $\mu_{\alpha} \neq 0$. In finite samples, Forecast 2 is preferable to 
 Forecast 1 when the $\mu_{\alpha}$ is large relative to its variability and 
 overall regression variability.  
+
+
+
 
 
 
