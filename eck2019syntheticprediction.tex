@@ -326,17 +326,16 @@ $\Var(\hat{\alpha}_{\text{adj}})$ as
     %= \E\left\{\Var(\hat{\alpha}_{\text{adj}}|\Hist)\right\} 
     %+ \frac{\sigma_{\alpha}^2}{n} \\
   &\qquad= \frac{1}{n^2} \sum_{i=2}^{n+1} \E\left\{\Var(\hat{\alpha}_i|\Hist)\right\} 
-    + \frac{\sigma_{\alpha}^2}{n} \\
-  &\qquad= \frac{1}{n^2(T-1)}\sum_{i=2}^{n+1} 
-    \E\left\{\frac{s_{e,i}^2}{(1-R^2_i)s_{\alpha_i}^2}\right\} 
-      + \frac{\sigma_{\alpha}^2}{n},
+    + \frac{\sigma_{\alpha}^2}{n}. %\\
+%  &\qquad= \frac{1}{n^2(T-1)}\sum_{i=2}^{n+1} 
+%    \E\left\{\frac{s_{e,i}^2}{(1-R^2_i)s_{\alpha_i}^2}\right\} 
+%      + \frac{\sigma_{\alpha}^2}{n},
 \label{reg}
 \end{split}
 \end{equation}
-where $s_{e,i}^2$ is the estimated variance of model $i$, $R^2_{\alpha_i}$ is 
-the multiple $R^2$ obtained from regressing the shock indicator $D$ on the 
-other regressors, and $s_{\alpha_i}^2$ is... .
-
+%where $s_{e,i}^2$ is the estimated variance of model $i$, $R^2_{\alpha_i}$ is 
+%the multiple $R^2$ obtained from regressing the shock indicator $D$ on the 
+%other regressors, and $s_{\alpha_i}^2$ is... .
 Propostion~\ref{prop:R1R2} states that Forecast 2 has lower forecast risk 
 than Forecast 1 when  
 $
@@ -348,8 +347,12 @@ $
 $
 Combining this result with \eqref{reg}, we see that Forecast 2 has lower 
 forecast risk than Forecast 1 when 
+%$$
+%  \frac{1}{n^2(T-1)}\sum_{i=2}^{n+1} \E\left\{\frac{s_{e,j}^2}{(1-R^2_i)s_{\alpha_i}^2}\right\} 
+%    + \frac{\sigma_{\alpha}^2}{n} < \mu_{\alpha}^2.
+%$$
 $$
-  \frac{1}{n^2(T-1)}\sum_{i=2}^{n+1} \E\left\{\frac{s_{e,j}^2}{(1-R^2_i)s_{\alpha_i}^2}\right\} 
+  \frac{1}{n^2} \sum_{i=2}^{n+1} \E\left\{\Var(\hat{\alpha}_i|\Hist)\right\} 
     + \frac{\sigma_{\alpha}^2}{n} < \mu_{\alpha}^2.
 $$
 Forecast 2 is preferable to Forecast 1 asymptotically in both $T$ and $n$ 
