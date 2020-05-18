@@ -1,4 +1,4 @@
-\begin{thebibliography}{6}
+\begin{thebibliography}{16}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -10,7 +10,7 @@
 Alberto Abadie, Alexis Diamond, and Jens Hainmueller.
 \newblock Synthetic control methods for comparative case studies: Estimating
   the effect of california’s tobacco control program.
-\newblock \emph{Journal of the American statistical Association}, 105\penalty0
+\newblock \emph{Journal of the American Statistical Association}, 105\penalty0
   (490):\penalty0 493--505, 2010.
 
 \bibitem[Bates and Granger(1969)]{bates1969combination}
@@ -19,27 +19,82 @@ John~M Bates and Clive~WJ Granger.
 \newblock \emph{Journal of the Operational Research Society}, 20\penalty0
   (4):\penalty0 451--468, 1969.
 
+\bibitem[Berkowitz and Kilian(2000)]{berkowitz2000recent}
+Jeremy Berkowitz and Lutz Kilian.
+\newblock Recent developments in bootstrapping time series.
+\newblock \emph{Econometric Reviews}, 19\penalty0 (1):\penalty0 1--48, 2000.
+
 \bibitem[Blundell and Bond(1998)]{blundell1998initial}
 Richard Blundell and Stephen Bond.
 \newblock Initial conditions and moment restrictions in dynamic panel data
   models.
-\newblock \emph{Journal of econometrics}, 87\penalty0 (1):\penalty0 115--143,
+\newblock \emph{Journal of Econometrics}, 87\penalty0 (1):\penalty0 115--143,
   1998.
+
+\bibitem[Bose(1988)]{bose1988edgeworth}
+Arup Bose.
+\newblock Edgeworth correction by bootstrap in autoregressions.
+\newblock \emph{The Annals of Statistics}, pages 1709--1722, 1988.
+
+\bibitem[Efron(1979)]{efron}
+B.~Efron.
+\newblock Bootstrap methods: Another look at the jackknife.
+\newblock \emph{The Annals of Statistics}, 7:\penalty0 1--26, 1979.
+
+\bibitem[Efron and Tibshirani(1986)]{efron1986bootstrap}
+Bradley Efron and Robert Tibshirani.
+\newblock Bootstrap methods for standard errors, confidence intervals, and
+  other measures of statistical accuracy.
+\newblock \emph{Statistical science}, pages 54--75, 1986.
 
 \bibitem[Granger and Newbold(2014)]{granger2014forecasting}
 Clive William~John Granger and Paul Newbold.
 \newblock \emph{Forecasting economic time series}.
 \newblock Academic Press, 2014.
 
+\bibitem[K\"{u}nsch(1989)]{kunsch1989jackknife}
+Hans~R K\"{u}nsch.
+\newblock The jackknife and the bootstrap for general stationary observations.
+\newblock \emph{The Annals of Statistics}, pages 1217--1241, 1989.
+
+\bibitem[Lee et~al.(2020)Lee, Lei, and Mallick]{lee2020estimation}
+Se~Yoon Lee, Bowen Lei, and Bani~K. Mallick.
+\newblock Estimation of covid-19 spread curves integrating global data and
+  borrowing information, 2020.
+
+\bibitem[Liu et~al.(1992)Liu, Singh, et~al.]{liu1992moving}
+Regina~Y Liu, Kesar Singh, et~al.
+\newblock Moving blocks jackknife and bootstrap capture weak dependence.
+\newblock \emph{Exploring the limits of bootstrap}, 225:\penalty0 248, 1992.
+
 \bibitem[Mundlak(1978)]{mundlak1978pooling}
 Yair Mundlak.
 \newblock On the pooling of time series and cross section data.
-\newblock \emph{Econometrica: journal of the Econometric Society}, pages
+\newblock \emph{Econometrica: Journal of the Econometric Society}, pages
   69--85, 1978.
+
+\bibitem[Plessen(2020)]{plessen2020integrated}
+Mogens~Graf Plessen.
+\newblock Integrated time series summarization and prediction algorithm and its
+  application to covid-19 data mining, 2020.
+
+\bibitem[Politis and Romano(1994)]{politis1994stationary}
+Dimitris~N Politis and Joseph~P Romano.
+\newblock The stationary bootstrap.
+\newblock \emph{Journal of the American Statistical association}, 89\penalty0
+  (428):\penalty0 1303--1313, 1994.
 
 \bibitem[Timmermann(2006)]{timmermann2006forecast}
 Allan Timmermann.
 \newblock Forecast combinations.
-\newblock \emph{Handbook of economic forecasting}, 1:\penalty0 135--196, 2006.
+\newblock \emph{Handbook of Economic Forecasting}, 1:\penalty0 135--196, 2006.
+
+\bibitem[Zellner et~al.(1991)Zellner, Hong, and Min]{zellner1991forecasting}
+Arnold Zellner, Chansik Hong, and Chung-ki Min.
+\newblock Forecasting turning points in international output growth rates using
+  bayesian exponentially weighted autoregression, time-varying parameter, and
+  pooling techniques.
+\newblock \emph{Journal of Econometrics}, 49\penalty0 (1-2):\penalty0 275--304,
+  1991.
 
 \end{thebibliography}

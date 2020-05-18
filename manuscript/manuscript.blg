@@ -3,44 +3,44 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: manuscript.aux
 The style file: plainnat.bst
 Database file #1: synthetic-prediction-notes.bib
-You've used 6 entries,
+You've used 16 entries,
             2773 wiz_defined-function locations,
-            634 strings with 5812 characters,
-and the built_in function-call counts, 2638 in all, are:
-= -- 245
-> -- 113
-< -- 6
-+ -- 39
-- -- 33
-* -- 197
-:= -- 401
-add.period$ -- 18
-call.type$ -- 6
-change.case$ -- 28
-chr.to.int$ -- 6
-cite$ -- 12
-duplicate$ -- 128
-empty$ -- 235
-format.name$ -- 45
-if$ -- 554
+            694 strings with 7319 characters,
+and the built_in function-call counts, 7068 in all, are:
+= -- 662
+> -- 305
+< -- 16
++ -- 106
+- -- 90
+* -- 511
+:= -- 1049
+add.period$ -- 46
+call.type$ -- 16
+change.case$ -- 76
+chr.to.int$ -- 16
+cite$ -- 32
+duplicate$ -- 350
+empty$ -- 630
+format.name$ -- 118
+if$ -- 1515
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 7
-newline$ -- 38
-num.names$ -- 24
-pop$ -- 55
+missing$ -- 15
+newline$ -- 86
+num.names$ -- 64
+pop$ -- 153
 preamble$ -- 1
-purify$ -- 23
+purify$ -- 61
 quote$ -- 0
-skip$ -- 98
+skip$ -- 284
 stack$ -- 0
-substring$ -- 136
-swap$ -- 13
-text.length$ -- 1
+substring$ -- 353
+swap$ -- 52
+text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 61
+type$ -- 171
 warning$ -- 0
-while$ -- 29
+while$ -- 76
 width$ -- 0
-write$ -- 84
+write$ -- 208
