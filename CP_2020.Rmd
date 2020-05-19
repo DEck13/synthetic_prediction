@@ -249,6 +249,7 @@ colnames(mat) <- c("a_1","sd_a_1","a_1_no","sd_a_1_no",
 rownames(mat) <- c("y2001", "y2008", "y2014")
 ```
 
+
 #### The March 9th, 2020 shock effect:
 
 ```{r}
@@ -258,14 +259,29 @@ start_day <- as.numeric(1:nrow(COP_close) >= start)
 COP_close <- COP_close %>% mutate(start_day = start_day)
 COP_close_small <- COP_close[(start-30):(start), ]
 dim(COP_close_small)
+```
+
+Here is the 1 day nowcast with S&P 500:
+
+```{r}
 m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
                     data = COP_close_small)
 summary(m_COP_03_09_20)
 alpha_03_09_20_1 <- summary(m_COP_03_09_20)$coef[3,1:2]
-alpha_03_09_20_1 #-10.51414
+alpha_03_09_20_1 #-10.51414 (1.62901)
 ```
 
-Here is the 5 day shock effect
+
+Here is the 1 day nowcast without S&P 500:
+
+```{r}
+m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
+summary(m_COP_03_09_20)
+alpha_03_09_20_1_no <- summary(m_COP_03_09_20)$coef[3,1:2]
+alpha_03_09_20_1_no #-10.533756 (1.617991)
+```
+
+Here is the 5 day shock effect with S&P 500:
 
 ```{r}
 COP_close_small <- COP_close[(start-30):(start+4), ]
@@ -274,8 +290,26 @@ m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day + GSPC_Close,
                     data = COP_close_small)
 summary(m_COP_03_09_20)
 alpha_03_09_20_5 <- summary(m_COP_03_09_20)$coef[3,1:2]
-alpha_03_09_20_5 #-5.333522
+alpha_03_09_20_5 #-5.333522 (2.077089)
 ```
+
+Here is the 5 day shock effect without S&P 500:
+
+```{r}
+m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
+summary(m_COP_03_09_20)
+alpha_03_09_20_5_no <- summary(m_COP_03_09_20)$coef[3,1:2]
+alpha_03_09_20_5_no #-5.314242 (2.031455)
+```
+
+
+
+
+
+
+
+
+
 
 
 ```{r, eval = FALSE, echo = FALSE}
