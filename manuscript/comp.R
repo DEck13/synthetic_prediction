@@ -53,7 +53,7 @@ Ypred.adjusted <- Ypred.original + alpha.hat * as.matrix(ifelse(2:(T + 1) > Tsta
 # set working directory
 setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
 # figure setting
-tikz('comp.tex', standAlone = TRUE, width = 5.5, height = 3)
+tikz('comp.tex', standAlone = TRUE, width = 8, height = 4)
 # plot
 par(mar = c(4, 4, 1, 2))
 # original
@@ -64,7 +64,18 @@ matplot(2:(T + 1), cbind(Y[2:(T + 1), 1], Ypred.original, Ypred.adjusted),
         type = 'l')
 # add shock
 segments(x0 = Tstar, y0 = -400, y1 = 600, col = 'deepskyblue', lty = 2, lwd = 2)
-text(x = Tstar + 40, y = -350, 'shock time point $T^*_1$')
+points(x = rep(125, 40), y = mu.alpha.hat, col = 'magenta')
+# add arrows
+arrows(x0 = 137, y0 = Ypred.original[165],
+       y1 = Ypred.adjusted[165],  code = 3, length = 0.07)
+arrows(x0 = 114, x1 = 122, y0 = alpha.hat, code = 2, length = 0.07)
+# \hat{\alpha}
+text(x = 165, y = mean(c(Ypred.original[165], Ypred.adjusted[165])) - 2, 
+     labels = '$\\displaystyle \\hat{\\alpha} = \\frac{1}{n}\\sum_{i=1}^{n} \\hat{\\alpha}_i=226.72$')
+# alpha_i
+text(x = 110, y = alpha.hat, labels = '$\\hat{\\alpha}_i$')
+# shock time points
+text(x = Tstar + 30, y = -350, 'shock time point $T^*_1$')
 # legends
 legend(x = 0, y = 600, 
        col = c('indianred1', 'magenta'),
@@ -72,3 +83,6 @@ legend(x = 0, y = 600,
        c('$\\hat{Y}$ without shock effects', '$\\hat{Y}$ with shock effects'))
 # output
 dev.off()
+
+
+

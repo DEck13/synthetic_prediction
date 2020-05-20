@@ -18,7 +18,9 @@
 \usepackage{hyperref}
 \usepackage{geometry}
 \usepackage{caption}
+\usepackage{float}
 \usepackage{tikz}
+\usepackage[linesnumbered, ruled,vlined]{algorithm2e}
 % margin setup
 \geometry{margin=1in}
 
@@ -125,11 +127,8 @@
 Things to do:
 \begin{enumerate}
   \item Literature review and introduction (We need a literature review for existing methods that are similar/different but close enough methods.  Possible searches include pooling, time series pooling, bayesian time series, bayesian autoregression)
-  \item Explore bootstrapping
   \item Data analysis
 \end{enumerate}
-
-In R, \texttt{optim} function in \texttt{base} and \texttt{Rsolnp} package may be helpful for solving the minimization problems in synthetic control methods.
 
 
 \begin{center}
@@ -137,9 +136,11 @@ In R, \texttt{optim} function in \texttt{base} and \texttt{Rsolnp} package may b
 \end{center}
 
 \begin{enumerate}
-  \item The manuscript is revised according to the comments and unnecessary parts are deleted.
-  \item Parametric bootstrap for AR(1) is added in Section  3.3 with some references added.
-  \item A couple of references are added in the introduction but more to be added.
+  \item Figure 1 is updated.
+  \item Some introductions for forecast combination are added in Paragraph 2. Literature review for time-series pooling in cross-sectional (panel) data is rewritten and more to be added.
+  \item The procedure for parametric bootstrap is rewritten.
+  \item Technical details for SCM method are updated.
+  \item SCM code is written using \texttt{Rsolnp} package.
 \end{enumerate}
 
 
@@ -183,6 +184,8 @@ competing forecasts for a single time series.  In this setting, one may
 desire combining forecasts as a method for lowering overall forecast error.  
 
 
+Forecast combination is a general term for a plethora of  methods for combining forecasts, e.g., (1) model averaging \citep{newbold2002forecast, timmermann2006forecast, hansen2008least}, (2) model selection \citep{lee2015model,greenaway2020multistep}, (3) time-series pooling \citep{mundlak1978pooling,zellner1991forecasting, lee2020estimation,plessen2020integrated}. Model averaging typically selects weights for models based on minimizing various loss functions whereas model selection chooses the model through minimization of those loss functions, see for example, \citet{fosten2019panel}. Time-series pooling is a broad topic for borrowing information from multiple time series for prediction improvement and is the focus of this paper. Before discussion of time-series pooling literature, we will first introduce the problem statement of our study.
+
 
 
 In this article we provide forecasting adjustment techniques with the goal 
@@ -217,30 +220,11 @@ averaging, and similarity weighting. The latter technique is similar to
 the weighting in synthetic control methodology \citep{abadie2010synthetic}.
 
 
-\vspace{.3cm}
 
-\emph{\textcolor{red}{More to be added ...}}
-
-\vspace{.3cm}
-
-Time-series pooling methodology is one of the main methods to deal this problem. The literature of time-series pooling is mainly related to pooling cross-sectional data. In this setting, estimation of parameters is usually based on merging from different time series using various pooling techniques.  For example, \citet{zellner1991forecasting} assumes the coefficient vectors of different time series are the same so that the time series can be merged to estimate parameters once in forecasting turning point of GDP growth rate in practice. 
-
-\emph{\textcolor{red}{More to be added ...}}
+ The literature of time-series pooling is mainly related to pooling cross-sectional panel data \citep{mundlak1978pooling, zellner1991forecasting, fosten2019panel}. The issues about whether to assume homogeneity or heterogeneity of slope coefficients across individual units are confounded. \citet{baltagi2008forecasting} showed that homogeneity approach often outperform   heterogeneity one in mean squared forecast error; while heterogeneity approach is more general to accommodate differences among units.
 
 
-Modern research in ``combining'' forecasts from disparate time series have taken perspectives from distinct fields.  \citet{lee2020estimation} constructed a Bayesian hierarchical model  to estimate posterior parameters for Richards model to improve predictive precision of COVID-19 infection trajectories for different countries. Though a Bayesian hierarchical approach can be a solution for our problem by setting up prior for shock-effects, the analysis is sensitive to the prior and the hierarchical model setup, and conditions for predictive improvement are generally hard to know. \citet{plessen2020integrated} employs a data-mining approach to take COVID-19 data from different countries as input to predict \emph{global} net daily infections  and deaths of COVID-19 from clustering. However, the fit is poor due to tremendous volatility of COVID-19 data, and perhaps a lack of random structure in his model. 
-
-\emph{\textcolor{red}{More to be added ...}}
-
-
-
-\begin{figure}[t]
-  \begin{center}
-    \includegraphics[height = 8cm]{comp.pdf}
-    \caption{A comparison between forecast without considering shock effects and the one uses simple averaging given $n=40$ disparate time series and that the shock time is at $T_1^* = 125$.}\label{figure1}
-  \end{center}  
-  \vspace{-.6cm}
-\end{figure}
+Modern researches in ``combining'' forecasts from disparate time series have taken perspectives from distinct fields.  \citet{lee2020estimation} constructed a Bayesian hierarchical model  to estimate posterior parameters for Richards model to improve predictive precision of COVID-19 infection trajectories for different countries. Though a Bayesian hierarchical approach can be a solution for our problem by setting up prior for shock-effects, the analysis is sensitive to the prior and the hierarchical model setup, and conditions for predictive improvement are generally hard to know. \citet{plessen2020integrated} employs a data-mining approach to take COVID-19 data from different countries as input to predict \emph{global} net daily infections  and deaths of COVID-19 from clustering. However, the fit is poor due to tremendous volatility of COVID-19 data, and perhaps a lack of random structure in his model. \emph{\textcolor{red}{More to be added ...}}
 
 
 
@@ -253,6 +237,9 @@ Modern research in ``combining'' forecasts from disparate time series have taken
 
 \section{Setting}
 \label{setting}
+
+
+
 We will suppose that an analyst has time series data ($y_{i,t}$,$\x_{i,t}$), 
 $t = 1$, $\ldots$, $T_i$, $i = 1$, $\ldots$, $n+1$, where $y_{i,t}$ is a 
 scalar response and $\x_{i,t}$ is a vector of covariates that are revealed to 
@@ -276,9 +263,21 @@ Our dynamic panel model includes an additional shock effect whose presence
 or absence is given by the binary variable $D_{i,t}$, the details of this model 
 are in the next section.
 
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[height = 8cm]{comp.pdf}
+    \caption{A comparison between forecast without considering shock effects and the one uses simple averaging given $n=40$ disparate time series and that the shock time is at $T_1^* = 125$. The dots represent least square estimate $\hat{\alpha}_i$ from disparate time series. Two model differs by an adjustment $\hat{\alpha}=\frac{1}{n}\sum_{i=1}^n \hat{\alpha}_i$.}\label{figure1}
+  \end{center}  
+  \vspace{-.6cm}
+\end{figure}
+
 Figure \ref{figure1} provides simple intuition of the practical usefulness of our proposed methodology. This figure depicts a time-series that experienced a ``shock'' at time point $T_1^* = 125$. It is supposed that the researcher does not have any information beyond $T_1^*$, but does have observations of forty disparate time series that have previously undergone a similar shock for which post-shock responses are recorded. Similarity in this context means that the shock effects are random variables that from a common distribution.
 %As we can see, the purple line provides a better prediction than the red line in this particular example. But we will justify later that consideration of estimated shock-effects will improve the prediction under certain conditions.
 In this example, the mean of the estimated shock effects is taken as a shock-effect estimator for the time series under study. Forecasts are then made by adding this shock-effect estimator to the estimated response values obtained from the process that ignores the shock. It is apparent from Figure \ref{figure1} that adjusting forecasts in this manner 1) leads to a reduction in forecasting risk; 2) does not fully recover the true shock-effect. We evaluate the performance of this post-shock prediction methodology throughout this article; we outline situations for when it is expected to work and when it is not.
+
+
+
 
 %Section \ref{properties} will provide a more detailed treatment about when our proposed estimators in Section \ref{constructionofestimators} will improve the prediction under various model setups in Section \ref{modelsetup}. More examples will be provided using Monte Carlo simulations in Section \ref{simulation}.
 
@@ -476,36 +475,45 @@ observed using disparate time series whose post-shock responses are observed.
 
 We use similar notation as that in \cite{abadie2010synthetic} to motivate 
 our weighted-adjustment estimator. Consider a $n\times 1$ weight vector 
-$\mbf{W}=(w_2, \ldots, w_{n+1})'$, where $w_i\in [0,1]$ for all 
+$\mbf{W}=(w_2, \ldots, w_{n+1})$, where $w_i\in [0,1]$ for all 
 $i = 2, \ldots, n+1$. Construct
 \begin{align*}
-  \mbf{X}_1 = \begin{pmatrix}
+ \mbf{X}_1 = \begin{pmatrix}
     \mbf{x}_{1, T_1^*-1} \\ \mbf{x}_{1, T_1^*}
-  \end{pmatrix} \quad 
-  \text{ and } \quad \mbf{X}_0 = \begin{pmatrix}
-    \mbf{x}_{2, T_2^*-1} & \cdots & \mbf{x}_{n+1, T_{n+1}^*-1} \\
-    \mbf{x}_{2, T_2^*} & \cdots & \mbf{x}_{n+1, T_{n+1}^*} 
-  \end{pmatrix},
+  \end{pmatrix}
+  \quad \text{ and }
+  \quad  \hat{\mbf{X}}_1(\mbf{W})
+  = w_2\begin{pmatrix}
+     \mbf{x}_{2, T_2^*-1} \\
+      \mbf{x}_{2, T_2^*}
+   \end{pmatrix} + \cdots + w_{n+1} \begin{pmatrix}
+     \mbf{x}_{n+1, T_{n+1}^*} \\
+      \mbf{x}_{n+1, T_{n+1}^*}
+   \end{pmatrix} .
 \end{align*}
-where $\mbf{X}_1$ is $2 \times 1$ and $\mbf{X}_0$ is $2\times n$. 
-Define $\mc{W}=\{\mbf{W}\in [0,1]^n \colon w_2+ \cdots + w_{n+1}=1 \}$. 
+where $\mbf{X}_1$ and $\hat{\mbf{X}}_1(\mbf{W})$ are $2 \times p$. Define $\mc{W}=\{\mbf{W}\in [0,1]^n \colon w_2+ \cdots + w_{n+1}=1 \}$. 
 Suppose there exists $\mbf{W}^*\in \mc{W}$ with 
-$\mbf{W}^*=(w_2^*, \ldots, w_{n+1}^*)'$ such that
+$\mbf{W}^*=(w_2^*, \ldots, w_{n+1}^*)$ such that
 \begin{align}
- \mbf{X}_1=\mbf{X}_0 \mbf{W}  \quad i.e., \quad \mbf{x}_{1, T_1^*-1} = \sum_{i=2}^{n+1} w_i^*\mbf{x}_{i, T_i^*-1} \text{ and } \mbf{x}_{1, T_1^*} = \sum_{i=2}^{n+1} w_i^*\mbf{x}_{i, T_i^*}.\label{SCM}
+ \mbf{X}_1=\hat{\mbf{X}}_1(\mbf{W}^*)  \quad i.e., \quad \mbf{x}_{1, T_1^*-1} = \sum_{i=2}^{n+1} w_i^*\mbf{x}_{i, T_i^*-1} \text{ and } \mbf{x}_{1, T_1^*} = \sum_{i=2}^{n+1} w_i^*\mbf{x}_{i, T_i^*}.\label{SCM}
 \end{align}
-Notice that $\mbf{W}^*$ exists as long as $\mbf{X}_1$ falls in the convex hull of 
-\begin{align}
-    (\mbf{x}_{2, T_2^*-1} & \cdots \mbf{x}_{n+1, T_{n+1}^*-1}, \ldots, 
-    \mbf{x}_{2, T_2^*},  \cdots  \mbf{x}_{n+1, T_{n+1}^*}). \label{convexhull}
-\end{align}
+ Notice that $\mbf{W}^*$ exists as long as $\mbf{X}_1$ falls in the convex hull of 
+ \begin{align*}
+   \left\{ \begin{pmatrix}
+     \mbf{x}_{2, T_2^*-1} \\
+      \mbf{x}_{2, T_2^*}
+   \end{pmatrix}, \ldots, \begin{pmatrix}
+     \mbf{x}_{n+1, T_{n+1}^*} \\
+      \mbf{x}_{n+1, T_{n+1}^*}
+   \end{pmatrix} \right\}.
+ \end{align*}
 %It is a reasonable assumption that the pool of time series that we are considering 
 %should be similar to the time series of interest. 
 Our weighted-adjustment estimator will therefore perform well when the pool of 
 disparate time series posses similar covariates to the time series for which 
 no post-shock responses are observed. We compute $\mbf{W}^*$ as
 \begin{align}
-  \mbf{W}^* = \argmin_{\mbf{W}\in \mc{W}} \norm{\mbf{X}_1-\mbf{X}_0\mbf{W}}. 
+  \mbf{W}^* = \argmin_{\mbf{W}\in \mc{W}} \norm{\mrm{vec}\big(\mbf{X}_1-\hat{\mbf{X}}_1(\mbf{W})\big)}_{2p}. 
   \label{W}
 \end{align}
 %which is a more general form of $\mbf{W}^*$ for the case when $\mbf{X}_1$ does not fall in the convex hull of (\ref{convexhull}). 
@@ -751,16 +759,35 @@ In the usual setup of AR($p$) model, the unobserved errors are assumed to be \em
 
 \citet{politis1994stationary} invented the stationary bootstrap method for \emph{strictly stationary} and \emph{weakly dependent} time series. However, the asymptotic accuracy of this procedure to OLS estimation is not known. Additionally, the asymptotic accuracy of this algorithm can be sensitive to the selection of $p$, the parameter of the geometric distribution; this issue is similar to that of the selection of block size in moving-block bootstrapping \citep{kunsch1989jackknife, liu1992moving}.  More work related to bootstrapping time series  can be referred to \citet{berkowitz2000recent}. It is up to the user in selecting which procedure to choose but under \emph{different} assumptions on the time-series.
 
-The procedures of bootstrapping AR(1) can be outline as
-\begin{enumerate}
-  \item From the observed fitted AR(1) model, we have a sample of residuals $\hat{\varepsilon}_{i, t}$'s for $i = 2, \ldots, n+1$ and $t=1, \ldots, T_i$. 
-  \item For the $b$th step of bootstrapping, we sampling with replacement from $\hat{\varepsilon}_{i, t}$'s to obtain  the bootstrapped residuals $\hat{\varepsilon}_{i, t}^b$'s.
-  \item Pluging $\hat{\varepsilon}_{i, t}^*$ into the original model yields a sample of ``bootstrapped'' response $y_{i, t}^b$'s.
-  \item  Compute the estimate of the shock-effects $\hat{\alpha}_i^{b}$ using OLS.
-  \item Compute the $\hat{\alpha}_{\rm adj}^{b}$, $\hat{\alpha}_{\rm wadj}^{b}$, and $\hat{\alpha}_{\rm IVW}^{b}$. 
-  \item Compute the sample mean, and sample variance of $\hat{\alpha}_{\rm adj}^{b}$, $\hat{\alpha}_{\rm wadj}^{b}$, and $\hat{\alpha}_{\rm IVW}^{b}$.
-\end{enumerate}
-Note that the estimates yielded by above procedure will provide an approximation for parameters involved in the risk-reduction conditions in Sections \ref{conditions} and \ref{comparisons}. In particular $\overline{\hat{\alpha}_{\rm wadj}}$, the sample mean of $\hat{\alpha}_{\rm wadj}^{b}$, will provide an approximation for $\E{\alpha_1}$ under $\mc{M}_1$, $\mc{M}_{21}$, and $\mc{M}_{22}$ since it is unbiased for $\E{\alpha_1}$ under those three configurations from Proposition \ref{unbiased}. Therefore, we can judge whether to use a shock-effect estimator, and choose between  shock-effect estimators by this method.
+\vspace{.2cm}
+\begin{algorithm}[H]
+\SetAlgoLined \label{boots}
+
+\SetKwInOut{Input}{Input}
+\Input{$B$ --  the number of parametric bootstraps  \\ $S_i= \{\hat{\varepsilon}_{i, t} \colon t = 1, \ldots, T_i\}$ -- the collection of  residuals for $t = 1,\ldots, T_i$ \\ $\mc{P}_i$ -- the fitted AR(1) model for $i = 2, \ldots, n+1$
+
+}
+
+\KwResult{The sample mean, and sample variance of bootstrapped adjustment estimator, inverse-variance weighted estimator, and weighted-adjustment estimator.}
+
+  \For{$b = 1:B$}{
+  \For{$i = 2, \ldots, n+1$}{
+  Sample with replacement from $S_{i}$ to obtain $S_{i}^{(b)}\coloneqq \{\hat{\varepsilon}_{i, t}^{(b)} \colon t = 1, \ldots, T_i\}$
+  
+  Plug $S_{i}^{(b)}$ into $\mc{P}_i$ to generate the bootstrapped response $\mbf{Y}_i^{(b)}$
+  
+  Compute $\hat{\alpha}_i^{(b)}$ based on OLS estimation of AR(1) with $\mbf{Y}_i^{(b)}$ and covariates from $\mc{P}_i$
+  }
+    Compute $\hat{\alpha}_{\rm adj}^{(b)}$, $\hat{\alpha}_{\rm wadj}^{(b)}$, and $\hat{\alpha}_{\rm IVW}^{(b)}$ 
+  }
+   Compute the sample mean, and sample variance of $\hat{\alpha}_{\rm adj}^{(b)}$, $\hat{\alpha}_{\rm wadj}^{(b)}$, and $\hat{\alpha}_{\rm IVW}^{(b)}$.
+ \caption{Parametric bootstrap for approximation for  mean and  variance of shock-effect estimators of $\alpha_1$.}
+\end{algorithm}
+\vspace{.2cm}
+
+The procedures of bootstrapping AR(1) can be outline as in Algorithm \ref{boots}. We stress that the $\varepsilon_{i,t}$ and $\varepsilon_{i,t'}$ for  $t \in \{1, \ldots, T_i^*\}$ and $t' \in \{T_i^*+1, \ldots, T_i\}$ are i.i.d. since $y_{i,t}$ differs from $y_{i,t'}$ only in the shock-effect $\alpha_i$ conditioned on $\Theta$ (see Section \ref{modelsetup}), and it is \emph{not} absorbed into $\varepsilon_{i,t}$ and $\varepsilon_{i,t'}$. Therefore, this parametric bootstrap framework will work for us.
+
+The estimates yielded by Algorithm \ref{boots} provides an approximation for parameters involved in the risk-reduction conditions in Sections \ref{conditions} and \ref{comparisons}. In particular $\overline{\hat{\alpha}_{\rm wadj}}$, the sample mean of $\hat{\alpha}_{\rm wadj}^{b}$, will provide an approximation for $\E{\alpha_1}$ under $\mc{M}_1$, $\mc{M}_{21}$, and $\mc{M}_{22}$ since it is unbiased for $\E{\alpha_1}$ under those three configurations from Proposition \ref{unbiased}. Therefore, we can judge whether to use a shock-effect estimator, and choose between  shock-effect estimators by this method.
 
 
 
