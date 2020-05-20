@@ -1,5 +1,5 @@
 ---
-title: "ConocoPhillips2020"
+title: "Conoco Phillips 2020"
 author: "Daniel J. Eck"
 date: "5/9/2020"
 output: pdf_document
@@ -10,20 +10,40 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-In this example we forecast Conoco Phillips stock prices in the midst of the coronavirus (COVID-19) recession. Specific interest is in predictions made after March 6th, 2020, the Friday before the stock market crash on March 9th, 2020. Conoco Phillips is chosen for this analysis because it is a large oil and gas resources [company](http://www.conocophillips.com/about-us/how-energy-works/) with a relatively recent [initial public offering](http://www.conocophillips.com/about-us/our-history/2009-1990/). Focus on the oil sector is because oil prices have been shown to exhibit a cointegrating behavior with economic indices ([Source](https://www.sciencedirect.com/science/article/pii/S014098830900245X?casa_token=Qi1OhieqW5sAAAAA:tzbKY-_SggD1Han_qWic9qVhiKHwO3YaEDrhi2bBEsozISXaX60paUH87QS2eonuKwak_W8QrA)), and our chosen time frame represents the onset of a significant economic down turn, coupled with OPEC decreasing the global price of oil the Sunday before trading resumes on Monday, March 9th [Source](https://www.cnbc.com/2020/03/08/saudi-arabia-to-hike-oil-output-above-10-million-bpd-in-april-after-opec-deal-collapse.html). Conoco Philips is particularly interesting because it is a young company with no stock information before 1990, thus we use separate companies to estimate the March 9th shock effect.
+In this example we forecast Conoco Phillips stock prices in the midst of the coronavirus (COVID-19) recession. Specific interest is in predictions made after March 6th, 2020, the Friday before the stock market crash on March 9th, 2020. Conoco Phillips is chosen for this analysis because it is a large oil and gas resources [company](http://www.conocophillips.com/about-us/how-energy-works/) with a relatively recent [initial public offering](http://www.conocophillips.com/about-us/our-history/2009-1990/). Focus on the oil sector is because oil prices have been shown to exhibit a cointegrating behavior with economic indices ([Source](https://www.sciencedirect.com/science/article/pii/S014098830900245X?casa_token=Qi1OhieqW5sAAAAA:tzbKY-_SggD1Han_qWic9qVhiKHwO3YaEDrhi2bBEsozISXaX60paUH87QS2eonuKwak_W8QrA)), and our chosen time frame represents the onset of a significant economic down turn, coupled with OPEC decreasing the global price of oil the Sunday before trading resumes on Monday, March 9th [Source](https://www.cnbc.com/2020/03/08/saudi-arabia-to-hike-oil-output-above-10-million-bpd-in-april-after-opec-deal-collapse.html). Furthermore, fear of and action in response to the coronavirus pandemic began to uptick dramatically between Friday, March 6th and Monday, March 9th. Major events include the SXSW festival being cancelled as trading closed on March 6th [Source](https://www.cnn.com/world/live-news/coronavirus-outbreak-03-06-20-intl-hnk/h_a8875b987d5086f165e9284304f7c77e),
+<!-- Cornavirus fear began taking ahold of the stock market in late February to early March https://www.cnn.com/world/live-news/coronavirus-outbreak-03-06-20-intl-hnk/h_82c5c28377848e2d8f728f498a08f4f7 -->
+New York declared a state of emergency on March 7th [Source](https://www.governor.ny.gov/news/novel-coronavirus-briefing-governor-cuomo-declares-state-emergency-contain-spread-virus), and by Sunday, March 8th, eight states have declared a state of emergency while Italy placed 16 million people in quarantine [Source](https://www.newsweek.com/what-us-states-have-declared-state-emergency-amid-coronavirus-outbreak-1491299).
+
+<!-- Jim Jim Tankersley,  https://www.nytimes.com/2020/03/09/podcasts/coronavirus-stock-market-crash.html
+-->
+
+<!-- Conoco Philips is particularly interesting because it is a young company with no stock information before 1990, thus we use separate companies to estimate the March 9th shock effect.-->
+
+Economic indicators forecasted our recession before the coronavirus pandemic began. The current recession followed an inversion of the yield curve that first happend back in March 22, 2019 [Source](https://apnews.com/a0af7de008924d789c6d2bddc1ee9168). An inversion of the yield curve is an event that signals that recessions are more likely ([St. Louis Fed](https://files.stlouisfed.org/files/htdocs/publications/economic-synopses/2018/11/30/does-the-yield-curve-really-forecast-recession.pdf), [San Francisco Fed](https://www.frbsf.org/economic-research/files/el2018-07.pdf?source=post_page---------------------------), [Damir Tonik](https://onlinelibrary.wiley.com/doi/pdf/10.1002/jcaf.22400?casa_token=ONwrV5ApkhkAAAAA:Qgh2e8QFSEniGLvPbzST_p1o2PregqnrCoNQrwjSK47iNcySWPHZQOf1_F342Vzog-ayXtpPukAnuMc)). 
+
+In this analysis we investigate the performance of oil companies in previous recessions that followed an inversion of the yield curve to obtain a suitable Conoco Phillips donor pool for estimating the March 9th shock effect on Conoco Phillips oil stock. We also consider previous OPEC oil supply shocks. We will borrow from the literature on oil price forecasting to establish appropriate time horizons and forecasting models. Recessions that occured before 1973 are disregarded since oil price forecasts cannot be represented by standard time series models before 1973 ([Source](https://www.federalreserve.gov/PUBS/ifdp/2011/1022/ifdp1022.htm)). We will use a simple AR(1) model to forecast Conoco Phillips stock price. This model has been shown to beat no-change forecasts when predicting oil prices over time horizons of 1 and 3 months ([Source](https://www.federalreserve.gov/PUBS/ifdp/2011/1022/ifdp1022.htm)). We will consider 30 pre-shock trading days and we will forecast the immediate shock effect and the shock effect over a future five trading day window. All estimates will be adjusted for inflation using the inflation calculator at https://www.usinflationcalculator.com.
 
 
-The current recession followed an inversion of the yield curve, an event that signals that recessions are more likely ([St. Louis Fed](https://files.stlouisfed.org/files/htdocs/publications/economic-synopses/2018/11/30/does-the-yield-curve-really-forecast-recession.pdf), [San Francisco Fed](https://www.frbsf.org/economic-research/files/el2018-07.pdf?source=post_page---------------------------), [Damir Tonik](https://onlinelibrary.wiley.com/doi/pdf/10.1002/jcaf.22400?casa_token=ONwrV5ApkhkAAAAA:Qgh2e8QFSEniGLvPbzST_p1o2PregqnrCoNQrwjSK47iNcySWPHZQOf1_F342Vzog-ayXtpPukAnuMc)). We investigate the performance of oil companies in previous recessions that followed an inversion of the yield curve to obtain a suitable donor pool for estimating the March 9th shock effect on Conoco Phillips oil stock. We also consider previous OPEC oil supply shocks. 
-
-
-We will borrow from the literature on oil price forecasting to establish appropriate time horizons, forecasting and nowcasting models, and donor pools of disparate time series. Recessions that occured before 1973 are disregarded since oil price forecasts cannot be represented by standard time series models before 1973 ([Source](https://www.federalreserve.gov/PUBS/ifdp/2011/1022/ifdp1022.htm)). We will use a simple AR(1) model to forecast Conoco Phillips stock price. This model has been shown to beat no-change forecasts when predicting oil prices over time horizons of 1 and 3 months ([Source](https://www.federalreserve.gov/PUBS/ifdp/2011/1022/ifdp1022.htm)). We will consider 30 pre-shock trading days and we will nowcast the immediate shock effect and the shock effect over a future five trading day window. All estimates will be adjusted for inflation: https://www.usinflationcalculator.com
 
 <!-- is strong evidence that recursively estimated AR and ARMA models have lower MSPE than the no-change forecast for predicting real oil prices, especially at horizons of 1 and 3 months. At longer horizons, the no-change forecast of the real price of oil typically is the predictor with the lowest MSPE. These results are robust to the use of real time data ([Source](https://www.federalreserve.gov/PUBS/ifdp/2011/1022/ifdp1022.htm)).  We will use these findings on oil prices as guidelines for constructing time horizons for our AR models, our time horizons will be 30 trading days centered at the reported time of the shock. -->
 
+Our donor pool will consist of Conoco Phillips shock effects observed on September 11th, 2001, September 8th, 2008, and November 27, 2014. The first two shock effects were observed during recessions that were predicated by an inversion of the yiled curve, and the third was an OPEC induced supply side shock effect. Some other notable shock effects were not included in this analysis because the conditions preceding them are not simialar to those of the March 9, 2020 shock effect, among these are the October 19, 1987, August 8th, 2011, and  August 24, 2015 shock effects ([1987 Source](https://www.nber.org/chapters/c10958.pdf), [2011 Source](https://www.latimes.com/world/la-xpm-2011-aug-06-la-fi-us-debt-downgrade-20110806-story.html), [2015 Source](https://www.nytimes.com/2015/08/25/business/dealbook/daily-stock-market-activity.html)). 
+<!-- 
+October 19, 1987: https://www.nber.org/chapters/c10958.pdf
+@article{shiller1988portfolio,
+  title={Portfolio insurance and other investor fashions as factors in the 1987 stock market crash},
+  author={Shiller, Robert J},
+  journal={NBER Macroeconomics Annual},
+  volume={3},
+  pages={287--297},
+  year={1988},
+  publisher={MIT Press}
+}
 
+August 24th, 2015: https://www.nytimes.com/2015/08/25/business/dealbook/daily-stock-market-activity.html
 
-
-
+August 8th, 2011, US Credit rating downgraded: https://www.latimes.com/world/la-xpm-2011-aug-06-la-fi-us-debt-downgrade-20110806-story.html
+-->
 
 
 
@@ -42,7 +62,7 @@ We will borrow from the literature on oil price forecasting to establish appropr
 
 We load in the relevant R packages
 
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 library(data.table)
 library(tidyverse)
 library(tseries)
@@ -51,26 +71,26 @@ library(quantmod)
 
 and load in relevant datasets with some mild preprocessing.
 
-```{r loadCOP, message = "FALSE"}
+```{r loadCOP, message = FALSE, warning = FALSE}
 ## Conoco Phillips
 getSymbols('COP', from = "2000-01-01")
 COP <- as.data.frame(COP)
 COP <- COP %>% mutate(Date = rownames(COP))
 
-## Exxon Mobile
-getSymbols('XOM', from = "1970-01-01")
-XOM <- as.data.frame(XOM)
-XOM <- XOM %>% mutate(Date = rownames(XOM))
-
-## Chevron
-getSymbols('CVX', from = "1970-01-01")
-CVX <- as.data.frame(CVX)
-CVX <- CVX %>% mutate(Date = rownames(CVX))
-
 ## S&P 500
 getSymbols('^GSPC', from = "1970-01-01")
 GSPC <- as.data.frame(GSPC)
 GSPC <- GSPC %>% mutate(Date = rownames(GSPC))
+
+## Exxon Mobile
+#getSymbols('XOM', from = "1970-01-01")
+#XOM <- as.data.frame(XOM)
+#XOM <- XOM %>% mutate(Date = rownames(XOM))
+
+## Chevron
+#getSymbols('CVX', from = "1970-01-01")
+#CVX <- as.data.frame(CVX)
+#CVX <- CVX %>% mutate(Date = rownames(CVX))
 ```
 
 
@@ -89,13 +109,12 @@ COP_close <- merge(COP_close, GSPC_close)
 Y <- COP_close$COP_Close[-1]
 COP_close <- data.frame(COP_close[-nrow(COP_close), ], Y)
 start <- which(COP_close$Date == "2001-09-10")
-start_day <- as.numeric(1:nrow(COP_close) > start)
+## change to equality
+start_day <- as.numeric(1:nrow(COP_close) == start + 1)
 COP_close <- COP_close %>% mutate(start_day = start_day)
 COP_close_small <- COP_close[(start-29):(start+1), ]
-dim(COP_close_small)
 m_COP_9_11 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
                  data = COP_close_small)
-summary(m_COP_9_11)
 alpha_9_11_1 <- summary(m_COP_9_11)$coef[3,1:2]
 alpha_9_11_1 #-1.97 (0.41) in 2020 dollars
 ```
@@ -104,7 +123,6 @@ Here is the 1 day nowcast without S&P 500:
 
 ```{r}
 m_COP_9_11 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-summary(m_COP_9_11)
 alpha_9_11_1_no <- summary(m_COP_9_11)$coef[3,1:2]
 alpha_9_11_1_no #-1.56 (0.33) in 2020 dollars
 ```
@@ -115,9 +133,9 @@ Here is the 5 day nowcast with S&P 500:
 COP_close_small <- COP_close[(start-29):(start+5), ]
 m_COP_9_11 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
                  data = COP_close_small)
-summary(m_COP_9_11)
 alpha_9_11_5 <- summary(m_COP_9_11)$coef[3,1:2]
-alpha_9_11_5 #-2.19 (0.46) in 2020 dollars
+             #constant: -2.19 (0.46) in 2020 dollars
+alpha_9_11_5 #-1.17 (0.54) in 2020 dollars
 ```
 
 Here is the 5 day nowcast without S&P 500:
@@ -125,9 +143,9 @@ Here is the 5 day nowcast without S&P 500:
 ```{r}
 COP_close_small <- COP_close[(start-29):(start+5), ]
 m_COP_9_11 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-summary(m_COP_9_11)
 alpha_9_11_5_no <- summary(m_COP_9_11)$coef[3,1:2]
-alpha_9_11_5_no #-1.55 (0.28) in 2020 dollars
+                #constant: -1.55 (0.28) in 2020 dollars
+alpha_9_11_5_no #-1.59 (0.52) in 2020 dollars
 ```
 
 
@@ -142,13 +160,12 @@ Here is the 1 day nowcast with S&P 500:
 ```{r}
 COP_close <- COP_close %>% select(-"start_day")
 start <- which(COP_close$Date == "2008-09-08")
-start_day <- as.numeric(1:nrow(COP_close) >= start)
+## change to equality
+start_day <- as.numeric(1:nrow(COP_close) == start)
 COP_close <- COP_close %>% mutate(start_day = start_day)
 COP_close_small <- COP_close[(start-30):(start), ]
-dim(COP_close_small)
 m_COP_9_08_08 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
                     data = COP_close_small)
-summary(m_COP_9_08_08)
 alpha_9_08_08_1 <- summary(m_COP_9_08_08)$coef[3,1:2]
 alpha_9_08_08_1 #-6.95 (1.98) in 2020 dollars
 ```
@@ -157,7 +174,6 @@ Here is the 1 day nowcast without S&P 500:
 
 ```{r}
 m_COP_9_08_08 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-summary(m_COP_9_08_08)
 alpha_9_08_08_1_no <- summary(m_COP_9_08_08)$coef[3,1:2]
 alpha_9_08_08_1_no #-6.94 (1.94) in 2020 dollars
 ```
@@ -169,18 +185,18 @@ Here is the 5 day nowcast with S&P 500:
 COP_close_small <- COP_close[(start-30):(start+4), ]
 m_COP_9_08_08 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
                     data = COP_close_small)
-summary(m_COP_9_08_08)
 alpha_9_08_08_5 <- summary(m_COP_9_08_08)$coef[3,1:2]
-alpha_9_08_08_5 #-4.20 (1.61) in 2020 dollars
+                #constant: -4.20 (1.61) in 2020 dollars
+alpha_9_08_08_5 # -6.28 (2.00) in 2020 dollars
 ```
 
 Here is the 5 day nowcast with S&P 500:
 
 ```{r}
 m_COP_9_08_08 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-summary(m_COP_9_08_08)
 alpha_9_08_08_5_no <- summary(m_COP_9_08_08)$coef[3,1:2]
-alpha_9_08_08_5_no #-4.14 (1.58) in 2020 dollars
+                   #constant: -4.14 (1.58) in 2020 dollars
+alpha_9_08_08_5_no #-6.26 (1.94) 
 ```
 
 
@@ -193,13 +209,12 @@ Here is the 1 day nowcast with S&P 500:
 ```{r}
 COP_close <- COP_close %>% select(-"start_day")
 start <- which(COP_close$Date == "2014-11-26")
-start_day <- as.numeric(1:nrow(COP_close) >= start)
+start_day <- as.numeric(1:nrow(COP_close) == start)
+## change to equality
 COP_close <- COP_close %>% mutate(start_day = start_day)
 COP_close_small <- COP_close[(start-30):(start), ]
-dim(COP_close_small)
 m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day + GSPC_Close,
                     data = COP_close_small)
-summary(m_COP_11_27_14)
 alpha_11_27_14_1 <- summary(m_COP_11_27_14)$coef[3,1:2]
 alpha_11_27_14_1 #-5.68 (1.06) in 2020 dollars
 ```
@@ -209,7 +224,6 @@ Here is the 1 day nowcast without S&P 500:
 
 ```{r}
 m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-summary(m_COP_11_27_14)
 alpha_11_27_14_1_no <- summary(m_COP_11_27_14)$coef[3,1:2]
 alpha_11_27_14_1_no #-5.26 (0.97) in 2020 dollars
 ```
@@ -219,35 +233,22 @@ Here is the 5 day nowcast with S&P 500:
 
 ```{r}
 COP_close_small <- COP_close[(start-30):(start+4), ]
-dim(COP_close_small)
 m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day + GSPC_Close,
                     data = COP_close_small)
-summary(m_COP_11_27_14)
 alpha_11_27_14_5 <- summary(m_COP_11_27_14)$coef[3,1:2]
-alpha_11_27_14_5 #-2.69 (0.94) in 2020 dollars
+                 #constant: -2.69 (0.94) in 2020 dollars
+alpha_11_27_14_5 #-5.43 (1.01) in 2020 dollars
 ```
 
 Here is the 5 day nowcast without S&P 500:
 
 ```{r}
 m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-summary(m_COP_11_27_14)
 alpha_11_27_14_5_no <- summary(m_COP_11_27_14)$coef[3,1:2]
-alpha_11_27_14_5_no #-1.23 (0.65) in 2020 dollars
+                    #constant:-1.23 (0.65) in 2020 dollars
+alpha_11_27_14_5_no #-5.26 (0.99) in 2020 dollars
 ```
 
-
-
-```{r}
-mat <- rbind(
-c(-1.97, 0.41, -1.56, 0.33, -2.19, 0.46, -1.55, 0.28),
-c(-6.95, 1.98, -6.94, 1.94, -4.20, 1.61, -4.14, 1.58),
-c(-5.68, 1.06, -5.26, 0.97, -2.69, 0.94, -1.23, 0.65)
-)
-colnames(mat) <- c("a_1","sd_a_1","a_1_no","sd_a_1_no",
-                   "a_5","sd_a_5","a_5_no","sd_a_5_no")
-rownames(mat) <- c("y2001", "y2008", "y2014")
-```
 
 
 #### The March 9th, 2020 shock effect:
@@ -255,10 +256,10 @@ rownames(mat) <- c("y2001", "y2008", "y2014")
 ```{r}
 COP_close <- COP_close %>% select(-"start_day")
 start <- which(COP_close$Date == "2020-03-06")
-start_day <- as.numeric(1:nrow(COP_close) >= start)
+## change to equality
+start_day <- as.numeric(1:nrow(COP_close) == start)
 COP_close <- COP_close %>% mutate(start_day = start_day)
 COP_close_small <- COP_close[(start-30):(start), ]
-dim(COP_close_small)
 ```
 
 Here is the 1 day nowcast with S&P 500:
@@ -266,7 +267,6 @@ Here is the 1 day nowcast with S&P 500:
 ```{r}
 m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
                     data = COP_close_small)
-summary(m_COP_03_09_20)
 alpha_03_09_20_1 <- summary(m_COP_03_09_20)$coef[3,1:2]
 alpha_03_09_20_1 #-10.51414 (1.62901)
 ```
@@ -276,7 +276,6 @@ Here is the 1 day nowcast without S&P 500:
 
 ```{r}
 m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-summary(m_COP_03_09_20)
 alpha_03_09_20_1_no <- summary(m_COP_03_09_20)$coef[3,1:2]
 alpha_03_09_20_1_no #-10.533756 (1.617991)
 ```
@@ -285,59 +284,164 @@ Here is the 5 day shock effect with S&P 500:
 
 ```{r}
 COP_close_small <- COP_close[(start-30):(start+4), ]
-dim(COP_close_small)
 m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
                     data = COP_close_small)
-summary(m_COP_03_09_20)
 alpha_03_09_20_5 <- summary(m_COP_03_09_20)$coef[3,1:2]
-alpha_03_09_20_5 #-5.333522 (2.077089)
+                 #constant: -5.333522 (2.077089)
+alpha_03_09_20_5 #-10.714979 (1.775454)
 ```
 
 Here is the 5 day shock effect without S&P 500:
 
 ```{r}
 m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-summary(m_COP_03_09_20)
 alpha_03_09_20_5_no <- summary(m_COP_03_09_20)$coef[3,1:2]
-alpha_03_09_20_5_no #-5.314242 (2.031455)
+                    #constant: -5.314242 (2.031455)
+alpha_03_09_20_5_no #-10.668604 (1.754461)
 ```
 
 
 
 
+## Shock effect estimators
+
+We first obtain the inflation-adjusted shock effect estimators from all of the above analyses.
+
+```{r}
+a_estimates <- rbind(
+c(-1.97, 0.41, -1.56, 0.33, -1.17, 0.54, -1.59, 0.52),
+c(-6.95, 1.98, -6.94, 1.94, -6.28, 2.00, -6.26, 1.94),
+c(-5.68, 1.06, -5.26, 0.97, -5.43, 1.01, -5.26, 0.99)
+)
+colnames(a_estimates) <- c("a_1","sd_a_1","a_1_no","sd_a_1_no",
+                   "a_5","sd_a_5","a_5_no","sd_a_5_no")
+rownames(a_estimates) <- c("y2001", "y2008", "y2014")
+```
 
 
+We now compute four shock effect estimators. We compute the adjustment estimator that averages the estimated shock effects and the inverse variance weighted adjustment estimator, these two estimators are computed with and without the September 11th, 2001 shock effect. We consider analyses without the September 11th, 2001 shock effect because the stock market was closed for the week following the terrorist attack, so immediate post shock data was not actually observed.
+
+```{r}
+a_adj <- colMeans(a_estimates[,1:4 * 2 -1 ])
+a_adj_no911 <- colMeans(a_estimates[-1,1:4 * 2 -1 ])
+weights <- rbind(
+(1 / a_estimates[,1:4 * 2])[1, ] / colSums(1 / a_estimates[,1:4 * 2]),
+(1 / a_estimates[,1:4 * 2])[2, ] / colSums(1 / a_estimates[,1:4 * 2]),
+(1 / a_estimates[,1:4 * 2])[3, ] / colSums(1 / a_estimates[,1:4 * 2])
+)
+a_adj_IVW <- colSums(weights * a_estimates[,1:4 * 2 -1 ])
+weights_no911 <- rbind(
+(1 / a_estimates[-1,1:4 * 2])[1, ] / colSums(1 / a_estimates[-1,1:4 * 2]),
+(1 / a_estimates[-1,1:4 * 2])[2, ] / colSums(1 / a_estimates[-1,1:4 * 2])
+)
+a_adj_IVW_no911 <- colSums(weights_no911 * a_estimates[-1,1:4 * 2 -1 ])
+```
+
+Here are the estimators:
+
+```{r}
+shock_effects <- rbind(a_adj, a_adj_no911, 
+                       a_adj_IVW, a_adj_IVW_no911)
+shock_effects
+```
+
+Interesting to note that the March 9th, 2020 shock effect is closely approximated by the additive effect of the recession diven shock on September 8th, 2008 and the OPEC supply driven shock on November 27, 2014.
+
+```{r}
+additive <- colSums(a_estimates[-1,1:4 * 2 -1])
+additive
+```
 
 
+## Post-shock forecasts
+
+```{r}
+COP_close <- COP_close %>% select(-"start_day")
+start <- which(COP_close$Date == "2020-03-06")
+#start_day <- as.numeric(1:nrow(COP_close) >= start)
+#COP_close <- COP_close %>% mutate(start_day = start_day)
+COP_close_small <- COP_close[(start-30):(start), ]
+```
+
+Here is the 1 day nowcast with S&P 500:
+
+```{r}
+m_COP_03_06_20 <- lm(Y ~ COP_Close + GSPC_Close, 
+                     data = COP_close_small[-nrow(COP_close_small), ])
+preds <- predict(m_COP_03_06_20)
+Yhat_nothing_1 <- 0.933928 * 46.96604 -7.462690 + 0.003267 * 3023.94
+Yhat_adj_1 <- Yhat_nothing_1 + shock_effects[, 1]
+Yhat_adj_additive_1 <- Yhat_nothing_1 + additive[1]
+
+## doing nothing completely misses the mark
+Yhat_nothing_1 - COP_close_small$Y[nrow(COP_close_small)]
+
+## adjustment gets closer
+Yhat_adj_1 - COP_close_small$Y[nrow(COP_close_small)]
+
+## additive effect does well
+Yhat_adj_additive_1 - COP_close_small$Y[nrow(COP_close_small)]
+```
 
 
+```{r}
+COP_close_small$id <- 1:nrow(COP_close_small)
+mat <- cbind(COP_close_small$id[nrow(COP_close_small)], 
+             c(Yhat_adj_1, Yhat_adj_additive_1))
+colnames(mat) <- c("id", "Yhat_adj")
+dat <- as.data.frame(mat)
+ggplot(COP_close_small, mapping = aes(x = id, y = Y)) + 
+  labs(title = "Conoco Phillips forecasting (with S&P 500)", 
+       x = "Day", y = "Close price (in USD)") +
+  geom_point() + 
+  geom_point(data = dat, aes(x = id, y = Yhat_adj), col = 2, pch = 2:6) + 
+  geom_line(aes(x = id, y = c(m_COP_03_06_20$fitted.values, Yhat_nothing_1)), 
+            col = "blue") +
+  theme_minimal()
+```
 
-```{r, eval = FALSE, echo = FALSE}
-## tests
-adf.test(dat_COP[50:200, ]$Close)
-adf.test(dat_COP[100:210, ]$Close)
-adf.test(dat_COP[100:207, ]$mkt_Close)
-adf.test(dat_COP[211:252, ]$Close)
-adf.test(dat_COP[211:252, ]$mkt_Close)
 
-Box.test(dat_COP[100:210, ]$Close, lag=20, type="Ljung-Box")
-kpss.test(dat_COP[100:210, ]$Close, null="Trend")
-acf(dat_COP[100:210, ]$Close)
+Here is the 1 day nowcast without S&P 500:
 
-## one level of differencing may be preferred
-fit <- arima(x = dat_COP[181:241, ]$Y, order = c(1, 0, 0), 
-      xreg = dat_COP[181:241, ]$mkt_Close)
-fit
 
-## the post-shock model
-fit2 <- arima(x = dat_COP[211:252, ]$Y, order = c(1, 0, 0), 
-      xreg = dat_COP[211:252, ]$mkt_Close)
-fit2
+```{r}
+m_COP_03_06_20 <- lm(Y ~ COP_Close, 
+                     data = COP_close_small[-nrow(COP_close_small), ])
+summary(m_COP_03_06_20)
+preds <- predict(m_COP_03_06_20)
+Yhat_nothing_1_no <- -1.25682 + 1.01170 * 47.00149 
+Yhat_adj_1_no <- Yhat_nothing_1_no + shock_effects[, 2]
+Yhat_adj_additive_1_no <- Yhat_nothing_1_no + additive[2]
+
+## doing nothing misses the mark
+Yhat_nothing_1_no - COP_close_small$Y[nrow(COP_close_small)]
+
+## adjustment gets closer
+Yhat_adj_1_no - COP_close_small$Y[nrow(COP_close_small)]
+
+## additive effect does well
+Yhat_adj_additive_1_no - COP_close_small$Y[nrow(COP_close_small)]
 ```
 
 
 
-
+```{r}
+COP_close_small$id <- 1:nrow(COP_close_small)
+mat <- cbind(COP_close_small$id[nrow(COP_close_small)], 
+             c(Yhat_adj_1,  Yhat_adj_additive_1_no))
+colnames(mat) <- c("id", "Yhat_adj")
+dat <- as.data.frame(mat)
+ggplot(COP_close_small, mapping = aes(x = id, y = Y)) + 
+  labs(title = "Conoco Phillips forecasting (without S&P 500)", 
+       x = "Day", y = "Close price (in USD)") +
+  geom_point() + 
+  geom_point(data = dat, aes(x = id, y = Yhat_adj), 
+                             col = 2, pch = 2:6) + 
+  geom_line(aes(x = id, y = c(m_COP_03_06_20$fitted.values,
+                              Yhat_nothing_1_no)), 
+            col = "blue") +
+  theme_minimal()
+```
 
 
 
