@@ -395,8 +395,18 @@ ggplot(COP_close_small, mapping = aes(x = id, y = Y)) +
        x = "Day", y = "Close price (in USD)") +
   geom_point() + 
   geom_point(data = dat, aes(x = id, y = Yhat_adj), col = 2, pch = 2:6) + 
+  geom_point(data = data.frame(x = unique(dat$id), y =Yhat_nothing_1), 
+             aes(x = x, y = y), col = "blue", cex = 1.5) + 
   geom_line(aes(x = id, y = c(m_COP_03_06_20$fitted.values, Yhat_nothing_1)), 
-            col = "blue") +
+            col = "blue") + 
+    annotate("text", x=1, y=seq(from = 47, to = 39,length.out=6), 
+             label=c("no adjustment","mean adjustment",
+                     "mean adjustment (no 9/11)","IVW adjustment",
+                     "IVW adjustment (no 9/11)", "aggregate adjustment"), 
+             hjust=0) + 
+    annotate("point", x = 0, y=seq(from = 47, to = 39,length.out=6), 
+             pch = c(16,2:6),
+             color = c("blue","red","red","red","red","red")) +
   theme_minimal()
 ```
 
@@ -437,9 +447,19 @@ ggplot(COP_close_small, mapping = aes(x = id, y = Y)) +
   geom_point() + 
   geom_point(data = dat, aes(x = id, y = Yhat_adj), 
                              col = 2, pch = 2:6) + 
+  geom_point(data = data.frame(x = unique(dat$id), y =Yhat_nothing_1_no), 
+             aes(x = x, y = y), col = "blue", cex = 1.5) + 
   geom_line(aes(x = id, y = c(m_COP_03_06_20$fitted.values,
                               Yhat_nothing_1_no)), 
             col = "blue") +
+      annotate("text", x=1, y=seq(from = 47, to = 39,length.out=6), 
+             label=c("no adjustment","mean adjustment",
+                     "mean adjustment (no 9/11)","IVW adjustment",
+                     "IVW adjustment (no 9/11)", "aggregate adjustment"), 
+             hjust=0) + 
+    annotate("point", x = 0, y=seq(from = 47, to = 39,length.out=6), 
+             pch = c(16,2:6),
+             color = c("blue","red","red","red","red","red")) +
   theme_minimal()
 ```
 
