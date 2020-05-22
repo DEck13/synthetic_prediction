@@ -168,67 +168,34 @@ Things to do:
 
 
 \section{Introduction}
-The technique of combining forecasts to lower forecast error has a rich 
-history \citep{bates1969combination, mundlak1978pooling, 
-  timmermann2006forecast, granger2014forecasting}.  
-The Introduction of \citet{timmermann2006forecast} provided several reasons 
-for combining forecasts.  In particular, combining forecasts may be 
-beneficial when: 
-1) the information set underlying individual forecasts is often unobserved to 
-the forecast user; 2) different individual forecasts may be very differently 
-affected by non-stationarities and model misspecifications; 3) different 
-individual forecasts may be motivated by different loss functions 
-\citep[and references therein]{timmermann2006forecast}.
-The setting for the forecast combination problem is that there are 
-competing forecasts for a single time series.  In this setting, one may 
-desire combining forecasts as a method for lowering overall forecast error.  
+
+In this article we provide forecasting adjustment techniques with the goal of lowering overall forecast error when the time series under study has undergone a structural shock. It is unlikely that any forecast that previously gave successful predictions for the time series of interest will be able to accommodate the structural shock.  However, all is not lost in this setting, one can integrate information from disparate time series that have previously undergone similar structural shocks to estimate the shock effect of the time series under study. One can then combine these past similar shock effects and add them to the present forecast to reduce the overall forecast error.
+%When such past similar shock effects exist, one may be able to aggregate the post-shock information from these disparate time series to aid the post-shock forecast for the time series under investigation.  
 
 
-Forecast combination is a general term for a plethora of  methods for combining forecasts, e.g., (1) model averaging \citep{newbold2002forecast, timmermann2006forecast, hansen2008least}, (2) model selection \citep{lee2015model,greenaway2020multistep}, (3) time-series pooling \citep{mundlak1978pooling,zellner1991forecasting, lee2020estimation,plessen2020integrated}. Model averaging typically selects weights for models based on minimizing various loss functions whereas model selection chooses the model through minimization of those loss functions, see for example, \citet{fosten2019panel}. Time-series pooling is a broad topic for borrowing information from multiple time series for prediction improvement and is the focus of this paper. Before discussion of time-series pooling literature, we will first introduce the problem statement of our study.
+Improving forecasts through forecast combination has a rich history \citep{bates1969combination, mundlak1978pooling, timmermann2006forecast, granger2014forecasting}.  
+%\citet{timmermann2006forecast} provided several reasons for combining forecasts.  In particular, combining forecasts may be beneficial when: 1) the information set underlying individual forecasts is often unobserved to the forecast user; 2) different individual forecasts may be very differently affected by non-stationarity and model misspecifications; 3) different individual forecasts may be motivated by different loss functions \citep[and references therein]{timmermann2006forecast}. 
+The classical setting for the forecast combination problem is when there are competing forecasts for a single time series.  %In this setting, one may desire combining forecasts as a method for lowering overall forecast error. %\textbf{Integrate this paragraph into the next paragraph.}
+\textbf{The following list of methods needs to fall in the forecast combination literature, not the time series pooling literature}. In this setting there are a plethora of methods for combining forecasts, e.g., (1) model averaging \citep{newbold2002forecast, timmermann2006forecast, hansen2008least}, (2) model selection \citep{lee2015model, greenaway2020multistep}, (3) time-series pooling \citep{mundlak1978pooling, zellner1991forecasting, lee2020estimation, plessen2020integrated}. Model averaging typically selects weights for models based on minimizing various loss functions whereas model selection chooses the model through minimization of those loss functions, see for example, \citet{fosten2019panel} \textbf{I do not think that this reference belongs here}. Classical forecast combination may fail when forecasting in the presence of structural shocks.
+
+%Time-series pooling is a broad topic for borrowing information from multiple time series for prediction improvement and is the focus of this paper. \textbf{Need to mention that these methods may fail or be irrelevant in the presence of shock effects.}
+
+In our post-shock setting we combine estimated quantities from different time series with the aim of lowering forecast error for a single time series under study. Our techniques are similar to those in time-series pooling and data integration.  The literature of time-series pooling is mainly related to pooling cross-sectional panel data \citep{mundlak1978pooling, zellner1991forecasting, fosten2019panel}. The issues about whether to assume homogeneity or heterogeneity of slope coefficients across individual units are confounded. \citet{baltagi2008forecasting} showed that homogeneity approach often outperform  heterogeneity one in mean squared forecast error; while heterogeneity approach is more general to accommodate differences among units. \textbf{How does this relevant to what we are doing?}
+
+Data integration for forecasting is a broad area of research including ideas from many areas. \citet{lee2020estimation} constructed a Bayesian hierarchical model embracing data integration %estimate posterior parameters for Richards model 
+to improve predictive precision of COVID-19 infection trajectories for different countries. A similar setup may be beneficial for post-shock prediction but may be too dependent upon model specification for the shock distribution.
+%, and conditions for predictive improvement are generally hard to know. 
+\citet{plessen2020integrated} employed a data-mining approach to combine COVID-19 data from different countries as input to predict global net daily infections and deaths of COVID-19 using clustering. However, there is a tremendous amount of volatility in this form of COVID-19 data, and the fit of this prediction method may be improved with modeling structure or preprocessing of the donor pool. \textbf{Mention synthetic intervention paper here, stress the importance of carefully constructing the donor pool.}  \emph{\textcolor{red}{More to be added ...}}
 
 
+%Therefore the traditional forecast combination framework may not be of any help.  
+%The Bayesian hierarchical approach of \citet{lee2020estimation} may be too sensitive to prior and the hierarchical parametric model setup.
 
-In this article we provide forecasting adjustment techniques with the goal 
-of lowering overall forecast error when the time series under study has 
-undergone a structural shock.
-%In this article we propose a new setting for the forecast combination 
-%problem.  We will suppose that a time series of interest has recently 
-%undergone a structural shock that is not similar to anything observed in its 
-%past, and we desire reliable post-shock forecasts in this setting.  
-It is unlikely that any forecast that previously gave successful predictions 
-for the time series of interest will be able to accommodate the 
-structural shock.  Therefore the traditional forecast combination framework 
-may not be of any help. However, all is not lost in this setting. It may be 
-the case that there exists disparate time series that have previously 
-undergone similar structural shocks.  When this is so, one may be able to 
-aggregate the post-shock information from these disparate time series to 
-aid the post-shock forecast for the time series under investigation.  
-
-We develop and compare aggregation techniques in this post-shock setting and 
-investigate settings for when they do and do not decrease mean squared 
-prediction error. We assume a simple auto regressive data generating process 
-with a general random effects structure. The main idea is to first average 
-the estimated shock effects from the disparate time series and then add 
-the averaged estimated shock effect to the present forecast. When these 
-time series are independent and the mean of shock effect distribution is 
-large relative to its variance then this technique will reduce mean squared 
-prediction error under the assumed model. Note that this methodology is not 
-motivated with the goal of unbiased, asymptotically unbiased, or consistent 
-estimation for the shock-effect of the time series under study. We consider 
-three aggregation techniques: simple averaging, inverse-variance weighted 
-averaging, and similarity weighting. The latter technique is similar to 
-the weighting in synthetic control methodology \citep{abadie2010synthetic}.
+\textbf{Need more of a transition to what we do here and why it is good.}
+We develop and compare aggregation techniques in this post-shock setting and investigate settings for when they do and do not decrease mean squared prediction error. We assume a simple auto regressive data generating process similar to that in \citet{blundell1998initial} with a general random effects structure. The main idea is to first average the estimated shock effects from the disparate time series and then add the averaged estimated shock effect to the present forecast. When these time series are independent and the mean of shock effect distribution is large relative to its variance then this technique will reduce mean squared prediction error under the assumed model. Note that this methodology is not motivated with the goal of unbiased, asymptotically unbiased, or consistent estimation for the shock-effect of the time series under study. We consider three aggregation techniques: simple averaging, inverse-variance weighted averaging, and similarity weighting. The latter technique is similar to the weighting in synthetic control methodology \citep{abadie2010synthetic}.
 
 
-
- The literature of time-series pooling is mainly related to pooling cross-sectional panel data \citep{mundlak1978pooling, zellner1991forecasting, fosten2019panel}. The issues about whether to assume homogeneity or heterogeneity of slope coefficients across individual units are confounded. \citet{baltagi2008forecasting} showed that homogeneity approach often outperform   heterogeneity one in mean squared forecast error; while heterogeneity approach is more general to accommodate differences among units.
-
-
-Modern researches in ``combining'' forecasts from disparate time series have taken perspectives from distinct fields.  \citet{lee2020estimation} constructed a Bayesian hierarchical model  to estimate posterior parameters for Richards model to improve predictive precision of COVID-19 infection trajectories for different countries. Though a Bayesian hierarchical approach can be a solution for our problem by setting up prior for shock-effects, the analysis is sensitive to the prior and the hierarchical model setup, and conditions for predictive improvement are generally hard to know. \citet{plessen2020integrated} employs a data-mining approach to take COVID-19 data from different countries as input to predict \emph{global} net daily infections  and deaths of COVID-19 from clustering. However, the fit is poor due to tremendous volatility of COVID-19 data, and perhaps a lack of random structure in his model. \emph{\textcolor{red}{More to be added ...}}
-
-
-
-
+\vspace*{0.25cm}\textbf{Need to discuss our example and our simulation results.}
 
 %The question is then how to estimate the shock effects and improve the 
 %prediction? This paper proposes three estimators, the adjustment estimator, weighted adjustment estimator, and inverse-variance weighted estimators. Section (to be updated) discusses properties of those estimators. Section (to be updated) compares the  interplay between prediction risk and different shock effects estimators. Section (to be updated) conducts simulation to justify our claims and certain properties that cannot be found analytically.
@@ -255,8 +222,8 @@ average forecast risk
 $$
   R_T = \frac{1}{T}\sum_{t=1}^T\E{\hat y_{1,t} - y_{1,t}}^2
 $$
-in our analyses. In this article, we consider a similar dynamic panel data 
-model with autoregressive structure to that in \citet{blundell1998initial}. 
+in our analyses. In this article, we consider a dynamic panel data 
+model with autoregressive structure similar to that in \citet{blundell1998initial}. 
 %without past time period covariate 
 %information and with a single present time covariate.  
 Our dynamic panel model includes an additional shock effect whose presence 
@@ -267,7 +234,7 @@ are in the next section.
 \begin{figure}[H]
   \begin{center}
     \includegraphics[height = 8cm]{comp.pdf}
-    \caption{A comparison between forecast without considering shock effects and the one uses simple averaging given $n=40$ disparate time series and that the shock time is at $T_1^* = 125$. The dots represent least square estimate $\hat{\alpha}_i$ from disparate time series. Two model differs by an adjustment $\hat{\alpha}=\frac{1}{n}\sum_{i=1}^n \hat{\alpha}_i$.}\label{figure1}
+    \caption{A comparison between forecast without considering shock effects and the one uses simple averaging given $n=40$ disparate time series and that the shock time is at $T_1^* = 125$. The dots represent least square estimate $\hat{\alpha}_i$ from disparate time series. Two model differs by an adjustment $\hat{\alpha}=\frac{1}{n}\sum_{i=1}^n \hat{\alpha}_i$. \textbf{The picture needs to be made more clear. Remove $\hat{\alpha}_i$ and state what those points are in the caption. Label the true (unknown to us) shock effect $\alpha_1$.}}\label{figure1}
   \end{center}  
   \vspace{-.6cm}
 \end{figure}
@@ -374,8 +341,7 @@ where $\hat\eta_1$, $\hat\phi_1$, $\hat\theta_1$, and $\hat\beta_1$ are all
 OLS estimators of $\eta_1$, $\phi_1$, $\theta_1$, and $\beta_1$ respectively, 
 and $\hat{\alpha}$ is some form of estimator for the shock effect of time series of interest, i.e., $\alpha_1$. 
 The first forecast ignores the presence of $\alpha_1$ while the second forecast 
-incorporates an estimate of $\alpha_1$ that is obtained from the other individual 
-forecasts under study. 
+incorporates an estimate of $\alpha_1$ that is obtained from the other independent forecasts under study. 
 %Under $\mc{M}_1$ (Section \ref{modelsetup}), $\E{\alpha_1} = \mu_{\alpha}$.
 
 Note that the two forecasts do not differ in their predictions for 
@@ -551,7 +517,7 @@ It will be understood that structural 0s in $\mbf{x}_{i,t}$ correspond to variab
 \section{Forecast risk and properties of shock-effects estimators}
 \label{properties}
 
-In this section, we discuss the properties that are related to forecast-risk reduction. In discussion of risk, it is useful to derive expressions for expectation and variance of the adjustment estimator $\hat{\alpha}_{\rm adj}$ and weighted-adjustment estimator.  The expression for the expectations are attached as follow\footnote{The formal justification can be found in Section \ref{exp}.}.
+In this section, we discuss the properties that are related to forecast-risk reduction. In discussion of risk, it is useful to derive expressions for expectation and variance of the adjustment estimator $\hat{\alpha}_{\rm adj}$ and weighted-adjustment estimator.  The expression for the expectations are as follow,
 
  \begin{enumerate}[label = (\roman*)]
     \item Under $\mc{M}_{1}$, $\E{\hat{\alpha}_{\rm adj}}=\E{\hat{\alpha}_{\rm wadj}} = \mu_{\alpha}$.
@@ -559,17 +525,16 @@ In this section, we discuss the properties that are related to forecast-risk red
     \begin{align*}
       \E{\hat{\alpha}_{\rm adj}} = \mu_{\alpha} + \frac{1}{2} \sum_{i=2}^{n+1} \delta' \mbf{x}_{i, T_i^*} + \frac{1}{n} \sum_{i=2}^{n+2} \gamma' \mbf{x}_{i, T_i^*-1} 
       \quad \text{ and } \quad 
-       \E{\hat{\alpha}_{\rm wadj}} = \mu_{\alpha} + \delta'\mbf{x}_{1, T_1^*} + \gamma' \mbf{x}_{1, T_1^*-1}
+       \E{\hat{\alpha}_{\rm wadj}} = \mu_{\alpha} + \delta'\mbf{x}_{1, T_1^*} + \gamma' \mbf{x}_{1, T_1^*-1}.
     \end{align*}
     \item Under $\mc{M}_{22}$,
     \begin{align*}
       \E{\hat{\alpha}_{\rm adj}} = \mu_{\alpha} + \frac{1}{2} \sum_{i=2}^{n+1} \mu_{\delta}' \mbf{x}_{i, T_i^*} + \frac{1}{n} \sum_{i=2}^{n+2}  \mu_{\gamma}'\mbf{x}_{i, T_i^*-1} 
       \quad \text{ and } \quad 
-       \E{\hat{\alpha}_{\rm wadj}} = \mu_{\alpha} + \mu_{\delta}'\mbf{x}_{1, T_1^*} + \mu_{\gamma}' \mbf{x}_{1, T_1^*-1}
+       \E{\hat{\alpha}_{\rm wadj}} = \mu_{\alpha} + \mu_{\delta}'\mbf{x}_{1, T_1^*} + \mu_{\gamma}' \mbf{x}_{1, T_1^*-1}.
     \end{align*}
   \end{enumerate}
-
-Note that $\hat{\alpha}_{\rm adj}$, $\hat{\alpha}_{\rm wadj}$, and $\hat{\alpha}_{\rm IVW}$ are not unbiased estimators for $\alpha_1$. Notice that under $\mc{M}_{1}$, $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm adj}$ are unbiased estimators for $\E{\alpha_1}=\mu_{\alpha}$ (see distributional details of $\alpha_1$ in Section \ref{modelsetup}). Nevertheless, $\hat{\alpha}_{\rm adj}$ is a biased estimator for $\E{\alpha_1}$ but $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator for $\E{\alpha_1}$ under both $\mc{M}_{21}$ and $\mc{M}_{22}$. Thus, we collect these results  as the following proposition. 
+Formal justification for these results can be found in Appendix. Note that $\hat{\alpha}_{\rm adj}$, $\hat{\alpha}_{\rm wadj}$, and $\hat{\alpha}_{\rm IVW}$ are not unbiased estimators for $\alpha_1$. Notice that under $\mc{M}_{1}$, $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm adj}$ are unbiased estimators for $\E{\alpha_1}=\mu_{\alpha}$ (see distributional details of $\alpha_1$ in Section \ref{modelsetup}). Nevertheless, $\hat{\alpha}_{\rm adj}$ is a biased estimator for $\E{\alpha_1}$ but $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator for $\E{\alpha_1}$ under both $\mc{M}_{21}$ and $\mc{M}_{22}$. Thus, we collect these results  as the following proposition. 
 
 \begin{prop}
 \label{unbiased} 
@@ -582,7 +547,7 @@ Note that $\hat{\alpha}_{\rm adj}$, $\hat{\alpha}_{\rm wadj}$, and $\hat{\alpha}
 
 
 Unbiasedness properties for $\E{\alpha_1}$ of $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ allow for simple risk-reduction conditions and invoke a method of comparison, although our primary interest is in reducing forecast risk. % for $\hat{\alpha}_{\rm adj}$ and  $\hat{\alpha}_{\rm wadj}$ to reduce risk, and make it more clear with respect to when one is better than the other. 
-These conditions will be discussed in Section \ref{conditions} and Section \ref{comparisons}. Next, we present the variance expressions for $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ as below\footnote{The formal justification can be found in Section \ref{var}}.
+These conditions will be discussed in Section \ref{conditions} and Section \ref{comparisons}. Next, we present the variance expressions for $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ as below
 
 \begin{enumerate}[label = (\roman*)]
   \item Under $\mc{M}_1$ and $\mc{M}_{21}$,  
@@ -597,15 +562,15 @@ These conditions will be discussed in Section \ref{conditions} and Section \ref{
   &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}+\frac{1}{n^2}\var{\alpha_i}\\
   \var{\hat{\alpha}_{\rm wadj}} 
   &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}
-  + \sum_{i=2}^{n+1} (w_i^*)^2 \var{\alpha_i}
+  + \sum_{i=2}^{n+1} (w_i^*)^2 \var{\alpha_i}.
 \end{align*}
 \end{enumerate}
-Note that the variances are not comparable in closed-form %we shall see that it is difficult to compare variances between $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ 
+Formal justification for these results can be found in Appendix. Note that the variances are not comparable in closed-form %we shall see that it is difficult to compare variances between $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ 
 because of the term $\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}$.  This term exists because of the inclusion of the random lagged response in our auto regressive model formulation.  Under $\mc{M}_{22}$, the expression for $\var{\alpha_i}$ is not of closed form because $\gamma_i$ and $\delta_i$ may be dependent when they are placed in a random-effects model. We investigate comparisons between the variability of these estimators in Section \ref{comparisons}.%, we will show under some circumstances, it is possible to compare the variances for $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$. 
 
 
 
-As Section \ref{conditions} and \ref{comparisons} detailed the conditions for risk-reduction and comparisons, they usually involve fixed quantities related to variance and expectation. To make use of those properties in practice, estimation is required. Section \ref{varbootstrap} will introduce a general procedure of \emph{parametric bootstrap} under the context of the problem to attain this purpose.
+As Section \ref{conditions} and \ref{comparisons} detailed the conditions for risk-reduction and comparisons, they usually involve fixed quantities related to variance and expectation. To make use of those properties in practice, estimation is required. Section \ref{varbootstrap} will introduce a general procedure of parametric bootstrap under the context of the problem to attain this purpose.
 
 
 \subsection{Conditions for risk-reduction for shock-effects estimators}
@@ -680,7 +645,9 @@ Note that since $\hat{\alpha}_{\rm adj}$ is biased for $\E{\alpha_1}$, the bias 
 
 As mentioned in Section \ref{constructionofestimators}, it is difficult to evaluate the expectation and variance of $\hat{\alpha}_{\rm IVW}$. In other words, $\hat{\alpha}_{\rm IVW}$ is generally biased for $\E{\alpha_1}$. That is to say we can adapt the above proof to derive the risk-reduction conditions for $\hat{\alpha}_{\rm IVW}$: under $\mc{M}_{1}$, $\mc{M}_{21}$, and $\mc{M}_{22}$, $R_{T_1^*+1,2}<R_{T_1^*+1,1}$ when $\var{\hat{\alpha}_{\rm IVW}} +(\E{\hat{\alpha}_{\rm IVW}}-\E{\alpha_1})^2<(\E{\alpha_1})^2$.
 
-Topics of  evaluation of these inequalities in practice can be found in Section \ref{varbootstrap}. As conditions of risk-reduction for individual estimators are obtained, a natural question arises --- which one is better? It will be discussed in Section \ref{comparisons}.
+Topics of  evaluation of these inequalities in practice can be found in Section \ref{varbootstrap}. 
+We will discuss comparisons of adjustment estimators in the the next Section.
+%As conditions of risk-reduction for individual estimators are obtained, a natural question arises --- which one is better? It will be discussed in Section \ref{comparisons}.
 
 
 
@@ -740,24 +707,28 @@ For the case of $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ , we can 
   -\var{\hat{\alpha}_{\rm wadj}} + \big(\E{\hat{\alpha}_{\rm adj}}-\mrm{E}(\alpha_1)\big)^2> 0.
 \end{align*}
  
- What insights can we gain from this inequality? We can analyze this inequality from two perspectives. 
+%What insights can we gain from this inequality? 
+We analyze this inequality from two perspectives. 
  \begin{enumerate}
    \item If it turns out to be fact that the variance of the weighted-adjustment estimator is greater than that of adjustment estimator, we should be aware that  the compromise for variance because of using $\hat{\alpha}_{\rm wadj}$ shouldn't exceed the squared bias, i.e., $\big(\E{\hat{\alpha}_{\rm adj}}-\mrm{E}(\alpha_1)\big)^2$.
    \item If instead the variance of $\hat{\alpha}_{\rm wadj}$ is smaller than that of $\hat{\alpha}_{\rm adj}$, the above inequality should always hold because $\big(\E{\hat{\alpha}_{\rm adj}}-\mrm{E}(\alpha_1)\big)^2>0$ under $\mc{M}_{21}$ and $\mc{M}_{22}$. 
  \end{enumerate}
   
- These are some analytical results for comparison studies among estimators of $\alpha_1$. Next, we will detail a framework for estimation of risk-reduction  quantities using non-parametric bootstrap such that the above inequalities can be  analyzed numerically in practice.
+ These are some analytical results for comparison studies among estimators of $\alpha_1$. Next, we will detail a framework for estimation of risk-reduction  quantities using a parametric bootstrap routine. Therefore, the above inequalities can be analyzed numerically in practice.
 
 
 \subsection{Parametric bootstrap for risk-reduction evaluation problems}
+\label{varbootstrap}
 
-In this section, we present a parametric bootstrap procedure for our AR(1) model (see Section \ref{modelsetup}) in approximating the distribution of our shock-effect estimators. In the first step, we will introduce the pros and cons of this algorithm and refer the users to other alternatives. In the second step, we detail the procedure of boostrapping AR(1).
+\textbf{I am not sure if all of this is necessary. This is a nice summary of the literature but I think that we only need the results that motivate our bootstrap procedure.}
 
-\citet{efron} introduces the bootstrapping method to approximate the distribution of a statistic using a \emph{random sample}. However, this method will fail for time-series data since serial correlation or time-dependent features exist in typical time-series model. 
+In this section, we present a parametric bootstrap procedure for our AR(1) model (see Section \ref{modelsetup}) in approximating the distribution of our shock-effect estimators. %NO NEED TO OUTLINE IN THIS WAY: In the first step, we will introduce the pros and cons of this algorithm and refer the users to other alternatives. In the second step, we detail the procedure of boostrapping AR(1).
+%%\citet{efron} introduces the bootstrapping method to approximate the distribution of a statistic using a \emph{random sample}. However, this method will fail for time-series data since serial correlation or time-dependent features exist in typical time-series model. 
+In the AR($p$) model, the unobserved errors are assumed to be identically and independently distributed. In this setting, standard bootstrap methodology can be applied to resampling the residuals \citep{efron1986bootstrap}. The asymptotic accuracy for OLS parameter estimation is guaranteed under the order of $O(T^{-1/2})$ almost surely, where $T$ is the length of the time series \citep{berkowitz2000recent}. \citet{bose1988edgeworth} showed that it can be further improved to $o(T^{-1/2})$ almost surely under some regularity conditions. Nevertheless, the pseudo time series generated by this procedure are not stationary. 
 
-In the usual setup of AR($p$) model, the unobserved errors are assumed to be \emph{identically} and \emph{independently distributed}. In other words, standard bootstrap methodology can be applied to resampling the residuals \citep{efron1986bootstrap}. As in the standard bootstrap, the asymptotic accuracy for OLS parameter estimation is guaranteed under the order of $O(T^{-1/2})$ almost surely, where $T$ is the length of the time series \citep{berkowitz2000recent}. \citet{bose1988edgeworth} showed that it can be further improved to $o(T^{-1/2})$ almost surely under some regularity conditions. Nevertheless, the pseudo time series generated by this procedure are not stationary. 
+\citet{politis1994stationary} motivated a stationary bootstrap method for strictly stationary and weakly dependent time series. However, the asymptotic accuracy of this procedure to OLS estimation is not known. Additionally, the asymptotic accuracy of this algorithm can be sensitive to the selection of $p$, the parameter of the geometric distribution (\textbf{what does this mean, what is the geometric distribution in this context?}). This issue is similar to that of the selection of block size in moving-block bootstrapping \citep{kunsch1989jackknife, liu1992moving}.  More work related to bootstrapping time series  can be referred to \citet{berkowitz2000recent}. It is up to the user in selecting which procedure to choose but under different assumptions on the time-series.
 
-\citet{politis1994stationary} invented the stationary bootstrap method for \emph{strictly stationary} and \emph{weakly dependent} time series. However, the asymptotic accuracy of this procedure to OLS estimation is not known. Additionally, the asymptotic accuracy of this algorithm can be sensitive to the selection of $p$, the parameter of the geometric distribution; this issue is similar to that of the selection of block size in moving-block bootstrapping \citep{kunsch1989jackknife, liu1992moving}.  More work related to bootstrapping time series  can be referred to \citet{berkowitz2000recent}. It is up to the user in selecting which procedure to choose but under \emph{different} assumptions on the time-series.
+\textbf{We do not need to rewrite bootstrap algorithms that exist in the literature. We only need to write our algorithm. Emphasis needs to be placed on $T_i^*$being known, the pre and post $T_i^*$ sampling needs to be made explicit.}
 
 \vspace{.2cm}
 \begin{algorithm}[H]
@@ -789,6 +760,7 @@ The procedures of bootstrapping AR(1) can be outline as in Algorithm \ref{boots}
 
 The estimates yielded by Algorithm \ref{boots} provides an approximation for parameters involved in the risk-reduction conditions in Sections \ref{conditions} and \ref{comparisons}. In particular $\overline{\hat{\alpha}_{\rm wadj}}$, the sample mean of $\hat{\alpha}_{\rm wadj}^{b}$, will provide an approximation for $\E{\alpha_1}$ under $\mc{M}_1$, $\mc{M}_{21}$, and $\mc{M}_{22}$ since it is unbiased for $\E{\alpha_1}$ under those three configurations from Proposition \ref{unbiased}. Therefore, we can judge whether to use a shock-effect estimator, and choose between  shock-effect estimators by this method.
 
+\textbf{We should include a brief simulation which shows that our bootstrap procedure works.}
 
 
 \section{Simulation}
@@ -929,13 +901,13 @@ But it may be unbiased in some special circumstances when the above bias turns o
   \end{align*}
   Therefore, as long as we have $\var{\hat{\alpha}_{\rm adj}}<\mu_{\alpha}^2$, we will achieve the risk reduction. 
 
- \textbf{Proof for statement (ii):} By Proposition \ref{unbiased}, the property that $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator of $\mu_{\alpha}$ holds for $\mc{M}_{1}$. Then, similar proof of statement (i) will proves the Proposition.
+ \textbf{Proof for statement (ii):} By Proposition \ref{unbiased}, the property that $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator of $\mu_{\alpha}$ holds for $\mc{M}_{1}$. The remainder of the proof follows a similar argument to the proof of statement (i).
 \end{proof-of-proposition}
 
 
 
 \begin{proof-of-proposition}[\ref{propriskwadj2}]
-  By Proposition \ref{unbiased}, the property that $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator of $\E{\alpha_1}$ holds for $\mc{M}_{21}$ and $\mc{M}_{22}$. Then, similar proof of Proposition \ref{propriskadj} will proves the Proposition.
+  By Proposition \ref{unbiased}, the property that $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator of $\E{\alpha_1}$ holds for $\mc{M}_{21}$ and $\mc{M}_{22}$. The remainder of the proof follows a similar argument to the proof of Proposition \ref{propriskadj} (\textbf{Fix this problematic reference}).
 \end{proof-of-proposition}
 
 
