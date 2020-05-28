@@ -66,7 +66,7 @@
 \hypersetup{
   linkcolor  = blue,
   citecolor  = blue,
-  urlcolor   = magenta,
+  urlcolor   = blue,
   colorlinks = true,
 } % color setup
 
@@ -136,11 +136,11 @@ Things to do:
 \end{center}
 
 \begin{enumerate}
-  \item Figure 1 is updated.
-  \item Some introductions for forecast combination are added in Paragraph 2. Literature review for time-series pooling in cross-sectional (panel) data is rewritten and more to be added.
-  \item The procedure for parametric bootstrap is rewritten.
-  \item Technical details for SCM method are updated.
-  \item SCM code is written using \texttt{Rsolnp} package.
+  \item Figure 1 is revised accordingly.
+  \item The synthetic intervention paper and comment are added in the introduction. Other parts haven't been revised.
+  \item Parametric bootstrap is updated with additional comments. 
+  \item The background for Example section is written.
+  \item SCM.R for SCM method and sim.R for simulation are added in Github.
 \end{enumerate}
 
 
@@ -185,7 +185,7 @@ In our post-shock setting we combine estimated quantities from different time se
 Data integration for forecasting is a broad area of research including ideas from many areas. \citet{lee2020estimation} constructed a Bayesian hierarchical model embracing data integration %estimate posterior parameters for Richards model 
 to improve predictive precision of COVID-19 infection trajectories for different countries. A similar setup may be beneficial for post-shock prediction but may be too dependent upon model specification for the shock distribution.
 %, and conditions for predictive improvement are generally hard to know. 
-\citet{plessen2020integrated} employed a data-mining approach to combine COVID-19 data from different countries as input to predict global net daily infections and deaths of COVID-19 using clustering. However, there is a tremendous amount of volatility in this form of COVID-19 data, and the fit of this prediction method may be improved with modeling structure or preprocessing of the donor pool. \textbf{Mention synthetic intervention paper here, stress the importance of carefully constructing the donor pool.}  \emph{\textcolor{red}{More to be added ...}}
+\citet{plessen2020integrated} employed a data-mining approach to combine COVID-19 data from different countries as input to predict global net daily infections and deaths of COVID-19 using clustering. However, there is a tremendous amount of volatility in this form of COVID-19 data, and the fit of this prediction method may be improved with modeling structure or preprocessing of the donor pool. From a machine learning perspective, \citet{agarwal2020two} proposed a model-free synthetic intervention  method to predict unobserved potential outcomes after different interventions given a donor pool of observed outcomes with given interventions. Among those methodologies, they share the implicit assumption that candidates  from donor pool should be similar. In other words, caution should be dedicated to the construction of donor pool; otherwise, the result will be expected not to be  robust to the noise introduced by the insimilar ones. \emph{\textcolor{red}{More to be added ...}}
 
 
 %Therefore the traditional forecast combination framework may not be of any help.  
@@ -234,12 +234,12 @@ are in the next section.
 \begin{figure}[H]
   \begin{center}
     \includegraphics[height = 8cm]{comp.pdf}
-    \caption{A comparison between forecast without considering shock effects and the one uses simple averaging given $n=40$ disparate time series and that the shock time is at $T_1^* = 125$. The dots represent least square estimate $\hat{\alpha}_i$ from disparate time series. Two model differs by an adjustment $\hat{\alpha}=\frac{1}{n}\sum_{i=1}^n \hat{\alpha}_i$. \textbf{The picture needs to be made more clear. Remove $\hat{\alpha}_i$ and state what those points are in the caption. Label the true (unknown to us) shock effect $\alpha_1$.}}\label{figure1}
+    \caption{The time series experience a shock at $T_1^*+1=126$ with true shock effect $\alpha = 4.88$. The figure is a comparison between forecast without considering shock effects and the one uses simple averaging given $n=40$ disparate time series, and that the shock time is at $T_1^* +1=126$. The magenta dots represent least square estimate $\hat{\alpha}_i$ from disparate time series. The prediction of $\hat{y}^{2}_{T_1^*+1}$ and $\hat{y}^{1}_{T_1^*+1}$ differs only by an adjustment $\hat{\alpha}=5.22$. It is clear that $\hat{y}^{2}_{T_1^*+1}$ performs better than $\hat{y}^{1}_{T_1^*+1}$.}\label{figure1}
   \end{center}  
   \vspace{-.6cm}
 \end{figure}
 
-Figure \ref{figure1} provides simple intuition of the practical usefulness of our proposed methodology. This figure depicts a time-series that experienced a ``shock'' at time point $T_1^* = 125$. It is supposed that the researcher does not have any information beyond $T_1^*$, but does have observations of forty disparate time series that have previously undergone a similar shock for which post-shock responses are recorded. Similarity in this context means that the shock effects are random variables that from a common distribution.
+Figure \ref{figure1} provides simple intuition of the practical usefulness of our proposed methodology. This figure depicts a time-series that experienced a ``shock'' at time point $T_1^*+1 = 126$. It is supposed that the researcher does not have any information beyond $T_1^*+1$, but does have observations of forty disparate time series that have previously undergone a similar shock for which post-shock responses are recorded. Similarity in this context means that the shock effects are random variables that from a common distribution.
 %As we can see, the purple line provides a better prediction than the red line in this particular example. But we will justify later that consideration of estimated shock-effects will improve the prediction under certain conditions.
 In this example, the mean of the estimated shock effects is taken as a shock-effect estimator for the time series under study. Forecasts are then made by adding this shock-effect estimator to the estimated response values obtained from the process that ignores the shock. It is apparent from Figure \ref{figure1} that adjusting forecasts in this manner 1) leads to a reduction in forecasting risk; 2) does not fully recover the true shock-effect. We evaluate the performance of this post-shock prediction methodology throughout this article; we outline situations for when it is expected to work and when it is not.
 
@@ -263,7 +263,7 @@ The model $\mc{M}_1$ is defined as
 \begin{align}
 \mc{M}_1 \colon y_{i,t} =\eta_i +\alpha_i D_{i,t} + \phi_i y_{i, t-1} + \theta_i'\mbf{x}_{i,t}+ \beta_i'\mbf{x}_{i, t-1} + \varepsilon_{i,t}\label{equation1}
 \end{align}
-for $t = 1,\ldots,T_i$ and $i = 1,\ldots, n+1$, where $D_{i,t} = 1(t > T_i^*)$, 
+for $t = 1,\ldots,T_i$ and $i = 1,\ldots, n+1$, where $D_{i,t} = 1(t = T_i^* + 1)$, 
 $T_i^* < T_i$ and $\x_{i,t} \in \R^{p}$, $p \geq 1$.  We assume that the 
 $\mbf{x}_{i,t}$'s are fixed and $T_i^*$s are known. The random effects structure for $\mc{M}_1$ is:
 \begin{align*}
@@ -285,7 +285,7 @@ The random effects structure for this model (model $\mc{M}_2$) is:
 \begin{align}
 \mc{M}_2 \colon \begin{array}{l}
   y_{i,t} =\eta_i +\alpha_i D_{i,t} + \phi_i y_{i, t-1} + \theta_i'\mbf{x}_{i,t}+ \beta_i'\mbf{x}_{i, t-1} + \varepsilon_{i,t}\\[.2cm]
-  \; \alpha_i = \mu_{\alpha}+\delta_{i}'\mbf{x}_{i, T_i^*}+\gamma_i'\mbf{x}_{i, T^*_i-1}+\t{\varepsilon}_{i, T_i},
+  \; \alpha_i = \mu_{\alpha}+\delta_{i}'\mbf{x}_{i, T_i^*+1}+\gamma_i'\mbf{x}_{i, T^*_i}+\t{\varepsilon}_{i},
 \end{array}\label{model2}
 \end{align}
 for $i = 1, \ldots, n+1$, where the added random effects are
@@ -295,7 +295,7 @@ for $i = 1, \ldots, n+1$, where the added random effects are
 \end{align*}
 %and $\delta_i$ and $\gamma_i$ will be discussed shortly. 
 We further define 
-$\tilde{\alpha}_i=\mu_{\alpha}+\delta_i'\mbf{x}_{i, T_i^*}+\gamma_i'\mbf{x}_{i, T_i^*-1}$. 
+$\tilde{\alpha}_i=\mu_{\alpha}+\delta_i'\mbf{x}_{i, T_i^*+1}+\gamma_i'\mbf{x}_{i, T_i^*}$. 
 We will investigate post-shock aggregated estimators in $\mc{M}_2$ 
 in settings where $\delta_i$ and $\gamma_i$ are either fixed or random. 
 We let $\mc{M}_{21}$ denote model $\mc{M}_{2}$ with $\gamma_i = \gamma$ 
@@ -445,32 +445,32 @@ $\mbf{W}=(w_2, \ldots, w_{n+1})$, where $w_i\in [0,1]$ for all
 $i = 2, \ldots, n+1$. Construct
 \begin{align*}
  \mbf{X}_1 = \begin{pmatrix}
-    \mbf{x}_{1, T_1^*-1} \\ \mbf{x}_{1, T_1^*}
+    \mbf{x}_{1, T_1^*} \\ \mbf{x}_{1, T_1^*+1}
   \end{pmatrix}
   \quad \text{ and }
   \quad  \hat{\mbf{X}}_1(\mbf{W})
   = w_2\begin{pmatrix}
-     \mbf{x}_{2, T_2^*-1} \\
-      \mbf{x}_{2, T_2^*}
+     \mbf{x}_{2, T_2^*} \\
+      \mbf{x}_{2, T_2^*+1}
    \end{pmatrix} + \cdots + w_{n+1} \begin{pmatrix}
      \mbf{x}_{n+1, T_{n+1}^*} \\
-      \mbf{x}_{n+1, T_{n+1}^*}
+      \mbf{x}_{n+1, T_{n+1}^*+1}
    \end{pmatrix} .
 \end{align*}
 where $\mbf{X}_1$ and $\hat{\mbf{X}}_1(\mbf{W})$ are $2 \times p$. Define $\mc{W}=\{\mbf{W}\in [0,1]^n \colon w_2+ \cdots + w_{n+1}=1 \}$. 
 Suppose there exists $\mbf{W}^*\in \mc{W}$ with 
 $\mbf{W}^*=(w_2^*, \ldots, w_{n+1}^*)$ such that
 \begin{align}
- \mbf{X}_1=\hat{\mbf{X}}_1(\mbf{W}^*)  \quad i.e., \quad \mbf{x}_{1, T_1^*-1} = \sum_{i=2}^{n+1} w_i^*\mbf{x}_{i, T_i^*-1} \text{ and } \mbf{x}_{1, T_1^*} = \sum_{i=2}^{n+1} w_i^*\mbf{x}_{i, T_i^*}.\label{SCM}
+ \mbf{X}_1=\hat{\mbf{X}}_1(\mbf{W}^*)  \quad i.e., \quad \mbf{x}_{1, T_1^*} = \sum_{i=2}^{n+1} w_i^*\mbf{x}_{i, T_i^*} \text{ and } \mbf{x}_{1, T_1^*+1} = \sum_{i=2}^{n+1} w_i^*\mbf{x}_{i, T_i^*+1}.\label{SCM}
 \end{align}
  Notice that $\mbf{W}^*$ exists as long as $\mbf{X}_1$ falls in the convex hull of 
  \begin{align*}
    \left\{ \begin{pmatrix}
-     \mbf{x}_{2, T_2^*-1} \\
-      \mbf{x}_{2, T_2^*}
+     \mbf{x}_{2, T_2^*} \\
+      \mbf{x}_{2, T_2^*+1}
    \end{pmatrix}, \ldots, \begin{pmatrix}
      \mbf{x}_{n+1, T_{n+1}^*} \\
-      \mbf{x}_{n+1, T_{n+1}^*}
+      \mbf{x}_{n+1, T_{n+1}^*+1}
    \end{pmatrix} \right\}.
  \end{align*}
 %It is a reasonable assumption that the pool of time series that we are considering 
@@ -523,15 +523,15 @@ In this section, we discuss the properties that are related to forecast-risk red
     \item Under $\mc{M}_{1}$, $\E{\hat{\alpha}_{\rm adj}}=\E{\hat{\alpha}_{\rm wadj}} = \mu_{\alpha}$.
     \item Under $\mc{M}_{21}$, 
     \begin{align*}
-      \E{\hat{\alpha}_{\rm adj}} = \mu_{\alpha} + \frac{1}{2} \sum_{i=2}^{n+1} \delta' \mbf{x}_{i, T_i^*} + \frac{1}{n} \sum_{i=2}^{n+2} \gamma' \mbf{x}_{i, T_i^*-1} 
+      \E{\hat{\alpha}_{\rm adj}} = \mu_{\alpha} + \frac{1}{2} \sum_{i=2}^{n+1} \delta' \mbf{x}_{i, T_i^*+1} + \frac{1}{n} \sum_{i=2}^{n+2} \gamma' \mbf{x}_{i, T_i^*} 
       \quad \text{ and } \quad 
-       \E{\hat{\alpha}_{\rm wadj}} = \mu_{\alpha} + \delta'\mbf{x}_{1, T_1^*} + \gamma' \mbf{x}_{1, T_1^*-1}.
+       \E{\hat{\alpha}_{\rm wadj}} = \mu_{\alpha} + \delta'\mbf{x}_{1, T_1^*+1} + \gamma' \mbf{x}_{1, T_1^*}.
     \end{align*}
     \item Under $\mc{M}_{22}$,
     \begin{align*}
-      \E{\hat{\alpha}_{\rm adj}} = \mu_{\alpha} + \frac{1}{2} \sum_{i=2}^{n+1} \mu_{\delta}' \mbf{x}_{i, T_i^*} + \frac{1}{n} \sum_{i=2}^{n+2}  \mu_{\gamma}'\mbf{x}_{i, T_i^*-1} 
+      \E{\hat{\alpha}_{\rm adj}} = \mu_{\alpha} + \frac{1}{2} \sum_{i=2}^{n+1} \mu_{\delta}' \mbf{x}_{i, T_i^*+1} + \frac{1}{n} \sum_{i=2}^{n+2}  \mu_{\gamma}'\mbf{x}_{i, T_i^*} 
       \quad \text{ and } \quad 
-       \E{\hat{\alpha}_{\rm wadj}} = \mu_{\alpha} + \mu_{\delta}'\mbf{x}_{1, T_1^*} + \mu_{\gamma}' \mbf{x}_{1, T_1^*-1}.
+       \E{\hat{\alpha}_{\rm wadj}} = \mu_{\alpha} + \mu_{\delta}'\mbf{x}_{1, T_1^*+1} + \mu_{\gamma}' \mbf{x}_{1, T_1^*}.
     \end{align*}
   \end{enumerate}
 Formal justification for these results can be found in Appendix. Note that $\hat{\alpha}_{\rm adj}$, $\hat{\alpha}_{\rm wadj}$, and $\hat{\alpha}_{\rm IVW}$ are not unbiased estimators for $\alpha_1$. Notice that under $\mc{M}_{1}$, $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm adj}$ are unbiased estimators for $\E{\alpha_1}=\mu_{\alpha}$ (see distributional details of $\alpha_1$ in Section \ref{modelsetup}). Nevertheless, $\hat{\alpha}_{\rm adj}$ is a biased estimator for $\E{\alpha_1}$ but $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator for $\E{\alpha_1}$ under both $\mc{M}_{21}$ and $\mc{M}_{22}$. Thus, we collect these results  as the following proposition. 
@@ -720,52 +720,133 @@ We analyze this inequality from two perspectives.
 \subsection{Parametric bootstrap for risk-reduction evaluation problems}
 \label{varbootstrap}
 
-\textbf{I am not sure if all of this is necessary. This is a nice summary of the literature but I think that we only need the results that motivate our bootstrap procedure.}
 
 In this section, we present a parametric bootstrap procedure for our AR(1) model (see Section \ref{modelsetup}) in approximating the distribution of our shock-effect estimators. %NO NEED TO OUTLINE IN THIS WAY: In the first step, we will introduce the pros and cons of this algorithm and refer the users to other alternatives. In the second step, we detail the procedure of boostrapping AR(1).
 %%\citet{efron} introduces the bootstrapping method to approximate the distribution of a statistic using a \emph{random sample}. However, this method will fail for time-series data since serial correlation or time-dependent features exist in typical time-series model. 
-In the AR($p$) model, the unobserved errors are assumed to be identically and independently distributed. In this setting, standard bootstrap methodology can be applied to resampling the residuals \citep{efron1986bootstrap}. The asymptotic accuracy for OLS parameter estimation is guaranteed under the order of $O(T^{-1/2})$ almost surely, where $T$ is the length of the time series \citep{berkowitz2000recent}. \citet{bose1988edgeworth} showed that it can be further improved to $o(T^{-1/2})$ almost surely under some regularity conditions. Nevertheless, the pseudo time series generated by this procedure are not stationary. 
+In the AR($p$) model, the unobserved errors are assumed to be identically and independently distributed. In this setting, standard bootstrap methodology can be applied to resampling the residuals \citep{efron1986bootstrap}. \citet{bose1988edgeworth} showed that the asymptotic accuracy for OLS parameter estimation can be further improved from $O(T^{-1/2})$ to $o(T^{-1/2})$ almost surely under some regularity conditions. Nevertheless, the pseudo time series generated by this procedure are not stationary. 
 
-\citet{politis1994stationary} motivated a stationary bootstrap method for strictly stationary and weakly dependent time series. However, the asymptotic accuracy of this procedure to OLS estimation is not known. Additionally, the asymptotic accuracy of this algorithm can be sensitive to the selection of $p$, the parameter of the geometric distribution (\textbf{what does this mean, what is the geometric distribution in this context?}). This issue is similar to that of the selection of block size in moving-block bootstrapping \citep{kunsch1989jackknife, liu1992moving}.  More work related to bootstrapping time series  can be referred to \citet{berkowitz2000recent}. It is up to the user in selecting which procedure to choose but under different assumptions on the time-series.
-
-\textbf{We do not need to rewrite bootstrap algorithms that exist in the literature. We only need to write our algorithm. Emphasis needs to be placed on $T_i^*$being known, the pre and post $T_i^*$ sampling needs to be made explicit.}
+\citet{politis1994stationary} motivated a stationary bootstrap method for strictly stationary and weakly dependent time series $\{X_n \colon n \in \mathbb{N}\}$. This algorithm generates a sequence of blocks of observations $B_{I_1, L_1}, B_{I_2, L_2}, \ldots$, where $B_{i,b}= \{X_i, X_{i+1}, \ldots, X_{i+b-1}\}$\footnote{for $j > N$, $X_{j}$ is defined to be $X_k$, where $k = j \hspace{-.1cm} \mod N$ and $X_0 = X_N$}; and the sampling stops when $N$ observations are reached. Note that the collection of random positions $\{I_n \colon n \in \mathbb{N}\}$ is a sequence of i.i.d. discrete uniform random variables; and the collection of random lengths $\{L_n \colon n \in \mathbb{N}\}$ is a sequence of  i.i.d. geometric random variables with parameter $p$. However, the consistency needs to be proved by a case-by-case analysis \citep[Page 66]{politis1999subsampling}. Additionally, the asymptotic accuracy of this algorithm can be sensitive to the selection of $p$. This issue is similar to that of the selection of block size in moving-block bootstrapping \citep{kunsch1989jackknife, liu1992moving}.  More work related to bootstrapping time series  can be referred to Chapters 3 and 4 in \citet{politis1999subsampling}, and \citet{berkowitz2000recent}. It is up to the user in selecting which procedure to choose but under different assumptions on the time-series.
 
 \vspace{.2cm}
 \begin{algorithm}[H]
 \SetAlgoLined \label{boots}
 
 \SetKwInOut{Input}{Input}
-\Input{$B$ --  the number of parametric bootstraps  \\ $S_i= \{\hat{\varepsilon}_{i, t} \colon t = 1, \ldots, T_i\}$ -- the collection of  residuals for $t = 1,\ldots, T_i$ \\ $\mc{P}_i$ -- the fitted AR(1) model for $i = 2, \ldots, n+1$
-
+\Input{$B$ --  the number of parametric bootstraps  \\  $\{(y_{i,t}, \mbf{x}_{i,t})\colon i = 2,\ldots, n+1, t = 0, \ldots, T_i\}$ -- the data\\ $\{T_i^* \colon i = 1, \ldots, n+1\}$ -- the time point just before the shock\\$\{\hat{\varepsilon}_{i, t} \colon t = 1, \ldots, T_i\}$ -- the collection of  residuals for $t = 1,\ldots, T_i$ \\ $\{\hat{\eta}_i, \hat{\alpha}_i, \hat{\phi}_i, \hat{\theta}_i, \hat{\beta}_i\colon i = 2, \ldots, n+1\}$ -- the OLS estimates \\
 }
 
 \KwResult{The sample mean, and sample variance of bootstrapped adjustment estimator, inverse-variance weighted estimator, and weighted-adjustment estimator.}
 
   \For{$b = 1:B$}{
   \For{$i = 2, \ldots, n+1$}{
-  Sample with replacement from $S_{i}$ to obtain $S_{i}^{(b)}\coloneqq \{\hat{\varepsilon}_{i, t}^{(b)} \colon t = 1, \ldots, T_i\}$
   
-  Plug $S_{i}^{(b)}$ into $\mc{P}_i$ to generate the bootstrapped response $\mbf{Y}_i^{(b)}$
-  
-  Compute $\hat{\alpha}_i^{(b)}$ based on OLS estimation of AR(1) with $\mbf{Y}_i^{(b)}$ and covariates from $\mc{P}_i$
+    Sample with replacement from $\{\hat{\varepsilon}_{i, t} \colon t = 1, \ldots, T_i\}$ to obtain $\{\hat{\varepsilon}_{i, t}^{(b)} \colon t = 1, \ldots, T_i\}$
+    
+     Define $y_{i,0}^{(b)}=y_{i,0}$
+    
+    \For{$t = 1,\ldots, T_i$}{
+     
+
+         
+     Compute $y_{i,t}^{(b)}=\hat{\eta}_i +\hat{\alpha}_i 1(t=T_i^*+1)+\hat{\phi}_iy_{i,t-1}^{(b)}+\theta_i'\mbf{x}_{i,t} + \beta_i'\mbf{x}_{i, t-1}+\hat{\varepsilon}_{i,t}^{(b)}$
+    }
+    Compute $\hat{\alpha}_i^{(b)}$ based on OLS estimation of (\ref{equation1}) with $\{(y_{i,t}^{(b)}, \mbf{x}_{i,t}) \colon t= 0, \ldots, T_i\}$
   }
-    Compute $\hat{\alpha}_{\rm adj}^{(b)}$, $\hat{\alpha}_{\rm wadj}^{(b)}$, and $\hat{\alpha}_{\rm IVW}^{(b)}$ 
+   Compute the $b$th shock-effect estimate $\hat{\alpha}^{(b)}_{\rm est}$ for $\mrm{est} \in \{\mrm{adj}, \mrm{wadj}, \mrm{IVW}\}$
   }
-   Compute the sample mean, and sample variance of $\hat{\alpha}_{\rm adj}^{(b)}$, $\hat{\alpha}_{\rm wadj}^{(b)}$, and $\hat{\alpha}_{\rm IVW}^{(b)}$.
+   Compute the sample mean, and sample variance of $\{\hat{\alpha}_{\rm est}^{(b)} \colon b = 1, \ldots, B\}$ for $\mrm{est} \in \{\mrm{adj}, \mrm{wadj}, \mrm{IVW}\}$
  \caption{Parametric bootstrap for approximation for  mean and  variance of shock-effect estimators of $\alpha_1$.}
 \end{algorithm}
 \vspace{.2cm}
 
+
+
+
 The procedures of bootstrapping AR(1) can be outline as in Algorithm \ref{boots}. We stress that the $\varepsilon_{i,t}$ and $\varepsilon_{i,t'}$ for  $t \in \{1, \ldots, T_i^*\}$ and $t' \in \{T_i^*+1, \ldots, T_i\}$ are i.i.d. since $y_{i,t}$ differs from $y_{i,t'}$ only in the shock-effect $\alpha_i$ conditioned on $\Theta$ (see Section \ref{modelsetup}), and it is \emph{not} absorbed into $\varepsilon_{i,t}$ and $\varepsilon_{i,t'}$. Therefore, this parametric bootstrap framework will work for us.
 
-The estimates yielded by Algorithm \ref{boots} provides an approximation for parameters involved in the risk-reduction conditions in Sections \ref{conditions} and \ref{comparisons}. In particular $\overline{\hat{\alpha}_{\rm wadj}}$, the sample mean of $\hat{\alpha}_{\rm wadj}^{b}$, will provide an approximation for $\E{\alpha_1}$ under $\mc{M}_1$, $\mc{M}_{21}$, and $\mc{M}_{22}$ since it is unbiased for $\E{\alpha_1}$ under those three configurations from Proposition \ref{unbiased}. Therefore, we can judge whether to use a shock-effect estimator, and choose between  shock-effect estimators by this method.
+The estimates yielded by Algorithm \ref{boots} provides an approximation for parameters involved in the risk-reduction conditions in Sections \ref{conditions} and \ref{comparisons}. The almost-sure convergence results for $\hat{\alpha}_{\mrm{adj}}$  and $\hat{\alpha}_{\mrm{wadj}}$ follow naturally if we assume the regularity conditions outlined in  \citet{bose1988edgeworth}.
+The proof for the case of $\overline{\hat{\alpha}_{\mrm{wadj}}}$, the sample mean of the bootstrapped weighted adjustment estimator, can be presented as below. As $B \to \infty$,
+\begin{align*}
+  \overline{\hat{\alpha}_{\mrm{wadj}}} \mid \Theta 
+  = \frac{1}{B} \sum_{b=1}^B \sum_{i=2}^{n+1}w_i^* \hat{\alpha}_i^{(b)} \mid \Theta 
+  = \sum_{i=2}^{n+1}w_i^* \frac{1}{B} \sum_{b=1}^B\hat{\alpha}_i^{(b)} \mid \Theta 
+  \overset{a.s.}{\rightarrow} \sum_{i=2}^{n+1}w_i^* \alpha_i \mid \Theta=\E{\hat{\alpha}_{\rm wadj}|\Theta},
+\end{align*}
+The case for the sample variance of the bootstrapped weighted adjustment estimator would be similar. The same line of analysis holds for   adjustment estimator as well since  it is a linear combination of OLS estimates, and the weights are not random conditioned on $\Theta$ (see Section \ref{modelsetup}). Nevertheless, the case for $\hat{\alpha}_{\rm IVW}$ is slightly different because it is not a linear combination of OLS estimates with random weights. It is not clear with respect to whether similar consistency results holds for $\hat{\alpha}_{\rm IVW}$. We would claim that Algorithm \ref{boots} only provides an \emph{approximation} for the case of $\hat{\alpha}_{\rm IVW}$.
 
-\textbf{We should include a brief simulation which shows that our bootstrap procedure works.}
+In particular $\overline{\hat{\alpha}_{\rm wadj}}$, the sample mean of $\hat{\alpha}_{\rm wadj}^{(b)}$, will provide an approximation for $\E{\alpha_1}$ under $\mc{M}_1$, $\mc{M}_{21}$, and $\mc{M}_{22}$ since it is unbiased for $\E{\alpha_1}$ under those three configurations from Proposition \ref{unbiased}. Therefore, we can judge whether to use a shock-effect estimator, and choose between  shock-effect estimators by this method. 
+
+We \emph{stress} that the above approximation is conditioned on $\Theta$. Under a random-effect structure (see Section \ref{modelsetup}), every true shock effect of a time series in reality is only an observed value from a population.
+  For example, $\overline{\hat{\alpha}_{\rm wadj}}\overset{a.s.}{\rightarrow}\E{\hat{\alpha}_{\rm wadj}|\Theta}$ and $\overline{\hat{\alpha}_{\rm wadj}} \not\overset{a.s.}{\rightarrow}\E{\alpha_1}$ but $\E{\E{\hat{\alpha}_{\rm wadj}|\Theta}}=\E{\alpha_1}$. 
+
+The simulation for justification of the parametric bootstrap is provided in Section \ref{parametricbootstrapsimulation}.
 
 
 \section{Simulation}
 
 \label{simulation}
+
+
+\subsection{Parametric bootstrap simulation}
+\label{parametricbootstrapsimulation}
+
+In this section, we present the simulation for the parametric bootstrap procedure for AR(1) outlined in Section \ref{varbootstrap}. The simulation is only provided for the adjustment estimator and weighted adjustment estimator since the weights for inverse-variance estimator are random and the true values of its moments are unknown.
+
+
+
+\begin{center}
+  \begin{tabular}{l|cccccc}
+    & \multicolumn{6}{c}{Time series}\\
+    & 1 & 2 & 3 & 4 & 5 & 6\\
+   Length $T_i$ & 77 & 93 & 72 & 71 & 73 & 50 \\
+   Shock Time  $T_i^*+1$ & 20 & 39 & 45 & 52 & 59 & 11 \\
+   Autoregressive parameter $\phi_i$ & 0.540 & 0.961 & 0.654 & 0.547 & 0.266 & 0.197 
+  \end{tabular}
+\end{center}
+
+
+
+
+
+\section{Example}
+
+In this example we forecast Conoco Phillips stock prices in the midst of the coronavirus (COVID-19) recession. Specific interest is in predictions made after March 6th, 2020, the Friday before the stock market crash on March 9th, 2020. We will detail how we  combine knowledge from disparate time series to improve the forecast of Conoco Phillips stock price without adjustment for the shock. The forecast consists of four steps: (1) pick a model, (2) selection of covariates,  (3) choices of donor pool, and (4) nowcast. Section \ref{background} provides the justification for the first three steps. Section \ref{results} discusses the result of our forecast.
+
+\subsection{Background}
+\label{background}
+ Conoco Phillips is chosen for this analysis because it is a large oil and gas resources company \citep{conocowhatwedo} and with a relatively recent initial public offering \citep{conocohist}. Focus on the oil sector is because oil prices have been shown to exhibit a cointegrating behavior with economic indices \citep{he2010global}, and our chosen time frame represents the onset of a significant economic down turn, coupled with OPEC decreasing the global price of oil the Sunday before trading resumes on Monday, March 9th \citep{cnbc}. Furthermore, fear of and action in response to the coronavirus pandemic began to uptick dramatically between Friday, March 6th and Monday, March 9th. Major events include the SXSW festival being cancelled as trading closed on March 6th \citep{cnn}. New York declared a state of emergency on March 7th \citep{nygov}, and by Sunday, March 8th, eight states have declared a state of emergency while Italy placed 16 million people in quarantine \citep{newsweek}.
+
+
+Economic indicators forecasted our recession before the coronavirus pandemic began. The current recession followed an inversion of the yield curve that first happened back in March 22, 2019 \citep{ap}. An inversion of the yield curve is an event that signals that recessions are more likely \citep{fed, frbsf, tokic2019yield}. In this analysis we investigate the performance of oil companies in previous recessions that followed an inversion of the yield curve to obtain a suitable Conoco Phillips donor pool for estimating the March 9th shock effect on Conoco Phillips oil stock. We also consider previous OPEC oil supply shocks. We will borrow from the literature on oil price forecasting to establish appropriate time horizons and forecasting models. Recessions that occurred before 1973 are disregarded since oil price forecasts cannot be represented by standard time series models before 1973 \citep{alquist2013forecasting}.
+
+
+\subsubsection*{(1) AR(1) model and Time window}
+
+ We will use a simple AR(1) model to forecast Conoco Phillips stock price. This model has been shown to beat no-change forecasts when predicting oil prices over time horizons of 1 and 3 months \citep{alquist2013forecasting}. We will consider 30 pre-shock trading days and we will forecast the immediate shock effect and the shock effect over a future five trading day window. All estimates will be adjusted for inflation using the inflation calculator at \url{https://www.usinflationcalculator.com}. The model setup for AR(1) is exactly the same as what is stated in Section \ref{modelsetup} with addition of shock effects. All the parameters are estimated using OLS.
+
+\subsubsection*{(2) Selection of covariates}
+
+We perform two lines of analyses with one incorporating the price of S\&P 500 index and one without to justify our choice of covariate. Since the stock price of a company implies its value provided the number of shares is unchanged, the price of S\&P 500 index in the recession can partially represent the overall status of the economy.  Therefore, using the price of S\&P 500 index as the covariate can possibly improve the precision of the OLS estimates for shock-effects that are unique to Conoco Phillips. The rationale for inclusion of the price of S\&P 500 index is similar to that of market return in capital asset pricing model (CAPM).
+
+
+
+
+\subsubsection*{(3) Construction of donor pool}
+
+Our donor pool will consist of Conoco Phillips shock effects observed on September 11th, 2001, September 8th, 2008, and November 27, 2014. The first two shock effects were observed during recessions that were predicated by an inversion of the yield curve, and the third was an OPEC induced supply side shock effect. The reasons for those three shocks are
+\begin{enumerate}
+  \item On September 11th, 2001, Islamic extremist al-Qaeda  committed a series of four terrorist attacks  against U.S. It triggers negative percussions on the U.S. economy with falling stock prices, increased unemployment rates, and falling U.S. dollar \citep{nytimes911, history}.
+  \item On September 8th, 2008, the United States announced its takeover of Fannie May and Freddie Mac \citep{UST}, and it was reported that the nation’s unemployment rate reached five-year highs. It is also worth noting that Lehman Brothers Holdings filed for bankruptcy on Monday, September 15th, 2008 with what was a record of 613 billion dollars in debt \citep{lehman}.
+  \item On November 27th, 2014, it is documented that oil prices fall as OPEC opts not to cut production \citep{CNBC2014}. During the Great Recession when economic activity clearly declined, both oil and stock prices fell which points to demand factors. During the second half of 2014, oil prices plummeted but equity prices generally increased, suggesting that supply factors were the key driver \citep[Page 19]{baffes2015great}. 
+\end{enumerate}
+
+
+Some other notable shock effects were not included in this analysis because the conditions preceding them are not similar to those of the March 9, 2020 shock effect, among these are the October 19, 1987, August 8th, 2011, and  August 24, 2015 shock effects \citep{shiller1988portfolio, latimes, nytimes}.
+
+
+
+\subsection{Results}
+\label{results}
 
 
 \section{Supplementary Materials}
@@ -790,13 +871,13 @@ where we used the fact that $\sum_{i=2}^{n+1} w_i=1$.
   \begin{align*}
    \E{\hat{\alpha}_{\rm wadj}}= \mrm{E}\left\{\mrm{E}\left(\sum_{i=2}^{n+1} w_i^*\hat{\alpha}_i|\Theta\right)\right\}
    &= \mrm{E}\left( \sum_{i=2}^{n+1} w_i^*\alpha_i\right)\\
-   &= \mrm{E}\bigg\{ \sum_{i=2}^{n+1} w_i^*\left[\mu_{\alpha}+\delta_{i}'\mbf{x}_{i, T_i^*}+\gamma_i'\mbf{x}_{i, T^*_i-1}\right]\bigg\}\\
-   &=\mu_{\alpha}+\mrm{E}\bigg\{ \sum_{i=2}^{n+1} w_i^*\left[\delta_{i}'\mbf{x}_{i, T_i^*}+\gamma_i'\mbf{x}_{i, T^*_i-1}\right]\bigg\}.\tag{$\mbf{W}\in \mc{W}$}
+   &= \mrm{E}\bigg\{ \sum_{i=2}^{n+1} w_i^*\left[\mu_{\alpha}+\delta_{i}'\mbf{x}_{i, T_i^*+1}+\gamma_i'\mbf{x}_{i, T^*_i}\right]\bigg\}\\
+   &=\mu_{\alpha}+\mrm{E}\bigg\{ \sum_{i=2}^{n+1} w_i^*\left[\delta_{i}'\mbf{x}_{i, T_i^*+1}+\gamma_i'\mbf{x}_{i, T^*_i}\right]\bigg\}.\tag{$\mbf{W}\in \mc{W}$}
    \end{align*}
 Similarly,
   \begin{align*}
    \E{\hat{\alpha}_{\rm adj}}
-   &=\mu_{\alpha}+\frac{1}{n}\sum_{i=2}^{n+1} \E{\delta_{i}'\mbf{x}_{i, T_i^*}+\gamma_i'\mbf{x}_{i, T^*_i-1}}.
+   &=\mu_{\alpha}+\frac{1}{n}\sum_{i=2}^{n+1} \E{\delta_{i}'\mbf{x}_{i, T_i^*+1}+\gamma_i'\mbf{x}_{i, T^*_i}}.
    \end{align*}
 
 
@@ -841,8 +922,8 @@ Notice that $\mc{M}_{1}$ differs from $\mc{M}_{21}$ only by its mean parameteriz
 \begin{align*}
   \mrm{Bias}(\hat{\alpha}_{\rm adj}) = 
   \begin{cases}
-       \frac{1}{n} \sum_{i=2}^{n+1} \delta'(\mbf{x}_{i, T_i^*}-n\mbf{x}_{1, T_1^*}) +  \frac{1}{n} \sum_{i=2}^{n+1} \gamma'(\mbf{x}_{i, T_i^*-1}-n\mbf{x}_{1, T_1^*-1}) & \text{ for } \mc{M}_{21}\\
-    \frac{1}{n} \sum_{i=2}^{n+1} \mu_{\delta}'(\mbf{x}_{i, T_i^*}-n\mbf{x}_{1, T_1^*}) +  \frac{1}{n} \sum_{i=2}^{n+1} \mu_{\gamma}'(\mbf{x}_{i, T_i^*-1}-n\mbf{x}_{1, T_1^*-1}) & \text{ for }\mc{M}_{22}
+       \frac{1}{n} \sum_{i=2}^{n+1} \delta'(\mbf{x}_{i, T_i^*+1}-n\mbf{x}_{1, T_1^*+1}) +  \frac{1}{n} \sum_{i=2}^{n+1} \gamma'(\mbf{x}_{i, T_i^*}-n\mbf{x}_{1, T_1^*}) & \text{ for } \mc{M}_{21}\\
+    \frac{1}{n} \sum_{i=2}^{n+1} \mu_{\delta}'(\mbf{x}_{i, T_i^*+1}-n\mbf{x}_{1, T_1^*+1}) +  \frac{1}{n} \sum_{i=2}^{n+1} \mu_{\gamma}'(\mbf{x}_{i, T_i^*}-n\mbf{x}_{1, T_1^*}) & \text{ for }\mc{M}_{22}
   \end{cases}.
 \end{align*}
 But it may be unbiased in some special circumstances when the above bias turns out to be 0. \end{proof-of-proposition}
@@ -907,7 +988,7 @@ But it may be unbiased in some special circumstances when the above bias turns o
 
 
 \begin{proof-of-proposition}[\ref{propriskwadj2}]
-  By Proposition \ref{unbiased}, the property that $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator of $\E{\alpha_1}$ holds for $\mc{M}_{21}$ and $\mc{M}_{22}$. The remainder of the proof follows a similar argument to the proof of Proposition \ref{propriskadj} (\textbf{Fix this problematic reference}).
+  By Proposition \ref{unbiased}, the property that $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator of $\E{\alpha_1}$ holds for $\mc{M}_{21}$ and $\mc{M}_{22}$. The remainder of the proof follows a similar argument to the proof of Proposition \ref{proprisk} (\textbf{Fix this problematic reference}).
 \end{proof-of-proposition}
 
 
