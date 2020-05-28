@@ -27,7 +27,7 @@ In this analysis we investigate the performance of oil companies in previous rec
 
 <!-- is strong evidence that recursively estimated AR and ARMA models have lower MSPE than the no-change forecast for predicting real oil prices, especially at horizons of 1 and 3 months. At longer horizons, the no-change forecast of the real price of oil typically is the predictor with the lowest MSPE. These results are robust to the use of real time data ([Source](https://www.federalreserve.gov/PUBS/ifdp/2011/1022/ifdp1022.htm)).  We will use these findings on oil prices as guidelines for constructing time horizons for our AR models, our time horizons will be 30 trading days centered at the reported time of the shock. -->
 
-Our donor pool will consist of Conoco Phillips shock effects observed on September 11th, 2001, September 8th, 2008, and November 27, 2014. The first two shock effects were observed during recessions that were predicated by an inversion of the yiled curve, and the third was an OPEC induced supply side shock effect. Some other notable shock effects were not included in this analysis because the conditions preceding them are not simialar to those of the March 9, 2020 shock effect, among these are the October 19, 1987, August 8th, 2011, and  August 24, 2015 shock effects ([1987 Source](https://www.nber.org/chapters/c10958.pdf), [2011 Source](https://www.latimes.com/world/la-xpm-2011-aug-06-la-fi-us-debt-downgrade-20110806-story.html), [2015 Source](https://www.nytimes.com/2015/08/25/business/dealbook/daily-stock-market-activity.html)). 
+Our donor pool will consist of Conoco Phillips shock effects observed on September 11th, 2001, March 18th, 2008, many days in September and October of 2008, and November 27, 2014. The September 11th, 2001 and the 2008 shock effects were observed during recessions that were predicated by an inversion of the yield curve, and the November 27, 2014 shock was an OPEC induced supply side shock effect. <!--Some other notable shock effects were not included in this analysis because the conditions preceding them are not simialar to those of the March 9, 2020 shock effect, among these are the October 19, 1987, August 8th, 2011, and  August 24, 2015 shock effects ([1987 Source](https://www.nber.org/chapters/c10958.pdf), [2011 Source](https://www.latimes.com/world/la-xpm-2011-aug-06-la-fi-us-debt-downgrade-20110806-story.html), [2015 Source](https://www.nytimes.com/2015/08/25/business/dealbook/daily-stock-market-activity.html)). --> 
 <!-- 
 October 19, 1987: https://www.nber.org/chapters/c10958.pdf
 @article{shiller1988portfolio,
@@ -82,6 +82,24 @@ getSymbols('^GSPC', from = "1970-01-01")
 GSPC <- as.data.frame(GSPC)
 GSPC <- GSPC %>% mutate(Date = rownames(GSPC))
 
+## Brent Crude prices
+Brent_Crude <- read.csv("https://pkgstore.datahub.io/core/oil-prices/brent-daily_csv/data/d93216330ab2c27aae3d177b2f0f0921/brent-daily_csv.csv") %>%
+  rename(Oil_Close = Price)
+
+## WTI Crude prices
+WTI_Crude <- read.csv("https://pkgstore.datahub.io/core/oil-prices/wti-daily_csv/data/c414c9d375ec3c8f9d7c276d866fb2a4/wti-daily_csv.csv") %>%
+  rename(WTI_Close = Price)
+
+## inflation adjustment
+getSymbols("CPIAUCSL", src='FRED')
+avg.cpi <- apply.yearly(CPIAUCSL, mean)
+inflation_adj <- as.numeric(avg.cpi['2020'])/avg.cpi
+inflation_adj <- as.data.frame(inflation_adj)
+colnames(inflation_adj) <- c("dollars_2020")
+inflation_adj <- inflation_adj %>% mutate(year = 1947:2020)
+```
+
+```{r, echo = FALSE, eval = FALSE}
 ## Exxon Mobile
 #getSymbols('XOM', from = "1970-01-01")
 #XOM <- as.data.frame(XOM)
@@ -97,7 +115,7 @@ GSPC <- GSPC %>% mutate(Date = rownames(GSPC))
 
 #### Tuesday, September 11, 2001
 
-Here is the 1 day nowcast with S&P 500:
+Here is the estimated shock effect 1 day in the future with covariates:
 
 ```{r}
 ## September 11th (no trading from T-F); 1 day nowcast
@@ -106,60 +124,97 @@ COP_close <- COP %>% select(COP.Close, Date) %>%
 GSPC_close <- GSPC %>% select(GSPC.Close, Date) %>% 
   rename(GSPC_Close = GSPC.Close)
 COP_close <- merge(COP_close, GSPC_close)
+COP_close <- merge(COP_close, WTI_Crude)
 Y <- COP_close$COP_Close[-1]
 COP_close <- data.frame(COP_close[-nrow(COP_close), ], Y)
 start <- which(COP_close$Date == "2001-09-10")
-## change to equality
 start_day <- as.numeric(1:nrow(COP_close) == start + 1)
 COP_close <- COP_close %>% mutate(start_day = start_day)
 COP_close_small <- COP_close[(start-29):(start+1), ]
-m_COP_9_11 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
+m_COP_9_11 <- lm(Y ~ COP_Close + start_day + GSPC_Close + WTI_Close, 
                  data = COP_close_small)
-alpha_9_11_1 <- summary(m_COP_9_11)$coef[3,1:2]
-alpha_9_11_1 #-1.97 (0.41) in 2020 dollars
+alpha_9_11 <- summary(m_COP_9_11)$coef[3,1:2] * 
+  inflation_adj$dollars_2020[inflation_adj$year == 2001] 
+alpha_9_11
 ```
 
-Here is the 1 day nowcast without S&P 500:
+Here is the estimated shock effect 1 day in the future without covariates:
 
 ```{r}
-m_COP_9_11 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-alpha_9_11_1_no <- summary(m_COP_9_11)$coef[3,1:2]
-alpha_9_11_1_no #-1.56 (0.33) in 2020 dollars
-```
-
-Here is the 5 day nowcast with S&P 500:
-
-```{r}
-COP_close_small <- COP_close[(start-29):(start+5), ]
-m_COP_9_11 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
-                 data = COP_close_small)
-alpha_9_11_5 <- summary(m_COP_9_11)$coef[3,1:2]
-             #constant: -2.19 (0.46) in 2020 dollars
-alpha_9_11_5 #-1.17 (0.54) in 2020 dollars
-```
-
-Here is the 5 day nowcast without S&P 500:
-
-```{r}
-COP_close_small <- COP_close[(start-29):(start+5), ]
-m_COP_9_11 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-alpha_9_11_5_no <- summary(m_COP_9_11)$coef[3,1:2]
-                #constant: -1.55 (0.28) in 2020 dollars
-alpha_9_11_5_no #-1.59 (0.52) in 2020 dollars
+m_COP_9_11_no <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
+alpha_9_11_no <- summary(m_COP_9_11_no)$coef[3,1:2] * 
+  inflation_adj$dollars_2020[inflation_adj$year == 2001] 
+alpha_9_11_no
 ```
 
 
 
-#### Monday, September 8th, 2008
+
+#### 2008 shock effects
 <!-- https://www.democracynow.org/2008/9/8/headlines -->
 
-In the weekend before trading began, the United States announced its takeover of Fannie May and Freddie Mac [Source](https://www.treasury.gov/press-center/press-releases/Pages/hp1129.aspx), and it was reported that the nation’s unemployment rate reached five-year highs. It is also worth noting that Lehman Brothers Holdings filed for bankruptcy on Monday, September 15th, 2008 with what was a record of 613 billion dollars in debt [Source](https://www.marketwatch.com/story/lehman-folds-with-record-613-billion-debt).
+The first 4 major shocks of 2008 were proceeded by unprecedented failures in the financial sector that rattled markets, oil prices, and Conoco Phillips stock alike. The March 8th, September 12th, and September 26th shock effects were proceeded by the bailouts or failures of Bear Stearns, Lehman Brothers, and Washington Mutual financial institutions. The September 8th shock effect was proceeded by Fannie Mae and Freddie Mac being placed in conservatorship. 
+
+We first find the Baer Stearns shock effect. Here is the estimated shock effect 1 day in the future with covariates:
+
+```{r}
+COP_close <- COP_close %>% select(-"start_day")
+start <- which(COP_close$Date == "2008-03-18")
+start_day <- as.numeric(1:nrow(COP_close) == start)
+COP_close <- COP_close %>% mutate(start_day = start_day)
+COP_close_small <- COP_close[(start-29):(start+1), ]
+m_COP_3_18 <- lm(Y ~ COP_Close + start_day + GSPC_Close + WTI_Close, 
+                 data = COP_close_small)
+alpha_3_18 <- summary(m_COP_3_18)$coef[3,1:2] * 
+  inflation_adj$dollars_2020[inflation_adj$year == 2008] 
+alpha_3_18
+```
+
+Here is the estimated shock effect 1 day in the future without covariates:
+
+```{r}
+m_COP_3_18_no <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
+alpha_3_18_no <- summary(m_COP_3_18_no)$coef[3,1:2] * 
+  inflation_adj$dollars_2020[inflation_adj$year == 2008] 
+alpha_3_18_no
+```
+
+We now find the September shock effects. We estimate the financial instistution failures as if they are all the same.
+
+```{r}
+COP_close <- COP_close %>% select(-"start_day")
+COP_close[which(COP_close$COP_Close - COP_close$Y >= 3.5), ][2:4, ]
+start <- which(COP_close$COP_Close - COP_close$Y >= 3.5)[2:4]
+start_day <- as.numeric(1:nrow(COP_close) %in% start)
+COP_close <- COP_close %>% mutate(start_day = start_day)
+COP_close_small <- COP_close[
+  which(COP_close$Date == "2008-07-28"):which(COP_close$Date == "2008-09-26"), ]
+m_COP_Sept_08 <- lm(Y ~ COP_Close + start_day + GSPC_Close + WTI_Close, 
+                 data = COP_close_small)
+alpha_Sept_08 <- summary(m_COP_Sept_08)$coef[3,1:2] * 
+  inflation_adj$dollars_2020[inflation_adj$year == 2008] 
+alpha_Sept_08
+```
+
+Here is the estimated shock effect 1 day in the future without covariates:
+
+```{r}
+m_COP_Sept_08_no <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
+alpha_Sept_08_no <- summary(m_COP_Sept_08_no)$coef[3,1:2] * 
+  inflation_adj$dollars_2020[inflation_adj$year == 2008] 
+alpha_Sept_08_no
+```
+
+
+<!-- In the weekend before trading began, the United States announced its takeover of Fannie May and Freddie Mac [Source](https://www.treasury.gov/press-center/press-releases/Pages/hp1129.aspx), and it was reported that the nation’s unemployment rate reached five-year highs. It is also worth noting that Lehman Brothers Holdings filed for bankruptcy on Monday, September 15th, 2008 with what was a record of 613 billion dollars in debt [Source](https://www.marketwatch.com/story/lehman-folds-with-record-613-billion-debt). 
 
 Here is the 1 day nowcast with S&P 500:
 
 ```{r}
 COP_close <- COP_close %>% select(-"start_day")
-start <- which(COP_close$Date == "2008-09-08")
+#start <- which(COP_close$Date == "2008-09-08")
+start <- which(COP_close$Date == "2008-09-12")
+
 ## change to equality
 start_day <- as.numeric(1:nrow(COP_close) == start)
 COP_close <- COP_close %>% mutate(start_day = start_day)
@@ -177,77 +232,37 @@ m_COP_9_08_08 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
 alpha_9_08_08_1_no <- summary(m_COP_9_08_08)$coef[3,1:2]
 alpha_9_08_08_1_no #-6.94 (1.94) in 2020 dollars
 ```
-
-
-Here is the 5 day nowcast with S&P 500:
-
-```{r}
-COP_close_small <- COP_close[(start-30):(start+4), ]
-m_COP_9_08_08 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
-                    data = COP_close_small)
-alpha_9_08_08_5 <- summary(m_COP_9_08_08)$coef[3,1:2]
-                #constant: -4.20 (1.61) in 2020 dollars
-alpha_9_08_08_5 # -6.28 (2.00) in 2020 dollars
-```
-
-Here is the 5 day nowcast with S&P 500:
-
-```{r}
-m_COP_9_08_08 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-alpha_9_08_08_5_no <- summary(m_COP_9_08_08)$coef[3,1:2]
-                   #constant: -4.14 (1.58) in 2020 dollars
-alpha_9_08_08_5_no #-6.26 (1.94) 
-```
+-->
 
 
 #### Thursday, November 27, 2014
 
 During the Great Recession when economic activity clearly declined, both oil and stock prices fell which points to demand factors. During the second half of 2014, oil prices plummeted but equity prices generally increased, suggesting that supply factors were the key driver [Source pg 19](http://pubdocs.worldbank.org/en/339801451407117632/PRN01Mar2015OilPrices.pdf). It is documented that oil prices fall as OPEC opts not to cut production [Source](https://www.cnbc.com/2014/11/27/saudi-oil-minister-says-opec-will-not-cut-oil-production-reuters.html) on November 27th, 2014. This date will serve as our change point when we estimate a shock effect for Conoco Phillips stock.
 
-Here is the 1 day nowcast with S&P 500:
+Here is the estimated shock effect 1 day in the future with covariates:
 
 ```{r}
 COP_close <- COP_close %>% select(-"start_day")
 start <- which(COP_close$Date == "2014-11-26")
 start_day <- as.numeric(1:nrow(COP_close) == start)
-## change to equality
 COP_close <- COP_close %>% mutate(start_day = start_day)
 COP_close_small <- COP_close[(start-30):(start), ]
 m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day + GSPC_Close,
                     data = COP_close_small)
-alpha_11_27_14_1 <- summary(m_COP_11_27_14)$coef[3,1:2]
-alpha_11_27_14_1 #-5.68 (1.06) in 2020 dollars
+alpha_11_27_14 <- summary(m_COP_11_27_14)$coef[3,1:2] * 
+  inflation_adj$dollars_2020[inflation_adj$year == 2014] 
+alpha_11_27_14
 ```
 
-
-Here is the 1 day nowcast without S&P 500:
+Here is the estimated shock effect 1 day in the future without covariates:
 
 ```{r}
 m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-alpha_11_27_14_1_no <- summary(m_COP_11_27_14)$coef[3,1:2]
-alpha_11_27_14_1_no #-5.26 (0.97) in 2020 dollars
+alpha_11_27_14_no <- summary(m_COP_11_27_14)$coef[3,1:2]  * 
+  inflation_adj$dollars_2020[inflation_adj$year == 2014] 
+alpha_11_27_14_no
 ```
 
-
-Here is the 5 day nowcast with S&P 500:
-
-```{r}
-COP_close_small <- COP_close[(start-30):(start+4), ]
-m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day + GSPC_Close,
-                    data = COP_close_small)
-alpha_11_27_14_5 <- summary(m_COP_11_27_14)$coef[3,1:2]
-                 #constant: -2.69 (0.94) in 2020 dollars
-alpha_11_27_14_5 #-5.43 (1.01) in 2020 dollars
-```
-
-Here is the 5 day nowcast without S&P 500:
-
-```{r}
-m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-alpha_11_27_14_5_no <- summary(m_COP_11_27_14)$coef[3,1:2]
-                    #constant:-1.23 (0.65) in 2020 dollars
-alpha_11_27_14_5_no #-5.26 (0.99) in 2020 dollars
-```
 
 
 
@@ -267,8 +282,8 @@ Here is the 1 day nowcast with S&P 500:
 ```{r}
 m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
                     data = COP_close_small)
-alpha_03_09_20_1 <- summary(m_COP_03_09_20)$coef[3,1:2]
-alpha_03_09_20_1 #-10.51414 (1.62901)
+alpha_03_09_20 <- summary(m_COP_03_09_20)$coef[3,1:2]
+alpha_03_09_20 #-10.51414 (1.62901)
 ```
 
 
@@ -276,31 +291,9 @@ Here is the 1 day nowcast without S&P 500:
 
 ```{r}
 m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-alpha_03_09_20_1_no <- summary(m_COP_03_09_20)$coef[3,1:2]
-alpha_03_09_20_1_no #-10.533756 (1.617991)
+alpha_03_09_20_no <- summary(m_COP_03_09_20)$coef[3,1:2]
+alpha_03_09_20_no #-10.533756 (1.617991)
 ```
-
-Here is the 5 day shock effect with S&P 500:
-
-```{r}
-COP_close_small <- COP_close[(start-30):(start+4), ]
-m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
-                    data = COP_close_small)
-alpha_03_09_20_5 <- summary(m_COP_03_09_20)$coef[3,1:2]
-                 #constant: -5.333522 (2.077089)
-alpha_03_09_20_5 #-10.714979 (1.775454)
-```
-
-Here is the 5 day shock effect without S&P 500:
-
-```{r}
-m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-alpha_03_09_20_5_no <- summary(m_COP_03_09_20)$coef[3,1:2]
-                    #constant: -5.314242 (2.031455)
-alpha_03_09_20_5_no #-10.668604 (1.754461)
-```
-
-
 
 
 ## Shock effect estimators
@@ -308,33 +301,34 @@ alpha_03_09_20_5_no #-10.668604 (1.754461)
 We first obtain the inflation-adjusted shock effect estimators from all of the above analyses.
 
 ```{r}
-a_estimates <- rbind(
-c(-1.97, 0.41, -1.56, 0.33, -1.17, 0.54, -1.59, 0.52),
-c(-6.95, 1.98, -6.94, 1.94, -6.28, 2.00, -6.26, 1.94),
-c(-5.68, 1.06, -5.26, 0.97, -5.43, 1.01, -5.26, 0.99)
-)
-colnames(a_estimates) <- c("a_1","sd_a_1","a_1_no","sd_a_1_no",
-                   "a_5","sd_a_5","a_5_no","sd_a_5_no")
-rownames(a_estimates) <- c("y2001", "y2008", "y2014")
+
+a_estimates <- rbind( c(alpha_9_11, alpha_9_11_no),
+  c(alpha_3_18, alpha_3_18_no),
+  c(alpha_Sept_08, alpha_Sept_08_no),
+  c(alpha_11_27_14, alpha_11_27_14_no))
+colnames(a_estimates) <- c("a_1","sd_a_1","a_1_no","sd_a_1_no")
+rownames(a_estimates) <- c("y2001", "my2008", "sy2008", "y2014")
 ```
 
 
 We now compute four shock effect estimators. We compute the adjustment estimator that averages the estimated shock effects and the inverse variance weighted adjustment estimator, these two estimators are computed with and without the September 11th, 2001 shock effect. We consider analyses without the September 11th, 2001 shock effect because the stock market was closed for the week following the terrorist attack, so immediate post shock data was not actually observed.
 
 ```{r}
-a_adj <- colMeans(a_estimates[,1:4 * 2 -1 ])
-a_adj_no911 <- colMeans(a_estimates[-1,1:4 * 2 -1 ])
+a_adj <- colMeans(a_estimates[, c(1,3)])
+a_adj_no911 <- colMeans(a_estimates[-1, c(1,3)])
 weights <- rbind(
-(1 / a_estimates[,1:4 * 2])[1, ] / colSums(1 / a_estimates[,1:4 * 2]),
-(1 / a_estimates[,1:4 * 2])[2, ] / colSums(1 / a_estimates[,1:4 * 2]),
-(1 / a_estimates[,1:4 * 2])[3, ] / colSums(1 / a_estimates[,1:4 * 2])
+(1 / a_estimates[, c(2,4)])[1, ] / colSums(1 / a_estimates[, c(2,4)]),
+(1 / a_estimates[, c(2,4)])[2, ] / colSums(1 / a_estimates[, c(2,4)]),
+(1 / a_estimates[, c(2,4)])[3, ] / colSums(1 / a_estimates[, c(2,4)]),
+(1 / a_estimates[, c(2,4)])[4, ] / colSums(1 / a_estimates[, c(2,4)])
 )
-a_adj_IVW <- colSums(weights * a_estimates[,1:4 * 2 -1 ])
+a_adj_IVW <- colSums(weights * a_estimates[, c(1,3)])
 weights_no911 <- rbind(
-(1 / a_estimates[-1,1:4 * 2])[1, ] / colSums(1 / a_estimates[-1,1:4 * 2]),
-(1 / a_estimates[-1,1:4 * 2])[2, ] / colSums(1 / a_estimates[-1,1:4 * 2])
+(1 / a_estimates[-1, c(2,4)])[1, ] / colSums(1 / a_estimates[-1, c(2,4)]),
+(1 / a_estimates[-1, c(2,4)])[2, ] / colSums(1 / a_estimates[-1, c(2,4)]),
+(1 / a_estimates[-1, c(2,4)])[3, ] / colSums(1 / a_estimates[-1, c(2,4)])
 )
-a_adj_IVW_no911 <- colSums(weights_no911 * a_estimates[-1,1:4 * 2 -1 ])
+a_adj_IVW_no911 <- colSums(weights_no911 * a_estimates[-1, c(1,3)])
 ```
 
 Here are the estimators:
@@ -345,10 +339,10 @@ shock_effects <- rbind(a_adj, a_adj_no911,
 shock_effects
 ```
 
-Interesting to note that the March 9th, 2020 shock effect is closely approximated by the additive effect of the recession diven shock on September 8th, 2008 and the OPEC supply driven shock on November 27, 2014.
+Interesting to note that the March 9th, 2020 shock effect is closely approximated by the additive effect of the average of the 2008 recession diven shocks and the OPEC supply driven shock on November 27, 2014.
 
 ```{r}
-additive <- colSums(a_estimates[-1,1:4 * 2 -1])
+additive <- colMeans(a_estimates[c(2,3), c(1,3)]) + a_estimates[4, c(1,3)]
 additive
 ```
 
@@ -366,28 +360,30 @@ COP_close_small <- COP_close[(start-30):(start), ]
 Here is the 1 day nowcast with S&P 500:
 
 ```{r}
-m_COP_03_06_20 <- lm(Y ~ COP_Close + GSPC_Close, 
+m_COP_03_06_20 <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close, 
                      data = COP_close_small[-nrow(COP_close_small), ])
 preds <- predict(m_COP_03_06_20)
-Yhat_nothing_1 <- 0.933928 * 46.96604 -7.462690 + 0.003267 * 3023.94
-Yhat_adj_1 <- Yhat_nothing_1 + shock_effects[, 1]
-Yhat_adj_additive_1 <- Yhat_nothing_1 + additive[1]
+summary(m_COP_03_06_20)
+Yhat_nothing <- -2.430990 + 1.045492 * 47.01888 + 
+  0.003063 * 3023.94 + -0.210924 * 45.90
+Yhat_adj <- Yhat_nothing + shock_effects[, 1]
+Yhat_adj_additive <- Yhat_nothing + additive[1]
 
 ## doing nothing completely misses the mark
-Yhat_nothing_1 - COP_close_small$Y[nrow(COP_close_small)]
+Yhat_nothing - COP_close_small$Y[nrow(COP_close_small)]
 
 ## adjustment gets closer
-Yhat_adj_1 - COP_close_small$Y[nrow(COP_close_small)]
+Yhat_adj - COP_close_small$Y[nrow(COP_close_small)]
 
 ## additive effect does well
-Yhat_adj_additive_1 - COP_close_small$Y[nrow(COP_close_small)]
+Yhat_adj_additive - COP_close_small$Y[nrow(COP_close_small)]
 ```
 
 
 ```{r}
 COP_close_small$id <- 1:nrow(COP_close_small)
 mat <- cbind(COP_close_small$id[nrow(COP_close_small)], 
-             c(Yhat_adj_1, Yhat_adj_additive_1))
+             c(Yhat_adj, Yhat_adj_additive))
 colnames(mat) <- c("id", "Yhat_adj")
 dat <- as.data.frame(mat)
 ggplot(COP_close_small, mapping = aes(x = id, y = Y)) + 
@@ -395,9 +391,9 @@ ggplot(COP_close_small, mapping = aes(x = id, y = Y)) +
        x = "Day", y = "Close price (in USD)") +
   geom_point() + 
   geom_point(data = dat, aes(x = id, y = Yhat_adj), col = 2, pch = 2:6) + 
-  geom_point(data = data.frame(x = unique(dat$id), y =Yhat_nothing_1), 
+  geom_point(data = data.frame(x = unique(dat$id), y =Yhat_nothing), 
              aes(x = x, y = y), col = "blue", cex = 1.5) + 
-  geom_line(aes(x = id, y = c(m_COP_03_06_20$fitted.values, Yhat_nothing_1)), 
+  geom_line(aes(x = id, y = c(m_COP_03_06_20$fitted.values, Yhat_nothing)), 
             col = "blue") + 
     annotate("text", x=1, y=seq(from = 47, to = 39,length.out=6), 
              label=c("no adjustment","mean adjustment",
@@ -411,7 +407,7 @@ ggplot(COP_close_small, mapping = aes(x = id, y = Y)) +
 ```
 
 
-Here is the 1 day nowcast without S&P 500:
+Here is the 1 day nowcast without covariates:
 
 
 ```{r}
@@ -419,18 +415,18 @@ m_COP_03_06_20 <- lm(Y ~ COP_Close,
                      data = COP_close_small[-nrow(COP_close_small), ])
 summary(m_COP_03_06_20)
 preds <- predict(m_COP_03_06_20)
-Yhat_nothing_1_no <- -1.25682 + 1.01170 * 47.00149 
-Yhat_adj_1_no <- Yhat_nothing_1_no + shock_effects[, 2]
-Yhat_adj_additive_1_no <- Yhat_nothing_1_no + additive[2]
+Yhat_nothing_no <- -1.25682 + 1.01170 * 47.00149
+Yhat_adj_no <- Yhat_nothing_no + shock_effects[, 2]
+Yhat_adj_additive_no <- Yhat_nothing_no + additive[2]
 
 ## doing nothing misses the mark
-Yhat_nothing_1_no - COP_close_small$Y[nrow(COP_close_small)]
+Yhat_nothing_no - COP_close_small$Y[nrow(COP_close_small)]
 
 ## adjustment gets closer
-Yhat_adj_1_no - COP_close_small$Y[nrow(COP_close_small)]
+Yhat_adj_no - COP_close_small$Y[nrow(COP_close_small)]
 
 ## additive effect does well
-Yhat_adj_additive_1_no - COP_close_small$Y[nrow(COP_close_small)]
+Yhat_adj_additive_no - COP_close_small$Y[nrow(COP_close_small)]
 ```
 
 
@@ -438,7 +434,7 @@ Yhat_adj_additive_1_no - COP_close_small$Y[nrow(COP_close_small)]
 ```{r}
 COP_close_small$id <- 1:nrow(COP_close_small)
 mat <- cbind(COP_close_small$id[nrow(COP_close_small)], 
-             c(Yhat_adj_1,  Yhat_adj_additive_1_no))
+             c(Yhat_adj,  Yhat_adj_additive_no))
 colnames(mat) <- c("id", "Yhat_adj")
 dat <- as.data.frame(mat)
 ggplot(COP_close_small, mapping = aes(x = id, y = Y)) + 
@@ -447,10 +443,10 @@ ggplot(COP_close_small, mapping = aes(x = id, y = Y)) +
   geom_point() + 
   geom_point(data = dat, aes(x = id, y = Yhat_adj), 
                              col = 2, pch = 2:6) + 
-  geom_point(data = data.frame(x = unique(dat$id), y =Yhat_nothing_1_no), 
+  geom_point(data = data.frame(x = unique(dat$id), y =Yhat_nothing_no), 
              aes(x = x, y = y), col = "blue", cex = 1.5) + 
   geom_line(aes(x = id, y = c(m_COP_03_06_20$fitted.values,
-                              Yhat_nothing_1_no)), 
+                              Yhat_nothing_no)), 
             col = "blue") +
       annotate("text", x=1, y=seq(from = 47, to = 39,length.out=6), 
              label=c("no adjustment","mean adjustment",
@@ -462,6 +458,7 @@ ggplot(COP_close_small, mapping = aes(x = id, y = Y)) +
              color = c("blue","red","red","red","red","red")) +
   theme_minimal()
 ```
+
 
 
 
