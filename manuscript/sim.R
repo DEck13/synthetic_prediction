@@ -10,7 +10,7 @@ for (t in T) {
 phi <- round(runif(n + 1, 0, 1), 3) # autoregressive parameters
 
 # parameter 
-mu.alpha <- 10; sigma.alpha <- 1; sigma <- 1
+mu.alpha <- 10; sigma.alpha <- 0.001; sigma <- 1; p <- 5
 
 # construction of design matrix and shock effects
 X <- c()
@@ -20,17 +20,19 @@ gamma <- c()
 for (i in 1:(n + 1)) {
   Ti <- T[i]
   Tstari <- Tstar[i]
-  X[[i]] <- rnorm(Ti + 1) 
+  X[[i]] <- matrix(rgamma(n = p * (Ti + 1), shape = 1, scale = 10), ncol = p, byrow = T) 
+  # matrix(rnorm(n = (Ti + 1) * p), ncol = p, byrow = T)
   # parameter setup
-  delta[i] <- rnorm(1)
-  gamma[i] <- rnorm(1)
+  delta[[i]] <- matrix(rnorm(p), nrow = 1)
+  gamma[[i]] <- matrix(rnorm(p), nrow = 1)
   epsilontildei <- rnorm(n = 1, sd = sigma.alpha)
   # alpha
-  alpha <- c(alpha, mu.alpha + delta[i] * X[[i]][Tstari + 1] + 
-               gamma[i] * X[[i]][Tstari] + epsilontildei)
+  alpha <- c(alpha, mu.alpha + delta[[i]] %*% X[[i]][Tstari + 1, ] + 
+               gamma[[i]] %*% X[[i]][Tstari, ] + epsilontildei)
 }
 
-mu.alpha + delta[1] * X[[i]][Tstar[1] + 1] + gamma[1] * X[[i]][Tstar[1]]
+# E(alpha1)
+mu.alpha + delta[[1]] %*% X[[1]][Tstar[1] + 1, ] + gamma[[1]] %*% X[[1]][Tstar[1], ]
 
 # generation of yit
 Y <- c()
@@ -46,15 +48,15 @@ for (i in 1:(n + 1)) {
   xi <- X[[i]]
   
   # parameter setup
-  thetai <- rnorm(1)
-  betai <- rnorm(1)
+  thetai <- matrix(rnorm(p), nrow = 1)
+  betai <- matrix(rnorm(p), nrow = 1)
   etai <- rnorm(1)
   
   yi <- yi0
   for (t in 2:(T[i] + 1)) {
     epsilonit <- rnorm(n = 1, sd = sigma)
     yi <- c(yi, etai + alphai * ifelse(t == Tstari + 2, yes = 1, no = 0) +
-              phii * yi[t - 1] + thetai * xi[t] + betai * xi[t - 1] + epsilonit)
+              phii * yi[t - 1] + thetai %*% xi[t, ] + betai %*% xi[t - 1, ] + epsilonit)
   }
   
   Y[[i]] <- yi
@@ -103,7 +105,8 @@ scm <- function(X, Tstar) {
   
   
   # optimization
-  solnp(par = rep(1/n, n), fun = weightedX0, eqfun = Wcons, eqB = 0, LB = rep(0, n), UB = rep(1, n))
+  solnp(par = rep(1/n, n), fun = weightedX0, eqfun = Wcons, eqB = 0, 
+        LB = rep(0, n), UB = rep(1, n), control = list(trace = 0))
 }
 ols.est.alphahat <- function(Tstar, Y, X) {
   
@@ -126,11 +129,11 @@ ols.est.alphahat <- function(Tstar, Y, X) {
     Ti <- T[i]
     Tstari <- Tstar[i]
     yi <- Y[[i]][-1]
-    xi <- X[[i]][-1]
+    xi <- X[[i]][-1, ]
     
     # lag
     yilag <- Y[[i]][-(Ti + 1)]
-    xilag <- X[[i]][-(Ti + 1)]
+    xilag <- X[[i]][-(Ti + 1), ]
     
     # OLS
     lmodi <- lm(yi ~ 1 + ifelse(1:Ti == Tstari + 1, yes = 1, no = 0) + 
@@ -161,7 +164,7 @@ ols.est.alphahat <- function(Tstar, Y, X) {
   alphahat.wadj <- as.numeric(crossprod(W, alphahat))
   
   # Inverse-Variance Estimator
-  alphahat.IVW <- sum(mu.alpha.hat / se ^ 2) /  (sum(1 / se ^ 2))
+  alphahat.IVW <- sum(alphahat / se ^ 2) /  (sum(1 / se ^ 2))
   
   est <- c(alphahat.adj, alphahat.wadj, alphahat.IVW)
   names(est) <- c('adj', 'wadj', 'IVW')
@@ -178,7 +181,6 @@ est <- ols.est.alphahat(Tstar = Tstar, Y = Y, X = X)$est
 # ols object
 ols <- ols.est.alphahat(Tstar = Tstar, Y = Y, X = X)
 
-
 # Bootstrap
 B <- 10000
 
@@ -191,6 +193,7 @@ boots <- function(B, ols) {
   Y <- ols$Y
   X <- ols$X
   lmod <- ols$lmod
+  p <- ncol(X[[1]])
   
   alphahat.adj.B <- c()
   alphahat.wadj.B <- c()
@@ -207,19 +210,19 @@ boots <- function(B, ols) {
       yitb <- Y[[i]][1]
       Tstari <- Tstar[i]
       lmodi <- lmod[[i - 1]]
-      xi <- X[[i]][-1]
-      xilag <- X[[i]][-(Ti + 1)]
+      xi <- X[[i]][-1,]
+      xilag <- X[[i]][-(Ti + 1), ]
       
       # parameter
       etahati <- coef(lmodi)[1]
       alphahati <- coef(lmodi)[2]
       phihati <- coef(lmodi)[3]
-      thetahati <- coef(lmodi)[4]
-      betahati <- coef(lmodi)[5]
+      thetahati <- coef(lmodi)[4:(4 + p - 1)]
+      betahati <- coef(lmodi)[(4 + p):(3 + 2 * p)]
       
       for (t in 1: Ti) {
         yitb <- c(yitb, etahati + alphahati * ifelse(t == Tstari + 1, yes = 1, no = 0) +
-          phihati * yitb[t] + thetahati * xi[t] + betahati * xilag[t] + resit[t])
+          phihati * yitb[t] + thetahati %*% xi[t, ] + betahati %*% xilag[t, ] + resit[t])
       }
       Yb[[i]] <- yitb
     }
@@ -234,6 +237,15 @@ boots <- function(B, ols) {
 
 # bootstrap samples
 bootsamp <- boots(B = 1000, ols = ols)
+
+# Histogram
+par(mfrow = c(2,2))
+for (i in 1:3) {
+  hist(bootsamp[[i]], main = paste0('Distribution of Bootstrapped ', 
+                                    names(bootsamp[[i]])[1], 
+                                    ' Estimator'))
+  summary(bootsamp[[i]])
+}
 
 # experiment 
 Bs <- c(100, 1000, 10000)
@@ -261,3 +273,38 @@ risk.reduction <- function(means, vars) {
 }
 risk.reduction(means = means[3,], vars = vars[3,])
 # in this case adj is the best
+
+# nowcasting 
+nowcast.alpha <- function(X, Y, Tstar, best = c('adj', 'wadj', 'IVW')) {
+  # set up
+  T1 <- T[1]
+  Tstar1 <- Tstar[1]
+  y1 <- Y[[1]][-1]
+  x1 <- X[[1]][-1, ]
+  
+  # lag
+  y1lag <- Y[[1]][-(T1 + 1)]
+  x1lag <- X[[1]][-(T1 + 1), ]
+  
+  # OLS
+  lmod1 <- lm(y1 ~ 1 + y1lag + x1 + x1lag, subset = 1:Tstar1)
+  
+  # ols object
+  ols <- ols.est.alphahat(Tstar = Tstar, Y = Y, X = X)
+  
+  # design matrix
+  design <- rbind(c(1, y1lag[Tstar1 + 1], x1[Tstar1 + 1, ], x1lag[Tstar1 + 1, ]))
+  
+  # forecast 1
+  yhat1 <- design %*% coef(lmod1)
+  
+  # forecast 2
+  yhat2 <- yhat1 + ols$est[best]
+  
+  # output
+  return(list(yhat2 = yhat2, alpha1est = ols$est[best]))
+}
+
+# prediction
+nowcast.alpha(X = X, Y = Y, Tstar = Tstar, best = 'wadj')
+Y[[1]][Tstar[1] + 2] # better!
