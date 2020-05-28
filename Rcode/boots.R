@@ -46,9 +46,9 @@ for (j in 2:(n + 1)){
 }
 
 # Non-parametric Bootstrap of Shock-Effects
-B <- 5000
+B <- 50000
 IVWB <- c()
-for (b in 1:5000) {
+for (b in 1:B) {
   index <- base::sample(1:100, size = 100, replace = T)
   alphahatb <- mu.alpha.hat[index]
   seb <- se[index]

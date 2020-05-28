@@ -1,8 +1,8 @@
 # Bootstrap Simulation
 set.seed(2014)
 # parameter setup
-n <- 5 # pool size
-T <- sample(50:100, size = 6) # Time Length
+n <- 10 # pool size
+T <- sample(50:100, size = n + 1) # Time Length
 Tstar <- c() # Shock Time Points
 for (t in T) {
  Tstar <- c(Tstar, sample(3:t, size = 1))
@@ -10,7 +10,7 @@ for (t in T) {
 phi <- round(runif(n + 1, 0, 1), 3) # autoregressive parameters
 
 # parameter 
-mu.alpha <- 10; sigma.alpha <- 1; sigma <- 1
+mu.alpha <- 5; sigma.alpha <- 0.1; sigma <- 1
 
 # construction of design matrix and shock effects
 X <- c()
@@ -20,10 +20,11 @@ gamma <- c()
 for (i in 1:(n + 1)) {
   Ti <- T[i]
   Tstari <- Tstar[i]
-  X[[i]] <- rnorm(Ti + 1) 
+  X[[i]] <- #rnorm(Ti + 1, sd = 10) 
+    rgamma(Ti + 1, shape = 1, scale = 10)
   # parameter setup
-  delta[i] <- rnorm(1)
-  gamma[i] <- rnorm(1)
+  delta[i] <- rnorm(1, mean = 5, sd = 0.1)
+  gamma[i] <- rnorm(1, mean = 5, sd = 0.1)
   epsilontildei <- rnorm(n = 1, sd = sigma.alpha)
   # alpha
   alpha <- c(alpha, mu.alpha + delta[i] * X[[i]][Tstari + 1] + 
@@ -31,6 +32,9 @@ for (i in 1:(n + 1)) {
 }
 
 mu.alpha + delta[1] * X[[i]][Tstar[1] + 1] + gamma[1] * X[[i]][Tstar[1]]
+mu.alpha + delta[1] * X[[1]][Tstar[1] + 1] + gamma[1] * X[[1]][Tstar[1]]
+mu.alpha + delta[5] * X[[5]][Tstar[5] + 1] + gamma[5] * X[[5]][Tstar[5]]
+
 
 # generation of yit
 Y <- c()
@@ -103,7 +107,8 @@ scm <- function(X, Tstar) {
   
   
   # optimization
-  solnp(par = rep(1/n, n), fun = weightedX0, eqfun = Wcons, eqB = 0, LB = rep(0, n), UB = rep(1, n))
+  solnp(par = rep(1/n, n), fun = weightedX0, eqfun = Wcons, 
+        eqB = 0, LB = rep(0, n), UB = rep(1, n), control = list(trace = 0))
 }
 ols.est.alphahat <- function(Tstar, Y, X) {
   
@@ -161,7 +166,7 @@ ols.est.alphahat <- function(Tstar, Y, X) {
   alphahat.wadj <- as.numeric(crossprod(W, alphahat))
   
   # Inverse-Variance Estimator
-  alphahat.IVW <- sum(mu.alpha.hat / se ^ 2) /  (sum(1 / se ^ 2))
+  alphahat.IVW <- sum(alphahat / se ^ 2) /  (sum(1 / se ^ 2))
   
   est <- c(alphahat.adj, alphahat.wadj, alphahat.IVW)
   names(est) <- c('adj', 'wadj', 'IVW')
@@ -177,7 +182,7 @@ est <- ols.est.alphahat(Tstar = Tstar, Y = Y, X = X)$est
 
 # ols object
 ols <- ols.est.alphahat(Tstar = Tstar, Y = Y, X = X)
-
+ols$est
 
 # Bootstrap
 B <- 10000
@@ -233,7 +238,18 @@ boots <- function(B, ols) {
 
 
 # bootstrap samples
-bootsamp <- boots(B = 1000, ols = ols)
+bootsamp <- boots(B = 500, ols = ols)
+
+par(mfrow = c(2,2))
+hist(bootsamp[[1]])
+summary(bootsamp[[1]])
+
+hist(bootsamp[[2]])
+summary(bootsamp[[2]])
+
+hist(bootsamp[[3]])
+summary(bootsamp[[3]])
+
 
 # experiment 
 Bs <- c(100, 1000, 10000)
