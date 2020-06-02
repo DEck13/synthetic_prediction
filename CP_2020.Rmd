@@ -119,9 +119,9 @@ Here is the estimated shock effect 1 day in the future with covariates:
 
 ```{r}
 ## September 11th (no trading from T-F); 1 day nowcast
-COP_close <- COP %>% select(COP.Close, Date) %>% 
+COP_close <- COP %>% dplyr::select(COP.Close, Date) %>% 
   rename(COP_Close = COP.Close)
-GSPC_close <- GSPC %>% select(GSPC.Close, Date) %>% 
+GSPC_close <- GSPC %>% dplyr::select(GSPC.Close, Date) %>% 
   rename(GSPC_Close = GSPC.Close)
 COP_close <- merge(COP_close, GSPC_close)
 COP_close <- merge(COP_close, WTI_Crude)
@@ -153,45 +153,33 @@ alpha_9_11_no
 #### 2008 shock effects
 <!-- https://www.democracynow.org/2008/9/8/headlines -->
 
-The first 4 major shocks of 2008 were proceeded by unprecedented failures in the financial sector that rattled markets, oil prices, and Conoco Phillips stock alike. The March 8th, September 12th, and September 26th shock effects were proceeded by the bailouts or failures of Bear Stearns, Lehman Brothers, and Washington Mutual financial institutions. The September 8th shock effect was proceeded by Fannie Mae and Freddie Mac being placed in conservatorship. 
-
-We first find the Baer Stearns shock effect. Here is the estimated shock effect 1 day in the future with covariates:
-
-```{r}
-COP_close <- COP_close %>% select(-"start_day")
-start <- which(COP_close$Date == "2008-03-18")
-start_day <- as.numeric(1:nrow(COP_close) == start)
-COP_close <- COP_close %>% mutate(start_day = start_day)
-COP_close_small <- COP_close[(start-29):(start+1), ]
-m_COP_3_18 <- lm(Y ~ COP_Close + start_day + GSPC_Close + WTI_Close, 
-                 data = COP_close_small)
-alpha_3_18 <- summary(m_COP_3_18)$coef[3,1:2] * 
-  inflation_adj$dollars_2020[inflation_adj$year == 2008] 
-alpha_3_18
-```
-
-Here is the estimated shock effect 1 day in the future without covariates:
-
-```{r}
-m_COP_3_18_no <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-alpha_3_18_no <- summary(m_COP_3_18_no)$coef[3,1:2] * 
-  inflation_adj$dollars_2020[inflation_adj$year == 2008] 
-alpha_3_18_no
-```
+The first 4 major shocks of 2008 were proceeded by unprecedented failures in the financial sector that rattled markets, oil prices, and Conoco Phillips stock alike. The September 12th and September 26th shock effects were proceeded by the bailouts or failures of Lehman Brothers and Washington Mutual financial institutions. The September 8th shock effect was proceeded by Fannie Mae and Freddie Mac being placed in conservatorship. 
 
 We now find the September shock effects. We estimate the financial instistution failures as if they are all the same.
 
 ```{r}
-COP_close <- COP_close %>% select(-"start_day")
-COP_close[which(COP_close$COP_Close - COP_close$Y >= 3.5), ][2:4, ]
-start <- which(COP_close$COP_Close - COP_close$Y >= 3.5)[2:4]
-start_day <- as.numeric(1:nrow(COP_close) %in% start)
-COP_close <- COP_close %>% mutate(start_day = start_day)
+#COP_close <- COP_close %>% dplyr::select(-"start_day")
+COP_close <- COP %>% dplyr::select(COP.Close, Date) %>% 
+  rename(COP_Close = COP.Close)
+COP_close <- merge(COP_close, GSPC_close)
+COP_close <- merge(COP_close, WTI_Crude)
+Y <- COP_close$COP_Close[-1]
+COP_close <- data.frame(COP_close[-nrow(COP_close), ], Y)
+start_09_08_08 <- which(COP_close$Date == "2008-09-08")
+start_09_12_08 <- which(COP_close$Date == "2008-09-12")
+start_09_26_08 <- which(COP_close$Date == "2008-09-26")
+start_day_09_08_08 <- as.numeric(1:nrow(COP_close) %in% start_09_08_08)
+start_day_09_12_08 <- as.numeric(1:nrow(COP_close) %in% start_09_12_08)
+start_day_09_26_08 <- as.numeric(1:nrow(COP_close) %in% start_09_26_08)
+COP_close <- COP_close %>% mutate(start_day_09_08_08 = start_day_09_08_08, 
+                                  start_day_09_12_08 = start_day_09_12_08, 
+                                  start_day_09_26_08 = start_day_09_26_08)
 COP_close_small <- COP_close[
   which(COP_close$Date == "2008-07-28"):which(COP_close$Date == "2008-09-26"), ]
-m_COP_Sept_08 <- lm(Y ~ COP_Close + start_day + GSPC_Close + WTI_Close, 
+m_COP_Sept_08 <- lm(Y ~ COP_Close + start_day_09_08_08 + start_day_09_12_08 + 
+                      start_day_09_26_08 + GSPC_Close + WTI_Close, 
                  data = COP_close_small)
-alpha_Sept_08 <- summary(m_COP_Sept_08)$coef[3,1:2] * 
+alpha_Sept_08 <- summary(m_COP_Sept_08)$coef[3:5,1:2] * 
   inflation_adj$dollars_2020[inflation_adj$year == 2008] 
 alpha_Sept_08
 ```
@@ -199,40 +187,15 @@ alpha_Sept_08
 Here is the estimated shock effect 1 day in the future without covariates:
 
 ```{r}
-m_COP_Sept_08_no <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-alpha_Sept_08_no <- summary(m_COP_Sept_08_no)$coef[3,1:2] * 
+m_COP_Sept_08_no <- lm(Y ~ COP_Close + start_day_09_08_08 + start_day_09_12_08 + 
+                      start_day_09_26_08, data = COP_close_small)
+alpha_Sept_08_no <- summary(m_COP_Sept_08_no)$coef[3:5,1:2] * 
   inflation_adj$dollars_2020[inflation_adj$year == 2008] 
 alpha_Sept_08_no
 ```
 
 
-<!-- In the weekend before trading began, the United States announced its takeover of Fannie May and Freddie Mac [Source](https://www.treasury.gov/press-center/press-releases/Pages/hp1129.aspx), and it was reported that the nation’s unemployment rate reached five-year highs. It is also worth noting that Lehman Brothers Holdings filed for bankruptcy on Monday, September 15th, 2008 with what was a record of 613 billion dollars in debt [Source](https://www.marketwatch.com/story/lehman-folds-with-record-613-billion-debt). 
 
-Here is the 1 day nowcast with S&P 500:
-
-```{r}
-COP_close <- COP_close %>% select(-"start_day")
-#start <- which(COP_close$Date == "2008-09-08")
-start <- which(COP_close$Date == "2008-09-12")
-
-## change to equality
-start_day <- as.numeric(1:nrow(COP_close) == start)
-COP_close <- COP_close %>% mutate(start_day = start_day)
-COP_close_small <- COP_close[(start-30):(start), ]
-m_COP_9_08_08 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
-                    data = COP_close_small)
-alpha_9_08_08_1 <- summary(m_COP_9_08_08)$coef[3,1:2]
-alpha_9_08_08_1 #-6.95 (1.98) in 2020 dollars
-```
-
-Here is the 1 day nowcast without S&P 500:
-
-```{r}
-m_COP_9_08_08 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-alpha_9_08_08_1_no <- summary(m_COP_9_08_08)$coef[3,1:2]
-alpha_9_08_08_1_no #-6.94 (1.94) in 2020 dollars
-```
--->
 
 
 #### Thursday, November 27, 2014
@@ -242,7 +205,12 @@ During the Great Recession when economic activity clearly declined, both oil and
 Here is the estimated shock effect 1 day in the future with covariates:
 
 ```{r}
-COP_close <- COP_close %>% select(-"start_day")
+COP_close <- COP %>% dplyr::select(COP.Close, Date) %>% 
+  rename(COP_Close = COP.Close)
+COP_close <- merge(COP_close, GSPC_close)
+COP_close <- merge(COP_close, WTI_Crude)
+Y <- COP_close$COP_Close[-1]
+COP_close <- data.frame(COP_close[-nrow(COP_close), ], Y)
 start <- which(COP_close$Date == "2014-11-26")
 start_day <- as.numeric(1:nrow(COP_close) == start)
 COP_close <- COP_close %>% mutate(start_day = start_day)
@@ -269,7 +237,7 @@ alpha_11_27_14_no
 #### The March 9th, 2020 shock effect:
 
 ```{r}
-COP_close <- COP_close %>% select(-"start_day")
+COP_close <- COP_close %>% dplyr::select(-"start_day")
 start <- which(COP_close$Date == "2020-03-06")
 ## change to equality
 start_day <- as.numeric(1:nrow(COP_close) == start)
@@ -301,13 +269,11 @@ alpha_03_09_20_no #-10.533756 (1.617991)
 We first obtain the inflation-adjusted shock effect estimators from all of the above analyses.
 
 ```{r}
-
 a_estimates <- rbind( c(alpha_9_11, alpha_9_11_no),
-  c(alpha_3_18, alpha_3_18_no),
-  c(alpha_Sept_08, alpha_Sept_08_no),
+  cbind(alpha_Sept_08, alpha_Sept_08_no),
   c(alpha_11_27_14, alpha_11_27_14_no))
 colnames(a_estimates) <- c("a_1","sd_a_1","a_1_no","sd_a_1_no")
-rownames(a_estimates) <- c("y2001", "my2008", "sy2008", "y2014")
+rownames(a_estimates) <- c("y2001","s8y2008","s12y2008","s26y2008","y2014")
 ```
 
 
@@ -320,13 +286,15 @@ weights <- rbind(
 (1 / a_estimates[, c(2,4)])[1, ] / colSums(1 / a_estimates[, c(2,4)]),
 (1 / a_estimates[, c(2,4)])[2, ] / colSums(1 / a_estimates[, c(2,4)]),
 (1 / a_estimates[, c(2,4)])[3, ] / colSums(1 / a_estimates[, c(2,4)]),
-(1 / a_estimates[, c(2,4)])[4, ] / colSums(1 / a_estimates[, c(2,4)])
+(1 / a_estimates[, c(2,4)])[4, ] / colSums(1 / a_estimates[, c(2,4)]),
+(1 / a_estimates[, c(2,4)])[5, ] / colSums(1 / a_estimates[, c(2,4)])
 )
 a_adj_IVW <- colSums(weights * a_estimates[, c(1,3)])
 weights_no911 <- rbind(
 (1 / a_estimates[-1, c(2,4)])[1, ] / colSums(1 / a_estimates[-1, c(2,4)]),
 (1 / a_estimates[-1, c(2,4)])[2, ] / colSums(1 / a_estimates[-1, c(2,4)]),
-(1 / a_estimates[-1, c(2,4)])[3, ] / colSums(1 / a_estimates[-1, c(2,4)])
+(1 / a_estimates[-1, c(2,4)])[3, ] / colSums(1 / a_estimates[-1, c(2,4)]),
+(1 / a_estimates[-1, c(2,4)])[4, ] / colSums(1 / a_estimates[-1, c(2,4)])
 )
 a_adj_IVW_no911 <- colSums(weights_no911 * a_estimates[-1, c(1,3)])
 ```
@@ -342,7 +310,7 @@ shock_effects
 Interesting to note that the March 9th, 2020 shock effect is closely approximated by the additive effect of the average of the 2008 recession diven shocks and the OPEC supply driven shock on November 27, 2014.
 
 ```{r}
-additive <- colMeans(a_estimates[c(2,3), c(1,3)]) + a_estimates[4, c(1,3)]
+additive <- colMeans(a_estimates[2:4, c(1,3)]) + a_estimates[4, c(1,3)]
 additive
 ```
 
@@ -350,7 +318,7 @@ additive
 ## Post-shock forecasts
 
 ```{r}
-COP_close <- COP_close %>% select(-"start_day")
+COP_close <- COP_close %>% dplyr::select(-"start_day")
 start <- which(COP_close$Date == "2020-03-06")
 #start_day <- as.numeric(1:nrow(COP_close) >= start)
 #COP_close <- COP_close %>% mutate(start_day = start_day)
