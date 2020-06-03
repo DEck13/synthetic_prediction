@@ -126,8 +126,11 @@
 
 Things to do:
 \begin{enumerate}
-  \item Literature review and introduction (We need a literature review for existing methods that are similar/different but close enough methods.  Possible searches include pooling, time series pooling, bayesian time series, bayesian autoregression)
-  \item Data analysis
+  \item Literature review and introduction. Need more references, need to mention synthetic interventions in the introduction or the discussion.
+  \item Need to mention possible generalizations in the Discussion.
+  \item Need to add weighted adjustment estimator to the data analysis.
+  \item Need to add simulations. 
+  \item Update abstract.
 \end{enumerate}
 
 
@@ -136,16 +139,14 @@ Things to do:
 \end{center}
 
 \begin{enumerate}
-  \item Figure 1 is revised accordingly.
   \item The synthetic intervention paper and comment are added in the introduction. Other parts haven't been revised.
-  \item Parametric bootstrap is updated with additional comments. 
-  \item The background for Example section is written.
   \item SCM.R for SCM method and sim.R for simulation are added in Github.
+  \item Data analysis references are fixed. The structure is organized better.
 \end{enumerate}
 
 
 % table of contents
-\tableofcontents
+%\tableofcontents
 
 
 \newpage 
@@ -218,9 +219,9 @@ collection.
 %revealed prior to the observation of $y_{1,t}$.  
 To gauge the performance of a procedure that produces forecasts 
 $\{\hat y_{1,t}, t= 1,2,\ldots\}$ given time horizon $T_1$, 
-we consider forecast risk in the form of root mean squared error
+we consider forecast risk in the form of root mean squared error (RMSE),
 $$
-  R_T = \sqrt{\frac{1}{T}\sum_{t=1}^T\E{\hat y_{1,t} - y_{1,t}}^2}
+  R_T = \sqrt{\frac{1}{T}\sum_{t=1}^T\E{\hat y_{1,t} - y_{1,t}}^2},
 $$
 in our analyses. \textbf{Let's switch to root mean squared error, this metric is often used in forecasting articles.} In this article, we consider a dynamic panel data 
 model with autoregressive structure similar to that in \citet{blundell1998initial}. 
@@ -231,7 +232,7 @@ or absence is given by the binary variable $D_{i,t}$, the details of this model
 are in the next section.
 
 
-\begin{figure}[H]
+\begin{figure}
   \begin{center}
     \includegraphics[height = 8cm]{comp.pdf}
     \caption{The time series experience a shock at $T_1^*+1=126$ with true shock effect $\alpha = 4.88$. The figure is a comparison between forecast without considering shock effects and the one uses simple averaging given $n=40$ disparate time series, and that the shock time is at $T_1^* +1=126$. The magenta dots represent least square estimate $\hat{\alpha}_i$ from disparate time series. The prediction of $\hat{y}^{2}_{T_1^*+1}$ and $\hat{y}^{1}_{T_1^*+1}$ differs only by an adjustment $\hat{\alpha}=5.22$. It is clear that $\hat{y}^{2}_{T_1^*+1}$ performs better than $\hat{y}^{1}_{T_1^*+1}$.}\label{figure1}
@@ -794,53 +795,76 @@ Simulation for justification of the parametric bootstrap is provided in Section 
 
 \section{Forecasting Conoco Phillips stock in the presence of shocks}
 
-In this example we forecast Conoco Phillips stock prices in the midst of the coronavirus (COVID-19) recession. Specific interest is in predictions made after March 6th, 2020, the Friday before the stock market crash on March 9th, 2020. We will detail how we combine knowledge from disparate time series to improve the forecast of Conoco Phillips stock price that would be made without adjustment for the shock. The forecast consists of four steps: (1) pick a model, (2) selection of covariates,  (3) choices of donor pool, and (4) nowcast. Section \ref{background} provides the justification for the first three steps. Section \ref{results} discusses the result of our forecast.
+In this example we forecast Conoco Phillips stock prices in the midst of the coronavirus recession. Specific interest is in predictions made after March 6th, 2020, the Friday before the stock market crash on March 9th, 2020. We will detail how we combine knowledge from disparate time series to improve the forecast of Conoco Phillips stock price that would be made without adjustment for the shock. The forecast consists of four steps: (1) pick a model, (2) selection of covariates,  (3) choices of donor pool, and (4) forecast. %Section \ref{background} provides the justification for the first three steps. Section \ref{results} discusses the result of our forecast.
 
-\subsection{Background}
-\label{background}
+%\subsection{Background}
+%\label{background}
 
- Conoco Phillips is chosen for this analysis because it is a large oil and gas resources company \citep{conocowhatwedo}. %and with a relatively recent initial public offering \citep{conocohist}. 
+Conoco Phillips is chosen for this analysis because it is a large oil and gas resources company \citep{conocowhatwedo}. %and with a relatively recent initial public offering \citep{conocohist}. 
 Focus on the oil sector is because oil prices have been shown to exhibit a cointegrating behavior with economic indices \citep{he2010global}, and our chosen time frame represents the onset of a significant economic down turn, coupled with a Russia and OPEC battle for global oil price control the Sunday before trading resumes on Monday, March 9th \citep{sukhankin2020russian}. Furthermore, fear of and action in response to the coronavirus pandemic began to uptick dramatically between Friday, March 6th and Monday, March 9th. Major events include the SXSW festival being cancelled as trading closed on March 6th \citep{wang2020impact}. New York declared a state of emergency on March 7th \citep{nygov}, and by Sunday, March 8th, eight states have declared a state of emergency \citep{alonso2020state} while Italy placed 16 million people in quarantine \citep{sjodin2020only}.
 
 
-Economic indicators forecasted our recession before the coronavirus pandemic began. The current recession followed an inversion of the yield curve that first happened back in March, 2019 \citep{tokic2019yield}. An inversion of the yield curve is an event that signals that recessions are more likely \citep{andolfatto2018yield, bauer2018economic}. In this analysis we investigate the performance of oil companies in previous recessions that followed an inversion of the yield curve to obtain a suitable Conoco Phillips donor pool for estimating the March 9th shock effect on Conoco Phillips oil stock. We also consider previous OPEC oil supply shocks. We will borrow from the literature on oil price forecasting to establish appropriate time horizons and forecasting models. Recessions that occurred before 1973 are disregarded since oil price forecasts cannot be represented by standard time series models before 1973 \citep{alquist2013forecasting}.
+Economic indicators forecasted our recession before the coronavirus pandemic began. The current recession followed an inversion of the yield curve that first happened back in March, 2019 \citep{tokic2019yield}. An inversion of the yield curve is an event that signals that recessions are more likely \citep{andolfatto2018yield, bauer2018economic}. In this analysis we investigate the performance of oil companies in previous recessions that followed an inversion of the yield curve to obtain a suitable Conoco Phillips donor pool for estimating the March 9th shock effect on Conoco Phillips oil stock. We also consider previous OPEC oil supply shocks \citep{mensi2014opec}. We will borrow from the literature on oil price forecasting to establish appropriate time horizons and forecasting models. Recessions that occurred before 1973 are disregarded since oil price forecasts cannot be represented by standard time series models before 1973 \citep{alquist2013forecasting}. In this analysis we make the following considerations:
 
-
-\subsubsection*{(1) AR(1) model and Time window}
-
- We will use a simple AR(1) model to forecast Conoco Phillips stock price. This model has been shown to beat no-change forecasts when predicting oil prices over time horizons of 1 and 3 months \citep{alquist2013forecasting}. We will consider 30 pre-shock trading days and we will forecast the immediate shock effect and the shock effect over a future five trading day window. All estimates will be adjusted for inflation. The model setup for AR(1) is exactly the same as what is stated in Section \ref{modelsetup} with addition of shock effects. All the parameters are estimated using OLS.
-
-\subsubsection*{(2) Selection of covariates}
-
-We perform two lines of analyses with one incorporating the price of S\&P 500 index and one without to justify our choice of covariate. Since the stock price of a company implies its value provided the number of shares is unchanged, the price of S\&P 500 index in the recession can partially represent the overall status of the economy.  Therefore, using the price of S\&P 500 index as the covariate can possibly improve the precision of the OLS estimates for shock-effects that are unique to Conoco Phillips. The rationale for inclusion of the price of S\&P 500 index is similar to that of market return in capital asset pricing model (CAPM). (\textbf{Need reference for the CAPM}.)
-
-
-
-
-\subsubsection*{(3) Construction of donor pool}
-
-Our donor pool will consist of Conoco Phillips shock effects observed after September 11th, 2001, %March 18th, 2008, 
-several events in September, 2008, and November 27, 2014. The first two shock effects were observed during recessions that were predicated by an inversion of the yield curve \citep{bauer2018economic}, and the third was an OPEC induced supply side shock effect \citep{huppmann2015opec}. The reasons for those three shocks are
 \begin{enumerate}
+\item[(1)] {\bf AR(1) model and time window}. We will use a simple AR(1) model to forecast Conoco Phillips stock price. This model has been shown to beat no-change forecasts when predicting oil prices over time horizons of 1 and 3 months \citep{alquist2013forecasting}. We will consider 30 pre-shock trading days and we will forecast the immediate shock effect and the shock effect over a future five trading day window. All estimates will be adjusted for inflation. The model setup for AR(1) is exactly the same as what is stated in Section \ref{modelsetup} with addition of shock effects. All the parameters are estimated using OLS.
+\item[(2)] {\bf Selection of covariates}. We perform our analyses incorporating daily S\&P 500 index prices and West Texas Intermediate (WTI) crude oil prices as covariates. 
+\item[(3)] {\bf Construction of donor pool}. Our donor pool will consist of Conoco Phillips shock effects observed after September 11th, 2001, %March 18th, 2008, 
+several events in September, 2008, and November 27, 2014. The first two shock effects were observed during recessions that were predicated by an inversion of the yield curve \citep{bauer2018economic}, and the third was an OPEC induced supply side shock effect \citep{huppmann2015opec}. The reasons for those three shocks are:
+  \begin{enumerate}
   \item On September 11th, 2001, Islamic extremist al-Qaeda committed a series of terrorist attacks against the United States of America \citep{braniff2011towards}. In addition to the tragic loss of life, this triggered negative repercussions on the U.S. and world economies with falling stock prices and a falling U.S. dollar \citep{floyd2001terror}. Moreover, trading was closed until September 17, 2001 \citep{johnston2006impact}.
-  %\item In heavy trading on Tuesday, March 18 \citep{shorter2008bear}
-  \item On September 8th, 2008, the United States announced its takeover of Fannie May and Freddie Mac \citep{UST}, and it was reported that the nation’s unemployment rate reached five-year highs. It is also worth noting that Lehman Brothers Holdings filed for bankruptcy on Monday, September 15th, 2008 with what was a record of 613 billion dollars in debt \citep{lehman}.
+  \item  In early September 2008, time series of oil prices experienced a sudden increase in volatility simultaneously due to turmoil in financial markets. The political, economic, social or environmental events may coincide with these shocks \citep{ewing2013volatility}. Notable shock effects followed the placement of Fannie May and Freddie Mac in conservatorship on September 7th (shock effect on the 8th), Lehman Brothers filing for bankruptcy on September 15th, and the Office of Thrift Supervision closes Washington Mutual Bank on September 25th \citep{dwyer2009financial, longstaff2010subprime}.
   \item On November 27th, 2014, it is documented that oil prices fall as OPEC opts not to cut production \citep{huppmann2015opec}. During the Great Recession when economic activity clearly declined, both oil and stock prices fell which points to demand factors. During the second half of 2014, oil prices plummeted but equity prices generally increased, suggesting that supply factors were the key driver \citep[Page 19]{baffes2015great}. 
+  \end{enumerate}
+\item[(4)] {\bf Forecast}. \textbf{Jilei, please fill this in. I do not know what you have in mind.}
 \end{enumerate}
+
+%Since the stock price of a company implies its value provided the number of shares is unchanged, the price of S\&P 500 index in the recession can partially represent the overall status of the economy.  Therefore, using the price of S\&P 500 index as the covariate can possibly improve the precision of the OLS estimates for shock-effects that are unique to Conoco Phillips. The rationale for inclusion of the price of S\&P 500 index is similar to that of market return in capital asset pricing model (CAPM). (\textbf{Need reference for the CAPM}.)
+
+
+% INTEREST RATES AND OIL RELATIONSHIP: This paper shows that in the short term both gold and crude oil prices positively influence each other. Interest rates have a negative influence on the future gold prices and a positive influence on the future crude oil prices. In the long run, a relationship exists whereby interest rates influence the US dollar, which in turn influences international crude oil prices. When the Federal Reserve Board (Fed) lowers interest rates to boost the economy, market expectations for oil demand change and, as a result, crude oil prices fluctuate \citep{wang2013dynamic}.
 
 
 %Some other notable shock effects were not included in this analysis because the conditions preceding them are not similar to those of the March 9, 2020 shock effect, among these are the October 19, 1987, August 8th, 2011, and  August 24, 2015 shock effects \citep{shiller1988portfolio, latimes, nytimes}.
 
 
 
-\subsection{Results}
-\label{results}
+%\subsection{Results}
+%\label{results}
+
+{\bf Jilei, can you add the weighted adjustment estimator to this analysis?}
+We estimate the five shock effects mentioned above using OLS and then construct $\hat{\alpha}_{\text{adj}}$ and $\hat{\alpha}_{\text{IVW}}$ from these estimates. We also consider estimation without the September 11th, 2001 shock effect since there was a week long delay in trading due to the terrorist attack. We also study additive shock effect estimators where the shock effects corresponding to separate supply and demand shocks are added to estimate the unknown shock effect. The supply shock donor pool consists of the November 27th, 2014 shock effect and the demand shock donor pool consists of the remaining shock effects. 
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[height = 8cm]{CPtimeseries.png}
+    \caption{March 9th, 2020 post-shock forecasts for Conoco Phillips stock price. The blue line displays the }
+    \label{Fig:CP}
+  \end{center}  
+  \vspace{-.6cm}
+\end{figure}
+
+We can see from Figure~\ref{Fig:CP} that $\hat{\alpha}_{\text{adj}}$ and $\hat{\alpha}_{\text{IVW}}$ perform decently well, they do not recover the magnitude of the shock effect but are much better than unadjusted forecasts that do not account for shock effects.
+The unadjusted forecast had an RMSE of 12.24, 
+the use of $\hat{\alpha}_{\text{adj}}$ had an RMSE of 6.85,
+the use of $\hat{\alpha}_{\text{adj}}$ without September 11th had an RMSE of 5.96,
+the use of $\hat{\alpha}_{\text{IVW}}$ had an RMSE of 9.37,
+and the use of $\hat{\alpha}_{\text{IVW}}$ without September 11th had an RMSE of 6.15.
+The additive adjustment estimator computed by adding the $\hat{\alpha}_{\text{adj}}$ estimators for the demand and supply shock effects without September 11th has an RMSE of 0.80. 
+The additive adjustment estimator computed by adding the $\hat{\alpha}_{\text{IVW}}$ estimators for the demand and supply shock effects without September 11th has an RMSE of 0.023.
+
+We also see that additive estimators do extremely well. However, these additive estimators are retrospective but their is some apriori justification for their use. \citet{kilian2009not} study the effect that different supply and demand shocks have on oil prices through a vector auto regressive model. Their model postulates an additive nature of shock effects, although the additivity parameters requires estimation in their context. %This provides some anecdotal justification for apriori estimation of the March 9th Conoco Phillips shock effect with the addition of the adjustment estimator corresponding to the separate supply and demand aspects of this shock effect.
+
+
+
+
 
 
 
 \section{Discussion}
 
-Our bootstrap procedure can be extended to approximate the distribution of shock effect estimators from more general time series. \citet{politis1994stationary} motivated a stationary bootstrap method for strictly stationary and weakly dependent time series $\{X_n \colon n \in \mathbb{N}\}$. This algorithm generates a sequence of blocks of observations $B_{I_1, L_1}, B_{I_2, L_2}, \ldots$, where $B_{i,b}= \{X_i, X_{i+1}, \ldots, X_{i+b-1}\}$\footnote{for $j > N$, $X_{j}$ is defined to be $X_k$, where $k = j \hspace{-.1cm} \mod N$ and $X_0 = X_N$}; and the sampling stops when $N$ observations are reached. Note that the collection of random positions $\{I_n \colon n \in \mathbb{N}\}$ is a sequence of i.i.d. discrete uniform random variables; and the collection of random lengths $\{L_n \colon n \in \mathbb{N}\}$ is a sequence of  i.i.d. geometric random variables with parameter $p$. However, the consistency needs to be proved by a case-by-case analysis \citep[Page 66]{politis1999subsampling}. Additionally, the asymptotic accuracy of this algorithm can be sensitive to the selection of $p$. This issue is similar to that of the selection of block size in moving-block bootstrapping \citep{kunsch1989jackknife, liu1992moving}.  More work related to bootstrapping time series  can be referred to Chapters 3 and 4 in \citet{politis1999subsampling}, and \citet{berkowitz2000recent}. It is up to the user in selecting which procedure to choose but under different assumptions on the time-series.
+
+Our bootstrap procedure can be extended to approximate the distribution of shock effect estimators from more general time series. %I AM NOT SURE HOW MUCH OF THE FOLLOWING IS NEEDED: \citet{politis1994stationary} motivated a stationary bootstrap method for strictly stationary and weakly dependent time series $\{X_n \colon n \in \mathbb{N}\}$. This algorithm generates a sequence of blocks of observations $B_{I_1, L_1}, B_{I_2, L_2}, \ldots$, where $B_{i,b}= \{X_i, X_{i+1}, \ldots, X_{i+b-1}\}$\footnote{for $j > N$, $X_{j}$ is defined to be $X_k$, where $k = j \hspace{-.1cm} \mod N$ and $X_0 = X_N$}; and the sampling stops when $N$ observations are reached. Note that the collection of random positions $\{I_n \colon n \in \mathbb{N}\}$ is a sequence of i.i.d. discrete uniform random variables; and the collection of random lengths $\{L_n \colon n \in \mathbb{N}\}$ is a sequence of  i.i.d. geometric random variables with parameter $p$. However, the consistency needs to be proved by a case-by-case analysis \citep[Page 66]{politis1999subsampling}. Additionally, the asymptotic accuracy of this algorithm can be sensitive to the selection of $p$. This issue is similar to that of the selection of block size in moving-block bootstrapping \citep{kunsch1989jackknife, liu1992moving}.  More work related to bootstrapping time series  can be referred to Chapters 3 and 4 in \citet{politis1999subsampling}, and \citet{berkowitz2000recent}. It is up to the user in selecting which procedure to choose but under different assumptions on the time-series.
 
 
 

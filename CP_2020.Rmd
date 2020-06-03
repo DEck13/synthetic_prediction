@@ -131,10 +131,11 @@ start <- which(COP_close$Date == "2001-09-10")
 start_day <- as.numeric(1:nrow(COP_close) == start + 1)
 COP_close <- COP_close %>% mutate(start_day = start_day)
 COP_close_small <- COP_close[(start-29):(start+1), ]
+COP_close_small[, 2:5] <- COP_close_small[, 2:5] * 
+  inflation_adj$dollars_2020[inflation_adj$year == 2001] 
 m_COP_9_11 <- lm(Y ~ COP_Close + start_day + GSPC_Close + WTI_Close, 
                  data = COP_close_small)
-alpha_9_11 <- summary(m_COP_9_11)$coef[3,1:2] * 
-  inflation_adj$dollars_2020[inflation_adj$year == 2001] 
+alpha_9_11 <- summary(m_COP_9_11)$coef[3,1:2] 
 alpha_9_11
 ```
 
@@ -142,8 +143,7 @@ Here is the estimated shock effect 1 day in the future without covariates:
 
 ```{r}
 m_COP_9_11_no <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-alpha_9_11_no <- summary(m_COP_9_11_no)$coef[3,1:2] * 
-  inflation_adj$dollars_2020[inflation_adj$year == 2001] 
+alpha_9_11_no <- summary(m_COP_9_11_no)$coef[3,1:2]
 alpha_9_11_no
 ```
 
@@ -176,11 +176,12 @@ COP_close <- COP_close %>% mutate(start_day_09_08_08 = start_day_09_08_08,
                                   start_day_09_26_08 = start_day_09_26_08)
 COP_close_small <- COP_close[
   which(COP_close$Date == "2008-07-28"):which(COP_close$Date == "2008-09-26"), ]
+COP_close_small[, 2:5] <- COP_close_small[, 2:5] * 
+  inflation_adj$dollars_2020[inflation_adj$year == 2008] 
 m_COP_Sept_08 <- lm(Y ~ COP_Close + start_day_09_08_08 + start_day_09_12_08 + 
                       start_day_09_26_08 + GSPC_Close + WTI_Close, 
                  data = COP_close_small)
-alpha_Sept_08 <- summary(m_COP_Sept_08)$coef[3:5,1:2] * 
-  inflation_adj$dollars_2020[inflation_adj$year == 2008] 
+alpha_Sept_08 <- summary(m_COP_Sept_08)$coef[3:5,1:2] 
 alpha_Sept_08
 ```
 
@@ -189,8 +190,7 @@ Here is the estimated shock effect 1 day in the future without covariates:
 ```{r}
 m_COP_Sept_08_no <- lm(Y ~ COP_Close + start_day_09_08_08 + start_day_09_12_08 + 
                       start_day_09_26_08, data = COP_close_small)
-alpha_Sept_08_no <- summary(m_COP_Sept_08_no)$coef[3:5,1:2] * 
-  inflation_adj$dollars_2020[inflation_adj$year == 2008] 
+alpha_Sept_08_no <- summary(m_COP_Sept_08_no)$coef[3:5,1:2] 
 alpha_Sept_08_no
 ```
 
@@ -215,10 +215,11 @@ start <- which(COP_close$Date == "2014-11-26")
 start_day <- as.numeric(1:nrow(COP_close) == start)
 COP_close <- COP_close %>% mutate(start_day = start_day)
 COP_close_small <- COP_close[(start-30):(start), ]
-m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day + GSPC_Close,
-                    data = COP_close_small)
-alpha_11_27_14 <- summary(m_COP_11_27_14)$coef[3,1:2] * 
+COP_close_small[, 2:5] <- COP_close_small[, 2:5] * 
   inflation_adj$dollars_2020[inflation_adj$year == 2014] 
+m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day + GSPC_Close  + WTI_Close,
+                    data = COP_close_small)
+alpha_11_27_14 <- summary(m_COP_11_27_14)$coef[3,1:2] 
 alpha_11_27_14
 ```
 
@@ -226,8 +227,7 @@ Here is the estimated shock effect 1 day in the future without covariates:
 
 ```{r}
 m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
-alpha_11_27_14_no <- summary(m_COP_11_27_14)$coef[3,1:2]  * 
-  inflation_adj$dollars_2020[inflation_adj$year == 2014] 
+alpha_11_27_14_no <- summary(m_COP_11_27_14)$coef[3,1:2]  
 alpha_11_27_14_no
 ```
 
@@ -239,23 +239,22 @@ alpha_11_27_14_no
 ```{r}
 COP_close <- COP_close %>% dplyr::select(-"start_day")
 start <- which(COP_close$Date == "2020-03-06")
-## change to equality
 start_day <- as.numeric(1:nrow(COP_close) == start)
 COP_close <- COP_close %>% mutate(start_day = start_day)
 COP_close_small <- COP_close[(start-30):(start), ]
 ```
 
-Here is the 1 day nowcast with S&P 500:
+Here is the 1 day nowcast with covariates:
 
 ```{r}
-m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day + GSPC_Close, 
+m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day + GSPC_Close  + WTI_Close, 
                     data = COP_close_small)
 alpha_03_09_20 <- summary(m_COP_03_09_20)$coef[3,1:2]
-alpha_03_09_20 #-10.51414 (1.62901)
+alpha_03_09_20 #-11.31712 (1.90208)
 ```
 
 
-Here is the 1 day nowcast without S&P 500:
+Here is the 1 day nowcast without covariates:
 
 ```{r}
 m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day, data = COP_close_small)
@@ -272,7 +271,8 @@ We first obtain the inflation-adjusted shock effect estimators from all of the a
 a_estimates <- rbind( c(alpha_9_11, alpha_9_11_no),
   cbind(alpha_Sept_08, alpha_Sept_08_no),
   c(alpha_11_27_14, alpha_11_27_14_no))
-colnames(a_estimates) <- c("a_1","sd_a_1","a_1_no","sd_a_1_no")
+a_estimates[, c(2,4)] <- a_estimates[, c(2,4)]^2
+colnames(a_estimates) <- c("a_1","var_a_1","a_1_no","var_a_1_no")
 rownames(a_estimates) <- c("y2001","s8y2008","s12y2008","s26y2008","y2014")
 ```
 
@@ -307,11 +307,47 @@ shock_effects <- rbind(a_adj, a_adj_no911,
 shock_effects
 ```
 
-Interesting to note that the March 9th, 2020 shock effect is closely approximated by the additive effect of the average of the 2008 recession diven shocks and the OPEC supply driven shock on November 27, 2014.
+Interesting to note that the March 9th, 2020 shock effect is closely approximated by the additive effect of the average of the 2008 recession diven shocks and the OPEC supply driven shock on November 27, 2014. We first compute the additive adjustment estimator.
 
 ```{r}
+## Additive adjustment
 additive <- colMeans(a_estimates[2:4, c(1,3)]) + a_estimates[4, c(1,3)]
 additive
+```
+
+We now compute the additive IVW adjustment estimator.
+
+```{r}
+weights_additive <- rbind(
+(1 / a_estimates[, c(2,4)])[1, ] / colSums(1 / a_estimates[1:4, c(2,4)]),
+(1 / a_estimates[, c(2,4)])[2, ] / colSums(1 / a_estimates[1:4, c(2,4)]),
+(1 / a_estimates[, c(2,4)])[3, ] / colSums(1 / a_estimates[1:4, c(2,4)]),
+(1 / a_estimates[, c(2,4)])[4, ] / colSums(1 / a_estimates[1:4, c(2,4)])
+)
+a_adj_IVW_additive <- colSums(weights_additive * a_estimates[1:4, c(1,3)])
+weights_no911_additive <- rbind(
+(1 / a_estimates[2:4, c(2,4)])[1, ] / colSums(1 / a_estimates[2:4, c(2,4)]),
+(1 / a_estimates[2:4, c(2,4)])[2, ] / colSums(1 / a_estimates[2:4, c(2,4)]),
+(1 / a_estimates[2:4, c(2,4)])[3, ] / colSums(1 / a_estimates[2:4, c(2,4)])
+)
+a_adj_IVW_no911_additive <- 
+  colSums(weights_no911_additive * a_estimates[2:4, c(1,3)])
+
+## Additive IVW adjustment
+additive_IVW <- as.numeric(a_adj_IVW_additive[1] + a_estimates[5, 1])
+additive_IVW
+
+## Additive IVW adjustment without covariates
+additive_IVW_no <- as.numeric(a_adj_IVW_additive[2] + a_estimates[5, 1])
+additive_IVW_no
+
+## Additive IVW adjustment without 911
+additive_IVW_no911 <- as.numeric(a_adj_IVW_no911_additive[1] + a_estimates[5, 1])
+additive_IVW_no911
+
+## Additive IVW adjustment without 911 and covariates
+additive_IVW_no911_no <- as.numeric(a_adj_IVW_no911_additive[2] + a_estimates[5, 1])
+additive_IVW_no911_no
 ```
 
 
@@ -325,7 +361,7 @@ start <- which(COP_close$Date == "2020-03-06")
 COP_close_small <- COP_close[(start-30):(start), ]
 ```
 
-Here is the 1 day nowcast with S&P 500:
+Here is the 1 day nowcast with covariates:
 
 ```{r}
 m_COP_03_06_20 <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close, 
@@ -336,6 +372,8 @@ Yhat_nothing <- -2.430990 + 1.045492 * 47.01888 +
   0.003063 * 3023.94 + -0.210924 * 45.90
 Yhat_adj <- Yhat_nothing + shock_effects[, 1]
 Yhat_adj_additive <- Yhat_nothing + additive[1]
+Yhat_adj_additive_IVW <- Yhat_nothing + additive_IVW
+Yhat_adj_additive_IVW_no911 <- Yhat_nothing + additive_IVW_no911
 
 ## doing nothing completely misses the mark
 Yhat_nothing - COP_close_small$Y[nrow(COP_close_small)]
@@ -343,34 +381,39 @@ Yhat_nothing - COP_close_small$Y[nrow(COP_close_small)]
 ## adjustment gets closer
 Yhat_adj - COP_close_small$Y[nrow(COP_close_small)]
 
-## additive effect does well
+## additive effect does well with standard adjustment
 Yhat_adj_additive - COP_close_small$Y[nrow(COP_close_small)]
+
+## additive effect does well with IVW adjustment
+Yhat_adj_additive_IVW - COP_close_small$Y[nrow(COP_close_small)]
+Yhat_adj_additive_IVW_no911 - COP_close_small$Y[nrow(COP_close_small)]
 ```
 
 
 ```{r}
 COP_close_small$id <- 1:nrow(COP_close_small)
 mat <- cbind(COP_close_small$id[nrow(COP_close_small)], 
-             c(Yhat_adj, Yhat_adj_additive))
+             c(Yhat_adj, Yhat_adj_additive, Yhat_adj_additive_IVW_no911))
 colnames(mat) <- c("id", "Yhat_adj")
 dat <- as.data.frame(mat)
 ggplot(COP_close_small, mapping = aes(x = id, y = Y)) + 
-  labs(title = "Conoco Phillips forecasting (with S&P 500)", 
-       x = "Day", y = "Close price (in USD)") +
+  labs(title = "Conoco Phillips forecasting", 
+       x = "Day", y = "Closing price (in USD)") +
   geom_point() + 
-  geom_point(data = dat, aes(x = id, y = Yhat_adj), col = 2, pch = 2:6) + 
+  geom_point(data = dat, aes(x = id, y = Yhat_adj), col = 2, pch = 2:7) + 
   geom_point(data = data.frame(x = unique(dat$id), y =Yhat_nothing), 
              aes(x = x, y = y), col = "blue", cex = 1.5) + 
   geom_line(aes(x = id, y = c(m_COP_03_06_20$fitted.values, Yhat_nothing)), 
             col = "blue") + 
-    annotate("text", x=1, y=seq(from = 47, to = 39,length.out=6), 
+    annotate("text", x=1, y=seq(from = 47, to = 38,length.out=7), 
              label=c("no adjustment","mean adjustment",
                      "mean adjustment (no 9/11)","IVW adjustment",
-                     "IVW adjustment (no 9/11)", "aggregate adjustment"), 
+                     "IVW adjustment (no 9/11)", "aggregate adjustment", 
+                     "aggregate IVW adjustment"), 
              hjust=0) + 
-    annotate("point", x = 0, y=seq(from = 47, to = 39,length.out=6), 
-             pch = c(16,2:6),
-             color = c("blue","red","red","red","red","red")) +
+    annotate("point", x = 0, y=seq(from = 47, to = 38,length.out=7), 
+             pch = c(16,2:7),
+             color = c("blue","red","red","red","red","red","red")) +
   theme_minimal()
 ```
 
@@ -386,6 +429,8 @@ preds <- predict(m_COP_03_06_20)
 Yhat_nothing_no <- -1.25682 + 1.01170 * 47.00149
 Yhat_adj_no <- Yhat_nothing_no + shock_effects[, 2]
 Yhat_adj_additive_no <- Yhat_nothing_no + additive[2]
+Yhat_adj_additive_IVW_no <- Yhat_nothing + additive_IVW_no
+Yhat_adj_additive_IVW_no911_no <- Yhat_nothing + additive_IVW_no911_no
 
 ## doing nothing misses the mark
 Yhat_nothing_no - COP_close_small$Y[nrow(COP_close_small)]
@@ -395,6 +440,10 @@ Yhat_adj_no - COP_close_small$Y[nrow(COP_close_small)]
 
 ## additive effect does well
 Yhat_adj_additive_no - COP_close_small$Y[nrow(COP_close_small)]
+
+## additive effect does well with IVW adjustment
+Yhat_adj_additive_IVW_no - COP_close_small$Y[nrow(COP_close_small)]
+Yhat_adj_additive_IVW_no911_no - COP_close_small$Y[nrow(COP_close_small)]
 ```
 
 
@@ -402,28 +451,29 @@ Yhat_adj_additive_no - COP_close_small$Y[nrow(COP_close_small)]
 ```{r}
 COP_close_small$id <- 1:nrow(COP_close_small)
 mat <- cbind(COP_close_small$id[nrow(COP_close_small)], 
-             c(Yhat_adj,  Yhat_adj_additive_no))
+             c(Yhat_adj,  Yhat_adj_additive_no, Yhat_adj_additive_IVW_no911_no))
 colnames(mat) <- c("id", "Yhat_adj")
 dat <- as.data.frame(mat)
 ggplot(COP_close_small, mapping = aes(x = id, y = Y)) + 
-  labs(title = "Conoco Phillips forecasting (without S&P 500)", 
-       x = "Day", y = "Close price (in USD)") +
+  labs(title = "Conoco Phillips forecasting (without covariates)", 
+       x = "Day", y = "Closing price (in USD)") +
   geom_point() + 
   geom_point(data = dat, aes(x = id, y = Yhat_adj), 
-                             col = 2, pch = 2:6) + 
+                             col = 2, pch = 2:7) + 
   geom_point(data = data.frame(x = unique(dat$id), y =Yhat_nothing_no), 
              aes(x = x, y = y), col = "blue", cex = 1.5) + 
   geom_line(aes(x = id, y = c(m_COP_03_06_20$fitted.values,
                               Yhat_nothing_no)), 
             col = "blue") +
-      annotate("text", x=1, y=seq(from = 47, to = 39,length.out=6), 
+      annotate("text", x=1, y=seq(from = 47, to = 38,length.out=7), 
              label=c("no adjustment","mean adjustment",
                      "mean adjustment (no 9/11)","IVW adjustment",
-                     "IVW adjustment (no 9/11)", "aggregate adjustment"), 
+                     "IVW adjustment (no 9/11)", "aggregate adjustment",
+                     "aggregate IVW adjustment"), 
              hjust=0) + 
-    annotate("point", x = 0, y=seq(from = 47, to = 39,length.out=6), 
-             pch = c(16,2:6),
-             color = c("blue","red","red","red","red","red")) +
+    annotate("point", x = 0, y=seq(from = 47, to = 38,length.out=7), 
+             pch = c(16,2:7),
+             color = c("blue","red","red","red","red","red","red")) +
   theme_minimal()
 ```
 
