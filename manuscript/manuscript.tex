@@ -291,7 +291,7 @@ The random effects structure for this model (model $\mc{M}_2$) is:
 \end{align}
 for $i = 1, \ldots, n+1$, where the added random effects are
 \begin{align*}
-\t{\varepsilon}_{i} &\simiid  \normal{0}{\sigma^2_{\alpha}}, \qquad  i = 1, \ldots, n+1; \\
+\t{\varepsilon}_{i} &\simiid  \E{\t{\varepsilon}}=0, \var{\t{\varepsilon}}=\sigma^2_{\alpha}, \qquad i = 1, \ldots, n+1,\\
 \eta &\indep  \alpha_i \indep \phi \indep \theta \indep \varepsilon_{i,t} \indep \t{\varepsilon}_{i}.
 \end{align*}
 %and $\delta_i$ and $\gamma_i$ will be discussed shortly. 
@@ -795,7 +795,7 @@ Simulation for justification of the parametric bootstrap is provided in Section 
 
 \section{Forecasting Conoco Phillips stock in the presence of shocks}
 
-In this example we forecast Conoco Phillips stock prices in the midst of the coronavirus recession. Specific interest is in predictions made after March 6th, 2020, the Friday before the stock market crash on March 9th, 2020. We will detail how we combine knowledge from disparate time series to improve the forecast of Conoco Phillips stock price that would be made without adjustment for the shock. The forecast consists of four steps: (1) pick a model, (2) selection of covariates,  (3) choices of donor pool, and (4) forecast. %Section \ref{background} provides the justification for the first three steps. Section \ref{results} discusses the result of our forecast.
+In this example we forecast Conoco Phillips stock prices in the midst of the coronavirus recession. Specific interest is in predictions made after March 6th, 2020, the Friday before the stock market crash on March 9th, 2020. We will detail how we combine knowledge from disparate time series to improve the forecast of Conoco Phillips stock price that would be made without adjustment for the shock. The forecast consists of four steps: (1) pick a model, (2) selection of covariates,  (3) choices of donor pool. %Section \ref{background} provides the justification for the first three steps. Section \ref{results} discusses the result of our forecast.
 
 %\subsection{Background}
 %\label{background}
@@ -816,7 +816,7 @@ several events in September, 2008, and November 27, 2014. The first two shock ef
   \item  In early September 2008, time series of oil prices experienced a sudden increase in volatility simultaneously due to turmoil in financial markets. The political, economic, social or environmental events may coincide with these shocks \citep{ewing2013volatility}. Notable shock effects followed the placement of Fannie May and Freddie Mac in conservatorship on September 7th (shock effect on the 8th), Lehman Brothers filing for bankruptcy on September 15th, and the Office of Thrift Supervision closes Washington Mutual Bank on September 25th \citep{dwyer2009financial, longstaff2010subprime}.
   \item On November 27th, 2014, it is documented that oil prices fall as OPEC opts not to cut production \citep{huppmann2015opec}. During the Great Recession when economic activity clearly declined, both oil and stock prices fell which points to demand factors. During the second half of 2014, oil prices plummeted but equity prices generally increased, suggesting that supply factors were the key driver \citep[Page 19]{baffes2015great}. 
   \end{enumerate}
-\item[(4)] {\bf Forecast}. \textbf{Jilei, please fill this in. I do not know what you have in mind.}
+%\item[(4)] {\bf Forecast}. \textbf{Jilei, please fill this in. I do not know what you have in mind.}
 \end{enumerate}
 
 %Since the stock price of a company implies its value provided the number of shares is unchanged, the price of S\&P 500 index in the recession can partially represent the overall status of the economy.  Therefore, using the price of S\&P 500 index as the covariate can possibly improve the precision of the OLS estimates for shock-effects that are unique to Conoco Phillips. The rationale for inclusion of the price of S\&P 500 index is similar to that of market return in capital asset pricing model (CAPM). (\textbf{Need reference for the CAPM}.)
@@ -833,7 +833,7 @@ several events in September, 2008, and November 27, 2014. The first two shock ef
 %\label{results}
 
 {\bf Jilei, can you add the weighted adjustment estimator to this analysis?}
-We estimate the five shock effects mentioned above using OLS and then construct $\hat{\alpha}_{\text{adj}}$ and $\hat{\alpha}_{\text{IVW}}$ from these estimates. We also consider estimation without the September 11th, 2001 shock effect since there was a week long delay in trading due to the terrorist attack. We also study additive shock effect estimators where the shock effects corresponding to separate supply and demand shocks are added to estimate the unknown shock effect. The supply shock donor pool consists of the November 27th, 2014 shock effect and the demand shock donor pool consists of the remaining shock effects. 
+We estimate the five shock effects mentioned above using OLS and then construct $\hat{\alpha}_{\text{adj}}$ and $\hat{\alpha}_{\text{IVW}}$ from these estimates. We also consider estimation without the September 11th, 2001 shock effect since there was a week long delay in trading due to the terrorist attack. 
 
 \begin{figure}
   \begin{center}
@@ -850,10 +850,11 @@ the use of $\hat{\alpha}_{\text{adj}}$ had an RMSE of 6.85,
 the use of $\hat{\alpha}_{\text{adj}}$ without September 11th had an RMSE of 5.96,
 the use of $\hat{\alpha}_{\text{IVW}}$ had an RMSE of 9.37,
 and the use of $\hat{\alpha}_{\text{IVW}}$ without September 11th had an RMSE of 6.15.
-The additive adjustment estimator computed by adding the $\hat{\alpha}_{\text{adj}}$ estimators for the demand and supply shock effects without September 11th has an RMSE of 0.80. 
-The additive adjustment estimator computed by adding the $\hat{\alpha}_{\text{IVW}}$ estimators for the demand and supply shock effects without September 11th has an RMSE of 0.023.
 
-We also see that additive estimators do extremely well. However, these additive estimators are retrospective but their is some apriori justification for their use. \citet{kilian2009not} study the effect that different supply and demand shocks have on oil prices through a vector auto regressive model. Their model postulates an additive nature of shock effects, although the additivity parameters requires estimation in their context. %This provides some anecdotal justification for apriori estimation of the March 9th Conoco Phillips shock effect with the addition of the adjustment estimator corresponding to the separate supply and demand aspects of this shock effect.
+
+We also study additive shock effect estimators where the shock effects corresponding to separate supply and demand shocks are added to estimate the unknown shock effect. The supply shock donor pool consists of the November 27th, 2014 shock effect and the demand shock donor pool consists of the remaining shock effects. The additive adjustment estimator computed by adding the $\hat{\alpha}_{\text{adj}}$ estimators for the demand and supply shock effects without September 11th has an RMSE of 0.80.  The additive adjustment estimator computed by adding the $\hat{\alpha}_{\text{IVW}}$ estimators for the demand and supply shock effects without September 11th has an RMSE of 0.023. 
+
+These additive adjustment estimators do extremely well, nearly perfectly forecasting the realized shock effect. There is apriori justification for the use of these simply additive adjustment estimators, although their nearly perfect performance in this example is a retrospective finding. Our apriori justification comes from \citet{kilian2009not} who study the effect that different supply and demand shocks have on oil prices through a vector auto regressive model. Their model postulates an additive nature of shock effects, although the additivity parameters requires estimation in their context. %This provides some anecdotal justification for apriori estimation of the March 9th Conoco Phillips shock effect with the addition of the adjustment estimator corresponding to the separate supply and demand aspects of this shock effect.
 
 
 

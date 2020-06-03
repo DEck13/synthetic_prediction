@@ -1,0 +1,170 @@
+\documentclass[11pt]{article}
+
+% use packages
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+%\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{authblk}
+\usepackage{bm}
+\usepackage[usenames]{color}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage[linesnumbered, ruled,vlined]{algorithm2e}
+% margin setup
+\geometry{margin=1in}
+
+
+% function definition
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\w}{\textbf{w}}
+\newcommand{\x}{\textbf{x}}
+\newcommand{\X}{\textbf{X}}
+\newcommand{\Y}{\textbf{Y}}
+\newcommand{\Hist}{\mathcal{H}}
+\def\mbf#1{\mathbf{#1}} % bold but not italic
+\def\ind#1{\mathrm{1}(#1)} % indicator function
+\newcommand{\simiid}{\stackrel{iid}{\sim}} % IID 
+\def\where{\text{ where }} % where
+\newcommand{\indep}{\perp \!\!\! \perp } % independent symbols
+\def\cov#1#2{\mathrm{Cov}(#1, #2)} % covariance 
+\def\mrm#1{\mathrm{#1}} % remove math
+\newcommand{\reals}{\mathbb{R}} % Real number symbol
+\def\t#1{\tilde{#1}} % tilde
+\def\normal#1#2{\mathcal{N}(#1,#2)} % normal
+\def\mbi#1{\boldsymbol{#1}} % Bold and italic (math bold italic)
+\def\v#1{\mbi{#1}} % Vector notation
+\def\mc#1{\mathcal{#1}} % mathical
+\DeclareMathOperator*{\argmax}{arg\,max} % arg max
+\DeclareMathOperator*{\argmin}{arg\,min} % arg min
+\def\E#1{\mathrm{E}(#1)} % Expectation symbol
+\def\var#1{\mathrm{Var}(#1)} % Variance symbol
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} % checkmark
+\newcommand\red[1]{{\color{red}#1}}
+
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert} % A norm with 1 argument
+\DeclareMathOperator{\Var}{Var} % Variance symbol
+
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+\hypersetup{
+  linkcolor  = blue,
+  citecolor  = blue,
+  urlcolor   = blue,
+  colorlinks = true,
+} % color setup
+
+% proof to proposition 
+\newenvironment{proof-of-proposition}[1][{}]{\noindent{\bf
+    Proof of Proposition {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+% general proof of corollary
+  \newenvironment{proof-of-corollary}[1][{}]{\noindent{\bf
+    Proof of Corollary {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+% general proof of lemma
+  \newenvironment{proof-of-lemma}[1][{}]{\noindent{\bf
+    Proof of Lemma {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+
+\allowdisplaybreaks
+
+
+
+% title
+\title{Supplemental Materials for ``Minimizing post shock forecasting error using disparate information''}
+\author{Jilei Lin\thanks{jileil2@ilinois.edu}}
+\author{Ziyu Liu\thanks{ziyuliu3@illinois.edu}}
+\author{Daniel J. Eck\thanks{dje13@illinois.edu}}
+\affil{Department of Statistics, University of Illinois at Urbana-Champaign}
+
+%%% New version of \caption puts things in smaller type, single-spaced 
+%%% and indents them to set them off more from the text.
+\makeatletter
+\long\def\@makecaption#1#2{
+  \vskip 0.8ex
+  \setbox\@tempboxa\hbox{\small {\bf #1:} #2}
+  \parindent 1.5em  %% How can we use the global value of this???
+  \dimen0=\hsize
+  \advance\dimen0 by -3em
+  \ifdim \wd\@tempboxa >\dimen0
+  \hbox to \hsize{
+    \parindent 0em
+    \hfil 
+    \parbox{\dimen0}{\def\baselinestretch{0.96}\small
+      {\bf #1.} #2
+      %%\unhbox\@tempboxa
+    } 
+    \hfil}
+  \else \hbox to \hsize{\hfil \box\@tempboxa \hfil}
+  \fi
+}
+\makeatother
+
+
+
+\begin{document}
+
+\maketitle
+
+
+
+
+\vspace{.2cm}
+\begin{algorithm}[H]
+\SetAlgoLined \label{boots}
+
+\SetKwInOut{Input}{Input}
+\Input{$B$ --  the number of parametric bootstraps  \\  $\{(y_{i,t}, \mbf{x}_{i,t})\colon i = 2,\ldots, n+1, t = 0, \ldots, T_i\}$ -- the data\\ $\{T_i^* \colon i = 1, \ldots, n+1\}$ -- the time point just before the shock\\$\{\hat{\varepsilon}_{i, t} \colon t = 1, \ldots, T_i\}$ -- the collection of  residuals for $t = 1,\ldots, T_i$ \\ $\{\hat{\eta}_i, \hat{\alpha}_i, \hat{\phi}_i, \hat{\theta}_i, \hat{\beta}_i\colon i = 2, \ldots, n+1\}$ -- the OLS estimates \\
+}
+
+\KwResult{The sample mean, and sample variance of bootstrapped adjustment estimator, inverse-variance weighted estimator, and weighted-adjustment estimator.}
+
+  \For{$b = 1:B$}{
+  \For{$i = 2, \ldots, n+1$}{
+  
+    Sample with replacement from $\{\hat{\varepsilon}_{i, t} \colon t = 1, \ldots, T_i\}$ to obtain $\{\hat{\varepsilon}_{i, t}^{(b)} \colon t = 1, \ldots, T_i\}$
+    
+     Define $y_{i,0}^{(b)}=y_{i,0}$
+    
+    \For{$t = 1,\ldots, T_i$}{
+     
+
+         
+     Compute $y_{i,t}^{(b)}=\hat{\eta}_i +\hat{\alpha}_i 1(t=T_i^*+1)+\hat{\phi}_iy_{i,t-1}^{(b)}+\theta_i'\mbf{x}_{i,t} + \beta_i'\mbf{x}_{i, t-1}+\hat{\varepsilon}_{i,t}^{(b)}$
+    }
+    Compute $\hat{\alpha}_i^{(b)}$ based on OLS estimation of the parameters in $\mc{M}_1$ (\textbf{does this work for the other models?}) with $\{(y_{i,t}^{(b)}, \mbf{x}_{i,t}) \colon t= 0, \ldots, T_i\}$
+  }
+   Compute the $b$th shock-effect estimate $\hat{\alpha}^{(b)}_{\rm est}$ for $\mrm{est} \in \{\mrm{adj}, \mrm{wadj}, \mrm{IVW}\}$
+  }
+   Compute the sample mean, and sample variance of $\{\hat{\alpha}_{\rm est}^{(b)} \colon b = 1, \ldots, B\}$ for $\mrm{est} \in \{\mrm{adj}, \mrm{wadj}, \mrm{IVW}\}$
+ \caption{Parametric bootstrap for approximation for  mean and  variance of shock-effect estimators of $\alpha_1$.}
+\end{algorithm}
+\vspace{.2cm}
+
+
+
+
+\bibliographystyle{plainnat}
+\bibliography{synthetic-prediction-notes}
+
+\end{document}
+
+
+
