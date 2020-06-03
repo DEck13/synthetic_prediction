@@ -1,0 +1,113 @@
+\documentclass[11pt]{article}
+
+% use packages
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+%\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{authblk}
+\usepackage{bm}
+\usepackage[usenames]{color}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{multirow}
+\usepackage[linesnumbered, ruled,vlined]{algorithm2e}
+\usepackage{rotating}
+% margin setup
+\geometry{margin=1in}
+
+
+% function definition
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\w}{\textbf{w}}
+\newcommand{\x}{\textbf{x}}
+\newcommand{\X}{\textbf{X}}
+\newcommand{\Y}{\textbf{Y}}
+\newcommand{\Hist}{\mathcal{H}}
+\def\mbf#1{\mathbf{#1}} % bold but not italic
+\def\ind#1{\mathrm{1}(#1)} % indicator function
+\newcommand{\simiid}{\stackrel{iid}{\sim}} % IID 
+\def\where{\text{ where }} % where
+\newcommand{\indep}{\perp \!\!\! \perp } % independent symbols
+\def\cov#1#2{\mathrm{Cov}(#1, #2)} % covariance 
+\def\mrm#1{\mathrm{#1}} % remove math
+\newcommand{\reals}{\mathbb{R}} % Real number symbol
+\def\t#1{\tilde{#1}} % tilde
+\def\normal#1#2{\mathcal{N}(#1,#2)} % normal
+\def\mbi#1{\boldsymbol{#1}} % Bold and italic (math bold italic)
+\def\v#1{\mbi{#1}} % Vector notation
+\def\mc#1{\mathcal{#1}} % mathical
+\DeclareMathOperator*{\argmax}{arg\,max} % arg max
+\DeclareMathOperator*{\argmin}{arg\,min} % arg min
+\def\E#1{\mathrm{E}(#1)} % Expectation symbol
+\def\var#1{\mathrm{Var}(#1)} % Variance symbol
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} % checkmark
+\newcommand\red[1]{{\color{red}#1}}
+
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert} % A norm with 1 argument
+\DeclareMathOperator{\Var}{Var} % Variance symbol
+
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+\hypersetup{
+  linkcolor  = blue,
+  citecolor  = blue,
+  urlcolor   = blue,
+  colorlinks = true,
+} % color setup
+
+% proof to proposition 
+\newenvironment{proof-of-proposition}[1][{}]{\noindent{\bf
+    Proof of Proposition {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+% general proof of corollary
+  \newenvironment{proof-of-corollary}[1][{}]{\noindent{\bf
+    Proof of Corollary {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+% general proof of lemma
+  \newenvironment{proof-of-lemma}[1][{}]{\noindent{\bf
+    Proof of Lemma {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+
+\allowdisplaybreaks
+
+
+
+
+\begin{document}
+\begin{sidewaysfigure}
+ \caption{Simulation  with $B = 1000$, $p = 2$, $\mu_{\alpha}=10$, $X_{i,t} \simiid \Gamma(1,10)$, $\delta_i \sim \normal{2\mathbf{1}_p}{\sigma^2_{\delta}\mathbf{I}_p}$, $\gamma_i \sim \normal{2\mathbf{1}_p}{\sigma^2_{\gamma}\mathbf{I}_p}$} \vspace{.2cm}\centering\begin{tabular}{cc|cc|ccc|ccc}
+&  & \multicolumn{2}{c|}{Bias} & \multicolumn{3}{c|}{Distance to $\alpha_1$} & \multicolumn{3}{c}{Consistency} \\ $\sigma_{\alpha} = \sigma_{\delta}=\sigma_{\gamma}$ & $n$ & $|\hat{\alpha}_{\rm adj}^{\dagger}-\E{\hat{\alpha}_{\rm adj}}|$ & $|\hat{\alpha}_{\rm wadj}^{\dagger}-\E{\hat{\alpha}_{\rm wadj}}|$ & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$ & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$ \\[.3cm] \multirow{4}{*}{0.01}& 5 & 0.427 & 31.551 & 18.782 & 31.543 & 20.433 & 1  & 1  & 1  \\   &10 & 0.345 & 0.229 & 9.050 & 0.231 & 10.958 & 1  & 1  & 1  \\   &15 & 0.366 & 0.484 & 26.292 & 0.483 & 26.787 & 1  & 1  & 1  \\   &25 & 0.051 & 0.354 & 15.215 & 0.350 & 16.792 & 1  & 1  & 1  \\[.3cm]   \multirow{4}{*}{0.1} & 5 & 0.411 & 8.599 & 20.659 & 8.683 & 16.075 & 1  & 1  & 1  \\   &10 & 0.004 & 1.130 & 31.834 & 1.121 & 31.999 & 1  & 1  & 1  \\   &15 & 0.252 & 0.866 & 38.477 & 0.842 & 36.201 & 1  & 1  & 1  \\   &25 & 0.017 & 4.273 & 54.846 & 4.297 & 56.049 & 1  & 1  & 1  \\[.3cm]   \multirow{4}{*}{1}&5 & 0.559 & 163.417 & 170.584 & 165.212 & 169.204 & 1  & 1  & 1  \\   &10 & 0.732 & 19.168 & 1.209 & 17.658 & 1.682 & 1  & 1  & 1  \\   &15 & 0.191 & 29.582 & 64.219 & 29.695 & 64.982 & 0  & 0  & 0  \\   &25 & 0.098 & 11.948 & 10.795 & 10.349 & 13.788 & 1  & 1  & 1  \\[.3cm]   \multirow{4}{*}{10}&5 & 2.643 & 70.552 & 35.244 & 75.090 & 32.894 & 1  & 0  & 1  \\   &10 & 2.169 & 402.211 & 492.828 & 396.902 & 477.584 & 0  & 0  & 0  \\   &15 & 1.652 & 233.576 & 122.126 & 226.641 & 51.038 & 0  & 0  & 0  \\   &25 & 1.361 & 32.038 & 141.835 & 38.483 & 144.553 & 1  & 1  & 1  \\ \end{tabular}\end{sidewaysfigure}
+
+
+
+\begin{sidewaysfigure}
+ \caption{Simulation  with $B = 1000$, $p = 2$, $\mu_{\alpha}=10$, $X_{i,t} \simiid \Gamma(1,10)$, $\delta_i \sim \normal{2\mathbf{1}_p}{\sigma^2_{\delta}\mathbf{I}_p}$, $\gamma_i \sim \normal{2\mathbf{1}_p}{\sigma^2_{\gamma}\mathbf{I}_p}$, $n = 10$} \vspace{.2cm}\centering\begin{tabular}{cc|cc|ccc|ccc}
+&  & \multicolumn{2}{c|}{Bias} & \multicolumn{3}{c|}{Distance to $\alpha_1$} & \multicolumn{3}{c}{Consistency} \\ $\sigma_{\alpha} = \sigma_{\delta}=\sigma_{\gamma}$ & $\sigma$ & $|\hat{\alpha}_{\rm adj}^{\dagger}-\E{\hat{\alpha}_{\rm adj}}|$ & $|\hat{\alpha}_{\rm wadj}^{\dagger}-\E{\hat{\alpha}_{\rm wadj}}|$ & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$ & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$ \\[.3cm] \multirow{4}{*}{0.01} &0.01 & 0.005 & 26.505 & 68.635 & 26.523 & 70.356 & 1  & 1  & 1  \\  &  0.1 & 0.008 & 32.825 & 66.651 & 32.833 & 66.038 & 1  & 1  & 1  \\  &  1 & 0.209 & 55.052 & 77.779 & 55.048 & 78.677 & 1  & 1  & 1  \\  &  10 & 0.659 & 8.906 & 18.182 & 8.942 & 16.392 & 1  & 1  & 1 \\[.3cm] \multirow{4}{*}{0.1} &  0.01 & 0.041 & 4.850 & 48.389 & 4.856 & 48.773 & 1  & 1  & 1  \\  &  0.1 & 0.022 & 9.665 & 28.105 & 9.704 & 32.457 & 1  & 1  & 1  \\  &  1 & 0.284 & 7.249 & 34.603 & 7.087 & 33.139 & 1  & 1  & 1  \\  &  10 & 4.720 & 1.418 & 23.743 & 1.188 & 18.955 & 1  & 1  & 1  \\[.3cm] \multirow{4}{*}{1} &  0.01 & 0.249 & 126.966 & 144.470 & 126.197 & 145.266 & 1  & 1  & 1  \\  &  0.1 & 0.344 & 1.140 & 37.688 & 0.809 & 36.918 & 1  & 1  & 1  \\  &  1 & 0.744 & 39.141 & 44.573 & 38.778 & 45.929 & 0  & 0  & 0  \\  &  10 & 0.557 & 5.551 & 5.608 & 6.090 & 0.695 & 1  & 1  & 1  \\[.3cm] \multirow{4}{*}{10} &  0.01 & 2.555 & 195.978 & 198.593 & 195.032 & 194.004 & 0  & 0  & 0  \\  &  0.1 & 3.715 & 356.227 & 381.530 & 362.799 & 385.934 & 1  & 1  & 1  \\  &  1 & 0.820 & 532.508 & 463.159 & 536.718 & 477.354 & 0  & 0  & 0  \\  &  10 & 5.600 & 297.116 & 89.179 & 276.026 & 86.527 & 0  & 0  & 0  \\ \end{tabular}\end{sidewaysfigure}
+
+\begin{sidewaysfigure}
+ \caption{Simulation  with $B = 1000$, $p = 2$, $\mu_{\alpha}=10$, $X_{i,t} \simiid \normal{10}{10}$, $\delta_i \sim \normal{2\mathbf{1}_p}{\sigma^2_{\delta}\mathbf{I}_p}$, $\gamma_i \sim \normal{2\mathbf{1}_p}{\sigma^2_{\gamma}\mathbf{I}_p}$} \vspace{.2cm}\centering\begin{tabular}{cc|cc|ccc|ccc}
+&  & \multicolumn{2}{c|}{Bias} & \multicolumn{3}{c|}{Distance to $\alpha_1$} & \multicolumn{3}{c}{Consistency} \\ $\sigma_{\alpha} = \sigma_{\delta}=\sigma_{\gamma}$ & $n$ & $|\hat{\alpha}_{\rm adj}^{\dagger}-\E{\hat{\alpha}_{\rm adj}}|$ & $|\hat{\alpha}_{\rm wadj}^{\dagger}-\E{\hat{\alpha}_{\rm wadj}}|$ & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$ & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$ \\[.3cm] \multirow{4}{*}{$0.01$}&  5 & 0.261 & 6.226 & 9.817 & 6.246 & 11.876 & 1  & 1  & 1  \\   &  10 & 0.026 & 67.109 & 70.703 & 67.091 & 70.475 & 1  & 1  & 1  \\   & 15 & 0.160 & 0.418 & 37.747 & 0.427 & 39.294 & 1  & 1  & 0  \\   & 25 & 0.081 & 1.324 & 43.263 & 1.278 & 44.056 & 1  & 1  & 1  \\[.3cm]  \multirow{4}{*}{$0.1$} & 5 & 0.556 & 1.153 & 3.147 & 1.176 & 4.424 & 1  & 1  & 1  \\   & 10 & 0.076 & 3.897 & 51.714 & 3.877 & 53.642 & 1  & 1  & 1  \\   & 15 & 0.083 & 7.656 & 13.325 & 7.683 & 14.124 & 1  & 1  & 1  \\   & 25 & 0.029 & 0.666 & 27.716 & 0.646 & 25.711 & 1  & 1  & 1  \\[.3cm]  \multirow{4}{*}{$1$} & 5 & 0.613 & 11.998 & 40.189 & 12.346 & 41.000  & 1  & 1  & 1  \\   & 10 & 0.969 & 46.131 & 3.982 & 47.802 & 5.740 & 1  & 1  & 1  \\   & 15 & 0.349 & 17.527 & 32.923 & 17.757 & 32.635 & 1  & 1  & 1  \\   & 25 & 0.012 & 22.422 & 19.373 & 22.514 & 18.918 & 1  & 1  & 1  \\[.3cm]  \multirow{4}{*}{$10$} & 5 & 6.004 & 213.822 & 197.780 & 220.413 & 194.041 & 0  & 0  & 0  \\   & 10 & 3.039 & 754.690 & 494.622 & 747.898 & 476.112 & 0  & 0  & 0  \\   & 15 & 0.923 & 302.770 & 242.758 & 287.948 & 245.405 & 1  & 1  & 1  \\   & 25 & 1.703 & 298.133 & 207.077 & 322.499 & 218.913 & 0  & 0  & 0  \\ 
+\end{tabular}\end{sidewaysfigure}
+
+\begin{sidewaysfigure}
+ \caption{Simulation  with $B = 1000$, $p = 2$, $\mu_{\alpha}=10$, $X_{i,t} \simiid \Gamma(1,10)$, $\delta_i \sim \normal{2\mathbf{1}_p}{\sigma^2_{\delta}\mathbf{I}_p}$, $\gamma_i \sim \normal{2\mathbf{1}_p}{\sigma^2_{\gamma}\mathbf{I}_p}$, $n = 10$} \vspace{.2cm}\centering\begin{tabular}{cc|cc|ccc|ccc}
+&  & \multicolumn{2}{c|}{Bias} & \multicolumn{3}{c|}{Distance to $\alpha_1$} & \multicolumn{3}{c}{Consistency} \\ $\sigma_{\alpha} = \sigma_{\delta}=\sigma_{\gamma}$ & $\sigma$ & $|\hat{\alpha}_{\rm adj}^{\dagger}-\E{\hat{\alpha}_{\rm adj}}|$ & $|\hat{\alpha}_{\rm wadj}^{\dagger}-\E{\hat{\alpha}_{\rm wadj}}|$ & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$ & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$ \\[.3cm] \multirow{4}{*}{$0.01$} & 0.01 & 0.009 & 5.558 & 30.823 & 5.559 & 31.390 & 1  & 1  & 1  \\    & 0.1 & 0.001 & 0.169 & 4.072 & 0.162 & 1.176 & 1  & 1  & 1  \\    & 1 & 0.766 & 16.604 & 37.504 & 16.621 & 35.608 & 1  & 1  & 1  \\    & 10 & 3.169 & 9.673 & 59.918 & 9.860 & 57.710 & 1  & 0  & 1  \\[.3cm]  \multirow{4}{*}{$0.1$} &  0.01 & 0.024 & 29.621 & 71.619 & 29.792 & 71.856 & 0  & 0  & 0  \\   & 0.1 & 0.020 & 3.244 & 24.438 & 3.301 & 20.709 & 1  & 1  & 1  \\    & 1 & 0.031 & 17.347 & 52.090 & 17.399 & 54.809 & 1  & 1  & 1  \\   & 10 & 1.969 & 19.863 & 55.848 & 19.521 & 56.731 & 1  & 1  & 1  \\[.3cm] \multirow{4}{*}{$1$} &   0.01 & 0.102 & 38.132 & 99.657 & 40.849 & 99.075 & 1  & 0  & 1  \\    & 0.1 & 0.840 & 10.813 & 11.913 & 11.610 & 11.229 & 1  & 1  & 1  \\    & 1 & 0.300 & 59.262 & 3.435 & 59.195 & 0.154 & 1  & 1  & 1  \\    & 10 & 0.027 & 23.931 & 34.353 & 24.517 & 36.478 & 1  & 1  & 1  \\[.3cm]  \multirow{4}{*}{$10$} &  0.01 & 2.659 & 282.806 & 83.313 & 272.595 & 102.973 & 0  & 0  & 0  \\   & 0.1 & 2.148 & 75.597 & 103.570 & 88.656 & 85.908 & 1  & 0  & 1  \\    & 1 & 1.339 & 642.765 & 591.299 & 647.793 & 571.320 & 0  & 0  & 0  \\    & 10 & 8.033 & 105.833 & 166.808 & 118.156 & 171.404 & 0  & 0  & 0  \\\end{tabular}\end{sidewaysfigure}
+
+\end{document}

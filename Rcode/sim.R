@@ -170,7 +170,8 @@ ols.est.alphahat <- function(Tstar, Y, X) {
   names(est) <- c('adj', 'wadj', 'IVW')
   
   # output
-  return(list(alphahat = alphahat, est = est, Tstar = Tstar, X = X, Y = Y, lmod = lmod, res = res))
+  return(list(alphahat = alphahat, est = est, Tstar = Tstar, X = X, Y = Y, 
+              lmod = lmod, res = res, Wstar = W, se = se))
   
 }
 
@@ -248,18 +249,14 @@ for (i in 1:3) {
 }
 
 # experiment 
-Bs <- c(100, 1000, 10000)
-means <- matrix(0, nrow = 3, ncol = 3)
-vars <- matrix(0, nrow = 3, ncol = 3)
-for (i in 1:3) {
-  bootsamp <- boots(B = Bs[i], ols = ols)
-  for (j in 1:3) {
-    means[i, j] <- mean(bootsamp[[j]])
-    vars[i, j] <- var(bootsamp[[j]])
-  }
+# risk conditions
+means <- c()
+vars <- c()
+for (j in 1:3) {
+  means <- c(means, mean(bootsamp[[j]]))
+  vars <- c(vars, var(bootsamp[[j]]))
 }
-colnames(means) <- colnames(vars) <- c('adj', 'wadj', 'IVW')
-rownames(means) <- rownames(vars) <- c('B = 100', 'B = 1000', 'B = 10000')
+names(means) <- names(vars) <- c('adj', 'wadj', 'IVW')
 
 
 # risk-reduction conditions evaluation
@@ -269,15 +266,15 @@ risk.reduction <- function(means, vars) {
   rr.IVW <- (means['wadj']) ^ 2 - vars['IVW'] - (means['IVW'] - means['wadj']) ^ 2
   est <- c(rr.adj, rr.wadj, rr.IVW)
   names(est) <- c('adj', 'wadj', 'IVW')
-  return(list(usable = which(est > 0), best = which.max(est)))
+  return(list(usable = ifelse(est > 0, yes = 1, no = 0), best = which.max(est)))
 }
-risk.reduction(means = means[3,], vars = vars[3,])
+risk.reduction(means = means, vars = vars)
 # in this case adj is the best
 
 # nowcasting 
 nowcast.alpha <- function(X, Y, Tstar, best = c('adj', 'wadj', 'IVW')) {
   # set up
-  T1 <- T[1]
+  T1 <- length(Y[[1]]) - 1
   Tstar1 <- Tstar[1]
   y1 <- Y[[1]][-1]
   x1 <- X[[1]][-1, ]
@@ -302,9 +299,12 @@ nowcast.alpha <- function(X, Y, Tstar, best = c('adj', 'wadj', 'IVW')) {
   yhat2 <- yhat1 + ols$est[best]
   
   # output
-  return(list(yhat2 = yhat2, alpha1est = ols$est[best]))
+  return(list(yhat2 = yhat2, yhat1 = yhat1, alpha1est = ols$est[best]))
 }
 
 # prediction
-nowcast.alpha(X = X, Y = Y, Tstar = Tstar, best = 'wadj')
+nowcast.alpha(X = X, Y = Y, Tstar = Tstar, best = 'wadj')[]
 Y[[1]][Tstar[1] + 2] # better!
+
+sapply(c('adj', 'wadj', 'IVW'), function(d) nowcast.alpha(X = X, Y = Y, Tstar = Tstar, best = d)[[1]])
+
