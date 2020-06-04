@@ -16,20 +16,26 @@
 \gdef\HyperFirstAtBeginDocument#1{#1}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
+\providecommand \oddpage@label [2]{}
 \citation{bates1969combination,mundlak1978pooling,timmermann2006forecast,granger2014forecasting}
-\citation{timmermann2006forecast}
-\citation{timmermann2006forecast}
-\citation{abadie2010synthetic}
+\citation{newbold2002forecast,timmermann2006forecast,hansen2008least}
+\citation{lee2015model,greenaway2020multistep}
+\citation{mundlak1978pooling,zellner1991forecasting,lee2020estimation,plessen2020integrated}
+\citation{fosten2019panel}
+\citation{mundlak1978pooling,zellner1991forecasting,fosten2019panel}
+\citation{baltagi2008forecasting}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{2}{section.1}\protected@file@percent }
-\citation{zellner1991forecasting}
 \citation{lee2020estimation}
 \citation{plessen2020integrated}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces A comparison between forecast without considering shock effects and the one uses simple averaging given $n=40$ disparate time series and that the shock time is at $T_1^* = 125$.\relax }}{3}{figure.caption.2}\protected@file@percent }
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{figure1}{{1}{3}{A comparison between forecast without considering shock effects and the one uses simple averaging given $n=40$ disparate time series and that the shock time is at $T_1^* = 125$.\relax }{figure.caption.2}{}}
+\citation{agarwal2020two}
 \citation{blundell1998initial}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Setting}{4}{section.2}\protected@file@percent }
-\newlabel{setting}{{2}{4}{Setting}{section.2}{}}
+\citation{abadie2010synthetic}
+\citation{blundell1998initial}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Setting}{3}{section.2}\protected@file@percent }
+\newlabel{setting}{{2}{3}{Setting}{section.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces The time series experience a shock at $T_1^*+1=126$ with true shock effect $\alpha = 4.88$. The figure is a comparison between forecast without considering shock effects and the one uses simple averaging given $n=40$ disparate time series, and that the shock time is at $T_1^* +1=126$. The magenta dots represent least square estimate $\mathaccentV {hat}05E{\alpha }_i$ from disparate time series. The prediction of $\mathaccentV {hat}05E{y}^{2}_{T_1^*+1}$ and $\mathaccentV {hat}05E{y}^{1}_{T_1^*+1}$ differs only by an adjustment $\mathaccentV {hat}05E{\alpha }=5.22$. It is clear that $\mathaccentV {hat}05E{y}^{2}_{T_1^*+1}$ performs better than $\mathaccentV {hat}05E{y}^{1}_{T_1^*+1}$.\relax }}{4}{figure.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{figure1}{{1}{4}{The time series experience a shock at $T_1^*+1=126$ with true shock effect $\alpha = 4.88$. The figure is a comparison between forecast without considering shock effects and the one uses simple averaging given $n=40$ disparate time series, and that the shock time is at $T_1^* +1=126$. The magenta dots represent least square estimate $\hat {\alpha }_i$ from disparate time series. The prediction of $\hat {y}^{2}_{T_1^*+1}$ and $\hat {y}^{1}_{T_1^*+1}$ differs only by an adjustment $\hat {\alpha }=5.22$. It is clear that $\hat {y}^{2}_{T_1^*+1}$ performs better than $\hat {y}^{1}_{T_1^*+1}$.\relax }{figure.caption.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Model Setup}{4}{subsection.2.1}\protected@file@percent }
 \newlabel{modelsetup}{{2.1}{4}{Model Setup}{subsection.2.1}{}}
 \newlabel{equation1}{{1}{4}{Model Setup}{equation.2.1}{}}
@@ -38,65 +44,112 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Forecast}{5}{subsection.2.2}\protected@file@percent }
 \newlabel{forecast}{{2.2}{5}{Forecast}{subsection.2.2}{}}
 \citation{abadie2010synthetic}
-\citation{abadie2010synthetic}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Construction of shock effects estimators}{6}{subsection.2.3}\protected@file@percent }
 \newlabel{constructionofestimators}{{2.3}{6}{Construction of shock effects estimators}{subsection.2.3}{}}
 \newlabel{adjusted}{{4}{6}{Construction of shock effects estimators}{equation.2.4}{}}
 \citation{abadie2010synthetic}
+\citation{abadie2010synthetic}
 \newlabel{SCM}{{5}{7}{Construction of shock effects estimators}{equation.2.5}{}}
-\newlabel{convexhull}{{6}{7}{Construction of shock effects estimators}{equation.2.6}{}}
-\newlabel{W}{{7}{7}{Construction of shock effects estimators}{equation.2.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Forecast risk and properties of shock-effects estimators}{7}{section.3}\protected@file@percent }
-\newlabel{properties}{{3}{7}{Forecast risk and properties of shock-effects estimators}{section.3}{}}
+\newlabel{W}{{6}{7}{Construction of shock effects estimators}{equation.2.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Forecast risk and properties of shock-effects estimators}{8}{section.3}\protected@file@percent }
+\newlabel{properties}{{3}{8}{Forecast risk and properties of shock-effects estimators}{section.3}{}}
 \newlabel{unbiased}{{1}{8}{}{prop.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Conditions for risk-reduction for shock-effects estimators}{8}{subsection.3.1}\protected@file@percent }
-\newlabel{conditions}{{3.1}{8}{Conditions for risk-reduction for shock-effects estimators}{subsection.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Conditions for risk-reduction for shock-effects estimators}{9}{subsection.3.1}\protected@file@percent }
+\newlabel{conditions}{{3.1}{9}{Conditions for risk-reduction for shock-effects estimators}{subsection.3.1}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.1}Conditions under $\mathcal  {M}_1$}{9}{subsubsection.3.1.1}\protected@file@percent }
 \newlabel{conditionsmodel1}{{3.1.1}{9}{Conditions under $\mc {M}_1$}{subsubsection.3.1.1}{}}
 \newlabel{proprisk}{{2}{9}{}{prop.2}{}}
-\newlabel{riskconditionadj}{{8}{9}{Conditions under $\mc {M}_1$}{equation.3.8}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.2}Conditions under $\mathcal  {M}_{21}$ and $\mathcal  {M}_{22}$}{9}{subsubsection.3.1.2}\protected@file@percent }
-\newlabel{conditionsm2122}{{3.1.2}{9}{Conditions under $\mc {M}_{21}$ and $\mc {M}_{22}$}{subsubsection.3.1.2}{}}
-\newlabel{propriskwadj2}{{3}{9}{}{prop.3}{}}
+\newlabel{riskconditionadj}{{7}{9}{Conditions under $\mc {M}_1$}{equation.3.7}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.2}Conditions under $\mathcal  {M}_{21}$ and $\mathcal  {M}_{22}$}{10}{subsubsection.3.1.2}\protected@file@percent }
+\newlabel{conditionsm2122}{{3.1.2}{10}{Conditions under $\mc {M}_{21}$ and $\mc {M}_{22}$}{subsubsection.3.1.2}{}}
+\newlabel{propriskwadj2}{{3}{10}{}{prop.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Comparisons among estimators}{10}{subsection.3.2}\protected@file@percent }
 \newlabel{comparisons}{{3.2}{10}{Comparisons among estimators}{subsection.3.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Under $\mathcal  {M}_{1}$}{10}{subsubsection.3.2.1}\protected@file@percent }
-\citation{efron}
 \citation{efron1986bootstrap}
-\citation{berkowitz2000recent}
 \citation{bose1988edgeworth}
-\citation{politis1994stationary}
-\citation{kunsch1989jackknife,liu1992moving}
-\citation{berkowitz2000recent}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Under $\mathcal  {M}_{1}$}{11}{subsubsection.3.2.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Under $\mathcal  {M}_{21}$ and $\mathcal  {M}_{22}$}{11}{subsubsection.3.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Parametric bootstrap for risk-reduction evaluation problems}{11}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Bootstrap for risk-reduction evaluation problems}{11}{subsection.3.3}\protected@file@percent }
+\newlabel{varbootstrap}{{3.3}{11}{Bootstrap for risk-reduction evaluation problems}{subsection.3.3}{}}
+\citation{bose1988edgeworth}
+\citation{conocowhatwedo}
+\citation{he2010global}
+\citation{sukhankin2020russian}
+\citation{wang2020impact}
+\citation{nygov}
+\citation{alonso2020state}
+\citation{sjodin2020only}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Simulation}{12}{section.4}\protected@file@percent }
 \newlabel{simulation}{{4}{12}{Simulation}{section.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Supplementary Materials}{12}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Proofs}{12}{subsection.5.1}\protected@file@percent }
-\newlabel{proofs}{{5.1}{12}{Proofs}{subsection.5.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}Justification of Expectation of $\mathaccentV {hat}05E{\alpha }_{\rm  adj}$ and $\mathaccentV {hat}05E{\alpha }_{\rm  wadj}$}{12}{subsubsection.5.1.1}\protected@file@percent }
-\newlabel{exp}{{5.1.1}{12}{Justification of Expectation of $\hat {\alpha }_{\rm adj}$ and $\hat {\alpha }_{\rm wadj}$}{subsubsection.5.1.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.2}Justification of Variance of $\mathaccentV {hat}05E{\alpha }_{\rm  adj}$ and $\mathaccentV {hat}05E{\alpha }_{\rm  wadj}$}{13}{subsubsection.5.1.2}\protected@file@percent }
-\newlabel{var}{{5.1.2}{13}{Justification of Variance of $\hat {\alpha }_{\rm adj}$ and $\hat {\alpha }_{\rm wadj}$}{subsubsection.5.1.2}{}}
-\newlabel{equation6}{{9}{13}{Justification of Variance of $\hat {\alpha }_{\rm adj}$ and $\hat {\alpha }_{\rm wadj}$}{equation.5.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Proofs for lemmas and propositions}{13}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Parametric bootstrap simulation}{12}{subsection.4.1}\protected@file@percent }
+\newlabel{parametricbootstrapsimulation}{{4.1}{12}{Parametric bootstrap simulation}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Forecasting Conoco Phillips stock in the presence of shocks}{12}{section.5}\protected@file@percent }
+\citation{tokic2019yield}
+\citation{andolfatto2018yield,bauer2018economic}
+\citation{mensi2014opec}
+\citation{alquist2013forecasting}
+\citation{alquist2013forecasting}
+\citation{bauer2018economic}
+\citation{huppmann2015opec}
+\citation{braniff2011towards}
+\citation{floyd2001terror}
+\citation{johnston2006impact}
+\citation{ewing2013volatility}
+\citation{dwyer2009financial,longstaff2010subprime}
+\citation{huppmann2015opec}
+\citation{baffes2015great}
+\citation{kilian2009not}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces March 9th, 2020 post-shock forecasts for Conoco Phillips stock price. The blue line displays the \relax }}{14}{figure.caption.2}\protected@file@percent }
+\newlabel{Fig:CP}{{2}{14}{March 9th, 2020 post-shock forecasts for Conoco Phillips stock price. The blue line displays the \relax }{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion}{15}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Appendix}{15}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Proofs}{15}{subsection.7.1}\protected@file@percent }
+\newlabel{proofs}{{7.1}{15}{Proofs}{subsection.7.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.1}Justification of Expectation of $\mathaccentV {hat}05E{\alpha }_{\rm  adj}$ and $\mathaccentV {hat}05E{\alpha }_{\rm  wadj}$}{15}{subsubsection.7.1.1}\protected@file@percent }
+\newlabel{exp}{{7.1.1}{15}{Justification of Expectation of $\hat {\alpha }_{\rm adj}$ and $\hat {\alpha }_{\rm wadj}$}{subsubsection.7.1.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.2}Justification of Variance of $\mathaccentV {hat}05E{\alpha }_{\rm  adj}$ and $\mathaccentV {hat}05E{\alpha }_{\rm  wadj}$}{15}{subsubsection.7.1.2}\protected@file@percent }
+\newlabel{var}{{7.1.2}{15}{Justification of Variance of $\hat {\alpha }_{\rm adj}$ and $\hat {\alpha }_{\rm wadj}$}{subsubsection.7.1.2}{}}
+\newlabel{equation6}{{8}{16}{Justification of Variance of $\hat {\alpha }_{\rm adj}$ and $\hat {\alpha }_{\rm wadj}$}{equation.7.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Proofs for lemmas and propositions}{16}{subsection.7.2}\protected@file@percent }
+\newlabel{risklemma}{{1}{16}{}{lem.1}{}}
 \bibstyle{plainnat}
 \bibdata{synthetic-prediction-notes}
 \bibcite{abadie2010synthetic}{{1}{2010}{{Abadie et~al.}}{{Abadie, Diamond, and Hainmueller}}}
-\newlabel{risklemma}{{1}{14}{}{lem.1}{}}
-\bibcite{bates1969combination}{{2}{1969}{{Bates and Granger}}{{}}}
-\bibcite{berkowitz2000recent}{{3}{2000}{{Berkowitz and Kilian}}{{}}}
-\bibcite{blundell1998initial}{{4}{1998}{{Blundell and Bond}}{{}}}
-\bibcite{bose1988edgeworth}{{5}{1988}{{Bose}}{{}}}
-\bibcite{efron}{{6}{1979}{{Efron}}{{}}}
-\bibcite{efron1986bootstrap}{{7}{1986}{{Efron and Tibshirani}}{{}}}
-\bibcite{granger2014forecasting}{{8}{2014}{{Granger and Newbold}}{{}}}
-\bibcite{kunsch1989jackknife}{{9}{1989}{{K\"{u}nsch}}{{}}}
-\bibcite{lee2020estimation}{{10}{2020}{{Lee et~al.}}{{Lee, Lei, and Mallick}}}
-\bibcite{liu1992moving}{{11}{1992}{{Liu et~al.}}{{Liu, Singh, et~al.}}}
-\bibcite{mundlak1978pooling}{{12}{1978}{{Mundlak}}{{}}}
-\bibcite{plessen2020integrated}{{13}{2020}{{Plessen}}{{}}}
-\bibcite{politis1994stationary}{{14}{1994}{{Politis and Romano}}{{}}}
-\bibcite{timmermann2006forecast}{{15}{2006}{{Timmermann}}{{}}}
-\bibcite{zellner1991forecasting}{{16}{1991}{{Zellner et~al.}}{{Zellner, Hong, and Min}}}
+\bibcite{agarwal2020two}{{2}{2020}{{Agarwal et~al.}}{{Agarwal, Alomar, Sarker, Shah, Shen, and Yang}}}
+\bibcite{alonso2020state}{{3}{2020}{{Alonso}}{{}}}
+\bibcite{alquist2013forecasting}{{4}{2013}{{Alquist et~al.}}{{Alquist, Kilian, and Vigfusson}}}
+\bibcite{andolfatto2018yield}{{5}{2018}{{Andolfatto and Spewak}}{{}}}
+\bibcite{baffes2015great}{{6}{2015}{{Baffes et~al.}}{{Baffes, Kose, Ohnsorge, and Stocker}}}
+\bibcite{baltagi2008forecasting}{{7}{2008}{{Baltagi}}{{}}}
+\bibcite{bates1969combination}{{8}{1969}{{Bates and Granger}}{{}}}
+\bibcite{bauer2018economic}{{9}{2018}{{Bauer and Mertens}}{{}}}
+\bibcite{blundell1998initial}{{10}{1998}{{Blundell and Bond}}{{}}}
+\bibcite{bose1988edgeworth}{{11}{1988}{{Bose}}{{}}}
+\bibcite{braniff2011towards}{{12}{2011}{{Braniff and Moghadam}}{{}}}
+\bibcite{conocowhatwedo}{{13}{2020}{{ConocoPhillips}}{{}}}
+\bibcite{dwyer2009financial}{{14}{2009}{{Dwyer and Tkac}}{{}}}
+\bibcite{efron1986bootstrap}{{15}{1986}{{Efron and Tibshirani}}{{}}}
+\bibcite{ewing2013volatility}{{16}{2013}{{Ewing and Malik}}{{}}}
+\bibcite{floyd2001terror}{{17}{2001}{{Floyd and Fuerbringer}}{{}}}
+\bibcite{fosten2019panel}{{18}{2019}{{Fosten and Greenaway-McGrevy}}{{}}}
+\bibcite{granger2014forecasting}{{19}{2014}{{Granger and Newbold}}{{}}}
+\bibcite{greenaway2020multistep}{{20}{2020}{{Greenaway-McGrevy}}{{}}}
+\bibcite{hansen2008least}{{21}{2008}{{Hansen}}{{}}}
+\bibcite{he2010global}{{22}{2010}{{He et~al.}}{{He, Wang, and Lai}}}
+\bibcite{huppmann2015opec}{{23}{2015}{{Huppmann and Holz}}{{}}}
+\bibcite{johnston2006impact}{{24}{2006}{{Johnston and Nedelescu}}{{}}}
+\bibcite{kilian2009not}{{25}{2009}{{Kilian}}{{}}}
+\bibcite{lee2020estimation}{{26}{2020}{{Lee et~al.}}{{Lee, Lei, and Mallick}}}
+\bibcite{lee2015model}{{27}{2015}{{Lee and Phillips}}{{}}}
+\bibcite{longstaff2010subprime}{{28}{2010}{{Longstaff}}{{}}}
+\bibcite{mensi2014opec}{{29}{2014}{{Mensi et~al.}}{{Mensi, Hammoudeh, and Yoon}}}
+\bibcite{mundlak1978pooling}{{30}{1978}{{Mundlak}}{{}}}
+\bibcite{nygov}{{31}{2020}{{New York State Government}}{{}}}
+\bibcite{newbold2002forecast}{{32}{2002}{{Newbold and Harvey}}{{}}}
+\bibcite{plessen2020integrated}{{33}{2020}{{Plessen}}{{}}}
+\bibcite{sjodin2020only}{{34}{2020}{{Sj{\"o}din et~al.}}{{Sj{\"o}din, Wilder-Smith, Osman, Farooq, and Rockl{\"o}v}}}
+\bibcite{sukhankin2020russian}{{35}{2020}{{Sukhankin}}{{}}}
+\bibcite{timmermann2006forecast}{{36}{2006}{{Timmermann}}{{}}}
+\bibcite{tokic2019yield}{{37}{2019}{{Tokic}}{{}}}
+\bibcite{wang2020impact}{{38}{2020}{{Wang et~al.}}{{Wang, Pasco, Du, Petty, Fox, Galvani, Pignone, Johnston, and Meyers}}}
+\bibcite{zellner1991forecasting}{{39}{1991}{{Zellner et~al.}}{{Zellner, Hong, and Min}}}

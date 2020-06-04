@@ -1,19 +1,22 @@
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}% 
-\contentsline {section}{\numberline {2}Setting}{4}{section.2}% 
+\contentsline {section}{\numberline {2}Setting}{3}{section.2}% 
 \contentsline {subsection}{\numberline {2.1}Model Setup}{4}{subsection.2.1}% 
 \contentsline {subsection}{\numberline {2.2}Forecast}{5}{subsection.2.2}% 
 \contentsline {subsection}{\numberline {2.3}Construction of shock effects estimators}{6}{subsection.2.3}% 
-\contentsline {section}{\numberline {3}Forecast risk and properties of shock-effects estimators}{7}{section.3}% 
-\contentsline {subsection}{\numberline {3.1}Conditions for risk-reduction for shock-effects estimators}{8}{subsection.3.1}% 
+\contentsline {section}{\numberline {3}Forecast risk and properties of shock-effects estimators}{8}{section.3}% 
+\contentsline {subsection}{\numberline {3.1}Conditions for risk-reduction for shock-effects estimators}{9}{subsection.3.1}% 
 \contentsline {subsubsection}{\numberline {3.1.1}Conditions under $\mathcal {M}_1$}{9}{subsubsection.3.1.1}% 
-\contentsline {subsubsection}{\numberline {3.1.2}Conditions under $\mathcal {M}_{21}$ and $\mathcal {M}_{22}$}{9}{subsubsection.3.1.2}% 
+\contentsline {subsubsection}{\numberline {3.1.2}Conditions under $\mathcal {M}_{21}$ and $\mathcal {M}_{22}$}{10}{subsubsection.3.1.2}% 
 \contentsline {subsection}{\numberline {3.2}Comparisons among estimators}{10}{subsection.3.2}% 
-\contentsline {subsubsection}{\numberline {3.2.1}Under $\mathcal {M}_{1}$}{10}{subsubsection.3.2.1}% 
+\contentsline {subsubsection}{\numberline {3.2.1}Under $\mathcal {M}_{1}$}{11}{subsubsection.3.2.1}% 
 \contentsline {subsubsection}{\numberline {3.2.2}Under $\mathcal {M}_{21}$ and $\mathcal {M}_{22}$}{11}{subsubsection.3.2.2}% 
-\contentsline {subsection}{\numberline {3.3}Parametric bootstrap for risk-reduction evaluation problems}{11}{subsection.3.3}% 
+\contentsline {subsection}{\numberline {3.3}Bootstrap for risk-reduction evaluation problems}{11}{subsection.3.3}% 
 \contentsline {section}{\numberline {4}Simulation}{12}{section.4}% 
-\contentsline {section}{\numberline {5}Supplementary Materials}{12}{section.5}% 
-\contentsline {subsection}{\numberline {5.1}Proofs}{12}{subsection.5.1}% 
-\contentsline {subsubsection}{\numberline {5.1.1}Justification of Expectation of $\mathaccentV {hat}05E{\alpha }_{\rm adj}$ and $\mathaccentV {hat}05E{\alpha }_{\rm wadj}$}{12}{subsubsection.5.1.1}% 
-\contentsline {subsubsection}{\numberline {5.1.2}Justification of Variance of $\mathaccentV {hat}05E{\alpha }_{\rm adj}$ and $\mathaccentV {hat}05E{\alpha }_{\rm wadj}$}{13}{subsubsection.5.1.2}% 
-\contentsline {subsection}{\numberline {5.2}Proofs for lemmas and propositions}{13}{subsection.5.2}% 
+\contentsline {subsection}{\numberline {4.1}Parametric bootstrap simulation}{12}{subsection.4.1}% 
+\contentsline {section}{\numberline {5}Forecasting Conoco Phillips stock in the presence of shocks}{12}{section.5}% 
+\contentsline {section}{\numberline {6}Discussion}{15}{section.6}% 
+\contentsline {section}{\numberline {7}Appendix}{15}{section.7}% 
+\contentsline {subsection}{\numberline {7.1}Proofs}{15}{subsection.7.1}% 
+\contentsline {subsubsection}{\numberline {7.1.1}Justification of Expectation of $\mathaccentV {hat}05E{\alpha }_{\rm adj}$ and $\mathaccentV {hat}05E{\alpha }_{\rm wadj}$}{15}{subsubsection.7.1.1}% 
+\contentsline {subsubsection}{\numberline {7.1.2}Justification of Variance of $\mathaccentV {hat}05E{\alpha }_{\rm adj}$ and $\mathaccentV {hat}05E{\alpha }_{\rm wadj}$}{15}{subsubsection.7.1.2}% 
+\contentsline {subsection}{\numberline {7.2}Proofs for lemmas and propositions}{16}{subsection.7.2}% 

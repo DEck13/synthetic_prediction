@@ -10,10 +10,13 @@
 \BOOKMARK [2][-]{subsection.3.2}{Comparisons among estimators}{section.3}% 10
 \BOOKMARK [3][-]{subsubsection.3.2.1}{Under M1}{subsection.3.2}% 11
 \BOOKMARK [3][-]{subsubsection.3.2.2}{Under M21 and M22}{subsection.3.2}% 12
-\BOOKMARK [2][-]{subsection.3.3}{Parametric bootstrap for risk-reduction evaluation problems}{section.3}% 13
+\BOOKMARK [2][-]{subsection.3.3}{Bootstrap for risk-reduction evaluation problems}{section.3}% 13
 \BOOKMARK [1][-]{section.4}{Simulation}{}% 14
-\BOOKMARK [1][-]{section.5}{Supplementary Materials}{}% 15
-\BOOKMARK [2][-]{subsection.5.1}{Proofs}{section.5}% 16
-\BOOKMARK [3][-]{subsubsection.5.1.1}{Justification of Expectation of adj and wadj}{subsection.5.1}% 17
-\BOOKMARK [3][-]{subsubsection.5.1.2}{Justification of Variance of adj and wadj}{subsection.5.1}% 18
-\BOOKMARK [2][-]{subsection.5.2}{Proofs for lemmas and propositions}{section.5}% 19
+\BOOKMARK [2][-]{subsection.4.1}{Parametric bootstrap simulation}{section.4}% 15
+\BOOKMARK [1][-]{section.5}{Forecasting Conoco Phillips stock in the presence of shocks}{}% 16
+\BOOKMARK [1][-]{section.6}{Discussion}{}% 17
+\BOOKMARK [1][-]{section.7}{Appendix}{}% 18
+\BOOKMARK [2][-]{subsection.7.1}{Proofs}{section.7}% 19
+\BOOKMARK [3][-]{subsubsection.7.1.1}{Justification of Expectation of adj and wadj}{subsection.7.1}% 20
+\BOOKMARK [3][-]{subsubsection.7.1.2}{Justification of Variance of adj and wadj}{subsection.7.1}% 21
+\BOOKMARK [2][-]{subsection.7.2}{Proofs for lemmas and propositions}{section.7}% 22

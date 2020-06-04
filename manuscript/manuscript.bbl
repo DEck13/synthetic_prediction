@@ -1,4 +1,4 @@
-\begin{thebibliography}{16}
+\begin{thebibliography}{39}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -13,16 +13,58 @@ Alberto Abadie, Alexis Diamond, and Jens Hainmueller.
 \newblock \emph{Journal of the American Statistical Association}, 105\penalty0
   (490):\penalty0 493--505, 2010.
 
+\bibitem[Agarwal et~al.(2020)Agarwal, Alomar, Sarker, Shah, Shen, and
+  Yang]{agarwal2020two}
+Anish Agarwal, Abdullah Alomar, Arnab Sarker, Devavrat Shah, Dennis Shen, and
+  Cindy Yang.
+\newblock Two burning questions on covid-19: Did shutting down the economy
+  help? can we (partially) reopen the economy without risking the second wave?
+\newblock \emph{arXiv preprint arXiv:2005.00072}, 2020.
+
+\bibitem[Alonso(2020)]{alonso2020state}
+Melissa Alonso.
+\newblock At least 8 us states have declared a state of emergency.
+\newblock
+  \url{https://www.cnn.com/asia/live-news/coronavirus-outbreak-03-08-20-intl-hnk/h_1b09bcd8c4b247c893d65b7118353923},
+  2020.
+\newblock Accessed on 2020-06-01.
+
+\bibitem[Alquist et~al.(2013)Alquist, Kilian, and
+  Vigfusson]{alquist2013forecasting}
+Ron Alquist, Lutz Kilian, and Robert~J Vigfusson.
+\newblock Forecasting the price of oil.
+\newblock In \emph{Handbook of economic forecasting}, volume~2, pages 427--507.
+  Elsevier, 2013.
+
+\bibitem[Andolfatto and Spewak(2018)]{andolfatto2018yield}
+David Andolfatto and Andrew Spewak.
+\newblock Does the yield curve really forecast recession?
+\newblock \emph{Economic Synopses}, \penalty0 (30):\penalty0 1--2, 2018.
+
+\bibitem[Baffes et~al.(2015)Baffes, Kose, Ohnsorge, and
+  Stocker]{baffes2015great}
+John Baffes, M~Ayhan Kose, Franziska Ohnsorge, and Marc Stocker.
+\newblock The great plunge in oil prices: Causes, consequences, and policy
+  responses.
+\newblock \emph{Consequences, and Policy Responses (June 2015)}, 2015.
+
+\bibitem[Baltagi(2008)]{baltagi2008forecasting}
+Badi~H Baltagi.
+\newblock Forecasting with panel data.
+\newblock \emph{Journal of forecasting}, 27\penalty0 (2):\penalty0 153--173,
+  2008.
+
 \bibitem[Bates and Granger(1969)]{bates1969combination}
 John~M Bates and Clive~WJ Granger.
 \newblock The combination of forecasts.
 \newblock \emph{Journal of the Operational Research Society}, 20\penalty0
   (4):\penalty0 451--468, 1969.
 
-\bibitem[Berkowitz and Kilian(2000)]{berkowitz2000recent}
-Jeremy Berkowitz and Lutz Kilian.
-\newblock Recent developments in bootstrapping time series.
-\newblock \emph{Econometric Reviews}, 19\penalty0 (1):\penalty0 1--48, 2000.
+\bibitem[Bauer and Mertens(2018)]{bauer2018economic}
+Michael~D. Bauer and Thomas~M. Mertens.
+\newblock Economic forecasts with the yield curve.
+\newblock \emph{Federal Reserve Bank of San Francisco Economic Letter}, pages
+  1--5, 2018.
 
 \bibitem[Blundell and Bond(1998)]{blundell1998initial}
 Richard Blundell and Stephen Bond.
@@ -36,10 +78,24 @@ Arup Bose.
 \newblock Edgeworth correction by bootstrap in autoregressions.
 \newblock \emph{The Annals of Statistics}, pages 1709--1722, 1988.
 
-\bibitem[Efron(1979)]{efron}
-B.~Efron.
-\newblock Bootstrap methods: Another look at the jackknife.
-\newblock \emph{The Annals of Statistics}, 7:\penalty0 1--26, 1979.
+\bibitem[Braniff and Moghadam(2011)]{braniff2011towards}
+Bill Braniff and Assaf Moghadam.
+\newblock Towards global jihadism: Al-qaeda’s strategic, ideological and
+  structural adaptations since 9/11.
+\newblock \emph{Perspectives on Terrorism}, 5\penalty0 (2):\penalty0 36--49,
+  2011.
+
+\bibitem[ConocoPhillips(2020)]{conocowhatwedo}
+ConocoPhillips.
+\newblock What we do.
+\newblock \url{http://www.conocophillips.com/about-us/how-energy-works/}, 2020.
+\newblock Accessed on 2020-05-24.
+
+\bibitem[Dwyer and Tkac(2009)]{dwyer2009financial}
+Gerald~P Dwyer and Paula Tkac.
+\newblock The financial crisis of 2008 in fixed-income markets.
+\newblock \emph{Journal of International Money and Finance}, 28\penalty0
+  (8):\penalty0 1293--1316, 2009.
 
 \bibitem[Efron and Tibshirani(1986)]{efron1986bootstrap}
 Bradley Efron and Robert Tibshirani.
@@ -47,25 +103,88 @@ Bradley Efron and Robert Tibshirani.
   other measures of statistical accuracy.
 \newblock \emph{Statistical science}, pages 54--75, 1986.
 
+\bibitem[Ewing and Malik(2013)]{ewing2013volatility}
+Bradley~T Ewing and Farooq Malik.
+\newblock Volatility transmission between gold and oil futures under structural
+  breaks.
+\newblock \emph{International Review of Economics \& Finance}, 25:\penalty0
+  113--121, 2013.
+
+\bibitem[Floyd and Fuerbringer(2001)]{floyd2001terror}
+Norris Floyd and Jonathan Fuerbringer.
+\newblock A day of terror: The markets; stocks tumble abroad; exchanges in new
+  york never opened for the day.
+\newblock
+  \url{https://www.nytimes.com/2001/09/12/business/day-terror-markets-stocks-tumble-abroad-exchanges-new-york-never-opened-for-day.html
+  }, 2001.
+\newblock Accessed on 2020-05-24.
+
+\bibitem[Fosten and Greenaway-McGrevy(2019)]{fosten2019panel}
+Jack Fosten and Ryan Greenaway-McGrevy.
+\newblock Panel data nowcasting.
+\newblock \emph{Available at SSRN 3435691}, 2019.
+
 \bibitem[Granger and Newbold(2014)]{granger2014forecasting}
 Clive William~John Granger and Paul Newbold.
 \newblock \emph{Forecasting economic time series}.
 \newblock Academic Press, 2014.
 
-\bibitem[K\"{u}nsch(1989)]{kunsch1989jackknife}
-Hans~R K\"{u}nsch.
-\newblock The jackknife and the bootstrap for general stationary observations.
-\newblock \emph{The Annals of Statistics}, pages 1217--1241, 1989.
+\bibitem[Greenaway-McGrevy(2020)]{greenaway2020multistep}
+Ryan Greenaway-McGrevy.
+\newblock Multistep forecast selection for panel data.
+\newblock \emph{Econometric Reviews}, 39\penalty0 (4):\penalty0 373--406, 2020.
+
+\bibitem[Hansen(2008)]{hansen2008least}
+Bruce~E Hansen.
+\newblock Least-squares forecast averaging.
+\newblock \emph{Journal of Econometrics}, 146\penalty0 (2):\penalty0 342--350,
+  2008.
+
+\bibitem[He et~al.(2010)He, Wang, and Lai]{he2010global}
+Yanan He, Shouyang Wang, and Kin~Keung Lai.
+\newblock Global economic activity and crude oil prices: A cointegration
+  analysis.
+\newblock \emph{Energy Economics}, 32\penalty0 (4):\penalty0 868--876, 2010.
+
+\bibitem[Huppmann and Holz(2015)]{huppmann2015opec}
+Daniel Huppmann and Franziska Holz.
+\newblock What about the opec cartel?
+\newblock Technical report, DIW Roundup: Politik im Fokus, 2015.
+
+\bibitem[Johnston and Nedelescu(2006)]{johnston2006impact}
+R~Barry Johnston and Oana~M Nedelescu.
+\newblock The impact of terrorism on financial markets.
+\newblock \emph{Journal of Financial Crime}, 2006.
+
+\bibitem[Kilian(2009)]{kilian2009not}
+Lutz Kilian.
+\newblock Not all oil price shocks are alike: Disentangling demand and supply
+  shocks in the crude oil market.
+\newblock \emph{American Economic Review}, 99\penalty0 (3):\penalty0 1053--69,
+  2009.
 
 \bibitem[Lee et~al.(2020)Lee, Lei, and Mallick]{lee2020estimation}
 Se~Yoon Lee, Bowen Lei, and Bani~K. Mallick.
 \newblock Estimation of covid-19 spread curves integrating global data and
   borrowing information, 2020.
 
-\bibitem[Liu et~al.(1992)Liu, Singh, et~al.]{liu1992moving}
-Regina~Y Liu, Kesar Singh, et~al.
-\newblock Moving blocks jackknife and bootstrap capture weak dependence.
-\newblock \emph{Exploring the limits of bootstrap}, 225:\penalty0 248, 1992.
+\bibitem[Lee and Phillips(2015)]{lee2015model}
+Yoonseok Lee and Peter~C.B. Phillips.
+\newblock Model selection in the presence of incidental parameters.
+\newblock \emph{Journal of Econometrics}, 188\penalty0 (2):\penalty0 474--489,
+  2015.
+
+\bibitem[Longstaff(2010)]{longstaff2010subprime}
+Francis~A Longstaff.
+\newblock The subprime credit crisis and contagion in financial markets.
+\newblock \emph{Journal of financial economics}, 97\penalty0 (3):\penalty0
+  436--450, 2010.
+
+\bibitem[Mensi et~al.(2014)Mensi, Hammoudeh, and Yoon]{mensi2014opec}
+Walid Mensi, Shawkat Hammoudeh, and Seong-Min Yoon.
+\newblock How do opec news and structural breaks impact returns and volatility
+  in crude oil markets? further evidence from a long memory process.
+\newblock \emph{Energy Economics}, 42:\penalty0 343--354, 2014.
 
 \bibitem[Mundlak(1978)]{mundlak1978pooling}
 Yair Mundlak.
@@ -73,21 +192,57 @@ Yair Mundlak.
 \newblock \emph{Econometrica: Journal of the Econometric Society}, pages
   69--85, 1978.
 
+\bibitem[{New York State Government}(2020)]{nygov}
+{New York State Government}.
+\newblock At novel coronavirus briefing, governor cuomo declares state of
+  emergency to contain spread of virus.
+\newblock
+  \url{https://www.governor.ny.gov/news/novel-coronavirus-briefing-governor-cuomo-declares-state-emergency-contain-spread-virus},
+  2020.
+\newblock Accessed on 2020-05-24.
+
+\bibitem[Newbold and Harvey(2002)]{newbold2002forecast}
+Paul Newbold and David~I Harvey.
+\newblock Forecast combination and encompassing.
+\newblock \emph{A companion to economic forecasting}, 1:\penalty0 620, 2002.
+
 \bibitem[Plessen(2020)]{plessen2020integrated}
 Mogens~Graf Plessen.
 \newblock Integrated time series summarization and prediction algorithm and its
   application to covid-19 data mining, 2020.
 
-\bibitem[Politis and Romano(1994)]{politis1994stationary}
-Dimitris~N Politis and Joseph~P Romano.
-\newblock The stationary bootstrap.
-\newblock \emph{Journal of the American Statistical association}, 89\penalty0
-  (428):\penalty0 1303--1313, 1994.
+\bibitem[Sj{\"o}din et~al.(2020)Sj{\"o}din, Wilder-Smith, Osman, Farooq, and
+  Rockl{\"o}v]{sjodin2020only}
+Henrik Sj{\"o}din, Annelies Wilder-Smith, Sarah Osman, Zia Farooq, and Joacim
+  Rockl{\"o}v.
+\newblock Only strict quarantine measures can curb the coronavirus disease
+  (covid-19) outbreak in italy, 2020.
+\newblock \emph{Eurosurveillance}, 25\penalty0 (13):\penalty0 2000280, 2020.
+
+\bibitem[Sukhankin(2020)]{sukhankin2020russian}
+Sergey Sukhankin.
+\newblock Russian geopolitical objectives in the current oil price crisis, and
+  implications for canada.
+\newblock \emph{The School of Public Policy Publications}, 13, 2020.
 
 \bibitem[Timmermann(2006)]{timmermann2006forecast}
 Allan Timmermann.
 \newblock Forecast combinations.
 \newblock \emph{Handbook of Economic Forecasting}, 1:\penalty0 135--196, 2006.
+
+\bibitem[Tokic(2019)]{tokic2019yield}
+Damir Tokic.
+\newblock Is yield curve predicting a us recession in 2020?
+\newblock \emph{Journal of Corporate Accounting \& Finance}, 30\penalty0
+  (3):\penalty0 5--7, 2019.
+
+\bibitem[Wang et~al.(2020)Wang, Pasco, Du, Petty, Fox, Galvani, Pignone,
+  Johnston, and Meyers]{wang2020impact}
+Xutong Wang, Remy~F Pasco, Zhanwei Du, Michaela Petty, Spencer~J Fox, Alison~P
+  Galvani, Michael Pignone, S~Claiborne Johnston, and Lauren~Ancel Meyers.
+\newblock Impact of social distancing measures on covid-19 healthcare demand in
+  central texas.
+\newblock \emph{medRxiv}, 2020.
 
 \bibitem[Zellner et~al.(1991)Zellner, Hong, and Min]{zellner1991forecasting}
 Arnold Zellner, Chansik Hong, and Chung-ki Min.

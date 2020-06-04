@@ -3,44 +3,46 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: manuscript.aux
 The style file: plainnat.bst
 Database file #1: synthetic-prediction-notes.bib
-You've used 16 entries,
+Warning--there's a number but no volume in andolfatto2018yield
+You've used 39 entries,
             2773 wiz_defined-function locations,
-            694 strings with 7319 characters,
-and the built_in function-call counts, 7068 in all, are:
-= -- 662
-> -- 305
-< -- 16
-+ -- 106
-- -- 90
-* -- 511
-:= -- 1049
-add.period$ -- 46
-call.type$ -- 16
-change.case$ -- 76
-chr.to.int$ -- 16
-cite$ -- 32
-duplicate$ -- 350
-empty$ -- 630
-format.name$ -- 118
-if$ -- 1515
+            815 strings with 11507 characters,
+and the built_in function-call counts, 16911 in all, are:
+= -- 1551
+> -- 863
+< -- 35
++ -- 297
+- -- 258
+* -- 1266
+:= -- 2585
+add.period$ -- 120
+call.type$ -- 39
+change.case$ -- 203
+chr.to.int$ -- 39
+cite$ -- 79
+duplicate$ -- 792
+empty$ -- 1446
+format.name$ -- 327
+if$ -- 3562
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 15
-newline$ -- 86
-num.names$ -- 64
-pop$ -- 153
+missing$ -- 33
+newline$ -- 205
+num.names$ -- 156
+pop$ -- 401
 preamble$ -- 1
-purify$ -- 61
+purify$ -- 164
 quote$ -- 0
-skip$ -- 284
+skip$ -- 630
 stack$ -- 0
-substring$ -- 353
-swap$ -- 52
-text.length$ -- 4
+substring$ -- 670
+swap$ -- 78
+text.length$ -- 6
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 171
-warning$ -- 0
-while$ -- 76
+type$ -- 424
+warning$ -- 1
+while$ -- 170
 width$ -- 0
-write$ -- 208
+write$ -- 508
+(There was 1 warning)
