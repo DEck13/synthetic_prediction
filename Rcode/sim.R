@@ -183,7 +183,7 @@ est <- ols.est.alphahat(Tstar = Tstar, Y = Y, X = X)$est
 ols <- ols.est.alphahat(Tstar = Tstar, Y = Y, X = X)
 
 # Bootstrap
-B <- 10000
+B <- 1000
 
 # function based on ols object
 boots <- function(B, ols) {
@@ -235,6 +235,60 @@ boots <- function(B, ols) {
   return(list(adj = alphahat.adj.B, wadj = alphahat.wadj.B, IVW = alphahat.IVW.B))
 }
 
+# function based on ols object
+boots.mix <- function(B, ols) {
+  # extract
+  est <- ols$est
+  res <- ols$res
+  Tstar <- ols$Tstar
+  Y <- ols$Y
+  X <- ols$X
+  lmod <- ols$lmod
+  p <- ncol(X[[1]])
+  n <- length(ols$Y) - 1
+  
+  alphahat.adj.B <- c()
+  alphahat.wadj.B <- c()
+  alphahat.IVW.B <- c()
+  
+  for (b in 1:B) {
+    Yb <- Xb <- Tstarb <- c();
+    Yb[[1]] <- Y[[1]]; Xb[[1]] <- X[[1]]; Tstarb <- Tstar[1]
+    pool <- sample(2:(n + 1), size = n, replace = TRUE)
+    for (i in 1:n) {
+      
+      # setup
+      index <- pool[i]
+      Ti <- length(Y[[index]]) - 1
+      resit <- base::sample(res[[index - 1]], replace = TRUE)
+      yitb <- Y[[index]][1]
+      Tstari <- Tstar[index]
+      lmodi <- lmod[[index - 1]]
+      xi <- X[[index]][-1,]
+      xilag <- X[[index]][-(Ti + 1), ]
+      
+      # parameter
+      etahati <- coef(lmodi)[1]
+      alphahati <- coef(lmodi)[2]
+      phihati <- coef(lmodi)[3]
+      thetahati <- coef(lmodi)[4:(4 + p - 1)]
+      betahati <- coef(lmodi)[(4 + p):(3 + 2 * p)]
+      
+      for (t in 1:Ti) {
+        yitb <- c(yitb, etahati + alphahati * ifelse(t == Tstari + 1, yes = 1, no = 0) +
+                    phihati * yitb[t] + thetahati %*% xi[t, ] + betahati %*% xilag[t, ] + resit[t])
+      }
+      Yb[[i + 1]] <- yitb
+      Xb[[i + 1]] <- X[[index]]
+      Tstarb[[i + 1]] <- Tstari
+    }
+    olsb <- ols.est.alphahat(Tstar = Tstarb, Y = Yb, X = Xb)
+    alphahat.adj.B <- c(alphahat.adj.B, olsb$est['adj'])
+    alphahat.wadj.B <- c(alphahat.wadj.B, olsb$est['wadj'])
+    alphahat.IVW.B <- c(alphahat.IVW.B, olsb$est['IVW'])
+  }
+  return(list(adj = alphahat.adj.B, wadj = alphahat.wadj.B, IVW = alphahat.IVW.B))
+}
 
 # bootstrap samples
 bootsamp <- boots(B = 1000, ols = ols)
