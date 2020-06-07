@@ -811,3 +811,47 @@ result[, c(11:16 + 2)]
 pred <- result[, -c(1:4 + 2, 11:16 + 2)]
 # xtable
 xtable(pred, digits = 3)
+
+
+
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 200
+
+# parameter setup
+ns <- c(5, 10, 15, 25)
+sigma.delta.gamma.alphas <- c(0.01, 0.1, 1, 10)
+sim_params <- expand.grid(list(sigma.delta.gamma.alphas = sigma.delta.gamma.alphas, ns = ns))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.delta.gamma.alpha <- sim_params[j, 1]
+    n <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.gamma.delta = 2, 
+                                       mu.alpha = 10, sigma = 1, 
+                                       sigma.alpha = sigma.delta.gamma.alpha,
+                                       sigma.delta.gamma = sigma.delta.gamma.alpha, 
+                                       p = 2, B = 500, scale = 10, 
+                                       n = n, np = TRUE)
+      result <- c(study$bias, study$dist, study$consistency, study$rmse)
+      return(result)
+    }
+    # return results
+    out
+  })
+)
+

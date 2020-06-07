@@ -194,6 +194,8 @@ for (i in 1:5) {
 }
 
 # SCM
+
+# Euclidean metric
 # objective function
 weightedX0 <- function(W) {
   # W is a vector of weight of the same length of X0
@@ -220,6 +222,28 @@ weightedX0(round(outs$pars, digits = 3))
 # weighted adjustment estimator
 alpha_wadj <- sum(Wstar * estimates[,1])
  
+# Mahalanobis Distance metric
+Sigmahat <- cov(TS1[, c(3, 7, 4, 6)])
+weightedX0.M <- function(W) {
+  # W is a vector of weight of the same length of X0
+  n <- length(W)
+  p <- ncol(X1)
+  XW <- matrix(0, nrow = 2, ncol = p)
+  for (i in 1:n) {
+    XW <- XW + W[i] * X0[[i]]
+  }
+  norm <- as.numeric(matrix(X1 - XW, nrow = 1) %*% solve(Sigmahat) %*% matrix(X1 - XW))
+  return(norm)
+}
+# optimization
+outs.M <- solnp(par = rep(1/n, n), fun = weightedX0.M, eqfun = Wcons, eqB = 0, LB = rep(0, n), UB = rep(1, n))
+Wstar.M <- outs.M$pars
+# objective function
+sqrt(weightedX0.M(round(outs.M$pars, digits = 3)))
+# weighted adjustment estimator
+alpha_wadj.M <- sum(Wstar.M * estimates[,1])
+
+
 
 # Parametric Bootstrap Estimation
 
@@ -426,13 +450,13 @@ Yhat_additive <- c(alpha.adj.additive + Yhat_nothing, alpha.IVW.additive + Yhat_
                    alpha.wadj.additive + Yhat_nothing)
 
 ## doing nothing completely misses the mark
-Yhat_nothing - TS1$Y[nrow(TS1)]
+(Yhat_nothing - TS1$Y[nrow(TS1)]) ^ 2
 
 ## adjustment gets closer
-Yhat_adj - TS1$Y[nrow(TS1)]
+(Yhat_adj - TS1$Y[nrow(TS1)]) ^ 2
 
 ## additive effect does well
-Yhat_additive - TS1$Y[nrow(TS1)]
+(Yhat_additive - TS1$Y[nrow(TS1)]) ^ 2
 
 
 # plot data
