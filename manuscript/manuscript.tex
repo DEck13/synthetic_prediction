@@ -88,6 +88,9 @@
 
 
 
+
+
+
 % title
 \title{Minimizing post shock forecasting error using disparate information}
 \author{Jilei Lin\thanks{jileil2@ilinois.edu}}
@@ -123,6 +126,8 @@
 \begin{center}
   \textbf{Note}
 \end{center}
+
+
 
 
 Things to do:
@@ -731,16 +736,17 @@ that approximates the distribution of our shock-effect estimators and check the 
 %In the AR($p$) model, the unobserved errors are assumed to be identically and independently distributed. In this setting, standard bootstrap methodology can be applied to resampling the residuals \citep{efron1986bootstrap}. 
 \citet{bose1988edgeworth} showed that the asymptotic accuracy for OLS parameter estimation can be further improved from $O(T^{-1/2})$ to $o(T^{-1/2})$ almost surely under some regularity conditions. 
 
-\textbf{I think that our bootstrap procedure should first sample the disparate time series without replacement, and then estimate the parameters in each resampled time series.}
-The formal steps of our bootstrap procedures are outlined in the Supplementary Materials, the intuition for our procedure is as follows: let $B$ be the bootstrap sample size and initialize $y_{i,0}$ for all $i = 2,\ldots,n+1$. At iteration $b$, resample the residuals and then obtain shock-effect estimators for each of the disparate time series for all $i = 2,\ldots,n+1$. Then construct and store any of the adjustment estimators $\hat{\alpha}^{(b)}_{\mrm{adj}}$, $\hat{\alpha}^{(b)}_{\mrm{wadj}}$, and $\hat{\alpha}^{(b)}_{\mrm{IVW}}$. We can then estimate distributional quantities of our shock-effect estimators with the bootstrap sample of $\hat{\alpha}^{(b)}_{\mrm{adj}}$, $\hat{\alpha}^{(b)}_{\mrm{wadj}}$, and $\hat{\alpha}^{(b)}_{\mrm{IVW}}$, for $b = 1,\ldots,B$.
+To specify, there are two possible parametric bootstrap procedures for our methods, one conditioned on donor pool and the other  without. We first illustrate the simpler parametric bootstrap conditioned on the donor pool. The formal steps of it are outlined in the Supplementary Materials, the intuition for our procedure is as follows: let $B$ be the bootstrap sample size and let $I=\{2, \ldots, n +1\}$ be the indexes for donor pool. initialize $y_{i,0}$ for all $i \in I$. At iteration $b$, resample the residuals and then obtain shock-effect estimators for each of the disparate time series for all $i \in I$. Then construct and store any of the adjustment estimators $\hat{\alpha}^{(b)}_{\mrm{adj}}$, $\hat{\alpha}^{(b)}_{\mrm{wadj}}$, and $\hat{\alpha}^{(b)}_{\mrm{IVW}}$. We can then estimate distributional quantities of our shock-effect estimators with the bootstrap sample of $\hat{\alpha}^{(b)}_{\mrm{adj}}$, $\hat{\alpha}^{(b)}_{\mrm{wadj}}$, and $\hat{\alpha}^{(b)}_{\mrm{IVW}}$, for $b = 1,\ldots,B$.
 %The errors $\varepsilon_{i,t}$ and $\varepsilon_{i,t'}$ for $t \in \{1, \ldots, T_i^*\}$ and $t' \in \{T_i^*+1, \ldots, T_i\}$ are iid. 
 %since $y_{i,t}$ differs from $y_{i,t'}$ only in the shock-effect $\alpha_i$ conditioned on $\Theta$, and it is not absorbed into $\varepsilon_{i,t}$ and $\varepsilon_{i,t'}$. Therefore, this parametric bootstrap framework will work for us.
-Once can then use the bootstrapped shock-effects estimated by our residual bootstrap to provide an approximation for parameters involved in the risk-reduction conditions in Propositions \ref{proprisk} and \ref{propriskwadj2}.
+Once can then use the bootstrapped shock-effects estimated by our residual bootstrap to provide an approximation for parameters involved in the risk-reduction conditions in Propositions \ref{proprisk} and \ref{propriskwadj2}. 
+
+The parametric bootstrap without conditioning on the donor pool differs from the one with in the step that the former performs a non-parametric bootstrap by sampling $n$ values from $I=\{2, \ldots, n+1\}$ without replacement to generate  $I^*$. Then, it follows the same step with the one conditioned on the donor pool by replacing $I$ by $I^*$. 
 
 
 Let 
 $
-  \overline{\hat{\alpha}_{\mrm{aadj}}} 
+  \overline{\hat{\alpha}_{\mrm{adj}}} 
     = \frac{1}{B} \sum_{b=1}^B \sum_{i=2}^{n+1}\hat{\alpha}_i^{(b)}
 $, 
 $
@@ -764,8 +770,8 @@ The case for the sample variance of the bootstrapped weighted adjustment estimat
 
 %In particular $\overline{\hat{\alpha}_{\rm wadj}}$ will provide an approximation for $\E{\alpha_1}$ under $\mc{M}_1$, $\mc{M}_{21}$, and $\mc{M}_{22}$ since it is unbiased for $\E{\alpha_1}$ under those three configurations from Proposition \ref{unbiased}. Therefore, we can judge whether to use a shock-effect estimator, and choose between shock-effect estimators by this method. 
 
-We stress that the above approximation is conditioned on $\Theta$ and that bootstrapping cannot alleviate the inherent bias of using our adjustment estimators as estimates for $\alpha_1$. %Under a random-effect structure, every true shock effect of a time series in reality isan observed value from a population. For example, $\overline{\hat{\alpha}_{\rm wadj}}\overset{a.s.}{\rightarrow}\E{\hat{\alpha}_{\rm wadj}|\Theta}$ and $\overline{\hat{\alpha}_{\rm wadj}} \not\overset{a.s.}{\rightarrow}\E{\alpha_1}$ but $\E{\E{\hat{\alpha}_{\rm wadj}|\Theta}}=\E{\alpha_1}$. 
-Simulation for justification of the parametric bootstrap is provided in Section \ref{parametricbootstrapsimulation}.
+We stress that the above approximation is conditioned on $\Theta$ and the donor pool, and that bootstrapping cannot alleviate the inherent bias of using our adjustment estimators as estimates for $\alpha_1$. %Under a random-effect structure, every true shock effect of a time series in reality isan observed value from a population. For example, $\overline{\hat{\alpha}_{\rm wadj}}\overset{a.s.}{\rightarrow}\E{\hat{\alpha}_{\rm wadj}|\Theta}$ and $\overline{\hat{\alpha}_{\rm wadj}} \not\overset{a.s.}{\rightarrow}\E{\alpha_1}$ but $\E{\E{\hat{\alpha}_{\rm wadj}|\Theta}}=\E{\alpha_1}$. 
+For parametric bootstrap without conditioning on the donor pool but conditioned on $\Theta$, we stress that the $\mathbf{W}^*$ from SCM method will become random, and that the consistency results may not hold. Simulation for justification of the parametric bootstrap is provided in Section \ref{parametricbootstrapsimulation}.
 
 
 \section{Simulation}
@@ -773,10 +779,35 @@ Simulation for justification of the parametric bootstrap is provided in Section 
 \label{simulation}
 
 
-\subsection{Parametric bootstrap simulation}
+In this section, we provide justification for our methods based on simulation examples. We implement our simulation based on $\mc{M}_{22}$ with negligibly small $\Sigma_{\gamma}$ and $\Sigma_{\delta}$ approximating the design of $\mathcal{M}_{21}$.  $\phi_i$'s are sampled independently from $\mrm{Uniform}(0,1)$. We  sampled $T_i$'s  independently from  $\Gamma(10, 5)$ that are further rounded to integers. It is designed to illustrate the performance of $\hat{\alpha}_{\rm IVW}$ that may perform well in time series with varying lengths. Moreover, we generated the covariates from $\Gamma(1,10)$ to set up a setting when the $\hat{\alpha}_{\rm wadj}$ may perform well. We consider $p=2$ and $\mu_{\alpha}=10$. In this experiment, we consider parameter setup by varying $\sigma$ in the model of $y_{i,t}$, $n$, the donor pool size, and $\sigma_{\gamma}$ and $\sigma_{\delta}$ in the model $\delta_i \sim \normal{2\mathbf{1}_p}{\sigma^2_{\delta}\mathbf{I}_p}$, and $\gamma_i \sim \normal{2\mathbf{1}_p}{\sigma^2_{\gamma}\mathbf{I}_p}$.
+
+
+\subsection{Parametric bootstrap simulation for risk-reduction propositions}
 \label{parametricbootstrapsimulation}
 
-In this section, we provide experiments that vary across variance of $\alpha_i$, $y_{i,t}$, and donor pool size $n$ using two bootstrap techniques with one conditioned on the donor pool and one without. We implement our simulation based on $\mc{M}_{22}$ with negligibly small $\Sigma_{\gamma}$ and $\Sigma_{\delta}$ approximating the design of $\mathcal{M}_{21}$. We  sampled $T_i$'s  independently from  $\Gamma(10, 5)$ that are further rounded to integers. It is designed to illustrate the performance of $\hat{\alpha}_{\rm IVW}$ that may perform well in time series with varying lengths. Moreover, $\phi_i$'s are sampled independently from $\mrm{Uniform}(0,1)$.
+In this section, we provide justification for the bootstrap procedures used in estimating parameters for risk-reduction propositions (see Section \ref{properties}) and risk-reduction quantities (see Section \ref{comparisons}). We will compare the result of using parametric bootstrap conditioned on the donor pool with the one without using the parameter setup discussed in Section \ref{simulation}.
+
+Specifically, we verify the unbiasedness results in Proposition \ref{unbiased}, and consistency of our proposed risk-reduction propositions. We define the consistency by whether our risk-reduction propositions yield results that agree with the reality that can be known in the simulation. Suppose we make the decision to  accept $\hat{\alpha}$ for $\hat{\alpha}\in \{\hat{\alpha}_{\rm adj}, \hat{\alpha}_{\rm wadj}, \hat{\alpha}_{\rm IVW}\}$ if risk-reduction proposition reports that $\hat{\alpha}$ reduces the risk, and reject $\hat{\alpha}$ otherwise. Consistency can be interpreted in a similar way to hypothesis testing with the following confusion table. 
+\begin{center}
+  \begin{center}
+      \begin{tabular}{cc|c|c}
+        \hline
+        & & \multicolumn{2}{c}{Decision} \\
+        & & Accept $\hat{\alpha}$ & Reject $\hat{\alpha}$ \\ 
+                \hline
+     \multirow{2}{*}{Truth}  & $R_{T_1^*+1,2}<R_{T_1^*+1,1}$ & Consistent & Inconsistent\\
+      \cline{3-4}
+      & $R_{T_1^*+1,2}>R_{T_1^*+1,1}$   & Inconsistent & Consistent \\
+      \hline
+      \end{tabular}
+  \end{center}
+\end{center}
+We report 1 for risk-reduction propositions to be consistent and 0 otherwise.
+
+\subsection{Simulation for prediction}
+
+In this section, we report prediction results for our methods in the simulation. Specifically, we are interested in the distance between $\alpha_1$ and our shock-effect estimators, and the distance between $y_{1,T_1^*+1}$ and $\hat{y}_{1,T_1^*+1}$, $\hat{y}_{1,T_1^*+1}+ \hat{\alpha}_{\rm adj}$, $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm wadj}$, and $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm IVW}$.
+
 
 %In this section, we present the simulation for the parametric bootstrap procedure for AR(1) outlined in Section \ref{varbootstrap}. The simulation is only provided for the adjustment estimator and weighted adjustment estimator since the weights for inverse-variance estimator are random and the true values of its moments are unknown.
 
@@ -927,7 +958,7 @@ Third, though it is reflected in $\mc{M}_2$, we stress that our proposed methods
 Sixth, our bootstrap procedure can be extended to approximate the distribution of shock effect estimators from more general time series. The pseudo-time series generated by parametric bootstrap is not stationary. Note that \citet{politis1994stationary} motivated a stationary bootstrap method for strictly stationary and weakly dependent time series $\{X_n \colon n \in \mathbb{N}\}$. This algorithm generates a sequence of blocks of observations $B_{I_1, L_1}, B_{I_2, L_2}, \ldots$\footnote{The collection of random positions $\{I_n \colon n \in \mathbb{N}\}$ is a sequence of i.i.d. discrete uniform random variables; and the collection of random lengths $\{L_n \colon n \in \mathbb{N}\}$ is a sequence of  i.i.d. geometric random variables with parameter $p$.}, where $B_{i,b}= \{X_i, X_{i+1}, \ldots, X_{i+b-1}\}$\footnote{For $j > N$, $X_{j}$ is defined to be $X_k$, where $k = j \hspace{-.1cm} \mod N$ and $X_0 = X_N$.}; and the sampling stops when $N$ observations are reached.  However, the consistency needs to be proved by a case-by-case analysis \citep[Page 66]{politis1999subsampling}. Additionally, the asymptotic accuracy of this algorithm can be sensitive to the selection of $p$. This issue is similar to that of the selection of block size in moving-block bootstrapping \citep{kunsch1989jackknife, liu1992moving}.  More work related to bootstrapping time series  can be referred to Chapters 3 and 4 in \citet{politis1999subsampling}, and \citet{berkowitz2000recent}. It is up to the user in selecting which procedure to choose but under different assumptions on the time-series. 
 
 
-For the use of our methodology, caution should be dedicated to the construction of donor pool. Otherwise, the result will not be robust to the noises introduced by the the ones that are not similar to the time series of interest. 
+For the use of our methodology, caution should be dedicated to the construction of donor pool. Otherwise, the result will not be robust to the noises introduced by the the ones that are not similar to the time series of interest. We recommend using parametric bootstrap without conditioning on the donor pool when the donor pool size $n$ is large, and the one conditioned on the donor pool when $n$ is small.
 
 \section{Appendix}
 

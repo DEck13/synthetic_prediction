@@ -292,12 +292,14 @@ sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma,
   }
   
   # E(alpha1)
-  Ealpha1 <- mu.alpha + delta[[1]] %*% X[[1]][Tstar[1] + 1, ] + gamma[[1]] %*% X[[1]][Tstar[1], ]
+  Ealpha1 <- mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1] + 1, ] + 
+    matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1], ]
   
   # E(alpha_adj)
   alphas.2.np1 <- c()
   for (i in 2:(n + 1)) {
-    alphas.2.np1 <- c(alphas.2.np1, mu.alpha + delta[[i]] %*% X[[i]][Tstar[i] + 1, ] + gamma[[i]] %*% X[[i]][Tstar[i], ])
+    alphas.2.np1 <- c(alphas.2.np1, mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i] + 1, ] + 
+                        matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i], ])
   }
   Ealpha.adj <- mean(alphas.2.np1)
   
@@ -363,6 +365,7 @@ sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma,
   # yhats
   yhat2s <- sapply(c('adj', 'wadj', 'IVW'), function(d) nowcast.alpha(X = X, Y = Y, Tstar = Tstar, best = d)[[1]])
   yhat1 <- nowcast.alpha(X = X, Y = Y, Tstar = Tstar, best = 'wadj')[[2]]
+  names(yhat1) <- 'no'
   names(yhat2s) <- c('adj', 'wadj', 'IVW')
   
   # comparison
@@ -373,10 +376,10 @@ sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma,
   consistency <- ifelse(truth == guess, yes = 1, no = 0)
   
   # risk
-  rmse <- sqrt(abs(Y[[1]][Tstar[1] + 2] - yhat2s) ^ 2)
+  rmse <- sqrt(abs(Y[[1]][Tstar[1] + 2] - c(yhat1, yhat2s)) ^ 2)
   
   # output
-  result <- list(bias = bias, dist = dist, consistency = consistency, rmse = rmse)
+  result <- list(bias = bias, dist = dist, guess = guess, consistency = consistency, rmse = rmse)
   return(result)
 }
 
@@ -391,7 +394,6 @@ sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma,
   }
   phi <- round(runif(n + 1, 0, 1), 3) # autoregressive parameters
   
-  
   # construction of design matrix and shock effects
   X <- c()
   alpha <- c()
@@ -400,7 +402,8 @@ sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma,
   for (i in 1:(n + 1)) {
     Ti <- T[i]
     Tstari <- Tstar[i]
-    X[[i]] <- matrix(rnorm(n = (Ti + 1) * p, mean = mean, sd = sd), ncol = p, byrow = T)
+    X[[i]] <- matrix(rgamma(n = p * (Ti + 1), shape = 1, scale = scale), ncol = p, byrow = T) 
+    # matrix(rnorm(n = (Ti + 1) * p), ncol = p, byrow = T)
     # parameter setup
     delta[[i]] <- matrix(rnorm(p, mean = mu.gamma.delta, sd = sigma.delta.gamma), nrow = 1)
     gamma[[i]] <- matrix(rnorm(p, mean = mu.gamma.delta, sd = sigma.delta.gamma), nrow = 1)
@@ -411,15 +414,16 @@ sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma,
   }
   
   # E(alpha1)
-  Ealpha1 <- mu.alpha + delta[[1]] %*% X[[1]][Tstar[1] + 1, ] + gamma[[1]] %*% X[[1]][Tstar[1], ]
+  Ealpha1 <- mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1] + 1, ] + 
+    matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1], ]
   
   # E(alpha_adj)
   alphas.2.np1 <- c()
   for (i in 2:(n + 1)) {
-    alphas.2.np1 <- c(alphas.2.np1, mu.alpha + delta[[i]] %*% X[[i]][Tstar[i] + 1, ] + gamma[[i]] %*% X[[i]][Tstar[i], ])
+    alphas.2.np1 <- c(alphas.2.np1, mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i] + 1, ] + 
+                        matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i], ])
   }
-  Ealpha.adj <- mean(alphas.2.np1)
-  
+  Ealpha.adj <- mean(alphas.2.np1)  
   # generation of yit
   Y <- c()
   for (i in 1:(n + 1)) {
@@ -483,6 +487,7 @@ sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma,
   # yhats
   yhat2s <- sapply(c('adj', 'wadj', 'IVW'), function(d) nowcast.alpha(X = X, Y = Y, Tstar = Tstar, best = d)[[1]])
   yhat1 <- nowcast.alpha(X = X, Y = Y, Tstar = Tstar, best = 'wadj')[[2]]
+  names(yhat1) <- 'no'
   names(yhat2s) <- c('adj', 'wadj', 'IVW')
   
   # comparison
@@ -493,10 +498,10 @@ sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma,
   consistency <- ifelse(truth == guess, yes = 1, no = 0)
   
   # risk
-  rmse <- sqrt(abs(Y[[1]][Tstar[1] + 2] - yhat2s) ^ 2)
+  rmse <- sqrt(abs(Y[[1]][Tstar[1] + 2] - c(yhat1, yhat2s)) ^ 2)
   
   # output
-  result <- list(bias = bias, dist = dist, consistency = consistency, rmse = rmse)
+  result <- list(bias = bias, dist = dist, guess = guess, consistency = consistency, rmse = rmse)
   return(result)
 }
 
@@ -521,101 +526,6 @@ sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma,
 #                   sigma.delta.gamma = sigma.delta.gamma, 
 #                   p = 5, B = 1000, n = 5))
 #}
-
-bias.result <- c()
-dist.result <- c()
-consistency.result <- c()
-risk.result <- c()
-ns <- c(5, 10, 15, 25)
-sigma.delta.gamma.alpha <- c(0.01, 0.1, 1, 10)
-# set a seed
-set.seed(2020)
-for (j in 1:4) {
-  bias.result.j <- c()
-  dist.result.j <- c()
-  consistency.result.j <- c()
-  risk.result.j <- c()
-  for (i in 1:4) {
-    # result
-    study <- sim.study.normal.gammaX(mu.gamma.delta = 2, 
-                     mu.alpha = 10, sigma = 1, 
-                     sigma.alpha = sigma.delta.gamma.alpha[j],
-                     sigma.delta.gamma = sigma.delta.gamma.alpha[j], 
-                     p = 2, B = 1000, scale = 10, 
-                     n = ns[i], np = FALSE)
-    # output
-    bias.result.j <- rbind(bias.result.j, study$bias)
-    dist.result.j <- rbind(dist.result.j, study$dist)
-    consistency.result.j <- rbind(consistency.result.j, study$consistency)
-    risk.result.j <- rbind(risk.result.j, study$rmse)
-  }
-  rownames(bias.result.j) <- rownames(dist.result.j) <- rownames(consistency.result.j) <- rownames(risk.result.j) <- ns
-  bias.result[[j]] <- bias.result.j
-  dist.result[[j]] <- dist.result.j
-  consistency.result[[j]] <- consistency.result.j
-  risk.result[[j]] <- risk.result.j
-}
-
-
-# do call
-table.bias <- do.call('rbind', bias.result)
-table.dist <- do.call('rbind', dist.result)
-table.consistency <- do.call('rbind', consistency.result)
-table.risk <- do.call('rbind', risk.result)
-table <- cbind(table.bias, table.dist, table.consistency, table.risk)
-require('xtable')
-xtable(table, digits = 3)
-
-
-
-
-
-bias.result <- c()
-dist.result <- c()
-consistency.result <- c()
-risk.result <- c()
-ns <- c(5, 10, 15, 25)
-sigma.delta.gamma.alpha <- c(0.01, 0.1, 1, 10)
-# set a seed
-set.seed(2020)
-for (j in 1:4) {
-  bias.result.j <- c()
-  dist.result.j <- c()
-  consistency.result.j <- c()
-  risk.result.j <- c()
-  for (i in 1:4) {
-    # result
-    study <- sim.study.normal.gammaX(mu.gamma.delta = 2, 
-                                     mu.alpha = 10, sigma = 1, 
-                                     sigma.alpha = sigma.delta.gamma.alpha[j],
-                                     sigma.delta.gamma = sigma.delta.gamma.alpha[j], 
-                                     p = 2, B = 1000, scale = 10, 
-                                     n = ns[i], np = TRUE)
-    # output
-    bias.result.j <- rbind(bias.result.j, study$bias)
-    dist.result.j <- rbind(dist.result.j, study$dist)
-    consistency.result.j <- rbind(consistency.result.j, study$consistency)
-    risk.result.j <- rbind(risk.result.j, study$rmse)
-  }
-  rownames(bias.result.j) <- rownames(dist.result.j) <- rownames(consistency.result.j) <- rownames(risk.result.j) <- ns
-  bias.result[[j]] <- bias.result.j
-  dist.result[[j]] <- dist.result.j
-  consistency.result[[j]] <- consistency.result.j
-  risk.result[[j]] <- risk.result.j
-}
-
-# do call
-table.bias <- do.call('rbind', bias.result)
-table.dist <- do.call('rbind', dist.result)
-table.consistency <- do.call('rbind', consistency.result)
-table.risk <- do.call('rbind', risk.result)
-table <- cbind(table.bias, table.dist, table.consistency, table.risk)
-require('xtable')
-xtable(table, digits = 3)
-
-
-
-
 
 
 bias.result <- c()
@@ -854,4 +764,25 @@ system.time(
     out
   })
 )
+write_xlsx(lapply(output, as.data.frame), 'nonparametricnsigma.xlsx')
 
+# collect results
+result <- c()
+for (i in 1:16) {
+  table <- output[[i]]
+  means <- apply(table, 2, function(x) mean(x, na.rm = TRUE))
+  sds <- apply(table, 2, function(x) sd(x, na.rm = TRUE))
+  result.i <- c()
+  for (j in 1:11) {
+    result.i <- cbind(result.i, cbind(means[j], sds[j]))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+rownames(result) <- 1:16
+# results
+riskprop <- result[, c(1:2, 1:4 + 2, 11:16 + 2)]
+result[, c(11:16 + 2)]
+pred <- result[, -c(1:4 + 2, 11:16 + 2)]
+# xtable
+xtable(pred, digits = 3)
