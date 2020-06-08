@@ -686,7 +686,7 @@ system.time(
                                        sigma.delta.gamma = sigma.delta.gamma.alpha, 
                                        p = 2, B = 500, scale = 10, 
                                        n = n, np = FALSE)
-      result <- c(study$bias, study$dist, study$consistency, study$rmse)
+      result <- c(study$bias, study$dist, study$guess, study$consistency, study$rmse)
       return(result)
     }
   # return results
@@ -757,7 +757,7 @@ system.time(
                                        sigma.delta.gamma = sigma.delta.gamma.alpha, 
                                        p = 2, B = 500, scale = 10, 
                                        n = n, np = TRUE)
-      result <- c(study$bias, study$dist, study$consistency, study$rmse)
+      result <- c(study$bias, study$dist, study$guess, study$consistency, study$rmse)
       return(result)
     }
     # return results
