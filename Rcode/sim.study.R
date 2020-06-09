@@ -160,7 +160,6 @@ boots <- function(B, ols) {
   }
   return(list(adj = alphahat.adj.B, wadj = alphahat.wadj.B, IVW = alphahat.IVW.B))
 }
-
 # function based on ols object
 boots.mix <- function(B, ols) {
   # extract
@@ -216,7 +215,6 @@ boots.mix <- function(B, ols) {
   }
   return(list(adj = alphahat.adj.B, wadj = alphahat.wadj.B, IVW = alphahat.IVW.B))
 }
-
 # risk condition
 risk.reduction <- function(means, vars) {
   rr.adj <- (means['wadj']) ^ 2 - vars['adj'] - (means['adj'] - means['wadj']) ^ 2
@@ -226,8 +224,6 @@ risk.reduction <- function(means, vars) {
   names(est) <- c('adj', 'wadj', 'IVW')
   return(list(usable = ifelse(est > 0, yes = 1, no = 0), best = which.max(est)))
 }
-
-# nowcasting 
 # nowcasting 
 nowcast.alpha <- function(X, Y, Tstar, best = c('adj', 'wadj', 'IVW')) {
   # set up
@@ -259,12 +255,14 @@ nowcast.alpha <- function(X, Y, Tstar, best = c('adj', 'wadj', 'IVW')) {
   return(list(yhat2 = yhat2, yhat1 = yhat1, alpha1est = ols$est[best]))
 }
 
-
 # simulation study normal
 sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma, 
                                     sigma.alpha, sigma.delta.gamma, 
                                     p, B, n, scale, np = c(TRUE, FALSE)) {
   T <- round(rgamma(n = n + 1, shape = 10, scale = 5)) # Time Length
+  while(min(T) <= 3 + 2 * p) {
+    T <- round(rgamma(n = n + 1, shape = 10, scale = 5))
+  }
   Tstar <- c() # Shock Time Points
   for (t in T) {
     Tstar <- c(Tstar, sample(3:(t - 1), size = 1))
@@ -340,9 +338,9 @@ sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma,
   
   # bootstrap samples
   if (np == TRUE) {
-    bootsamp <- boots.mix(B = 1000, ols = ols)
+    bootsamp <- boots.mix(B = B, ols = ols)
   } else {
-    bootsamp <- boots(B = 1000, ols = ols)
+    bootsamp <- boots(B = B, ols = ols)
   }
   
   # Bias
@@ -375,14 +373,17 @@ sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma,
   names(truth) <- c('adj', 'wadj', 'IVW')
   consistency <- ifelse(truth == guess, yes = 1, no = 0)
   
+  # best consistency
+  best.consistency <- ifelse(which.min(abs(Y[[1]][Tstar[1] + 2] - yhat2s)) == 
+                               risk.reduction(means = means, vars = vars)$best, yes = 1, no = 0)
   # risk
   rmse <- sqrt(abs(Y[[1]][Tstar[1] + 2] - c(yhat1, yhat2s)) ^ 2)
   
   # output
-  result <- list(bias = bias, dist = dist, guess = guess, consistency = consistency, rmse = rmse)
+  result <- list(bias = bias, dist = dist, guess = guess, consistency = consistency, 
+                 best.consistency = best.consistency, rmse = rmse)
   return(result)
 }
-
 
 sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma, 
                                      sigma.alpha, sigma.delta.gamma, 
@@ -462,9 +463,9 @@ sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma,
   
   # bootstrap samples
   if (np == TRUE) {
-    bootsamp <- boots.mix(B = 1000, ols = ols)
+    bootsamp <- boots.mix(B = B, ols = ols)
   } else {
-    bootsamp <- boots(B = 1000, ols = ols)
+    bootsamp <- boots(B = B, ols = ols)
   }
   
   # Bias
@@ -497,35 +498,19 @@ sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma,
   names(truth) <- c('adj', 'wadj', 'IVW')
   consistency <- ifelse(truth == guess, yes = 1, no = 0)
   
+  # best consistency
+  best.consistency <- ifelse(which.min(abs(Y[[1]][Tstar[1] + 2] - yhat2s)) == 
+                               risk.reduction(means = means, vars = vars)$best, yes = 1, no = 0)
+  
   # risk
   rmse <- sqrt(abs(Y[[1]][Tstar[1] + 2] - c(yhat1, yhat2s)) ^ 2)
   
   # output
-  result <- list(bias = bias, dist = dist, guess = guess, consistency = consistency, rmse = rmse)
+  result <- list(bias = bias, dist = dist, guess = guess, 
+                 consistency = consistency, best.consistency = best.consistency, 
+                 rmse = rmse)
   return(result)
 }
-
-
-# parameters
-# mu.gamma.delta <- c(0, 10)
-# sigma.delta.gamma <- c(0.1, 1, 10)
-# all combinations of parameters
-# sim_params <- expand.grid(list(mu.gamma.delta = mu.gamma.delta, 
-#                               sigma.delta.gamma = sigma.delta.gamma))
-
-# simulation
-# result <- c()
-# for (i in 1:nrow(sim_params)) {
-  # parameters
-#  mu.gamma.delta <- sim_params[i, 1]
-#  sigma.delta.gamma <- sim_params[i, 2]
-  
-  # result
-#  result <- rbind(result, sim.study.normal(mu.gamma.delta = mu.gamma.delta, 
-#                   mu.alpha = 10, sigma = 1, sigma.alpha = sigma.delta.gamma,
-#                   sigma.delta.gamma = sigma.delta.gamma, 
-#                   p = 5, B = 1000, n = 5))
-#}
 
 
 bias.result <- c()
@@ -567,92 +552,6 @@ require('xtable')
 xtable(table, digits = 3)
 
 
-
-# normal X
-bias.result <- c()
-dist.result <- c()
-consistency.result <- c()
-ns <- c(5, 10, 15, 25)
-sigma.delta.gamma.alpha <- c(0.01, 0.1, 1, 10)
-# set a seed
-set.seed(2026)
-for (j in 1:4) {
-  bias.result.j <- c()
-  dist.result.j <- c()
-  consistency.result.j <- c()
-  for (i in 1:4) {
-    # result
-    study <- sim.study.normal.normalX(mu.gamma.delta = 2, 
-                                     mu.alpha = 10, sigma = 1, 
-                                     sigma.alpha = sigma.delta.gamma.alpha[j],
-                                     sigma.delta.gamma = sigma.delta.gamma.alpha[j], 
-                                     p = 2, B = 1000, mean = 10, sd = 10,
-                                     n = ns[i])
-    # output
-    bias.result.j <- rbind(bias.result.j, study$bias)
-    dist.result.j <- rbind(dist.result.j, study$dist)
-    consistency.result.j <- rbind(consistency.result.j, study$consistency)
-  }
-  rownames(bias.result.j) <- rownames(dist.result.j) <- rownames(consistency.result.j) <- ns
-  bias.result[[j]] <- bias.result.j
-  dist.result[[j]] <- dist.result.j
-  consistency.result[[j]] <- consistency.result.j
-}
-
-
-# do call
-table.bias <- do.call('rbind', bias.result)
-table.dist <- do.call('rbind', dist.result)
-table.consistency <- do.call('rbind', consistency.result)
-table <- cbind(table.bias, table.dist, table.consistency)
-require('xtable')
-xtable(table, digits = 3)
-
-
-
-bias.result <- c()
-dist.result <- c()
-consistency.result <- c()
-sigma.delta.gamma.alpha <- c(0.01, 0.1, 1, 10)
-sigma <- c(0.01, 0.1, 1, 10)
-# set a seed
-set.seed(2025)
-for (j in 1:4) {
-  bias.result.j <- c()
-  dist.result.j <- c()
-  consistency.result.j <- c()
-  for (i in 1:4) {
-    # result
-    study <- sim.study.normal.normalX(mu.gamma.delta = 2, 
-                                     mu.alpha = 10, sigma = sigma[i], 
-                                     sigma.alpha = sigma.delta.gamma.alpha[j],
-                                     sigma.delta.gamma = sigma.delta.gamma.alpha[j], 
-                                     p = 2, B = 1000, n = 10, mean = 10, sd = 10)
-    # output
-    bias.result.j <- rbind(bias.result.j, study$bias)
-    dist.result.j <- rbind(dist.result.j, study$dist)
-    consistency.result.j <- rbind(consistency.result.j, study$consistency)
-  }
-  rownames(bias.result.j) <- rownames(dist.result.j) <- rownames(consistency.result.j) <- sigma
-  bias.result[[j]] <- bias.result.j
-  dist.result[[j]] <- dist.result.j
-  consistency.result[[j]] <- consistency.result.j
-}
-
-
-# do call
-table.bias <- do.call('rbind', bias.result)
-table.dist <- do.call('rbind', dist.result)
-table.consistency <- do.call('rbind', consistency.result)
-table <- cbind(table.bias, table.dist, table.consistency)
-require('xtable')
-xtable(table, digits = 3)
-
-
-
-
-
-
 # MC
 library("parallel")
 library("doParallel")
@@ -684,9 +583,10 @@ system.time(
                                        mu.alpha = 10, sigma = 1, 
                                        sigma.alpha = sigma.delta.gamma.alpha,
                                        sigma.delta.gamma = sigma.delta.gamma.alpha, 
-                                       p = 2, B = 500, scale = 10, 
+                                       p = 13, B = 500, scale = 10, 
                                        n = n, np = FALSE)
-      result <- c(study$bias, study$dist, study$guess, study$consistency, study$rmse)
+      result <- c(study$bias, study$dist, study$guess, study$consistency,
+                  study$best.consistency, study$rmse)
       return(result)
     }
   # return results
@@ -703,22 +603,31 @@ write_xlsx(lapply(output, as.data.frame), 'parametricnsigma.xlsx')
 
 # collect results
 result <- c()
+nnas <- c()
 for (i in 1:16) {
   table <- output[[i]]
+  
+  # means and sds
   means <- apply(table, 2, function(x) mean(x, na.rm = TRUE))
   sds <- apply(table, 2, function(x) sd(x, na.rm = TRUE))
+  
+  # check how many effective rows
+  nna <- length(which(apply(output[[i]], 1, FUN = function(x) anyNA(x)) == FALSE))
+  nnas <- c(nnas, nna)
+  
   result.i <- c()
-  for (j in 1:11) {
-    result.i <- cbind(result.i, cbind(means[j], sds[j]))
+  for (j in 1:16) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
+                                       ' (', round(sds[j] / sqrt(nna), 
+                                                   digits = 3), ')'))
   }
   result <- rbind(result, result.i)
 }
 result <- cbind(sim_params[, c(2,1)], result)
 rownames(result) <- 1:16
 # results
-riskprop <- result[, c(1:2, 1:4 + 2, 11:16 + 2)]
-result[, c(11:16 + 2)]
-pred <- result[, -c(1:4 + 2, 11:16 + 2)]
+riskprop <- result[, c(1:4, 8:14)]
+pred <- result[, -c(1:4, 8:14)]
 # xtable
 xtable(pred, digits = 3)
 
@@ -757,7 +666,8 @@ system.time(
                                        sigma.delta.gamma = sigma.delta.gamma.alpha, 
                                        p = 2, B = 500, scale = 10, 
                                        n = n, np = TRUE)
-      result <- c(study$bias, study$dist, study$guess, study$consistency, study$rmse)
+      result <- c(study$bias, study$dist, study$guess, study$consistency, 
+                  study$best.consistency, study$rmse)
       return(result)
     }
     # return results
@@ -786,3 +696,5 @@ result[, c(11:16 + 2)]
 pred <- result[, -c(1:4 + 2, 11:16 + 2)]
 # xtable
 xtable(pred, digits = 3)
+
+
