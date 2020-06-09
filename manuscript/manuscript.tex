@@ -92,7 +92,7 @@
 
 
 % title
-\title{Minimizing post shock forecasting error using disparate information}
+\title{Minimizing post-shock forecasting error using disparate information}
 \author{Jilei Lin\thanks{jileil2@ilinois.edu}}
 \author{Ziyu Liu\thanks{ziyuliu3@illinois.edu}}
 \author{Daniel J. Eck\thanks{dje13@illinois.edu}}
@@ -160,9 +160,7 @@ Things to do:
 
 \maketitle
 \begin{abstract}
-    We developed a forecasting methodology for providing credible forecasts for time series data that has undergone a shock  by borrowing knowledge from disparate 
-    time series that have undergone similar shocks for which post-shock 
-    outcome is recorded. Three shock-effects estimators were constructed for minimizing average forecast risk. We proposed conditions when our methodology works, and which estimator is the best in average forecast risk reduction. Parametric bootstrap procedures are provided for such realization. Several simulated data examples, and a real data example of forecasting Conoco Phillips stock price are provided for verification and illustration.
+    We developed a forecasting methodology for providing credible forecasts for time series data that has undergone a shock  by borrowing knowledge from disparate time series that have undergone similar shocks for which post-shock outcome is recorded. Three shock-effects estimators were constructed for minimizing average forecast risk. We proposed conditions when our methodology works, and which estimator is the best in average forecast risk reduction. Bootstrap procedures are provided to estimate the variability of our shock effect estimators and these procedures can be used to assess the potential success of post-shock prediction before the post-shock response is observed. Several simulated data examples, and a real data example of forecasting Conoco Phillips stock price are provided for verification and illustration.
 \end{abstract}
 
 
@@ -186,7 +184,8 @@ In our post-shock setting we combine estimated quantities from different time se
 Data integration for forecasting is a broad area of research including ideas from many areas. \citet{lee2020estimation} constructed a Bayesian hierarchical model embracing data integration %estimate posterior parameters for Richards model 
 to improve predictive precision of COVID-19 infection trajectories for different countries. A similar setup may be beneficial for post-shock prediction but may be too dependent upon model specification for the shock distribution.
 %, and conditions for predictive improvement are generally hard to know. 
-\citet{plessen2020integrated} employed a data-mining approach to combine COVID-19 data from different countries as input to predict global net daily infections and deaths of COVID-19 using clustering. However, there is a tremendous amount of volatility in this form of COVID-19 data, and the fit of this prediction method may be improved with modeling structure or preprocessing of the donor pool. From a machine learning perspective, \citet{agarwal2020two} proposed a model-free synthetic intervention  method to predict unobserved potential outcomes after different interventions given a donor pool of observed outcomes with given interventions. 
+\citet{plessen2020integrated} employed a data-mining approach to combine COVID-19 data from different countries as input to predict global net daily infections and deaths of COVID-19 using clustering. However, there is a tremendous amount of volatility in this form of COVID-19 data, and the fit of this prediction method may be improved with modeling structure or preprocessing of the donor pool. %From a machine learning perspective, 
+\citet{agarwal2020two} proposed a model-free synthetic intervention method to predict unobserved potential outcomes after different interventions given a donor pool of observed outcomes with given interventions. They also provide useful guidelines for how to estimate the effects of potential interventions by giving recommendations for choosing the metric of interest, the intervention of interest, time horizons, and the donor pool.
 
 
 %Therefore the traditional forecast combination framework may not be of any help.  
@@ -208,30 +207,20 @@ We consider three aggregation techniques: simple averaging, inverse-variance wei
 \section{Setting}
 \label{setting}
 
-
-
-We will suppose that an analyst has time series data ($y_{i,t}$,$\x_{i,t}$), 
-$t = 1$, $\ldots$, $T_i$, $i = 1$, $\ldots$, $n+1$, where $y_{i,t}$ is a 
-scalar response and $\x_{i,t}$ is a vector of covariates that are revealed to 
-the analyst prior to the observation of $y_{1,t}$.  Suppose that the analyst 
-is interested in forecasting $y_{1,t}$, the first time series in the 
-collection.
+We will suppose that an analyst has time series data ($y_{i,t}$,$\x_{i,t}$), $t = 1$, $\ldots$, $T_i$, $i = 1$, $\ldots$, $n+1$, where $y_{i,t}$ is a scalar response and $\x_{i,t}$ is a vector of covariates that are revealed to the analyst prior to the observation of $y_{1,t}$.  Suppose that the analyst is interested in forecasting $y_{1,t}$, the first time series in the collection. 
 %$y_1, y_2, \ldots$.  
 %Given each time point $t \geq 1$, let $\x_{1,t}$ be a vector of covariates 
 %revealed prior to the observation of $y_{1,t}$.  
-To gauge the performance of a procedure that produces forecasts 
-$\{\hat y_{1,t}, t= 1,2,\ldots\}$ given time horizon $T_1$, 
-we consider forecast risk in the form of  mean squared error (MSE),
+
+We will suppose that specific interest is in forecasts to made after the occurrence of a structural shock. To gauge the performance of forecasts, we consider forecast risk in the form of mean squared error (MSE),
 $$
   R_T = \frac{1}{T}\sum_{t=1}^T\E{\hat y_{1,t} - y_{1,t}}^2,
 $$
-in our analyses. In this article, we consider a dynamic panel data 
-model with autoregressive structure similar to that in \citet{blundell1998initial}. 
-%without past time period covariate 
-%information and with a single present time covariate.  
-Our dynamic panel model includes an additional shock effect whose presence 
-or absence is given by the binary variable $D_{i,t}$, the details of this model 
-are in the next section.
+and root mean squared error (RMSE), given by $\sqrt{R_T}$, in our analyses. 
+
+
+%The forecast consists of three steps: (1) pick a model, (2) selection of covariates, (3) choices of donor pool.
+Our post-shock prediction methodology will consist of selecting covariates $x_{i,t}$, constructing a suitable donor pool of candidate time series that have undergone similar structural shocks to the time series under study, and specifying a model for the time series ($y_{i,t}$,$\x_{i,t}$), $t = 1$, $\ldots$, $T_i$, $i = 1$, $\ldots$, $n+1$. In this article, we consider a dynamic panel data model with autoregressive structure similar to that in \citet{blundell1998initial}. Our dynamic panel model includes an additional shock effect whose presence or absence is given by the binary variable $D_{i,t}$, and we will assume that the donor pool time series are independent of the time series under study. The details of this model are in the next section.
 
 
 \begin{figure}
@@ -274,8 +263,8 @@ $\mbf{x}_{i,t}$'s are fixed and $T_i^*$s are known. The random effects structure
   \phi_i &\simiid \phi, \where |\phi|<1, \qquad i = 1, \ldots, n+1, \\
    \theta_i &\simiid \theta, \where \E{\theta}=\mu_{\theta}, \var{\theta}=\Sigma_{\theta}^2, \qquad i = 1, \ldots, n + 1, \\
 \beta_i &\simiid \beta, \where \E{\beta}=\mu_{\beta}, \var{\beta}=\Sigma_{\beta}^2, \qquad i = 1, \ldots, n+1,\\
+\alpha_i &\simiid \alpha, \where \E{\alpha}=\mu_{\alpha}, \var{\alpha}=\sigma_{\alpha}^2, \qquad  i = 1, \ldots, n+1; \\
 \varepsilon_{i,t} &\simiid \normal{0}{\sigma^2}, \qquad t=1, \ldots, T_i, \; i = 1, \ldots, n+1,\\
-\alpha_i &\simiid  \normal{\mu_{\alpha}}{\sigma^2_{\alpha}}, \qquad  i = 1, \ldots, n+1; \\
 \eta &\indep  \alpha_i \indep \phi \indep \theta \indep \varepsilon_{i,t}.
 \end{align*}
 Notice that $\mc{M}_1$ assumes that $\alpha_i$ are iid with $\E{\alpha_i}=\mu_{\alpha}$ 
@@ -728,20 +717,18 @@ We analyze this inequality from two perspectives.
 \label{varbootstrap}
 
 
-In this section, we present a bootstrap procedure 
-%(see Section \ref{modelsetup}) 
-that approximates the distribution of our shock-effect estimators and check the underlying conditions of our risk reduction results in practice. Our procedure involves the resampling of residuals in the separate OLS fits. This procedure has its origins in Section 6 of \citet{efron1986bootstrap}, and it involves the resampling the residuals which are assumed to be the realizations of an iid processes.
+In this section, we present a bootstrap procedure that approximates the distribution of our shock-effect estimators and check the underlying conditions of our risk reduction results in practice. Our procedure involves the resampling of residuals in the separate OLS fits. This procedure has its origins in Section 6 of \citet{efron1986bootstrap}, and it involves the resampling the residuals which are assumed to be the realizations of an iid processes.
 %NO NEED TO OUTLINE IN THIS WAY: In the first step, we will introduce the pros and cons of this algorithm and refer the users to other alternatives. In the second step, we detail the procedure of boostrapping AR(1).
 %%\citet{efron} introduces the bootstrapping method to approximate the distribution of a statistic using a \emph{random sample}. However, this method will fail for time-series data since serial correlation or time-dependent features exist in typical time-series model. 
 %In the AR($p$) model, the unobserved errors are assumed to be identically and independently distributed. In this setting, standard bootstrap methodology can be applied to resampling the residuals \citep{efron1986bootstrap}. 
-\citet{bose1988edgeworth} showed that the asymptotic accuracy for OLS parameter estimation can be further improved from $O(T^{-1/2})$ to $o(T^{-1/2})$ almost surely under some regularity conditions. 
+\citet{bose1988edgeworth} showed that the asymptotic accuracy for OLS parameter estimation can be further improved from $O(T^{-1/2})$ to $o(T^{-1/2})$ almost surely under some regularity conditions.
 
-To specify, there are two possible parametric bootstrap procedures for our methods, one conditioned on donor pool and the other  without. We first illustrate the simpler parametric bootstrap conditioned on the donor pool. The formal steps of it are outlined in the Supplementary Materials, the intuition for our procedure is as follows: let $B$ be the bootstrap sample size and let $I=\{2, \ldots, n +1\}$ be the indexes for donor pool. initialize $y_{i,0}$ for all $i \in I$. At iteration $b$, resample the residuals and then obtain shock-effect estimators for each of the disparate time series for all $i \in I$. Then construct and store any of the adjustment estimators $\hat{\alpha}^{(b)}_{\mrm{adj}}$, $\hat{\alpha}^{(b)}_{\mrm{wadj}}$, and $\hat{\alpha}^{(b)}_{\mrm{IVW}}$. We can then estimate distributional quantities of our shock-effect estimators with the bootstrap sample of $\hat{\alpha}^{(b)}_{\mrm{adj}}$, $\hat{\alpha}^{(b)}_{\mrm{wadj}}$, and $\hat{\alpha}^{(b)}_{\mrm{IVW}}$, for $b = 1,\ldots,B$.
+To specify, there are two possible bootstrap procedures for our methods, one based on resampling the donor pool with replacement and the other without any resampling of the donor pool. We first illustrate the simple bootstrap without resampling the donor pool. The formal steps of it are outlined in the Supplementary Materials, the intuition for this procedure is as follows: let $B$ be the bootstrap sample size and let $I=\{2, \ldots, n +1\}$ be the indexes for donor pool. initialize $y_{i,0}$ for all $i \in I$. At iteration $b$, resample the residuals and then obtain shock-effect estimators for each of the disparate time series for all $i \in I$. Then construct and store any of the adjustment estimators $\hat{\alpha}^{(b)}_{\mrm{adj}}$, $\hat{\alpha}^{(b)}_{\mrm{wadj}}$, and $\hat{\alpha}^{(b)}_{\mrm{IVW}}$. We can then estimate distributional quantities of our shock-effect estimators with the bootstrap sample of $\hat{\alpha}^{(b)}_{\mrm{adj}}$, $\hat{\alpha}^{(b)}_{\mrm{wadj}}$, and $\hat{\alpha}^{(b)}_{\mrm{IVW}}$, for $b = 1,\ldots,B$.
 %The errors $\varepsilon_{i,t}$ and $\varepsilon_{i,t'}$ for $t \in \{1, \ldots, T_i^*\}$ and $t' \in \{T_i^*+1, \ldots, T_i\}$ are iid. 
 %since $y_{i,t}$ differs from $y_{i,t'}$ only in the shock-effect $\alpha_i$ conditioned on $\Theta$, and it is not absorbed into $\varepsilon_{i,t}$ and $\varepsilon_{i,t'}$. Therefore, this parametric bootstrap framework will work for us.
 Once can then use the bootstrapped shock-effects estimated by our residual bootstrap to provide an approximation for parameters involved in the risk-reduction conditions in Propositions \ref{proprisk} and \ref{propriskwadj2}. 
 
-The parametric bootstrap without conditioning on the donor pool differs from the one with in the step that the former performs a non-parametric bootstrap by sampling $n$ values from $I=\{2, \ldots, n+1\}$ without replacement to generate  $I^*$. Then, it follows the same step with the one conditioned on the donor pool by replacing $I$ by $I^*$. 
+The bootstrap based on resampling the donor pool with replacement is the same as above with the addition of first round of sampling $n$ values from $I=\{2, \ldots, n+1\}$ without replacement to generate  $I^*$. Then, it follows the same step with the one conditioned on the donor pool by replacing $I$ by $I^*$. Care is needed when using this bootstrap procedure to estimate the variability of $\hat{\alpha}_{\mrm{wadj}}$. When the rank of the design matrix corresponding to the mean function of $\alpha_i$ under $\mc{M}_2$ is greater than $n$ then our bootstrap procedure will work fine, however, if the constraints used to obtain $\mathbf{W}^*$ are binding then our bootstrap procedure needs to be modified \citep{li2019statistical}. The subsampling method in Section 4 of \citet{li2019statistical} can be adapted to our post-shock setting when the constraints are binding. 
 
 
 Let 
@@ -782,7 +769,7 @@ For parametric bootstrap without conditioning on the donor pool but conditioned 
 In this section, we provide justification for our methods based on simulation examples. We implement our simulation based on $\mc{M}_{22}$ with negligibly small $\Sigma_{\gamma}$ and $\Sigma_{\delta}$ approximating the design of $\mathcal{M}_{21}$.  $\phi_i$'s are sampled independently from $\mrm{Uniform}(0,1)$. We  sampled $T_i$'s  independently from  $\Gamma(10, 5)$ that are further rounded to integers. It is designed to illustrate the performance of $\hat{\alpha}_{\rm IVW}$ that may perform well in time series with varying lengths. Moreover, we generated the covariates from $\Gamma(1,10)$ to set up a setting when the $\hat{\alpha}_{\rm wadj}$ may perform well. We consider $p=2$ and $\mu_{\alpha}=10$. In this experiment, we consider parameter setup by varying $\sigma$ in the model of $y_{i,t}$, $n$, the donor pool size, and $\sigma_{\gamma}$ and $\sigma_{\delta}$ in the model $\delta_i \sim \normal{2\mathbf{1}_p}{\sigma^2_{\delta}\mathbf{I}_p}$, and $\gamma_i \sim \normal{2\mathbf{1}_p}{\sigma^2_{\gamma}\mathbf{I}_p}$.
 
 
-\subsection{Parametric bootstrap simulation for risk-reduction propositions}
+\subsection{Bootstrap simulation for risk-reduction propositions}
 \label{parametricbootstrapsimulation}
 
 In this section, we provide justification for the bootstrap procedures used in estimating parameters for risk-reduction propositions (see Section \ref{properties}) and risk-reduction quantities (see Section \ref{comparisons}). We will compare the result of using parametric bootstrap conditioned on the donor pool with the one without using the parameter setup discussed in Section \ref{simulation}.
@@ -793,7 +780,7 @@ Specifically, we verify the unbiasedness results in Proposition \ref{unbiased}, 
       \begin{tabular}{cc|c|c}
         \hline
         & & \multicolumn{2}{c}{Decision} \\
-        & & Accept $\hat{\alpha}$ & Reject $\hat{\alpha}$ \\ 
+        & & Use $\hat{\alpha}$ & Do not use $\hat{\alpha}$ \\ 
                 \hline
      \multirow{2}{*}{Truth}  & $R_{T_1^*+1,2}<R_{T_1^*+1,1}$ & Consistent & Inconsistent\\
       \cline{3-4}
@@ -829,7 +816,7 @@ In this section, we report prediction results for our methods in the simulation.
 
 \section{Forecasting Conoco Phillips stock in the presence of shocks}
 \label{forecasting}
-In this example we forecast Conoco Phillips stock prices in the midst of the coronavirus recession. Specific interest is in predictions made after March 6th, 2020, the Friday before the stock market crash on March 9th, 2020. We will detail how we combine knowledge from disparate time series to improve the forecast of Conoco Phillips stock price that would be made without adjustment for the shock. The forecast consists of four steps: (1) pick a model, (2) selection of covariates,  (3) choices of donor pool. %Section \ref{background} provides the justification for the first three steps. Section \ref{results} discusses the result of our forecast.
+In this example we forecast Conoco Phillips stock prices in the midst of the coronavirus recession. Specific interest is in predictions made after March 6, 2020, the Friday before the stock market crash on March 9, 2020. We will detail how we combine knowledge from disparate time series to improve the forecast of Conoco Phillips stock price that would be made without adjustments for the shock. %Section \ref{background} provides the justification for the first three steps. Section \ref{results} discusses the result of our forecast.
 
 %\subsection{Background}
 %\label{background}
@@ -841,17 +828,15 @@ Focus on the oil sector is because oil prices have been shown to exhibit a coint
 Economic indicators forecasted our recession before the coronavirus pandemic began. The current recession followed an inversion of the yield curve that first happened back in March, 2019 \citep{tokic2019yield}. An inversion of the yield curve is an event that signals that recessions are more likely \citep{andolfatto2018yield, bauer2018economic}. In this analysis we investigate the performance of oil companies in previous recessions that followed an inversion of the yield curve to obtain a suitable Conoco Phillips donor pool for estimating the March 9th shock effect on Conoco Phillips oil stock. We also consider previous OPEC oil supply shocks \citep{mensi2014opec}. We will borrow from the literature on oil price forecasting to establish appropriate time horizons and forecasting models. Recessions that occurred before 1973 are disregarded since oil price forecasts cannot be represented by standard time series models before 1973 \citep{alquist2013forecasting}. In this analysis we make the following considerations:
 
 \begin{enumerate}
-\item[(1)] {\bf AR(1) model and time window}. We will use a simple AR(1) model to forecast Conoco Phillips stock price. This model has been shown to beat no-change forecasts when predicting oil prices over time horizons of 1 and 3 months \citep{alquist2013forecasting}. We will consider 30 pre-shock trading days and we will forecast the immediate shock effect and the shock effect over a future five trading day window. All estimates will be adjusted for inflation. The model setup for AR(1) is exactly the same as what is stated in Section \ref{modelsetup} with addition of shock effects. All the parameters are estimated using OLS.
+\item[(1)] {\bf AR(1) model and time window}. We will use an AR(1) model to forecast Conoco Phillips stock price. This model has been shown to beat no-change forecasts when predicting oil prices over time horizons of one and three months \citep{alquist2013forecasting}. We will consider 30 pre-shock trading days and we will forecast the immediate shock effect and the shock effect over a future five trading day window. All estimates will be adjusted for inflation. The model setup for AR(1) is exactly the same as what is stated in Section \ref{modelsetup} with addition of shock effects. All the parameters are estimated using OLS.
 \item[(2)] {\bf Selection of covariates}. We perform our analyses incorporating daily S\&P 500 index prices and West Texas Intermediate (WTI) crude oil prices as covariates. 
-\item[(3)] {\bf Construction of donor pool}. Our donor pool will consist of Conoco Phillips shock effects observed after September 11th, 2001, %March 18th, 2008, 
-several events in September, 2008, and November 27, 2014. The first two shock effects were observed during recessions that were predicated by an inversion of the yield curve \citep{bauer2018economic}, and the third was an OPEC induced supply side shock effect \citep{huppmann2015opec}. The reasons for those three shocks are:
+\item[(3)] {\bf Construction of donor pool}. Our donor pool will consist of Conoco Phillips shock effects observed on March 14, 2008, several events in September, 2008, and November 27, 2014. The first two shock effects were observed during recessions that were predicated by an inversion of the yield curve \citep{bauer2018economic}, and the third was an OPEC induced supply side shock effect \citep{huppmann2015opec}. The reasons for those three shocks are:
   \begin{enumerate}
-  \item On September 11th, 2001, Islamic extremist al-Qaeda committed a series of terrorist attacks against the United States of America \citep{braniff2011towards}. In addition to the tragic loss of life, this triggered negative repercussions on the U.S. and world economies with falling stock prices and a falling U.S. dollar \citep{floyd2001terror}. Moreover, trading was closed until September 17, 2001 \citep{johnston2006impact}.
+  \item On March 14, 2008, Bear Stearns was verging on bankruptcy from what its officials described as a sudden liquidity squeeze related to its large exposure to devalued mortgage-backed securities. On that day, it also received word that it was getting an unprecedented loan from the Federal Reserve System, this decision was unprecedented: never before had the Fed committed to ``bailing out'' a financial entity that was not a commercial bank. The day of the announcement, the stocks of other major Wall Street firms tumbled (including Conoco Phillips). These concerns then spilled over into the broader universe of stocks \citep{shorter2008bear}. %In heavy trading on Tuesday, March 18, the firm’s share price closed at \$5.91.
   \item  In early September 2008, time series of oil prices experienced a sudden increase in volatility simultaneously due to turmoil in financial markets. The political, economic, social or environmental events may coincide with these shocks \citep{ewing2013volatility}. Notable shock effects followed the placement of Fannie May and Freddie Mac in conservatorship on September 7th (shock effect on the 8th), Lehman Brothers filing for bankruptcy on September 15th, and the Office of Thrift Supervision closes Washington Mutual Bank on September 25th \citep{dwyer2009financial, longstaff2010subprime}.
   \item On November 27th, 2014, it is documented that oil prices fall as OPEC opts not to cut production \citep{huppmann2015opec}. During the Great Recession when economic activity clearly declined, both oil and stock prices fell which points to demand factors. During the second half of 2014, oil prices plummeted but equity prices generally increased, suggesting that supply factors were the key driver \citep[Page 19]{baffes2015great}. 
   \end{enumerate}
 %\item[(4)] {\bf Forecast}. \textbf{Jilei, please fill this in. I do not know what you have in mind.}
-We assume that the five shocks are independent of the shock that Conoco Phillips  experienced on 2020-03-09. The covariates and response of time series in the donor pool are adjusted for inflation.
 \end{enumerate}
 
 %Since the stock price of a company implies its value provided the number of shares is unchanged, the price of S\&P 500 index in the recession can partially represent the overall status of the economy.  Therefore, using the price of S\&P 500 index as the covariate can possibly improve the precision of the OLS estimates for shock-effects that are unique to Conoco Phillips. The rationale for inclusion of the price of S\&P 500 index is similar to that of market return in capital asset pricing model (CAPM). (\textbf{Need reference for the CAPM}.)
@@ -860,40 +845,34 @@ We assume that the five shocks are independent of the shock that Conoco Phillips
 % INTEREST RATES AND OIL RELATIONSHIP: This paper shows that in the short term both gold and crude oil prices positively influence each other. Interest rates have a negative influence on the future gold prices and a positive influence on the future crude oil prices. In the long run, a relationship exists whereby interest rates influence the US dollar, which in turn influences international crude oil prices. When the Federal Reserve Board (Fed) lowers interest rates to boost the economy, market expectations for oil demand change and, as a result, crude oil prices fluctuate \citep{wang2013dynamic}.
 
 
-%Some other notable shock effects were not included in this analysis because the conditions preceding them are not similar to those of the March 9, 2020 shock effect, among these are the October 19, 1987, August 8th, 2011, and  August 24, 2015 shock effects \citep{shiller1988portfolio, latimes, nytimes}.
-
-
-
 %\subsection{Results}
 %\label{results}
 
-\vspace{-.3cm}
-\begin{table}[H]
-  \caption{Some basic summary statistics of the covariates and response} \vspace{.4cm} \label{table1}
-  \begin{center}
-    \begin{tabular}{ccrrrrrr}
-       &    & \multicolumn{2}{c}{S\&P 500} & \multicolumn{2}{c}{WTI}  & \multicolumn{2}{c}{$y_{i,t}$} \\
-     Time series & $T_i^*+1$ & Mean & SD  &  Mean & SD  & Mean & SD  \\
-             \hline 
-2020 Mar.  &  03--09 & 3239.11 & 139.28 & 50.36 & 3.13 & 55.35 & 6.37 \\   2008 Mar.  & 03--17 & 1341.03 & 29.50 & 98.82 & 7.01 & 60.59 & 2.28 \\  \multirow{3}{*}{2008 Sep.}
- & $T_3^* +1 = \text{09--08}$ & \multirow{3}{*}{1504.50}  & \multirow{3}{*}{43.44}  & \multirow{3}{*}{134.46} & \multirow{3}{*}{10.24} & \multirow{3}{*}{71.20}  & \multirow{3}{*}{4.11}  \\ 
- & $T_4^* +1 = \text{09--12}$ \\
-   & $T_5^* +1 = \text{09--26}$ \\
-\\  2014 Nov.  & 11--27 & 2179.99 & 66.99 & 85.70 & 3.38 & 76.99 & 1.90 \\ 
-    \end{tabular}
-  \end{center}  \vspace{-.3cm}
-\end{table}
+%\vspace{-.3cm}
+%\begin{table}[H]
+%  \caption{Some basic summary statistics of the covariates and response} \vspace{.4cm} \label{table1}
+%  \begin{center}
+%    \begin{tabular}{ccrrrrrr}
+%       &    & \multicolumn{2}{c}{S\&P 500} & \multicolumn{2}{c}{WTI}  & \multicolumn{2}{c}{$y_{i,t}$} \\
+%     Time series & $T_i^*+1$ & Mean & SD  &  Mean & SD  & Mean & SD  \\
+%             \hline 
+%2020 Mar.  &  03--09 & 3239.11 & 139.28 & 50.36 & 3.13 & 55.35 & 6.37 \\ %  2008 Mar.  & 03--14 & 1341.03 & 29.50 & 98.82 & 7.01 & 60.59 & 2.28 \\ % \multirow{3}{*}{2008 Sep.}
+% & $T_3^* +1 = \text{09--08}$ & \multirow{3}{*}{1504.50}  & \multirow{3}{*}{43.44}  & \multirow{3}{*}{134.46} & \multirow{3}{*}{10.24} & \multirow{3}{*}{71.20}  & \multirow{3}{*}{4.11}  \\ 
+% & $T_4^* +1 = \text{09--12}$ \\
+%   & $T_5^* +1 = \text{09--26}$ \\
+%\\%  2014 Nov.  & 11--27 & 2179.99 & 66.99 & 85.70 & 3.38 & 76.99 & 1.90 \\ 
+%    \end{tabular}
+%  \end{center}  \vspace{-.3cm}
+%\end{table}
 
+%Table \ref{table1} presents some basic summary statistics for the covariates and response for the time series of interest (stock price of Conoco Phillips in 2020 March) and the donor pool. 
 
-Table \ref{table1} presents some basic summary statistics for the covaraites and response for the time series of interest (stock price of Conoco Phillips in 2020 March) and the donor pool. Note that there are three shock-effects nested in the time series 2008 September. This generalization is possible since our risk-reduction propositions in Section \ref{properties} assumes the shock-effect estimates are independent of $\alpha_1$, the shock effect for the time series of interest; and allows arbitrary dependence of shock-effects in the donor pool. Specific to this generalization, we edit the model of $\alpha_i$ to $\alpha_i = \mu_{\alpha} + \delta_i'\mathbf{x}_{3, T_i^* + 1} + \gamma_i'\mathbf{x}_{3, T_i^*} + \tilde{\varepsilon}_i$ for $i = 3, 4, 5$ and $\alpha_i = \mu_{\alpha} + \delta_i'\mathbf{x}_{4, T_i^* + 1} + \gamma_i'\mathbf{x}_{4, T_i^*} + \tilde{\varepsilon}_i$ for $i = 6$.
-
-We computed 3 shock-effect estimates. Using the same model that is described in $\mc{M}_{2}$ (see Section \ref{modelsetup}), we computed 3 shock-effect estimates, namely the adjustment  $\hat{\alpha}_{\rm adj}$, weighted adjustment $\hat{\alpha}_{\rm wadj}$, and the inverse-variance weighted $\hat{\alpha}_{\rm IVW}$. For $\hat{\alpha}_{\rm wadj}$, the fitting result can be described by
+We assume that the five shocks are independent of the shock that Conoco Phillips experienced on March 9, 2020. The covariates and response of time series in the donor pool are adjusted for inflation. Note that there are three shock-effects nested in the time series 2008 September, we assume that these three shocks are independent. We computed 3 shock-effect estimates. Using the same model that is described in $\mc{M}_{2}$ (see Section \ref{modelsetup}), we computed 3 shock-effect estimates, namely the adjustment  $\hat{\alpha}_{\rm adj}$, weighted adjustment $\hat{\alpha}_{\rm wadj}$, and the inverse-variance weighted $\hat{\alpha}_{\rm IVW}$. For $\hat{\alpha}_{\rm wadj}$, the fitting result can be described by
 \begin{align*}
  \mathbf{W}^*= (0.000,0.000, 0.949, 0.000, 0.051) \quad \text{ and } \quad  \norm{\mrm{vec}\big(\mbf{X}_1-\hat{\mbf{X}}_1(\mbf{W}^*)\big)}_{4} = 23.496.
 \end{align*}
-Note that the norm is computed using the $k$-dimensional Euclidean metric. Table \ref{table1} that contains some basic summary statistics for the units and range of the covariates can provide some information about the performance of the fit. The fit is acceptable. According to discussions in Section \ref{constructionofestimators}, the property of $\hat{\alpha}_{\rm wadj}$ should hold approximately.
+Note that the norm is computed using the $k$-dimensional Euclidean metric. The fit is acceptable. According to discussions in Section \ref{constructionofestimators}, the property of $\hat{\alpha}_{\rm wadj}$ should hold approximately. The solution $\mathbf{W}^*$ reports that the $\alpha_1$ is similar to $\alpha_3$ (September 8, 2008) and $\alpha_5$ (November 27, 2014) under the setup of $\mc{M}_2$ and our collected covariates. 
 
-$\mathbf{W}^*$ reports that the $\alpha_1$ is similar to $\alpha_3$ (2008--09--08) and $\alpha_5$ (2014--11--27) according to the setup of $\mc{M}_2$. That is, the shock that Conoco Phillips experienced in 2020-03-09 is similar to the shock induced by the placement of Fannie May and Freddie Mac, and the one caused by oil supply shock on 2014--11--27. It is consistent with discussion at the beginning of the section.
 \begin{table}[H]
   \caption{Bootstrap estimates and results yielded by risk-reduction propositions with $B = 1000$}\label{table2}
   \begin{center}
@@ -902,8 +881,8 @@ $\mathbf{W}^*$ reports that the $\alpha_1$ is similar to $\alpha_3$ (2008--09--0
       \hline 
     Bootstrapped mean  & $-5.340$ & $-5.014$ & $-5.287$ \\
     Bootstrapped variance & 0.508 & 0.480 & 2.821 \\
-    Risk-reduction proposition & 1 & 1 & 1 \\
-    Best shock-effect estimator & 0 & 1 & 0
+    Risk-reduction proposition & 1 & 1 & 1
+%    Best shock-effect estimator & 0 & 1 & 0
     \end{tabular}
   \end{center}  
 \end{table}
@@ -930,11 +909,9 @@ Therefore, results proposed by Table \ref{table2} are verified with the reduced 
 
 
 
-We also study additive shock effect estimators where the shock effects corresponding to separate supply and demand shocks are added to estimate the unknown shock effect. The supply shock donor pool consists of the November 27th, 2014 shock effect and the demand shock donor pool consists of the remaining shock effects. The additive adjustment estimator computed by adding the $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{adj}}$, and $\hat{\alpha}_{\text{IVW}}$ estimators for the demand and supply shock effects have  MSEs of $1.797$, $2.812$, and $0.437$, respectively.  
+We also study additive shock effect estimators where the shock effects corresponding to separate supply and demand shocks are added to estimate the unknown shock effect. The supply shock donor pool consists of the November 27, 2014 shock effect and the demand shock donor pool consists of the remaining shock effects. The additive adjustment estimator computed by adding the $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{adj}}$, and $\hat{\alpha}_{\text{IVW}}$ estimators for the demand and supply shock effects have  MSEs of $1.797$, $2.812$, and $0.437$, respectively. These additive adjustment estimators do extremely well, nearly perfectly forecasting the realized shock effect. There is apriori justification for the use of these simply additive adjustment estimators, although their nearly perfect performance in this example is a retrospective finding. Our apriori justification comes from \citet{kilian2009not} who study the effect that different supply and demand shocks have on oil prices through a vector auto regressive model. Their model postulates an additive nature of shock effects, although the additivity parameters requires estimation in their context. %This provides some anecdotal justification for apriori estimation of the March 9th Conoco Phillips shock effect with the addition of the adjustment estimator corresponding to the separate supply and demand aspects of this shock effect.
 
-These additive adjustment estimators do extremely well, nearly perfectly forecasting the realized shock effect. There is apriori justification for the use of these simply additive adjustment estimators, although their nearly perfect performance in this example is a retrospective finding. Our apriori justification comes from \citet{kilian2009not} who study the effect that different supply and demand shocks have on oil prices through a vector auto regressive model. Their model postulates an additive nature of shock effects, although the additivity parameters requires estimation in their context. %This provides some anecdotal justification for apriori estimation of the March 9th Conoco Phillips shock effect with the addition of the adjustment estimator corresponding to the separate supply and demand aspects of this shock effect.
-
-However, from another perspective, this phenomenon can be explained by the fact that the donor pool is not constructed to be similar enough to the time series of interest. The shock on 2020-03-09 occurred with the pandemic caused by  COVID-19. It is difficult to find available stock market time series data that were generated under a similar setting.  
+However, from another perspective, this phenomenon can be explained by the fact that the donor pool is not constructed to be similar enough to the time series of interest. The shock(s) on March 9, 2020 in the midst of the COVID-19 pandemic and oil production volatility. It is difficult to find available stock market time series data that were generated under a similar setting.  
 
 
 
@@ -945,17 +922,14 @@ However, from another perspective, this phenomenon can be explained by the fact 
 
 
 
-Our proposed model in Section \ref{modelsetup} is a simple model with results in Section \ref{properties} easily generalizing to other more complicated models. 
+Our proposed model in Section \ref{modelsetup} is a simple model with results in Section \ref{properties} easily generalizing to other more complicated models. Our simple AR(1) model can be extended to AR($p$) settings %for $y_{i,t}$ with an additional component $\alpha_i 1(D_{i,t}=T_i^* + 1)$.  
+Similarly, the mean function for $\alpha_i$ under $\mc{M}_2$ can be extended to include more lagged predictors. Moreover, the functional form for the mean function can be extended beyond the linear regression model under $\mc{M}_2$. Multiple shock-effects can be nested within a time series; and time series in the donor pool are allowed be dependent. As an example, we could consider a dependency structure for the September 2008 shock effects in our analysis of Conoco Phillips stock.
+%This generalization is possible since our risk-reduction propositions in Section \ref{properties} assumes the shock-effect estimates are independent of $\alpha_1$, the shock effect for the time series of interest; and allows arbitrary dependence of shock-effects in the donor pool. 
+%Specific to this generalization, we edit the model of $\alpha_i$ to $\alpha_i = \mu_{\alpha} + \delta_i'\mathbf{x}_{3, T_i^* + 1} + \gamma_i'\mathbf{x}_{3, T_i^*} + \tilde{\varepsilon}_i$ for $i = 3, 4, 5$ and $\alpha_i = \mu_{\alpha} + \delta_i'\mathbf{x}_{4, T_i^* + 1} + \gamma_i'\mathbf{x}_{4, T_i^*} + \tilde{\varepsilon}_i$ for $i = 6$.
+%This generalization was adopted in Section \ref{forecasting}. In this case, the variance expressions proposed in Section \ref{properties} will not work. However, the risk-reduction propositions in Section \ref{properties} will work  as long as those shock-effects (not necessarily mutually independent) in the donor pool are independent of the one of interest. 
+Although it is reflected in $\mc{M}_2$, we stress that our proposed methods allow $\alpha_i$ to follow arbitrary distributions with existing first and second moments. The covariates in the model for $\alpha_i$ under $\mc{M}_2$ can be different from the covariates in the model of $y_{i,t}$. We also note that our post-shock framework can be extended to settings where the shock effect can be decomposed into separable estimable parts. An example of this is the additive shock effect estimators that we studied in our Conoco Phillips analysis. 
 
-
-First, the model can be extended to AR($p$) for $y_{i,t}$ with an additional component $\alpha_i 1(D_{i,t}=T_i^* + 1)$.  The model for $\alpha_i$ in $\mc{M}_2$ may be generalized to $\alpha_i = \mu_{\alpha} + \delta_i' \mathbf{x}_{i, T_i^*+1} + \cdots + \gamma_i \mathbf{x}_{i, T_i^* -(p+1)} + \tilde{\varepsilon}_{i}$ with some proper simple adjustments for SCM method. 
-
-Second, multiple shock-effects can be nested within a time series; and time series in the donor pool are allowed be dependent. This generalization was adopted in Section \ref{forecasting}. In this case, the variance expressions proposed in Section \ref{properties} will not work. However, the risk-reduction propositions in Section \ref{properties} will work  as long as those shock-effects (not necessarily mutually independent) in the donor pool are independent of the one of interest. 
-
-Third, though it is reflected in $\mc{M}_2$, we stress that our proposed methods allow $\alpha_i$ to follow arbitrary distributions with existing first and second moments. Fourth, the covariates in the model for $\alpha_i$ in $\mc{M}_2$ can be different from the covariates in the model of $y_{i,t}$. It is because in the derivation such dependence is not used. Fifth, the metric used in construction of $\hat{\alpha}_{\rm wadj}$ may be replaced with other complete metrics.
-
-
-Sixth, our bootstrap procedure can be extended to approximate the distribution of shock effect estimators from more general time series. The pseudo-time series generated by parametric bootstrap is not stationary. Note that \citet{politis1994stationary} motivated a stationary bootstrap method for strictly stationary and weakly dependent time series $\{X_n \colon n \in \mathbb{N}\}$. This algorithm generates a sequence of blocks of observations $B_{I_1, L_1}, B_{I_2, L_2}, \ldots$\footnote{The collection of random positions $\{I_n \colon n \in \mathbb{N}\}$ is a sequence of i.i.d. discrete uniform random variables; and the collection of random lengths $\{L_n \colon n \in \mathbb{N}\}$ is a sequence of  i.i.d. geometric random variables with parameter $p$.}, where $B_{i,b}= \{X_i, X_{i+1}, \ldots, X_{i+b-1}\}$\footnote{For $j > N$, $X_{j}$ is defined to be $X_k$, where $k = j \hspace{-.1cm} \mod N$ and $X_0 = X_N$.}; and the sampling stops when $N$ observations are reached.  However, the consistency needs to be proved by a case-by-case analysis \citep[Page 66]{politis1999subsampling}. Additionally, the asymptotic accuracy of this algorithm can be sensitive to the selection of $p$. This issue is similar to that of the selection of block size in moving-block bootstrapping \citep{kunsch1989jackknife, liu1992moving}.  More work related to bootstrapping time series  can be referred to Chapters 3 and 4 in \citet{politis1999subsampling}, and \citet{berkowitz2000recent}. It is up to the user in selecting which procedure to choose but under different assumptions on the time-series. 
+Our bootstrap procedure can be extended to approximate the distribution of shock effect estimators from more general time series. The pseudo-time series generated by parametric bootstrap is not stationary. Note that \citet{politis1994stationary} motivated a stationary bootstrap method for strictly stationary and weakly dependent time series $\{X_n \colon n \in \mathbb{N}\}$. This algorithm generates a sequence of blocks of observations $B_{I_1, L_1}, B_{I_2, L_2}, \ldots$\footnote{The collection of random positions $\{I_n \colon n \in \mathbb{N}\}$ is a sequence of i.i.d. discrete uniform random variables; and the collection of random lengths $\{L_n \colon n \in \mathbb{N}\}$ is a sequence of  i.i.d. geometric random variables with parameter $p$.}, where $B_{i,b}= \{X_i, X_{i+1}, \ldots, X_{i+b-1}\}$\footnote{For $j > N$, $X_{j}$ is defined to be $X_k$, where $k = j \hspace{-.1cm} \mod N$ and $X_0 = X_N$.}; and the sampling stops when $N$ observations are reached.  However, the consistency needs to be proved by a case-by-case analysis \citep[Page 66]{politis1999subsampling}. Additionally, the asymptotic accuracy of this algorithm can be sensitive to the selection of $p$. This issue is similar to that of the selection of block size in moving-block bootstrapping \citep{kunsch1989jackknife, liu1992moving}.  More work related to bootstrapping time series  can be referred to Chapters 3 and 4 in \citet{politis1999subsampling}, and \citet{berkowitz2000recent}. It is up to the user in selecting which procedure to choose but under different assumptions on the time-series. \textbf{Include footnotes in main text; also use either time series or time-series but not both}.
 
 
 For the use of our methodology, caution should be dedicated to the construction of donor pool. Otherwise, the result will not be robust to the noises introduced by the the ones that are not similar to the time series of interest. We recommend using parametric bootstrap without conditioning on the donor pool when the donor pool size $n$ is large, and the one conditioned on the donor pool when $n$ is small.
