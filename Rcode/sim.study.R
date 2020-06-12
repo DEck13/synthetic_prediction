@@ -259,10 +259,8 @@ nowcast.alpha <- function(X, Y, Tstar, best = c('adj', 'wadj', 'IVW')) {
 sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma, 
                                     sigma.alpha, sigma.delta.gamma, 
                                     p, B, n, scale, np = c(TRUE, FALSE)) {
-  T <- round(rgamma(n = n + 1, shape = 10, scale = 5)) # Time Length
-  while(min(T) <= 3 + 2 * p) {
-    T <- round(rgamma(n = n + 1, shape = 10, scale = 5))
-  }
+  T <- round(rgamma(n = n + 1, shape = 15, scale = 10)) # Time Length
+  T[which(T < 90)] <- 90
   Tstar <- c() # Shock Time Points
   for (t in T) {
     Tstar <- c(Tstar, sample(3:(t - 1), size = 1))
@@ -344,8 +342,8 @@ sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma,
   }
   
   # Bias
-  bias <- c(abs(mean(bootsamp[[1]]) - Ealpha.adj), 
-              abs(mean(bootsamp[[2]]) - Ealpha1))
+  bias <- c(abs(mean(bootsamp[[1]], na.rm = TRUE) - Ealpha.adj), 
+              abs(mean(bootsamp[[2]], na.rm = TRUE) - Ealpha1))
   names(bias) <- c('E.adj', 'E.wadj')
   
   # Distance
@@ -355,8 +353,8 @@ sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma,
   means <- c()
   vars <- c()
   for (j in 1:3) {
-    means <- c(means, mean(bootsamp[[j]]))
-    vars <- c(vars, var(bootsamp[[j]]))
+    means <- c(means, mean(bootsamp[[j]], na.rm = TRUE))
+    vars <- c(vars, var(bootsamp[[j]], na.rm = TRUE))
   }
   names(means) <- names(vars) <- c('adj', 'wadj', 'IVW')
   
@@ -388,7 +386,8 @@ sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma,
 sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma, 
                                      sigma.alpha, sigma.delta.gamma, 
                                      p, B, n, mean, sd, np = c(TRUE, FALSE)) {
-  T <- round(rgamma(n = n + 1, shape = 10, scale = 5)) # Time Length
+  T <- round(rgamma(n = n + 1, shape = 15, scale = 10)) # Time Length
+  T[which(T < 90)] <- 90
   Tstar <- c() # Shock Time Points
   for (t in T) {
     Tstar <- c(Tstar, sample(3:(t - 1), size = 1))
@@ -469,8 +468,8 @@ sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma,
   }
   
   # Bias
-  bias <- c(abs(mean(bootsamp[[1]]) - Ealpha.adj), 
-            abs(mean(bootsamp[[2]]) - Ealpha1))
+  bias <- c(abs(mean(bootsamp[[1]], na.rm = TRUE) - Ealpha.adj), 
+            abs(mean(bootsamp[[2]], na.rm = TRUE) - Ealpha1))
   names(bias) <- c('E.adj', 'E.wadj')
   
   # Distance
@@ -480,8 +479,8 @@ sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma,
   means <- c()
   vars <- c()
   for (j in 1:3) {
-    means <- c(means, mean(bootsamp[[j]]))
-    vars <- c(vars, var(bootsamp[[j]]))
+    means <- c(means, mean(bootsamp[[j]], na.rm = TRUE))
+    vars <- c(vars, var(bootsamp[[j]], na.rm = TRUE))
   }
   names(means) <- names(vars) <- c('adj', 'wadj', 'IVW')
   
@@ -593,6 +592,13 @@ system.time(
   out
   })
 )
+
+sim.study.normal.gammaX(mu.gamma.delta = 2, 
+                        mu.alpha = 10, sigma = 1, 
+                        sigma.alpha = 1,
+                        sigma.delta.gamma = 1, 
+                        p = 13, B = 500, scale = 10, 
+                        n = n, np = FALSE)
 
 # store results
 # load packages

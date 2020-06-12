@@ -64,7 +64,7 @@ start_day_20080317 <- as.numeric(1:nrow(COP_close) == start)
 COP_close <- COP_close %>% mutate(start_day_20080317 = start_day_20080317)
 TS2 <- COP_close[(start-30):start, ]
 # inflation adjustment
-TS2[, 2:7] <- COP_close_small[, 2:7] * inflation_adj$dollars_2020[inflation_adj$year == 2008] 
+TS2[, 2:7] <- TS2[, 2:7] * inflation_adj$dollars_2020[inflation_adj$year == 2008] 
 m_COP_3_17 <- lm(Y ~ COP_Close + start_day_20080317 + GSPC_Close + WTI_Close + WTI_Close_lag1 + GSPC_Close_lag1, 
                  data = TS2)
 alpha_3_17 <- summary(m_COP_3_17)$coef[3,1:2] 
@@ -128,7 +128,7 @@ lrindcov <- function(cov, cols, v){
 # not significant => Independence
 lrindcov(vcov(m_COP_Sept_08)[3:5, 3:5], cols = list(1, 2, 3), v = df.residual(m_COP_Sept_08))
 
-
+xtable(vcov(m_COP_Sept_08)[3:5, 3:5])
 
 #### Thursday, November 27, 2014
 
@@ -350,7 +350,6 @@ for (b in 1:B) {
   alphas[[2]] <- c(alphas[[2]], sum(alphahatsb * weights / sum(weights)))
   alphas[[3]] <- c(alphas[[3]], sum(Wstar * alphahatsb))
 }
-
 # Parameters
 means <- c()
 vars <- c()
@@ -367,7 +366,9 @@ risk.reduction <- function(means, vars) {
   rr.IVW <- (means['wadj']) ^ 2 - vars['IVW'] - (means['IVW'] - means['wadj']) ^ 2
   est <- c(rr.adj, rr.wadj, rr.IVW)
   names(est) <- c('adj', 'wadj', 'IVW')
-  return(list(usable = ifelse(est > 0, yes = 1, no = 0), best = which.max(est)))
+  return(list(usable = ifelse(est > 0, yes = 1, no = 0), 
+              best = which.max(est),
+              rr = est))
 }
 risk.reduction(means = means, vars = vars) 
 
@@ -418,7 +419,7 @@ alpha.adj.additive <- mean(estimates[1:4, 1]) + estimates[5, 1]
 
 # IVW estimator
 weights <- (1 / estimates[1:4,2]) / sum(1 / estimates[1:4, 2])
-alpha.IVW.additive <- sum(weights * a_estimates[1:4, 1])
+alpha.IVW.additive <- sum(weights * estimates[1:4, 1])
 alpha.IVW.additive <- as.numeric(alpha.IVW.additive + estimates[5, 1])
 
 # Weighted Adjustment Estimator
@@ -450,13 +451,13 @@ Yhat_additive <- c(alpha.adj.additive + Yhat_nothing, alpha.IVW.additive + Yhat_
                    alpha.wadj.additive + Yhat_nothing)
 
 ## doing nothing completely misses the mark
-(Yhat_nothing - TS1$Y[nrow(TS1)]) ^ 2
+Yhat_nothing - TS1$Y[nrow(TS1)]
 
 ## adjustment gets closer
-(Yhat_adj - TS1$Y[nrow(TS1)]) ^ 2
+Yhat_adj - TS1$Y[nrow(TS1)]
 
 ## additive effect does well
-(Yhat_additive - TS1$Y[nrow(TS1)]) ^ 2
+Yhat_additive - TS1$Y[nrow(TS1)]
 
 
 # plot data
@@ -471,25 +472,26 @@ setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
 tikz('fig2.tex', standAlone = TRUE, width = 7, height = 5)
 # plot
 ggplot(TS1, mapping = aes(x = id, y = Y)) + 
-  labs(title = "Conoco Phillips Stock Forecasting (2020--01--24 to 2020--03--09)", 
+  labs(title = "Conoco Phillips Stock Forecasting (2020 January 24th to 2020 March 9th)", 
        x = "Day", y = "Closing Stock price (in USD)") +
   geom_point() + 
   geom_point(data = dat, aes(x = id, y = Yhat_adj), 
              col = c("magenta", "deepskyblue", "indianred2"), 
-             pch = 2:4) + 
+             pch = 2:4, cex = 1.5) + 
   geom_point(data = data.frame(x = unique(dat$id), y = Yhat_nothing), 
              aes(x = x, y = y), col = "violet", cex = 1.5) + 
   geom_line(aes(x = id, y = c(m_COP_03_06_20$fitted.values, Yhat_nothing)), 
             col = "violet") + 
-  annotate("text", x = 1, y = seq(from = 45, to = 40, length.out = 4), 
+  annotate("text", x = 1, y = seq(from = 48, to = 40, length.out = 4), 
            label = c("$\\hat{y}_{1, T_1^* + 1}^{1}$",
                      "$\\hat{y}_{1, T_1^* + 1}^{1} + \\hat{\\alpha}_{\\rm adj}$",
                      "$\\hat{y}_{1, T_1^* + 1}^{1} + \\hat{\\alpha}_{\\rm IVW}$",
                      "$\\hat{y}_{1, T_1^* + 1}^{1} + \\hat{\\alpha}_{\\rm wadj}$"), 
-           hjust = 0) + 
-  annotate("point", x = 0, y = seq(from = 45, to = 40, length.out = 4), 
-           pch = c(16, 2:4),
-           color = c("violet", "magenta", "deepskyblue", "indianred2")) +
+           hjust = 0, size = 5) + 
+  annotate("point", x = 0, y = seq(from = 48, to = 40, length.out = 4), 
+           pch = c(16, 2:4), 
+           color = c("violet", "magenta", "deepskyblue", "indianred2"),
+           size = 2) +
   # add margin
   theme(plot.margin = unit(c(.5, .3, .3, .5), "cm")) + 
   # no grid
