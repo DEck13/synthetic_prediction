@@ -560,7 +560,7 @@ ncores <- detectCores() - 1
 registerDoParallel(cores = ncores)
 set.seed(2020)
 RNGkind("L'Ecuyer-CMRG")
-nsim <- 200
+nsim <- 260
 
 # parameter setup
 ns <- c(5, 10, 15, 25)
@@ -593,19 +593,90 @@ system.time(
   })
 )
 
-sim.study.normal.gammaX(mu.gamma.delta = 2, 
-                        mu.alpha = 10, sigma = 1, 
-                        sigma.alpha = 1,
-                        sigma.delta.gamma = 1, 
-                        p = 13, B = 500, scale = 10, 
-                        n = n, np = FALSE)
-
 # store results
 # load packages
 require('readxl')
 require('writexl')
 setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
 write_xlsx(lapply(output, as.data.frame), 'parametricnsigma.xlsx')
+
+
+# collect results
+result <- c()
+nnas <- c()
+for (i in 1:16) {
+  table <- output[[i]]
+  
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x, na.rm = TRUE))
+  sds <- apply(table, 2, function(x) sd(x, na.rm = TRUE))
+  
+  # check how many effective rows
+  nna <- length(which(apply(output[[i]], 1, FUN = function(x) anyNA(x)) == FALSE))
+  nnas <- c(nnas, nna)
+  
+  result.i <- c()
+  for (j in 1:16) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
+                                       ' (', round(sds[j] / sqrt(nna), 
+                                                   digits = 3), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+rownames(result) <- 1:16
+# results
+riskprop <- result[, c(1:4, 8:14)]
+pred <- result[, -c(3:4, 8:14)]
+# xtable
+require('xtable')
+xtable(riskprop)
+xtable(pred)
+
+
+
+
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 260
+# parameter setup
+sigma <- c(0.01, 0.1, 1, 10)
+sigma.delta.gamma.alphas <- c(0.01, 0.1, 1, 10)
+sim_params <- expand.grid(list(sigma.delta.gamma.alphas = sigma.delta.gamma.alphas, sigma = sigma))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.delta.gamma.alpha <- sim_params[j, 1]
+    sigma <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.gamma.delta = 2, 
+                                       mu.alpha = 10, sigma = sigma, 
+                                       sigma.alpha = sigma.delta.gamma.alpha,
+                                       sigma.delta.gamma = sigma.delta.gamma.alpha, 
+                                       p = 13, B = 500, scale = 10, 
+                                       n = 10, np = FALSE)
+      result <- c(study$bias, study$dist, study$guess, study$consistency,
+                  study$best.consistency, study$rmse)
+      return(result)
+    }
+    # return results
+    out
+  })
+)
+
 
 # collect results
 result <- c()
@@ -635,72 +706,5 @@ rownames(result) <- 1:16
 riskprop <- result[, c(1:4, 8:14)]
 pred <- result[, -c(1:4, 8:14)]
 # xtable
-xtable(pred, digits = 3)
-
-
-
-# MC
-library("parallel")
-library("doParallel")
-library("foreach")
-# 8 cores -- use 7
-ncores <- detectCores() - 1
-registerDoParallel(cores = ncores)
-set.seed(2020)
-RNGkind("L'Ecuyer-CMRG")
-nsim <- 200
-
-# parameter setup
-ns <- c(5, 10, 15, 25)
-sigma.delta.gamma.alphas <- c(0.01, 0.1, 1, 10)
-sim_params <- expand.grid(list(sigma.delta.gamma.alphas = sigma.delta.gamma.alphas, ns = ns))
-
-# simulation time
-system.time(
-  output <- lapply(1:nrow(sim_params), FUN = function(j) {
-    # parameters
-    sigma.delta.gamma.alpha <- sim_params[j, 1]
-    n <- sim_params[j, 2]
-    # %do% evaluates sequentially
-    # %dopar% evaluates in parallel
-    # .combine results
-    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
-      # result
-      study <- sim.study.normal.gammaX(mu.gamma.delta = 2, 
-                                       mu.alpha = 10, sigma = 1, 
-                                       sigma.alpha = sigma.delta.gamma.alpha,
-                                       sigma.delta.gamma = sigma.delta.gamma.alpha, 
-                                       p = 2, B = 500, scale = 10, 
-                                       n = n, np = TRUE)
-      result <- c(study$bias, study$dist, study$guess, study$consistency, 
-                  study$best.consistency, study$rmse)
-      return(result)
-    }
-    # return results
-    out
-  })
-)
-write_xlsx(lapply(output, as.data.frame), 'nonparametricnsigma.xlsx')
-
-# collect results
-result <- c()
-for (i in 1:16) {
-  table <- output[[i]]
-  means <- apply(table, 2, function(x) mean(x, na.rm = TRUE))
-  sds <- apply(table, 2, function(x) sd(x, na.rm = TRUE))
-  result.i <- c()
-  for (j in 1:11) {
-    result.i <- cbind(result.i, cbind(means[j], sds[j]))
-  }
-  result <- rbind(result, result.i)
-}
-result <- cbind(sim_params[, c(2,1)], result)
-rownames(result) <- 1:16
-# results
-riskprop <- result[, c(1:2, 1:4 + 2, 11:16 + 2)]
-result[, c(11:16 + 2)]
-pred <- result[, -c(1:4 + 2, 11:16 + 2)]
-# xtable
-xtable(pred, digits = 3)
-
+xtable(riskprop)
 
