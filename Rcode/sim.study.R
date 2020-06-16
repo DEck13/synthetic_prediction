@@ -224,6 +224,14 @@ risk.reduction <- function(means, vars) {
   names(est) <- c('adj', 'wadj', 'IVW')
   return(list(usable = ifelse(est > 0, yes = 1, no = 0), best = which.max(est)))
 }
+risk.reduction2 <- function(est, vars) {
+  rr.adj <- (est['wadj']) ^ 2 - vars['adj'] - (est['adj'] - est['wadj']) ^ 2
+  rr.wadj <- (est['wadj']) ^ 2 - vars['wadj']
+  rr.IVW <- (est['wadj']) ^ 2 - vars['IVW'] - (est['IVW'] - est['wadj']) ^ 2
+  rest <- c(rr.adj, rr.wadj, rr.IVW)
+  names(rest) <- c('adj', 'wadj', 'IVW')
+  return(list(usable = ifelse(rest > 0, yes = 1, no = 0), best = which.max(rest)))
+}
 # nowcasting 
 nowcast.alpha <- function(X, Y, Tstar, best = c('adj', 'wadj', 'IVW')) {
   # set up
@@ -263,7 +271,7 @@ sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma,
   T[which(T < 90)] <- 90
   Tstar <- c() # Shock Time Points
   for (t in T) {
-    Tstar <- c(Tstar, sample(3:(t - 1), size = 1))
+    Tstar <- c(Tstar, sample((2 * p + 3 + 1):(t - 1), size = 1))
   }
   phi <- round(runif(n + 1, 0, 1), 3) # autoregressive parameters
 
@@ -383,174 +391,6 @@ sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma,
   return(result)
 }
 
-sim.study.normal.normalX <- function(mu.gamma.delta, mu.alpha, sigma, 
-                                     sigma.alpha, sigma.delta.gamma, 
-                                     p, B, n, mean, sd, np = c(TRUE, FALSE)) {
-  T <- round(rgamma(n = n + 1, shape = 15, scale = 10)) # Time Length
-  T[which(T < 90)] <- 90
-  Tstar <- c() # Shock Time Points
-  for (t in T) {
-    Tstar <- c(Tstar, sample(3:(t - 1), size = 1))
-  }
-  phi <- round(runif(n + 1, 0, 1), 3) # autoregressive parameters
-  
-  # construction of design matrix and shock effects
-  X <- c()
-  alpha <- c()
-  delta <- c()
-  gamma <- c()
-  for (i in 1:(n + 1)) {
-    Ti <- T[i]
-    Tstari <- Tstar[i]
-    X[[i]] <- matrix(rgamma(n = p * (Ti + 1), shape = 1, scale = scale), ncol = p, byrow = T) 
-    # matrix(rnorm(n = (Ti + 1) * p), ncol = p, byrow = T)
-    # parameter setup
-    delta[[i]] <- matrix(rnorm(p, mean = mu.gamma.delta, sd = sigma.delta.gamma), nrow = 1)
-    gamma[[i]] <- matrix(rnorm(p, mean = mu.gamma.delta, sd = sigma.delta.gamma), nrow = 1)
-    epsilontildei <- rnorm(n = 1, sd = sigma.alpha)
-    # alpha
-    alpha <- c(alpha, mu.alpha + delta[[i]] %*% X[[i]][Tstari + 1, ] + 
-                 gamma[[i]] %*% X[[i]][Tstari, ] + epsilontildei)
-  }
-  
-  # E(alpha1)
-  Ealpha1 <- mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1] + 1, ] + 
-    matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1], ]
-  
-  # E(alpha_adj)
-  alphas.2.np1 <- c()
-  for (i in 2:(n + 1)) {
-    alphas.2.np1 <- c(alphas.2.np1, mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i] + 1, ] + 
-                        matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i], ])
-  }
-  Ealpha.adj <- mean(alphas.2.np1)  
-  # generation of yit
-  Y <- c()
-  for (i in 1:(n + 1)) {
-    
-    # initial value
-    yi0 <- rnorm(1)
-    
-    # setup
-    Tstari <- Tstar[i]
-    alphai <- alpha[i]
-    phii <- phi[i]
-    xi <- X[[i]]
-    
-    # parameter setup
-    thetai <- matrix(rnorm(p), nrow = 1)
-    betai <- matrix(rnorm(p), nrow = 1)
-    etai <- rnorm(1)
-    
-    yi <- yi0
-    for (t in 2:(T[i] + 1)) {
-      epsilonit <- rnorm(n = 1, sd = sigma)
-      yi <- c(yi, etai + alphai * ifelse(t == Tstari + 2, yes = 1, no = 0) +
-                phii * yi[t - 1] + thetai %*% xi[t, ] + betai %*% xi[t - 1, ] + epsilonit)
-    }
-    
-    Y[[i]] <- yi
-  }
-  
-  # estimates
-  alphahat <- ols.est.alphahat(Tstar = Tstar, Y = Y, X = X)$alphahat
-  est <- ols.est.alphahat(Tstar = Tstar, Y = Y, X = X)$est
-  
-  # ols object
-  ols <- ols.est.alphahat(Tstar = Tstar, Y = Y, X = X)
-  
-  
-  # bootstrap samples
-  if (np == TRUE) {
-    bootsamp <- boots.mix(B = B, ols = ols)
-  } else {
-    bootsamp <- boots(B = B, ols = ols)
-  }
-  
-  # Bias
-  bias <- c(abs(mean(bootsamp[[1]], na.rm = TRUE) - Ealpha.adj), 
-            abs(mean(bootsamp[[2]], na.rm = TRUE) - Ealpha1))
-  names(bias) <- c('E.adj', 'E.wadj')
-  
-  # Distance
-  dist <- abs(est - alpha[1])
-  
-  # risk conditions
-  means <- c()
-  vars <- c()
-  for (j in 1:3) {
-    means <- c(means, mean(bootsamp[[j]], na.rm = TRUE))
-    vars <- c(vars, var(bootsamp[[j]], na.rm = TRUE))
-  }
-  names(means) <- names(vars) <- c('adj', 'wadj', 'IVW')
-  
-  # yhats
-  yhat2s <- sapply(c('adj', 'wadj', 'IVW'), function(d) nowcast.alpha(X = X, Y = Y, Tstar = Tstar, best = d)[[1]])
-  yhat1 <- nowcast.alpha(X = X, Y = Y, Tstar = Tstar, best = 'wadj')[[2]]
-  names(yhat1) <- 'no'
-  names(yhat2s) <- c('adj', 'wadj', 'IVW')
-  
-  # comparison
-  guess <- risk.reduction(means = means, vars = vars)$usable
-  truth <- ifelse(as.numeric(abs(Y[[1]][Tstar[1] + 2] - yhat1)) - as.numeric(abs(Y[[1]][Tstar[1] + 2] - yhat2s)) > 0,
-                  yes = 1, no = 0) 
-  names(truth) <- c('adj', 'wadj', 'IVW')
-  consistency <- ifelse(truth == guess, yes = 1, no = 0)
-  
-  # best consistency
-  best.consistency <- ifelse(which.min(abs(Y[[1]][Tstar[1] + 2] - yhat2s)) == 
-                               risk.reduction(means = means, vars = vars)$best, yes = 1, no = 0)
-  
-  # risk
-  rmse <- sqrt(abs(Y[[1]][Tstar[1] + 2] - c(yhat1, yhat2s)) ^ 2)
-  
-  # output
-  result <- list(bias = bias, dist = dist, guess = guess, 
-                 consistency = consistency, best.consistency = best.consistency, 
-                 rmse = rmse)
-  return(result)
-}
-
-
-bias.result <- c()
-dist.result <- c()
-consistency.result <- c()
-sigma.delta.gamma.alpha <- c(0.01, 0.1, 1, 10)
-sigma <- c(0.01, 0.1, 1, 10)
-# set a seed
-set.seed(2018)
-for (j in 1:4) {
-  bias.result.j <- c()
-  dist.result.j <- c()
-  consistency.result.j <- c()
-  for (i in 1:4) {
-    # result
-    study <- sim.study.normal.gammaX(mu.gamma.delta = 2, 
-                              mu.alpha = 10, sigma = sigma[i], 
-                              sigma.alpha = sigma.delta.gamma.alpha[j],
-                              sigma.delta.gamma = sigma.delta.gamma.alpha[j], 
-                              p = 2, B = 1000, n = 10, scale = 10)
-    # output
-    bias.result.j <- rbind(bias.result.j, study$bias)
-    dist.result.j <- rbind(dist.result.j, study$dist)
-    consistency.result.j <- rbind(consistency.result.j, study$consistency)
-  }
-  rownames(bias.result.j) <- rownames(dist.result.j) <- rownames(consistency.result.j) <- sigma
-  bias.result[[j]] <- bias.result.j
-  dist.result[[j]] <- dist.result.j
-  consistency.result[[j]] <- consistency.result.j
-}
-
-
-# do call
-table.bias <- do.call('rbind', bias.result)
-table.dist <- do.call('rbind', dist.result)
-table.consistency <- do.call('rbind', consistency.result)
-table <- cbind(table.bias, table.dist, table.consistency)
-require('xtable')
-xtable(table, digits = 3)
-
-
 # MC
 library("parallel")
 library("doParallel")
@@ -560,18 +400,19 @@ ncores <- detectCores() - 1
 registerDoParallel(cores = ncores)
 set.seed(2020)
 RNGkind("L'Ecuyer-CMRG")
-nsim <- 260
+nsim <- 200
+
 
 # parameter setup
 ns <- c(5, 10, 15, 25)
-sigma.delta.gamma.alphas <- c(0.01, 0.1, 1, 10)
-sim_params <- expand.grid(list(sigma.delta.gamma.alphas = sigma.delta.gamma.alphas, ns = ns))
+sigma.alphas <- c(1, 5, 10, 25, 100)
+sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, ns = ns))
 
 # simulation time
 system.time(
   output <- lapply(1:nrow(sim_params), FUN = function(j) {
     # parameters
-    sigma.delta.gamma.alpha <- sim_params[j, 1]
+    sigma.alpha <- sim_params[j, 1]
     n <- sim_params[j, 2]
     # %do% evaluates sequentially
     # %dopar% evaluates in parallel
@@ -580,8 +421,8 @@ system.time(
       # result
       study <- sim.study.normal.gammaX(mu.gamma.delta = 2, 
                                        mu.alpha = 10, sigma = 1, 
-                                       sigma.alpha = sigma.delta.gamma.alpha,
-                                       sigma.delta.gamma = sigma.delta.gamma.alpha, 
+                                       sigma.alpha = sigma.alpha,
+                                       sigma.delta.gamma = 1, 
                                        p = 13, B = 500, scale = 10, 
                                        n = n, np = FALSE)
       result <- c(study$bias, study$dist, study$guess, study$consistency,
@@ -604,34 +445,37 @@ write_xlsx(lapply(output, as.data.frame), 'parametricnsigma.xlsx')
 # collect results
 result <- c()
 nnas <- c()
-for (i in 1:16) {
+for (i in 1:nrow(sim_params)) {
   table <- output[[i]]
+  # check how many effective rows
+  index <- which(apply(output[[i]], 1, FUN = function(x) anyNA(x)) == FALSE)
+  nna <- length(index)
+  nnas <- c(nnas, nna)
+  
+  # subset
+  table <- table[index, ]
   
   # means and sds
-  means <- apply(table, 2, function(x) mean(x, na.rm = TRUE))
-  sds <- apply(table, 2, function(x) sd(x, na.rm = TRUE))
-  
-  # check how many effective rows
-  nna <- length(which(apply(output[[i]], 1, FUN = function(x) anyNA(x)) == FALSE))
-  nnas <- c(nnas, nna)
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
   
   result.i <- c()
   for (j in 1:16) {
     result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
-                                       ' (', round(sds[j] / sqrt(nna), 
+                                       ' (', round(sds[j] / sqrt(50), 
                                                    digits = 3), ')'))
   }
   result <- rbind(result, result.i)
 }
 result <- cbind(sim_params[, c(2,1)], result)
-rownames(result) <- 1:16
+rownames(result) <- 1:4
 # results
 riskprop <- result[, c(1:4, 8:14)]
 pred <- result[, -c(3:4, 8:14)]
 # xtable
 require('xtable')
 xtable(riskprop)
-xtable(pred)
+colnames(riskprop) <- c('n', 'sigma.alpha','bias.adj', 'bias.wadj', 'guess.adj', 'guess.wadj', 'guess.IVW', 'prop.adj', 'prop.wadj', 'prop.IVW', 'best')
 
 
 
@@ -677,25 +521,38 @@ system.time(
   })
 )
 
+# store results
+# load packages
+require('readxl')
+require('writexl')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'parametricssigma.xlsx')
+
+
+
 
 # collect results
 result <- c()
 nnas <- c()
 for (i in 1:16) {
   table <- output[[i]]
-  
-  # means and sds
-  means <- apply(table, 2, function(x) mean(x, na.rm = TRUE))
-  sds <- apply(table, 2, function(x) sd(x, na.rm = TRUE))
-  
   # check how many effective rows
-  nna <- length(which(apply(output[[i]], 1, FUN = function(x) anyNA(x)) == FALSE))
+  index <- which(apply(output[[i]], 1, FUN = function(x) anyNA(x)) == FALSE)
+  nna <- length(index)
   nnas <- c(nnas, nna)
   
+  # subset
+  table <- table[index, ]
+  table <- table[1:200, ]
+  
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+
   result.i <- c()
   for (j in 1:16) {
     result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
-                                       ' (', round(sds[j] / sqrt(nna), 
+                                       ' (', round(sds[j] / sqrt(200), 
                                                    digits = 3), ')'))
   }
   result <- rbind(result, result.i)
@@ -704,7 +561,6 @@ result <- cbind(sim_params[, c(2,1)], result)
 rownames(result) <- 1:16
 # results
 riskprop <- result[, c(1:4, 8:14)]
-pred <- result[, -c(1:4, 8:14)]
+pred <- result[, -c(3:4, 8:14)]
 # xtable
-xtable(riskprop)
-
+xtable(pred)
