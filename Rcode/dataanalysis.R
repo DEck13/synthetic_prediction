@@ -371,6 +371,19 @@ risk.reduction <- function(means, vars) {
               rr = est))
 }
 risk.reduction(means = means, vars = vars) 
+# sample version
+risk.reduction2 <- function(est, vars) {
+  rr.adj <- (est['wadj']) ^ 2 - vars['adj'] - (est['adj'] - est['wadj']) ^ 2
+  rr.wadj <- (est['wadj']) ^ 2 - vars['wadj']
+  rr.IVW <- (est['wadj']) ^ 2 - vars['IVW'] - (est['IVW'] - est['wadj']) ^ 2
+  rest <- c(rr.adj, rr.wadj, rr.IVW)
+  names(rest) <- c('adj', 'wadj', 'IVW')
+  return(list(usable = ifelse(rest > 0, yes = 1, no = 0), best = which.max(rest), rr = rest))
+}
+est <- c(alpha_adj, alpha_wadj, alpha_IVW)
+names(est) <- c('adj', 'wadj', 'IVW')
+risk.reduction2(est = est, vars = vars) 
+
 
 
 # A function of descriptive statistics
