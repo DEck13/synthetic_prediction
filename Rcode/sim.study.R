@@ -351,10 +351,80 @@ ddboots <- function(B, K, ols, np) {
   return(list(adj = RR.adj, wadj = RR.wadj, IVW = RR.IVW))
 }
 
+cv <- function(k, X, Y, Tstar, np, B) {
+  # k must <= n
+  # X is a list of n + 1 objects
+  n <- length(X) - 1
+  
+  # if n <= k
+  if (n <= k) {
+    draw <- 1:n
+    k <- n
+  } else {
+    draw <- sample(1:n, size = k, replace = TRUE)
+  }
+  
+  c1 <- c()
+  c2 <- c()
+  
+  for (i in 1:k) {
+    X.i <- c(X[draw[i] + 1], X[-c(1, draw[i] + 1)])
+    Y.i <- c(Y[draw[i] + 1], Y[-c(1, draw[i] + 1)])
+    Tstar.i <- c(Tstar[draw[i] + 1], Tstar[-c(1, draw[i] + 1)])
+    
+    # ols object
+    ols.i <- ols.est.alphahat(Tstar = Tstar.i, Y = Y.i, X = X.i)
+    
+    # estimates
+    alphahat.i <- ols.i$alphahat
+    est.i <- ols.i$est
+    
+    # bootstrap samples
+    if (np == TRUE) {
+      bootsamp <- boots.mix(B = B, ols = ols.i)
+    } else {
+      bootsamp <- boots(B = B, ols = ols.i)
+    }
+    
+    # risk conditions
+    vars.i <- c()
+    for (j in 1:3) {
+      vars.i <- c(vars.i, var(bootsamp[[j]], na.rm = TRUE))
+    }
+    names(vars.i) <- c('adj', 'wadj', 'IVW')
+    
+    # yhats
+    yhat2s <- sapply(c('adj', 'wadj', 'IVW'), function(d) nowcast.alpha(X = X.i, Y = Y.i, Tstar = Tstar.i, best = d)[[1]])
+    yhat1 <- nowcast.alpha(X = X.i, Y = Y.i, Tstar = Tstar.i, best = 'wadj')[[2]]
+    names(yhat1) <- 'no'
+    names(yhat2s) <- c('adj', 'wadj', 'IVW')
+    
+    # truth
+    truth <- ifelse(as.numeric(abs(Y.i[[1]][Tstar.i[1] + 2] - yhat1)) - as.numeric(abs(Y.i[[1]][Tstar.i[1] + 2] - yhat2s)) > 0,
+                    yes = 1, no = 0) 
+    names(truth) <- c('adj', 'wadj', 'IVW')
+    
+    # comparison
+    guess <- risk.reduction2(est = est.i, vars = vars.i)$usable
+    consistency <- ifelse(truth == guess, yes = 1, no = 0)
+    c1 <- rbind(c1, consistency)
+    
+    # best consistency
+    best.consistency <- ifelse(which.min(abs(Y.i[[1]][Tstar.i[1] + 2] - yhat2s)) == 
+                                 risk.reduction2(est = est.i, vars = vars.i)$best, yes = 1, no = 0)
+    c2 <- c(c2, best.consistency)
+  }
+  
+  C <- c(apply(c1, 2, mean), mean(c2))
+  names(C) <- c(c('adj', 'wadj', 'IVW'), 'best')
+  
+  return(C)
+}
+
 # simulation study normal
 sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma, 
                                     sigma.alpha, sigma.delta.gamma, 
-                                    p, B, n, scale, np = c(TRUE, FALSE)) {
+                                    p, B, n, k, scale, np = c(TRUE, FALSE)) {
   T <- round(rgamma(n = n + 1, shape = 15, scale = 10)) # Time Length
   T[which(T < 90)] <- 90
   Tstar <- c() # Shock Time Points
@@ -463,43 +533,23 @@ sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma,
   # risk
   rmse <- sqrt(abs(Y[[1]][Tstar[1] + 2] - c(yhat1, yhat2s)) ^ 2)
   
-  # empty result
-  result <- c()
-  
-  for (z in 1:2) {
-    if (z == 1) {
-      # Bias
-      bias <- c(abs(mean(bootsamp[[1]], na.rm = TRUE) - Ealpha.adj), 
-                abs(mean(bootsamp[[2]], na.rm = TRUE) - Ealpha1))
-      names(bias) <- c('E.adj', 'E.wadj')
+  # Bias
+  bias <- c(abs(est['adj'] - Ealpha.adj), 
+            abs(est['wadj'] - Ealpha1))
+  names(bias) <- c('E.adj', 'E.wadj')
       
-      # comparison
-      guess <- risk.reduction(means = means, vars = vars)$usable
-      consistency <- ifelse(truth == guess, yes = 1, no = 0)
+  # comparison
+  guess <- risk.reduction2(est = est, vars = vars)$usable
+  consistency <- ifelse(truth == guess, yes = 1, no = 0)
       
-      # best consistency
-      best.consistency <- ifelse(which.min(abs(Y[[1]][Tstar[1] + 2] - yhat2s)) == 
-                                   risk.reduction(means = means, vars = vars)$best, yes = 1, no = 0)
-      
-      result[[1]] <- rbind(c(bias, dist, guess, consistency, best.consistency, rmse))
-    } else {
-      # Bias
-      bias <- c(abs(est['adj'] - Ealpha.adj), 
-                abs(est['wadj'] - Ealpha1))
-      names(bias) <- c('E.adj', 'E.wadj')
-      
-      # comparison
-      guess <- risk.reduction2(est = est, vars = vars)$usable
-      consistency <- ifelse(truth == guess, yes = 1, no = 0)
-      
-      # best consistency
-      best.consistency <- ifelse(which.min(abs(Y[[1]][Tstar[1] + 2] - yhat2s)) == 
+  # best consistency
+  best.consistency <- ifelse(which.min(abs(Y[[1]][Tstar[1] + 2] - yhat2s)) == 
                                    risk.reduction2(est = est, vars = vars)$best, yes = 1, no = 0)
+  
+  # cv consistency
+  cv.consistency <- cv(k = k, X = X, Y = Y, Tstar = Tstar, np = np, B = B)
       
-      result[[2]] <- rbind(c(bias, dist, guess, consistency, best.consistency, rmse))
-    }
-  }
-  names(result) <- c('boot', 'samp')
+  result <- rbind(c(bias, dist, guess, consistency, best.consistency, rmse, cv.consistency))
   return(result)
 }
 
@@ -653,122 +703,6 @@ sim.study.normal.gammaX.ddboots <- function(mu.gamma.delta, mu.alpha, sigma,
   return(result)
 }
 
-
-
-# collect results
-frame <- c()
-for (z in 1:2) {
-  result <- c()
-  for (i in 1:nrow(sim_params)) {
-  table <- output[[i]]
-  # means and sds
-  means <- apply(table[0:199 * 2 + z, ], 2, function(x) mean(x))
-  sds <- apply(table[0:199 * 2 + z, ], 2, function(x) sd(x))
-  result.i <- c()
-  for (j in 1:16) {
-    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
-                                         ' (', round(sds[j] / sqrt(50), 
-                                                     digits = 3), ')'))
-    }
-  result <- rbind(result, result.i)
-  }
-  result <- cbind(sim_params[, c(2,1)], result)
-  rownames(result) <- 1:20
-  frame[[z]] <- result
-}
-frame <- do.call('rbind', frame)
-# results
-riskprop <- frame[, c(1:4, 8:14)]
-pred <- frame[, -c(3:4, 8:14)]
-# xtable
-require('xtable')
-xtable(riskprop)
-xtable(pred[1:20,])
-
-
-# MC
-library("parallel")
-library("doParallel")
-library("foreach")
-# 8 cores -- use 7
-ncores <- detectCores() - 1
-registerDoParallel(cores = ncores)
-set.seed(2020)
-RNGkind("L'Ecuyer-CMRG")
-nsim <- 200
-# parameter setup
-sigma <- c(1, 5, 10, 25, 100)
-sigma.alphas <- c(1, 5, 10, 25, 100)
-sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, sigma = sigma))
-
-# simulation time
-system.time(
-  output <- lapply(1:nrow(sim_params), FUN = function(j) {
-    # parameters
-    sigma.alpha <- sim_params[j, 1]
-    sigma <- sim_params[j, 2]
-    # %do% evaluates sequentially
-    # %dopar% evaluates in parallel
-    # .combine results
-    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
-      # result
-      study <- sim.study.normal.gammaX(mu.gamma.delta = 2, 
-                                       mu.alpha = 10, sigma = sigma, 
-                                       sigma.alpha = sigma.alpha,
-                                       sigma.delta.gamma = 1, 
-                                       p = 13, B = 500, scale = 10, 
-                                       n = 10, np = FALSE)
-      result <- rbind(study$boot, study$samp)
-      return(result)
-    }
-    # return results
-    out
-  })
-)
-
-# store results
-# load packages
-require('readxl')
-require('writexl')
-setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
-write_xlsx(lapply(output, as.data.frame), 'parametricssigma.xlsx')
-
-
-
-# collect results
-frame <- c()
-for (z in 1:2) {
-  result <- c()
-  for (i in 1:nrow(sim_params)) {
-    table <- output[[i]]
-    # means and sds
-    means <- apply(table[0:199 * 2 + z, ], 2, function(x) mean(x))
-    sds <- apply(table[0:199 * 2 + z, ], 2, function(x) sd(x))
-    result.i <- c()
-    for (j in 1:16) {
-      result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
-                                         ' (', round(sds[j] / sqrt(50), 
-                                                     digits = 3), ')'))
-    }
-    result <- rbind(result, result.i)
-  }
-  result <- cbind(sim_params[, c(2,1)], result)
-  rownames(result) <- 1:25
-  frame[[z]] <- result
-}
-frame <- do.call('rbind', frame)
-# results
-riskprop <- frame[, c(1:4, 8:14)]
-pred <- frame[, -c(3:4, 8:14)]
-# xtable
-require('xtable')
-xtable(riskprop[-(1:25),])
-xtable(pred[-(1:25),])
-
-
-
-
-
 # MC
 library("parallel")
 library("doParallel")
@@ -909,13 +843,75 @@ xtable(riskprop)
 
 
 
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 100
+# parameter setup
+sigma <- c(5, 10, 25, 50, 100)
+sigma.alphas <- c(5, 10, 25, 50, 100)
+sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, sigma = sigma))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.alpha <- sim_params[j, 1]
+    sigma <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.gamma.delta = 1, 
+                                       mu.alpha = 2, sigma = sigma, 
+                                       sigma.alpha = sigma.alpha,
+                                       sigma.delta.gamma = 0.5, 
+                                       p = 13, B = 200, scale = 2, 
+                                       n = 10, np = FALSE)
+      result <- rbind(study$boot, study$samp)
+      return(result)
+    }
+    # return results
+    out
+  })
+)
+
+# store results
+# load packages
+require('readxl')
+require('writexl')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'parametricssigma.xlsx')
 
 
-
-
-
-
-
+result <- c()
+for (i in 1:nrow(sim_params)) {
+  table <- output[[i]][1:100 * 2, ]
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+  result.i <- c()
+  for (j in 1:16) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
+                                       ' (', round(sds[j] / sqrt(100), 
+                                                   digits = 3), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+# results
+riskprop <- result[, c(1:4, 8:14)]
+pred <- result[, -c(3:4, 8:14)]
+require('xtable')
+xtable(riskprop)
+xtable(pred)
 
 
 
@@ -951,15 +947,15 @@ system.time(
                                        mu.alpha = 2, sigma = 10, 
                                        sigma.alpha = sigma.alpha,
                                        sigma.delta.gamma = 0.5, 
-                                       p = 13, B = 200, scale = 2, 
+                                       p = 13, B = 100, k = 10, scale = 2, 
                                        n = n, np = FALSE)
-      result <- study$samp
-      return(result)
+      return(study)
     }
     # return results
     out
   })
 )
+
 
 # store results
 # load packages
@@ -975,7 +971,7 @@ for (i in 1:nrow(sim_params)) {
   means <- apply(table, 2, function(x) mean(x))
   sds <- apply(table, 2, function(x) sd(x))
   result.i <- c()
-  for (j in 1:16) {
+  for (j in 1:20) {
     result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
                                        ' (', round(sds[j] / sqrt(100), 
                                                    digits = 3), ')'))
@@ -984,8 +980,10 @@ for (i in 1:nrow(sim_params)) {
 }
 result <- cbind(sim_params[, c(2,1)], result)
 # results
-riskprop <- result[, c(1:4, 8:14)]
+riskprop <- result[, c(1:2, 8:14, 19:22)]
 pred <- result[, -c(3:4, 8:14)]
 require('xtable')
 xtable(riskprop)
 xtable(pred)
+
+
