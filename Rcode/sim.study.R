@@ -361,7 +361,7 @@ cv <- function(k, X, Y, Tstar, np, B) {
     draw <- 1:n
     k <- n
   } else {
-    draw <- sample(1:n, size = k, replace = TRUE)
+    draw <- sample(1:n, size = k, replace = FALSE)
   }
   
   c1 <- c()
@@ -986,4 +986,150 @@ require('xtable')
 xtable(riskprop)
 xtable(pred)
 
+
+
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 100
+# parameter setup
+sigma <- c(5, 10, 25, 50, 100)
+sigma.alphas <- c(5, 10, 25, 50, 100)
+sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, sigma = sigma))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.alpha <- sim_params[j, 1]
+    sigma <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.gamma.delta = 1, 
+                                       mu.alpha = 2, sigma = sigma, 
+                                       sigma.alpha = sigma.alpha,
+                                       sigma.delta.gamma = 0.5, 
+                                       p = 13, B = 100, scale = 2, k = 5,
+                                       n = 10, np = FALSE)
+      return(study)
+    }
+    # return results
+    out
+  })
+)
+
+# store results
+# load packages
+require('readxl')
+require('writexl')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'parametricssigma.xlsx')
+
+
+result <- c()
+for (i in 1:nrow(sim_params)) {
+  table <- output[[i]]
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+  result.i <- c()
+  for (j in 1:20) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
+                                       ' (', round(sds[j] / sqrt(100), 
+                                                   digits = 3), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+# results
+riskprop <- result[, c(1:2, 8:10, 19:22)]
+pred <- result[, -c(3:4, 8:14, 19:22)]
+require('xtable')
+xtable(riskprop)
+xtable(pred)
+
+
+
+
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 30
+
+
+# parameter setup
+ns <- c(5, 10, 15, 25)
+sigma.alphas <- c(5, 10, 25, 50, 100)
+sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, ns = ns))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.alpha <- sim_params[j, 1]
+    n <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.gamma.delta = 1, 
+                                       mu.alpha = 2, sigma = 10, 
+                                       sigma.alpha = sigma.alpha,
+                                       sigma.delta.gamma = 0.5, 
+                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       n = n, np = TRUE)
+      return(study)
+    }
+    # return results
+    out
+  })
+)
+
+
+
+# store results
+# load packages
+require('readxl')
+require('writexl')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'nonparametricnsigma.xlsx')
+
+
+result <- c()
+for (i in 1:nrow(sim_params)) {
+  table <- output[[i]]
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+  result.i <- c()
+  for (j in 1:20) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
+                                       ' (', round(sds[j] / sqrt(30), 
+                                                   digits = 3), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+# results
+riskprop <- result[, c(1:2, 8:10, 19:22)]
+pred <- result[, -c(3:4, 8:14, 19:22)]
+require('xtable')
+xtable(riskprop)
+xtable(pred)
 

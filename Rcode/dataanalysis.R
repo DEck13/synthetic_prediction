@@ -158,7 +158,6 @@ COP_close <- COP_close %>% mutate(start_day_20200309 = start_day_20200309)
 # time window
 TS1 <- COP_close[(start-30):(start), ]
 
-
 # shock-effect estimate
 m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day_20200309 + GSPC_Close + WTI_Close + WTI_Close_lag1 + GSPC_Close_lag1, 
                      data = TS1)
@@ -186,11 +185,12 @@ alpha_IVW <- sum(weights * estimates[, 1])
 Tstar.Date <- c("2020-03-05", "2008-03-13", "2008-09-05", "2008-09-11", "2008-09-25",  "2014-11-25")
 Tstar <- sapply(Tstar.Date, function(x) which(COP_close$Date == x))
 # X1
-X1 <- as.matrix(COP_close[c(Tstar[1], Tstar[1] + 1), c(3, 4)])
+X1 <- as.matrix(TS1[c(nrow(TS1) - 1, nrow(TS1)), c(3, 4)])
+# X1 <- as.matrix(COP_close[c(Tstar[1], Tstar[1] + 1), c(3, 4)])
 # X0
 X0 <- c()
 for (i in 1:5) {
-  X0[[i]] <- as.matrix(COP_close[c(Tstar[i + 1], Tstar[i + 1] + 1), c(3, 4)])
+ X0[[i]] <- as.matrix(COP_close[c(Tstar[i + 1], Tstar[i + 1] + 1), c(3, 4)])
 }
 
 # SCM
@@ -354,6 +354,7 @@ for (b in 1:B) {
   alphas[[2]] <- c(alphas[[2]], sum(alphahatsb * weights / sum(weights)))
   alphas[[3]] <- c(alphas[[3]], sum(Wstar * alphahatsb))
 }
+
 # Parameters
 means <- c()
 vars <- c()
@@ -377,423 +378,6 @@ names(est) <- c('adj', 'wadj', 'IVW')
 risk.reduction2(est = est, vars = vars) 
 
 
-# round 1
-Tstar.1 <- Tstar[-1]
-X1.1 <- as.matrix(COP_close[c(Tstar.1[1], Tstar.1[1] + 1), c(3, 4)])
-# X0
-X0.1 <- c()
-n <- length(Tstar.1) - 1
-for (i in 1:n) {
-  X0.1[[i]] <- as.matrix(COP_close[c(Tstar.1[i + 1], Tstar.1[i + 1] + 1), c(3, 4)])
-}
-# objective function is not 0; the fit may not be good
-Wstar.1 <- scmm(X1 = X1.1, X0 = X0.1)
-
-# weighted adjustment estimator
-alpha_wadj.1 <- sum(Wstar.1 * estimates[2:5,1])
-# IVW estimator
-weights.1 <- (1 / estimates[2:5,2]) / sum(1 / estimates[2:5, 2])
-alpha_IVW.1 <- sum(weights.1 * estimates[2:5, 1])
-# adjustment estimator
-alpha_adj.1 <- mean(estimates[2:5, 1])
-
-
-# Set a seed
-set.seed(2020)
-# Bootstrap replications
-B <- 1000
-# List of linear models
-lmod.1 <- list(m_COP_Sept_08, m_COP_11_27_14)
-# List of Data
-TS.1 <- list(TS3, TS4)
-# List of T*
-Tstar.1.Date <- Tstar.Date[-1]
-# Empty List for storation
-alphas.1 <- vector(mode = 'list', length = 3)
-# Loop begins
-for (b in 1:B) {
-  
-  # Vector for storing alpha hats
-  alphahatsb <- c()
-  # Weights for IVW Estimator
-  weights <- c()
-  
-  for (i in 1:2) {
-    # preparation
-    res <- residuals(lmod.1[[i]])
-    dat <- TS.1[[i]]
-    Ti <- nrow(dat)
-    coef <- matrix(coef(lmod.1[[i]]), nrow = 1)
-    
-    # BOOTSTRAP
-    resb <- sample(res, size = Ti, replace = TRUE)
-    
-    # New response
-    yi0 <- dat$COP_Close[1]
-    yib <- yi0
-    
-    # Case by Case
-    if (i == 1) {
-      # i = 2 has 3 dates
-      Tstari <- which(dat$Date %in% Tstar.1.Date[c(i + 1, i + 2, i + 3)])
-      
-      for (t in 1:Ti) {
-        datt <- matrix(c(1, yib[t], 
-                         ifelse(t == Tstari+ 1, yes = 1, no = 0), 
-                         as.numeric(dat[t, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])))
-        yib <- c(yib, resb[t] + coef %*% datt)
-      }
-      
-      # Prepare for new data
-      yb <- yib[-1]; yblag <- yib[-(Ti + 1)]
-      datbi <- data.frame(yblag, 
-                          ifelse(1:Ti == Tstari[1] + 1, yes = 1, no = 0), 
-                          ifelse(1:Ti == Tstari[2] + 1, yes = 1, no = 0),
-                          ifelse(1:Ti == Tstari[3] + 1, yes = 1, no = 0),
-                          dat[, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])
-      # New colnames
-      colnames(datbi) <- c('yblag', 'shock1', 'shock2', 'shock3', c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1'))
-      
-      # New Linear Model
-      lmodbi <- lm(yb ~ 1 + yblag + shock1 + shock2 + shock3 + GSPC_Close + WTI_Close + WTI_Close_lag1 + GSPC_Close_lag1, dat = datbi)
-      
-      # 3 Shock Effects
-      alphahatsb <- c(alphahatsb, coef(lmodbi)[3:5])
-      
-      # IVW Weights
-      weights <- c(weights, 1 / summary(lmodbi)$coef[3:5, 2] ^ 2)
-    } else {
-      
-      # i = 2
-      Tstari <- which(dat$Date == Tstar.1.Date[i + 3])
-      
-      for (t in 1:Ti) {
-        datt <- matrix(c(1, yib[t], ifelse(t == Tstari + 1, yes = 1, no = 0), 
-                         as.numeric(dat[t, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])))
-        yib <- c(yib, resb[t] + coef %*% datt)
-      }
-      
-      # Prepare for new data
-      yb <- yib[-1]; yblag <- yib[-(Ti + 1)]
-      datbi <- data.frame(yblag, ifelse(1:Ti == Tstari + 1, yes = 1, no = 0), dat[, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])
-      
-      # New colnames
-      colnames(datbi) <- c('yblag', 'shock', c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1'))
-      
-      # New Linear Model
-      lmodbi <- lm(yb ~ 1 + yblag + shock + GSPC_Close + WTI_Close + WTI_Close_lag1 + GSPC_Close_lag1, dat = datbi)
-      
-      # Shock Effects
-      alphahatsb <- c(alphahatsb, coef(lmodbi)[3])
-      
-      # Weights
-      weights <- c(weights, 1 / summary(lmodbi)$coef[3, 2] ^ 2)
-    }
-  }
-  
-  # Store Computed Shock-Effects Estimators
-  alphas.1[[1]] <- c(alphas.1[[1]], mean(alphahatsb))
-  alphas.1[[2]] <- c(alphas.1[[2]], sum(alphahatsb * weights / sum(weights)))
-  alphas.1[[3]] <- c(alphas.1[[3]], sum(Wstar.1 * alphahatsb))
-}
-# Parameters
-vars.1 <- c()
-for (j in 1:3) {
-  vars.1 <- c(vars.1, var(alphas.1[[j]]))
-}
-names(vars.1) <- c('adj', 'wadj', 'IVW')
-# check risk conditions
-est.1 <- c(alpha_adj.1, alpha_wadj.1, alpha_IVW.1)
-names(est.1) <- c('adj', 'wadj', 'IVW')
-risk.reduction2(est = est.1, vars = vars.1) 
-
-## Post-shock forecasts
-ps1 <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + GSPC_Close + WTI_Close + 
-            WTI_Close_lag1 + GSPC_Close_lag1, data = TS2[-nrow(TS2), ])
-# Yhat 1
-Yhat_nothing.1 <- coef(ps1) %*% t(as.matrix(cbind(1, as.vector(TS2[nrow(TS2), c(2, 3, 4, 6, 7)]))))
-# Yhat 2
-Yhat_adj.1 <- Yhat_nothing.1 + est.1
-
-## doing nothing completely misses the mark
-Yhat_nothing.1 - TS2$Y[nrow(TS2)]
-
-## adjustment gets closer
-Yhat_adj.1 - TS2$Y[nrow(TS2)]
-
-## CONSISTENCY
-consistency <- c(0, 0, 0, 0)
-
-# round 2
-Tstar.2 <- Tstar[-1][c(5, 1:4)]
-X1.2 <- as.matrix(COP_close[c(Tstar.2[1], Tstar.2[1] + 1), c(3, 4)])
-# X0
-X0.2 <- c()
-n <- length(Tstar.2) - 1
-for (i in 1:n) {
-  X0.2[[i]] <- as.matrix(COP_close[c(Tstar.2[i + 1], Tstar.2[i + 1] + 1), c(3, 4)])
-}
-# objective function is not 0; the fit may not be good
-Wstar.2 <- scmm(X1 = X1.2, X0 = X0.2)
-
-# weighted adjustment estimator
-alpha_wadj.2 <- sum(Wstar.2 * estimates[1:4,1])
-# IVW estimator
-weights.2 <- (1 / estimates[1:4,2]) / sum(1 / estimates[1:4, 2])
-alpha_IVW.2 <- sum(weights.2 * estimates[1:4, 1])
-# adjustment estimator
-alpha_adj.2 <- mean(estimates[1:4, 1])
-
-
-# Set a seed
-set.seed(2020)
-# Bootstrap replications
-B <- 1000
-# List of linear models
-lmod.2 <- list(m_COP_3_17, m_COP_Sept_08)
-# List of Data
-TS.2 <- list(TS2, TS3)
-# List of T*
-Tstar.2.Date <- Tstar.Date[-1][c(5, 1:4)]
-# Empty List for storation
-alphas.2 <- vector(mode = 'list', length = 3)
-# Loop begins
-for (b in 1:B) {
-  
-  # Vector for storing alpha hats
-  alphahatsb <- c()
-  # Weights for IVW Estimator
-  weights <- c()
-  
-  for (i in 1:2) {
-    # preparation
-    res <- residuals(lmod.2[[i]])
-    dat <- TS.2[[i]]
-    Ti <- nrow(dat)
-    coef <- matrix(coef(lmod.2[[i]]), nrow = 1)
-    
-    # BOOTSTRAP
-    resb <- sample(res, size = Ti, replace = TRUE)
-    
-    # New response
-    yi0 <- dat$COP_Close[1]
-    yib <- yi0
-    
-    # Case by Case
-    if (i == 2) {
-      # i = 2 has 3 dates
-      Tstari <- which(dat$Date %in% Tstar.2.Date[c(i + 1, i + 2, i + 3)])
-      
-      for (t in 1:Ti) {
-        datt <- matrix(c(1, yib[t], 
-                         ifelse(t == Tstari+ 1, yes = 1, no = 0), 
-                         as.numeric(dat[t, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])))
-        yib <- c(yib, resb[t] + coef %*% datt)
-      }
-      
-      # Prepare for new data
-      yb <- yib[-1]; yblag <- yib[-(Ti + 1)]
-      datbi <- data.frame(yblag, 
-                          ifelse(1:Ti == Tstari[1] + 1, yes = 1, no = 0), 
-                          ifelse(1:Ti == Tstari[2] + 1, yes = 1, no = 0),
-                          ifelse(1:Ti == Tstari[3] + 1, yes = 1, no = 0),
-                          dat[, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])
-      # New colnames
-      colnames(datbi) <- c('yblag', 'shock1', 'shock2', 'shock3', c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1'))
-      
-      # New Linear Model
-      lmodbi <- lm(yb ~ 1 + yblag + shock1 + shock2 + shock3 + GSPC_Close + WTI_Close + WTI_Close_lag1 + GSPC_Close_lag1, dat = datbi)
-      
-      # 3 Shock Effects
-      alphahatsb <- c(alphahatsb, coef(lmodbi)[3:5])
-      
-      # IVW Weights
-      weights <- c(weights, 1 / summary(lmodbi)$coef[3:5, 2] ^ 2)
-    } else {
-      
-      # i = 1
-      Tstari <- which(dat$Date == Tstar.2.Date[i + 1])
-      
-      for (t in 1:Ti) {
-        datt <- matrix(c(1, yib[t], ifelse(t == Tstari + 1, yes = 1, no = 0), 
-                         as.numeric(dat[t, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])))
-        yib <- c(yib, resb[t] + coef %*% datt)
-      }
-      
-      # Prepare for new data
-      yb <- yib[-1]; yblag <- yib[-(Ti + 1)]
-      datbi <- data.frame(yblag, ifelse(1:Ti == Tstari + 1, yes = 1, no = 0), dat[, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])
-      
-      # New colnames
-      colnames(datbi) <- c('yblag', 'shock', c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1'))
-      
-      # New Linear Model
-      lmodbi <- lm(yb ~ 1 + yblag + shock + GSPC_Close + WTI_Close + WTI_Close_lag1 + GSPC_Close_lag1, dat = datbi)
-      
-      # Shock Effects
-      alphahatsb <- c(alphahatsb, coef(lmodbi)[3])
-      
-      # Weights
-      weights <- c(weights, 1 / summary(lmodbi)$coef[3, 2] ^ 2)
-    }
-  }
-  
-  # Store Computed Shock-Effects Estimators
-  alphas.2[[1]] <- c(alphas.2[[1]], mean(alphahatsb))
-  alphas.2[[2]] <- c(alphas.2[[2]], sum(alphahatsb * weights / sum(weights)))
-  alphas.2[[3]] <- c(alphas.2[[3]], sum(Wstar.2 * alphahatsb))
-}
-# Parameters
-vars.2 <- c()
-for (j in 1:3) {
-  vars.2 <- c(vars.2, var(alphas.2[[j]]))
-}
-names(vars.2) <- c('adj', 'wadj', 'IVW')
-# check risk conditions
-est.2 <- c(alpha_adj.2, alpha_wadj.2, alpha_IVW.2)
-names(est.2) <- c('adj', 'wadj', 'IVW')
-risk.reduction2(est = est.2, vars = vars.2) 
-
-## Post-shock forecasts
-ps2 <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + GSPC_Close + WTI_Close + 
-            WTI_Close_lag1 + GSPC_Close_lag1, data = TS4[-nrow(TS4), ])
-# Yhat 1
-Yhat_nothing.2 <- coef(ps2) %*% t(as.matrix(cbind(1, as.vector(TS4[nrow(TS4), c(2, 3, 4, 6, 7)]))))
-# Yhat 2
-Yhat_adj.2 <- Yhat_nothing.2 + est.2
-
-## doing nothing completely misses the mark
-Yhat_nothing.2 - TS4$Y[nrow(TS4)]
-
-## adjustment gets closer
-Yhat_adj.2 - TS4$Y[nrow(TS4)]
-
-
-## CONSISTENCY
-consistency <- rbind(consistency, c(0, 1, 0, 0))
-
-
-
-# round 3, 4, 5
-for (j in c(3, 4, 5)) {
-  Tstar.345 <- c(Tstar[-1][j - 1], Tstar[-1][-(2:4)])
-  X1.345 <- as.matrix(COP_close[c(Tstar.345[1], Tstar.345[1] + 1), c(3, 4)])
-  # X0
-  X0.345 <- c()
-  n <- length(Tstar.345) - 1
-  for (k in 1:n) {
-    X0.345[[k]] <- as.matrix(COP_close[c(Tstar.345[k + 1], Tstar.345[k + 1] + 1), c(3, 4)])
-  }
-  # objective function is not 0; the fit may not be good
-  Wstar.345 <- scmm(X1 = X1.345, X0 = X0.345)
-  
-  # weighted adjustment estimator
-  alpha_wadj.345 <- sum(Wstar.345 * estimates[c(1, 5),1])
-  # IVW estimator
-  weights.345 <- (1 / estimates[c(1, 5),1]) / sum(1 / estimates[c(1, 5),1])
-  alpha_IVW.345 <- sum(weights.345 * estimates[c(1, 5), 1])
-  # adjustment estimator
-  alpha_adj.345 <- mean(estimates[c(1, 5), 1])
-  
-  
-  # Set a seed
-  set.seed(2020)
-  # Bootstrap replications
-  B <- 1000
-  # List of linear models
-  lmod.345 <- list(m_COP_3_17, m_COP_11_27_14)
-  # List of Data
-  TS.345 <- list(TS2, TS4)
-  # List of T*
-  Tstar.345.Date <- c(Tstar.Date[-1][j - 1], Tstar.Date[-1][-(2:4)])
-  # Empty List for storation
-  alphas.345 <- vector(mode = 'list', length = 3)
-  # Loop begins
-  for (b in 1:B) {
-    
-    # Vector for storing alpha hats
-    alphahatsb <- c()
-    # Weights for IVW Estimator
-    weights <- c()
-    
-    for (i in 1:2) {
-      # preparation
-      res <- residuals(lmod.345[[i]])
-      dat <- TS.345[[i]]
-      Ti <- nrow(dat)
-      coef <- matrix(coef(lmod.345[[i]]), nrow = 1)
-      
-      # BOOTSTRAP
-      resb <- sample(res, size = Ti, replace = TRUE)
-      
-      # New response
-      yi0 <- dat$COP_Close[1]
-      yib <- yi0
-        
-      # i = 2
-      Tstari <- which(dat$Date == Tstar.345.Date[i + 1])
-        
-      for (t in 1:Ti) {
-        datt <- matrix(c(1, yib[t], ifelse(t == Tstari + 1, yes = 1, no = 0), 
-                           as.numeric(dat[t, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])))
-        yib <- c(yib, resb[t] + coef %*% datt)
-      }
-        
-      # Prepare for new data
-      yb <- yib[-1]; yblag <- yib[-(Ti + 1)]
-      datbi <- data.frame(yblag, ifelse(1:Ti == Tstari + 1, yes = 1, no = 0), dat[, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])
-        
-      # New colnames
-      colnames(datbi) <- c('yblag', 'shock', c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1'))
-        
-      # New Linear Model
-      lmodbi <- lm(yb ~ 1 + yblag + shock + GSPC_Close + WTI_Close + WTI_Close_lag1 + GSPC_Close_lag1, dat = datbi)
-        
-      # Shock Effects
-      alphahatsb <- c(alphahatsb, coef(lmodbi)[3])
-        
-      # Weights
-      weights <- c(weights, 1 / summary(lmodbi)$coef[3, 2] ^ 2)
-    }
-    
-    # Store Computed Shock-Effects Estimators
-    alphas.345[[1]] <- c(alphas.345[[1]], mean(alphahatsb))
-    alphas.345[[2]] <- c(alphas.345[[2]], sum(alphahatsb * weights / sum(weights)))
-    alphas.345[[3]] <- c(alphas.345[[3]], sum(Wstar.1 * alphahatsb))
-  }
-  # Parameters
-  vars.345 <- c()
-  for (j in 1:3) {
-    vars.345 <- c(vars.345, var(alphas.345[[j]]))
-  }
-  names(vars.345) <- c('adj', 'wadj', 'IVW')
-  # check risk conditions
-  est.345 <- c(alpha_adj.345, alpha_wadj.345, alpha_IVW.345)
-  names(est.345) <- c('adj', 'wadj', 'IVW')
-  
-  ## Post-shock forecasts
-  rows <- sapply(2139:as.numeric(Tstar.345[1]), function(x) which(rownames(TS3) == x))
-  ps345 <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + GSPC_Close + WTI_Close + 
-              WTI_Close_lag1 + GSPC_Close_lag1, data = TS3[rows, ])
-  # Yhat 1
-  Yhat_nothing.345 <- coef(ps345) %*% t(as.matrix(cbind(1, as.vector(TS3[max(rows) + 1, c(2, 3, 4, 6, 7)]))))
-  
-  # Yhat 2
-  Yhat_adj.345 <- Yhat_nothing.345 + est.345
-  
-  # truth
-  truth <- sapply(Yhat_adj.345 - TS3$Y[max(rows) + 1], function(x) if (abs(x) < abs(Yhat_nothing.345)) 1 else 0)
-  # guess
-  guess <- risk.reduction2(est = est.345, vars = vars.345)$usable
-  best.const <- ifelse(which.min(abs(Yhat_adj.345 - TS3$Y[max(rows) + 1])) == 
-                         risk.reduction2(est = est.345, vars = vars.345)$best,
-                       yes = 1, no = 0)
-  # consistency
-  consistency <- rbind(consistency, c(ifelse(truth == guess, yes = 1, no = 0), best.const))
-}
-
-
-
 # All Estimators Are Usable !
 # Vote for Weighted Adjustment Estimators !
 
@@ -809,11 +393,17 @@ alpha.IVW.additive <- as.numeric(alpha.IVW.additive + estimates[5, 1])
 
 # Weighted Adjustment Estimator
 # X0
-X0 <- c()
-for (i in 1:4) {
-  X0[[i]] <- as.matrix(COP_close[c(Tstar[i + 1], Tstar[i + 1] + 1), c(3, 4)])
-}
+# X0 <- c()
+# for (i in 1:4) {
+  # X0[[i]] <- as.matrix(COP_close[c(Tstar[i + 1], Tstar[i + 1] + 1), c(3, 4)])
+# }
 # SCM
+X0 <- c()
+X0[[1]] <- as.matrix(TS2[c(nrow(TS2) - 1, nrow(TS2)), c(3, 4)])
+indrow <- apply(TS3[, 9:11], 2, function(x) which(x == 1))
+for (i in 2:4) {
+  X0[[i]] <- as.matrix(TS3[c(indrow[i - 1], indrow[i - 1]), c(3, 4)])
+}
 n <- 4
 # optimization
 outs <- solnp(par = rep(1/n, n), fun = weightedX0, eqfun = Wcons, eqB = 0, LB = rep(0, n), UB = rep(1, n))

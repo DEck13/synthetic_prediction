@@ -35,7 +35,7 @@
 \newcommand{\Hist}{\mathcal{H}}
 \def\mbf#1{\mathbf{#1}} % bold but not italic
 \def\ind#1{\mathrm{1}(#1)} % indicator function
-\newcommand{\simiid}{\stackrel{iid}{\sim}} % IID 
+\newcommand{\simiid}{\stackrel{iid}{\sim}} %[] IID 
 \def\where{\text{ where }} % where
 \newcommand{\indep}{\perp \!\!\! \perp } % independent symbols
 \def\cov#1#2{\mathrm{Cov}(#1, #2)} % covariance 
@@ -133,10 +133,6 @@
 Things to do:
 \begin{enumerate}
   \item Need to add simulations. 
-  \item $\mu_{\alpha}=2$, $X_{i,t}\sim \Gamma(1,2)$, $\delta_i, \gamma_i \sim \normal{1}{0.5}$
-  \item $\sigma=10$ for the base case.
-  \item $\sigma_{\alpha}= (5, 10, 25, 50, 100)$
-  \item $\sigma= (5, 10, 25, 50, 100)$
 \end{enumerate}
 
 
@@ -146,6 +142,7 @@ Things to do:
 
 \begin{enumerate}
   \item Revisions to abstract, introduction, simulation, data analysis, and discussions.
+  \item Addition of Section 3.4
 \end{enumerate}
 
 
@@ -157,7 +154,7 @@ Things to do:
 
 \maketitle
 \begin{abstract}
-    We developed a forecasting methodology for providing credible forecasts for time series data that has undergone a shock  by borrowing knowledge from disparate time series that have undergone similar shocks for which post-shock outcome is recorded. Three shock-effects estimators were constructed for minimizing average forecast risk. We proposed conditions when our methodology works and estimators for risk-reduction quantities. Bootstrap procedures are provided to estimate the variability of our shock effect estimators; and these procedures can be used to assess the potential success of post-shock prediction before the post-shock response is observed. The risk-reduction conditions and risk-reduction quantities are powerful tools for users because we can empirically aid a prospective evaluation about whether the three aggregation techniques  will work well and which one is the best. Several simulated data examples, and a real data example of forecasting Conoco Phillips stock price are provided for verification and illustration.
+    We developed a forecasting methodology for providing credible forecasts for time series data that has undergone a shock  by borrowing knowledge from disparate time series that have undergone similar shocks for which post-shock outcome is recorded. Three shock-effects estimators were constructed for minimizing average forecast risk. We proposed risk-reduction propositions providing conditions when our methodology works and estimators for risk-reduction quantities. Bootstrap procedures are provided to estimate the variability of our shock effect estimators; and these procedures can be used to assess the potential success of post-shock prediction before the post-shock response is observed. The risk-reduction propositions and risk-reduction quantities are powerful tools for users because we can empirically aid a prospective evaluation about whether the three aggregation techniques  will work well and which one is the best. Leave-one-out cross validation with $k$ random  draws is proposed to estimate consistency of risk-reduction propositions and best consistency of voting the best shock-estimators, prospectively informing users the probabilities that this prospective evaluation is consistent with the reality. Several simulated data examples, and a real data example of forecasting Conoco Phillips stock price are provided for verification and illustration.
 \end{abstract}
 
 
@@ -190,7 +187,7 @@ to improve predictive precision of COVID-19 infection trajectories for different
 
 Up to the scale of the shock, it is very unlikely that the above mentioned methods will work ideally since they are trained on the time series data that do not experience such a shock. To combat this problem, we develop and compare aggregation techniques in this post-shock setting based on the idea of data integration. We assume a simple auto regressive data generating process similar to that in \citet{blundell1998initial} with a general random effects structure. The main idea is to provide a scalar adjustment, based on estimated shock effects from the disparate time series, to the original forecast at the known shock time point. 
 
-We consider three aggregation techniques: simple averaging, inverse-variance weighted averaging, and similarity weighting. The latter technique is similar to the weighting in synthetic control methodology \citep{abadie2010synthetic}. We provide conditions  when the adjusted forecasts will work better than the original one, and estimate risk-reduction quantities to find the best technique out of the three. The involved parameters in the conditions and risk-reduction quantities are estimated by parametric bootstrap. These propositions and risk-reduction quantities are powerful tools for users in the sense that we can empirically aid a prospective evaluation about whether the three aggregation techniques  will work well and which one is the best, using estimates from bootstrap procedures. Our Monte Carlo simulation results show that  the risk-reduction conditions are highly consistent with the truth when the model for the shock effects is identified well with appropriate covariates under a fixed design; and gain more precision when the donor pool size increases. Our simulations further show that the procedure of voting the best technique by risk-reduction quantities is consistent with the truth when donor pool size is large. In the real data example of forecasting stock price of Conoco Phillips that experienced a shock on 2020 March 9th, the proposed three aggregation techniques work decently well. We now motivate our aggregation techniques.
+We consider three aggregation techniques: simple averaging, inverse-variance weighted averaging, and similarity weighting. The latter technique is similar to the weighting in synthetic control methodology \citep{abadie2010synthetic}. We provide risk-reduction propositions that detail the conditions  when the adjusted forecasts will work better than the original one, and estimate risk-reduction quantities to find the best technique out of the three. The involved parameters in the risk-reduction propositions and risk-reduction quantities are estimated by parametric bootstrap. These propositions and risk-reduction quantities are powerful tools for users in the sense that we can empirically aid a prospective evaluation about whether the three aggregation techniques  will work well and which one is the best, using estimates from bootstrap procedures. Furthermore, to inform the credibility of this prospective evaluation, we propose a leave-one-out cross validation with $k$ random draws to estimate the consistency of the risk-reduction propositions and best consistency of voting the best shock-effect estimators prospectively (see Definition \ref{consistency} and \ref{best consistency}), which tell the probabilities that the prospective evaluation is consistent with the reality. Our Monte Carlo simulation results show that  the risk-reduction conditions are highly consistent with the truth when the model for the shock effects is identified well with appropriate covariates under a fixed design; and gain more precision when the donor pool size increases. Our simulations further show that the procedure of voting the best technique by risk-reduction quantities is consistent with the truth when donor pool size is large. In the real data example of forecasting stock price of Conoco Phillips that experienced a shock on 2020 March 9th, the proposed three aggregation techniques work decently well. We now motivate our aggregation techniques.
 
 
 % Note that this methodology is not motivated with the goal of unbiased, asymptotically unbiased, or consistent estimation for the shock-effect of the time series under study.
@@ -683,15 +680,15 @@ In other words, when $\var{\hat{\alpha}_{\rm wadj}}<\var{\hat{\alpha}_{\rm adj}}
 \label{section322}
 According to Proposition \ref{propriskwadj2} and the discussion in Section \ref{conditionsm2122}, the risk-reduction quantities $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ are
 \begin{align*}
-  \Delta_{\rm adj} 
+  \Delta(\hat{\alpha}_{\rm adj})
   = (\E{\alpha_1})^2 -\var{\hat{\alpha}_{\rm adj}} -(\E{\hat{\alpha}_{\rm adj}}-\E{\alpha_1})^2
 \quad   \text{ and } \quad 
-  \Delta_{\rm wadj} 
+  \Delta(\hat{\alpha}_{\rm wadj})
   = (\E{\alpha_1})^2-\var{\hat{\alpha}_{\rm wadj}}.
 \end{align*}
 In this case, the risk-reduction quantity for $\hat{\alpha}_{\rm adj}$ is similar to that of $\hat{\alpha}_{\rm IVW}$ since they are both biased for $\E{\alpha_1}$.  Thus,
 \begin{align*}
- \Delta_{\rm IVW} 
+ \Delta(\hat{\alpha}_{\rm IVW})
   = (\E{\alpha_1})^2 -\var{\hat{\alpha}_{\rm IVW}} -(\E{\hat{\alpha}_{\rm IVW}}-\E{\alpha_1})^2
 \end{align*}
 
@@ -721,7 +718,7 @@ We analyze this inequality from two perspectives.
 \label{varbootstrap}
 
 
-In this section, we present a bootstrap procedure that approximates the distribution of our shock-effect estimators, checks the underlying conditions of our risk reduction results, and estimate risk-reduction using plug-in approach in practice. Our procedure involves the resampling of residuals in the separate OLS fits. This procedure has its origins in Section 6 of \citet{efron1986bootstrap}, and it involves the resampling the residuals which are assumed to be the realizations of an iid processes.
+In this section, we present a bootstrap procedure that approximates the distribution of our shock-effect estimators, checks the underlying conditions of our risk reduction propositions, and estimate risk-reduction using plug-in approach in practice. Our procedure involves the resampling of residuals in the separate OLS fits. This procedure has its origins in Section 6 of \citet{efron1986bootstrap}, and it involves the resampling the residuals which are assumed to be the realizations of an iid processes.
 %NO NEED TO OUTLINE IN THIS WAY: In the first step, we will introduce the pros and cons of this algorithm and refer the users to other alternatives. In the second step, we detail the procedure of boostrapping AR(1).
 %%\citet{efron} introduces the bootstrapping method to approximate the distribution of a statistic using a \emph{random sample}. However, this method will fail for time-series data since serial correlation or time-dependent features exist in typical time-series model. 
 %In the AR($p$) model, the unobserved errors are assumed to be identically and independently distributed. In this setting, standard bootstrap methodology can be applied to resampling the residuals \citep{efron1986bootstrap}. 
@@ -767,12 +764,20 @@ For $\mc{B}_u$ but conditioned on $\Theta$, we emphasize that the $\mathbf{W}^*$
 
 Recall that  $\hat{\alpha}_{\rm wadj}$ and $\hat{\alpha}_{\rm IVW}$ are unbiased estimators of their expectations, and $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator of $\E{\alpha_1}$ from Proposition \ref{unbiased}. Given the bootstrapped estimates of the variance, we can estimate the risk-reduction quantities in Section \ref{comparisons} using the estimates from the parametric bootstrap. For example, the $\Delta_{\rm adj}$ and its estimator $\hat{\Delta}_{\rm adj}$ are
 \begin{align*}
-  \Delta_{\rm adj} 
+  \Delta(\hat{\alpha}_{\rm adj})
   &= (\E{\alpha_1})^2 -\var{\hat{\alpha}_{\rm adj}} -(\E{\hat{\alpha}_{\rm adj}}-\E{\alpha_1})^2 \\
-  \hat{\Delta}_{\rm adj} 
+  \hat{\Delta}(\hat{\alpha}_{\rm adj})
  & = (\hat{\alpha}_{\rm wadj})^2 -S^2_{\hat{\alpha}_{\rm adj}} -(\hat{\alpha}_{\rm adj}-\hat{\alpha}_{\rm wadj})^2,
 \end{align*}
-where $S^2_{\hat{\alpha}_{\rm adj}}$ is the bootstrap sample variance for $\hat{\alpha}_{\rm adj}$. Suppose the $\hat{\Delta}_{\rm wadj}$ and $\hat{\Delta}_{\rm IVW}$ are estimators for $\Delta_{\rm wadj}$ and $\Delta_{\rm IVW}$, respectively. Then, we can evaluate the risk-reduction propositions by judging whether $\hat{\Delta}_{\rm est}>0$ for $\text{est} \in \{\text{adj}, \text{wadj}, \text{IVW}\}$, and  the best estimator $\hat{\alpha}_{\rm best}$ is the one with the maximum estimated risk-reduction quantities. Next, we discuss some potential problems of the bootstrap procedures. 
+where $S^2_{\hat{\alpha}_{\rm adj}}$ is the bootstrap sample variance for $\hat{\Delta}(\hat{\alpha}_{\rm adj})$. 
+
+Suppose we have a pool of shock-effect estimators, $\mc{A}$, e.g., $\mc{A}= \{\hat{\alpha}_{\rm adj}, \hat{\alpha}_{\rm wadj}, \hat{\alpha}_{\rm IVW}\}$ in our study. We can determine which one is the best shock-effect estimator. Suppose the $\hat{\Delta}(\hat{\alpha}_{\rm wadj})$ and $\hat{\Delta}(\hat{\alpha}_{\rm IVW})$ are estimators for $\Delta(\hat{\alpha}_{\rm wadj}) $ and $\Delta(\hat{\alpha}_{\rm IVW})$, respectively. Then, we can evaluate the risk-reduction propositions by judging whether $\hat{\Delta}(\hat{\alpha})>0$ for $\hat{\alpha}\in \mc{A}$. Besides, we can also select the best shock-effect estimator accordingly. Define
+\begin{align}
+	\hat{\alpha}_{\rm best} = \argmax_{\hat{\alpha}\in \mc{A}} \hat{\Delta}(\hat{\alpha}) \quad \text{ and } \quad  \alpha_{\rm best} = \argmax_{\hat{\alpha}\in \mc{A}} \Delta(\hat{\alpha}). \label{best}
+\end{align}
+That is, the best estimator $\hat{\alpha}_{\rm best}$ is the one with the maximum estimated risk-reduction quantities whereas $\alpha_{\rm best}$ is the true best shock-effect estimator given observed post-shock response. See more discussions in Section \ref{loocv}.
+
+
 
 In terms of the use of our bootstrap procedure, we caution that the bootstrapping residuals in OLS estimation may not provide valid inference in moderate or high dimension where $p < T_i$ but $p / T_i$ is not close to zero for $i\in \{2, \ldots, n+1\}$ \citep{el2018can}; see alternatives for residual bootstrapping in linear models in \citet{el2018can}.
 
@@ -780,7 +785,63 @@ Recall that $\mathbf{W}^*$  may not be unique if the conditions in Proposition \
 
 There are some issues in using $\mc{B}_u$ when $\mathbf{W}^*$ falls in the boundary of the parameter space. See detailed discussions in Section \ref{discussion}.
 
+\subsection{Leave-one-out cross validation with $k$ random draws}
+\label{loocv}
+
+In this section, we introduce a powerful procedure for rendering prospective evaluations of the applicability of the proposed methods. First, we introduce the concept of consistency. Second, we detail the leave-one-out cross-validation with $k$ random draws to realize the estimation prospectively.
+
+Our risk-reduction propositions methodologies can be evaluated by \emph{consistency}. Risk-reduction propositions are decision-making procedures that might commit a type of error, which is similar to Type I or Type II error in a hypothesis test. Let $\hat{\alpha}$ be an estimator of $\alpha_1$ and $\delta_{\hat{\alpha}}$ is the corresponding risk-reduction proposition. If $\Delta(\hat{\alpha})>0$ ($\Delta(\hat{\alpha})<0$, respectively) but $\delta_{\hat{\alpha}}$ incorrectly reported $\Delta(\hat{\alpha})<0$ ($\Delta(\hat{\alpha})>0$, respectively) so that it make the decision not to use $\hat{\alpha}$ (to use $\hat{\alpha}$, respectively), $\delta_{\hat{\alpha}}$ is said to be \emph{inconsistent}. If $\Delta(\hat{\alpha})<0$ ($\Delta(\hat{\alpha})>0$, respectively) and  $\delta_{\hat{\alpha}}$ correctly reported $\Delta(\hat{\alpha})<0$ ($\Delta(\hat{\alpha})>0$, respectively) so that it make the decision to use $\hat{\alpha}$, $\delta_{\hat{\alpha}}$ is said to be \emph{consistent}. These situations are depicted in the following table. 
+\begin{center}
+  \begin{center}
+      \begin{tabular}{cc|c|c}
+        \hline
+        & & \multicolumn{2}{c}{Decision} \\
+        & & Use $\hat{\alpha}$ & Do not use $\hat{\alpha}$ \\ 
+                \hline
+     \multirow{2}{*}{Truth}  & $\Delta(\hat{\alpha})>0$ & Consistent & Inconsistent\\
+      \cline{3-4}
+      & $\Delta(\hat{\alpha})<0$  & Inconsistent & Consistent \\
+      \hline
+      \end{tabular}
+  \end{center}
+\end{center}
+Similar definitions can be adapted to the best shock-effect estimators. 
+
+In this setting, judging whether $\delta_{\alpha}$ is consistent can be treated as a Bernoulli trial that reports 1 if $\delta_{\alpha}$ is consistent, and reports 0 if $\delta_{\alpha}$ is inconsistent. It is also true for selecting the best shock-effect estimator. It motivates us to define
+\begin{align*}
+	\mc{C}(\delta_{\alpha}) 
+	= I(\delta_{\hat{\alpha}} \text{ is consistent})
+ \quad \text{ and } \quad  	
+ \mc{C}(\mc{A}) 
+	= I(\hat{\alpha}_{\rm best} = \alpha_{\rm best})
+\end{align*}
+where $I(\cdot)$ is an indicator function, $\mc{A}$ is the pool of shock-effect estimators, $\alpha_{\rm best}$ is the true best shock-effect estimator, and $\hat{\alpha}_{\rm best}$ is the best shock-effect estimator selected by the maximum estimated risk-reduction,   see Section \ref{varbootstrap}.  Then, we can define consistency and best consistency as in Definition \ref{consistency} and \ref{best consistency}.
+
+\begin{defn}
+\normalfont 	\label{consistency}The \emph{consistency} of 	the risk-reduction proposition $\delta_{\hat{\alpha}}$ is $\E{\mc{C}(\delta_{\hat{\alpha}})}$.
+\end{defn}
+
+\begin{defn}
+	\normalfont  \label{best consistency}Given $\mc{A}$ the pool of shock-effect estimators, the \emph{best consistency} is $\E{\mc{C}(\mc{A})}$.
+\end{defn}
+Consistency and best consistency are important parameters for users to evaluate the effectiveness of our risk-reduction propositions and estimated risk-reduction. If $\E{\mc{C}(\delta_{\hat{\alpha}})} > 0.5$, we  claim that $\delta_{\hat{\alpha}}$ is better than a random guess. If $\E{\mc{C}(\mc{A})} > 1/ |\mc{A}|$, we claim that the procedure of selecting the best shock-effect estimators is better than a random guess. Note that $\mc{C}(\delta_{\hat{\alpha}})$
+ and $\mc{C}(\mc{A})$ generally can be known only if the post-shock response is observed. But it is only feasible in a retrospective finding. It is even more difficult to construct a random sample to estimate $\E{\mc{C}(\delta_{\hat{\alpha}})}$ or $\E{\mc{C}(\mc{A})}$. Nevertheless, it is possible to estimate them using the procedure \emph{leave-one-out cross validation (LOOCV)}.
+
+Our proposed LOOCV tailors the standard LOOCV to our application. See details of standard LOOCV in Section 7.10 of \citet{hastie2009elements}.  Recall in Section \ref{modelsetup} that we are given the data $\{(\mbf{x}_{i,t}, y_{i,t}) \colon i = 1, \ldots, n+1, t = 1, \ldots, T_i\}$, where $\{(\mbf{x}_{1,t}, y_{1,t})\colon t = 1, \ldots, T_1\}$ is the data of the time series of interest and the remaining is those of the donor pool. For $m^{\rm th}$ iteration of LOOCV, where $m = \{1, \ldots, n\}$, we set aside $\{(\mbf{x}_{m + 1, t}, y_{m + 1, t}) \colon t = 1, \ldots, T_{m+1}\}$ as the time series of interest, and construct a new donor pool $\{(\mbf{x}_{i, t}, y_{i, t}) \colon i \in \mc{I}, t = 1, \ldots, T_{i}\}$, where $\mc{I}=\{2, \ldots, n+1\} \setminus \{m+1\}$. Since the post-shock response $y_{m+1, T_{m+1}^*+1}$ is observed, for $\hat{\alpha}\in \mc{A}$, we can compute the consistency and best consistency as $\mc{C} ^{(-m)}(\delta_{\hat{\alpha}})$ and $\mc{C} ^{(-m)}(\mc{A})$  using the estimation procedures in Section \ref{varbootstrap}. The the LOOCV estimates for $\E{\mc{C}(\delta_{\hat{\alpha}})}$  and $\E{\mc{C}(\mc{A})}$ are
+\begin{align*}
+	 \bar{\mc{C}}(\delta_{\hat{\alpha}})= \frac{1}{n} \sum_{m = 1}^n \mc{C} ^{(-m)}(\delta_{\hat{\alpha}})
+	 \quad \text{ and } \quad \bar{\mc{C}}(\mc{A})= \frac{1}{n} \sum_{m = 1}^n \mc{C} ^{(-m)}(\mc{A}).
+\end{align*}
+Note that to satisfy $\mc{M}_{2}$ in Section \ref{modelsetup}, the candidates from donor pool has to be assumed to be mutually independent. Based on this assumption, $\bar{\mc{C}}(\delta_{\hat{\alpha}})$ and $\bar{\mc{C}}(\mc{A})$ should be almost unbiased estimates of $\E{\mc{C}(\delta_{\hat{\alpha}})}$ and $\E{\mc{C}(\mc{A})}$, respectively \citep[Page 222]{msos}.
+
+However, LOOCV can be very computationally intensive when $n$ is large. In an analog to $k$-fold cross-validation as remedies for ordinary LOOCV, we propose a similar procedure \emph{LOOCV with $k$ random draws} to alleviate the computation burden. LOOCV with $k$ random draws differs in the selection of indices. The algorithms are outlined as follows. If $n \leq  k$, we set $k$ to be $n$. If $n > k$, we randomly sample without replacement $k$ elements from $\{1, \ldots, n\}$ to gather them into $\mc{J}$. For $m \in \mc{J}$, we set aside $\{(\mbf{x}_{m + 1, t}, y_{m + 1, t}) \colon t = 1, \ldots, T_{m+1}\}$ as the time series of interest, and construct a new donor pool $\{(\mbf{x}_{i, t}, y_{i, t}) \colon i \in \mc{I}, t = 1, \ldots, T_{i}\}$, where $\mc{I}=\{2, \ldots, n+1\} \setminus \{m+1\}$. The LOOCV with $k$ random draws estimates for $\E{\mc{C}(\delta_{\hat{\alpha}})}$  and $\E{\mc{C}(\mc{A})}$ are
+\begin{align*}
+	 \bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}})= \frac{1}{k} \sum_{m \in \mc{J}} \mc{C} ^{(-m)}(\delta_{\hat{\alpha}})
+	 \quad \text{ and } \quad \bar{\mc{C}}^{(k)}(\mc{A})= \frac{1}{k} \sum_{m \in \mc{J}} \mc{C} ^{(-m)}(\mc{A}).
+\end{align*}
+Similarly, assuming the candidates in the donor pool are  mutually independent and the data  satisfy $\mc{M}_{2}$, $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}})$ and $\bar{\mc{C}}^{(k)}(\mc{A})$ should be almost unbiased estimates of $\E{\mc{C}^{}(\delta_{\hat{\alpha}})}$ and $\E{\mc{C}(\mc{A})}$, respectively. The estimation bias should decrease as $k \to n$.  In practice, $k=5$ or $k=10$ can be typical choices for LOOCV with $k$ random draws. 
  
+
 
 \section{Simulation}
 
@@ -789,10 +850,10 @@ There are some issues in using $\mc{B}_u$ when $\mathbf{W}^*$ falls in the bound
 
 In this section, we provide justification for our methods based on Monte Carlo simulation examples. We implemented our simulation based on $\mc{M}_{22}$ with negligibly small $\Sigma_{\gamma}$ and $\Sigma_{\delta}$ approximating the design of $\mathcal{M}_{21}$.  We consider $p=13$ and $\mu_{\alpha}=10$, where $p = 13$ is set to satisfy conditions in Proposition \ref{uniqueness}.
 
-Parameter setup of our simulations are detailed as below. $\phi_i$'s are sampled independently from $\mrm{Uniform}(0,1)$. We  sampled $T_i$'s  independently from  $\Gamma(15, 10)$ that are further rounded to integers. If it exists some  $i$ such that  $T_i < 90$, we let $T_i=90$ instead.  Moreover, $T_i^*$ is randomly selected from $2p + 4$ to $T_i-1$. Those are set up to satisfy a necessary condition for the design matrix of OLS estimation to have full rank. Moreover, it is also designed to illustrate the performance of $\hat{\alpha}_{\rm IVW}$ that may perform well in time series with varying lengths. However, it is still possible that the design matrix for the bootstrapped model does not have full rank for some $b\in \{1, \ldots, B\}$. In that case, we do not consider such $b$ in computations of means and variances. Additionally, we generated the covariates from $\Gamma(1,10)$ to set up a setting when the $\hat{\alpha}_{\rm wadj}$ may perform well.  
+Parameter setup of our simulations are detailed as below. $\phi_i$'s are sampled independently from $\mrm{Uniform}(0,1)$. We  sampled $T_i$'s  independently from  $\Gamma(15, 10)$ that are further rounded to integers. If it exists some  $i$ such that  $T_i < 90$, we let $T_i=90$ instead.  Moreover, $T_i^*$ is randomly selected from $2p + 4$ to $T_i-1$. Those are set up to satisfy a necessary condition for the design matrix of OLS estimation to have full rank. Moreover, it is also designed to illustrate the performance of $\hat{\alpha}_{\rm IVW}$ that may perform well in time series with varying lengths. However, it is still possible that the design matrix for the bootstrapped model does not have full rank for some $b\in \{1, \ldots, B\}$. In that case, we do not consider such $b$ in computations of means and variances. Additionally, we generated the covariates from $\Gamma(1,2)$ to set up a setting when the $\hat{\alpha}_{\rm wadj}$ may perform well.  
 
 
-In this experiment, we consider parameter setup by varying $\sigma$ in the model of $y_{i,t}$, $n$, the donor pool size, and $\sigma_{\alpha}$ in the model of $\alpha_i$. We used 200 replications of Monte Carlo simulations and $B = 500$ for computation; and report means and standard errors for estimated quantities accordingly.
+In this experiment, we consider parameter setup by varying $\sigma$ in the model of $y_{i,t}$, $n$, the donor pool size, and $\sigma_{\alpha}$ in the model of $\alpha_i$. We used $30$ replications of Monte Carlo simulations and $B = 200$ for computation; and report means and standard errors for estimated quantities accordingly. $k=5$ is set up for LOOCV with $k$ random draws.
 
 
 \subsection{Bootstrap simulation for risk-reduction propositions}
@@ -800,24 +861,11 @@ In this experiment, we consider parameter setup by varying $\sigma$ in the model
 
 In this section, we provide justification for the bootstrap procedures used in estimating parameters for risk-reduction propositions (see Section \ref{properties}) and risk-reduction quantities (see Section \ref{comparisons}). We will compare the result of using parametric bootstrap conditioned on the donor pool with the one without using the parameter setup discussed in Section \ref{simulation}.
 
-Specifically, we verify the unbiasedness results in Proposition \ref{unbiased}, and consistency of our proposed risk-reduction propositions. We define the consistency by whether our risk-reduction propositions yield results that agree with the reality that can be known in the simulation. Suppose we make the decision to  accept $\hat{\alpha}$ for $\hat{\alpha}\in \{\hat{\alpha}_{\rm adj}, \hat{\alpha}_{\rm wadj}, \hat{\alpha}_{\rm IVW}\}$ if risk-reduction proposition reports that $\hat{\alpha}$ reduces the risk, and reject $\hat{\alpha}$ otherwise. Consistency can be interpreted in a similar way to hypothesis testing with the following confusion table. 
-\begin{center}
-  \begin{center}
-      \begin{tabular}{cc|c|c}
-        \hline
-        & & \multicolumn{2}{c}{Decision} \\
-        & & Use $\hat{\alpha}$ & Do not use $\hat{\alpha}$ \\ 
-                \hline
-     \multirow{2}{*}{Truth}  & $R_{T_1^*+1,2}<R_{T_1^*+1,1}$ & Consistent & Inconsistent\\
-      \cline{3-4}
-      & $R_{T_1^*+1,2}>R_{T_1^*+1,1}$   & Inconsistent & Consistent \\
-      \hline
-      \end{tabular}
-  \end{center}
-\end{center}
-We report 1 for risk-reduction propositions to be consistent and 0 otherwise. Recall that in Section \ref{comparisons}, we could estimate the risk-reduction quantities, and therefore select the best estimator with the maximum risk-reduction quantities. It is also possible to confirm whether this decision is true in a simulation setting. Similarly, we report 1 for the decision of selecting the best shock-effect estimators  to be consistent and 0 otherwise.
 
-In the first experiment, we consider the parameter combination of  $n \in \{5, 10, 15, 25\}$ and $\sigma_{\alpha} \in  \{1, 5, 10, 25, 100\}$ where we fix $\sigma$ to 1. The bias results are not reported for $\hat{\alpha}_{\rm IVW}$ since its moments are generally unknown. It is shown in Table ? that as the donor pool size increases, the bias and consistency results improve with more precision. In contrast, the result gets poorer as  the variance of $\alpha_i$ increases. It is to be expected since the consistency results claimed in Section \ref{varbootstrap} are conditioned on $\Theta$. Under a fixed design, it is evident that the results of our risk-reduction propositions are highly consistent if the models for $\alpha_i$'s  are identified correctly with appropriate covariates. But it is reversed in the random design case. Moreover, notice that the consistency for voting the best estimator works poor when $n$ is small but improves significantly when $n$ is large.
+
+In the first experiment, we consider the parameter combination of  $n \in \{5, 10, 15, 25\}$ and $\sigma_{\alpha} \in  \{5, 10, 25, 50, 100\}$ where we fix $\sigma$ to $10$. From Table ?, assuming that $\bar{C}^{(k)}(\delta_{\hat{\alpha}})$ well estimates $\E{\mc{C}(\delta_{\hat{\alpha}}})$ and fixing $n$, we can observe that $\delta_{\hat{\alpha}}$ is highly consistent for $\hat{\alpha}\in \mc{A}$ when $\sigma_{\alpha}$ is small. It is because when $\sigma_{\alpha}$ is small, the signal of the covariates is strong so that $\hat{\alpha}_{\rm wadj}$ will be expected to capture the signal. Moreover, when $\sigma_{\alpha}$ is small, $\mc{M}_{22}$ approximates $\mc{M}_{21}$ such that estimation of $\E{\alpha_1}$ should be nearly unbiased according to Proposition \ref{unbiased}. Nevertheless, when the signal of the covariates is poor ($\sigma_{\alpha}$ is big), the $\delta_{\hat{\alpha}}$  become more inconsistent for $\hat{\alpha}\in \mc{A}$. It is to be expected since the bootstrap estimates become more biased. However, users can be warned by $\bar{C}^{(k)}(\delta_{\hat{\alpha}})$ to have an idea of the effectiveness of $\delta_{\hat{\alpha}}$. Fixing $\sigma_{\alpha}$, we can observe that $\delta_{\hat{\alpha}}$ becomes more consistent when $n$ increases. It is due to the robustness gain in estimation when $n$ increases.
+
+In this setting, comparing Table ? with Table ??, we can see that $\mc{B}_u$ does not differ a lot from $\mc{B}_c$.
 
 \subsection{Simulation for prediction}
 
@@ -911,13 +959,12 @@ Note that the norm is computed using the $k$-dimensional Euclidean metric. The s
       & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$ \\
       \hline 
     Bootstrapped variance & 0.531 & 0.479 & 0.970 \\
-    Leave-one-out consistency & 0.000 & 0.800 & 0.000
     \end{tabular}
   \end{center}  
 \end{table}
 \vspace{-.5cm}
 
-Using the parametric bootstrap conditioned on the donor pool proposed in Section \ref{varbootstrap}, we estimated parameters for risk-reduction propositions and risk-reduction quantities proposed in  Section \ref{properties}; and the result is presented in Table \ref{table2}. Plugging these estimates into conditions in Section \ref{properties} and risk-reduction formulas in Section \ref{comparisons} yields (1) $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$, and $\hat{\alpha}_{\text{IVW}}$  reduce the risk and (2) the risk-reduction quantities are $34.565$, $34.880$, and $34.139$, respectively. The estimated risk-reduction quantities  vote $\hat{\alpha}_{\rm wadj}$  for the best estimator. Moreover, the leave-one-out consistency of the risk-reduction propositions are 0.000, 0.800, and 0.000 for $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$, and $\hat{\alpha}_{\text{IVW}}$, respectively. It implies that we should only use the propositions for $\hat{\alpha}_{\text{wadj}}$. Then, we verify the consistency of the result yielded by risk-reduction propositions with the reality as below.
+Using $\mc{B}_c$ proposed in Section \ref{varbootstrap}, we estimated parameters for risk-reduction propositions and risk-reduction quantities proposed in  Section \ref{properties}; and the result is presented in Table \ref{table2}. Plugging these estimates into conditions in Section \ref{properties} and risk-reduction formulas in Section \ref{comparisons} yields (1) $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$, and $\hat{\alpha}_{\text{IVW}}$  reduce the risk and (2) the risk-reduction quantities are $34.565$, $34.880$, and $34.139$, respectively.  The estimated risk-reduction quantities  vote $\hat{\alpha}_{\rm wadj}$  for the best estimator. LOOCV with $k$ random draws was not implemented since the effective $n$ is $3$, a number too small to provide a credible estimation. We verify the consistency of the result yielded by risk-reduction propositions with the reality as below.
 
 \begin{figure}
   \begin{center}
@@ -931,8 +978,8 @@ Using the parametric bootstrap conditioned on the donor pool proposed in Section
 
 We can see from Figure~\ref{Fig:CP} that $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$ and $\hat{\alpha}_{\text{IVW}}$ perform decently well, they do not recover the magnitude of the shock effect but are much better than unadjusted forecasts that do not account for shock effects. 
 The unadjusted forecast has an RMSE of 9.870 dollars whereas 
-the use of $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$, and $\hat{\alpha}_{\text{IVW}}$ have  RMSE of $4.436$, $3.924$, and $4.423$ dollars, respectively.
-Therefore, the risk-reduction propositions are consistent with the reality  with the reduced risks for forecasts using  $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$, and $\hat{\alpha}_{\text{IVW}}$ than without. Moreover, the risk-reduction quantities are consistent with the reality as well. The results are also consistent with leave-one-out consistency for $\hat{\alpha}_{\text{wadj}}$ in that it  reduces the risk. 
+the use of $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$, and $\hat{\alpha}_{\text{IVW}}$ have  RMSE of $4.436$, $3.924$, and $4.423$ dollars, respectively. 
+Therefore, the risk-reduction propositions are consistent with the reality  with the reduced risks for forecasts using  $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$, and $\hat{\alpha}_{\text{IVW}}$ than without. Moreover, the risk-reduction quantities are consistent with the reality as well. 
 
 
 The phenomenon that the true shock effect is not recovered by $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$, and $\hat{\alpha}_{\text{IVW}}$ can be due to that the donor pool is not constructed to be similar enough to the time series of interest. The shock(s) on March 9, 2020 is(are) in the midst of the COVID-19 pandemic and oil production volatility. It is difficult to find available stock market time series data that were generated under a similar setting.  
@@ -951,8 +998,8 @@ From another perspective, it is possible that the stock of Conoco Phillips actua
 
 
 
-Our proposed model in Section \ref{modelsetup} is a simple model with results in Section \ref{properties} easily generalizing to other more complicated models. Our simple AR(1) model can be extended to AR($p$) settings %for $y_{i,t}$ with an additional component $\alpha_i 1(D_{i,t}=T_i^* + 1)$.  
-Similarly, the mean function for $\alpha_i$ under $\mc{M}_2$ can be extended to include more lagged predictors. Moreover, the functional form for the mean function can be extended beyond the linear regression model under $\mc{M}_2$. Multiple shock-effects can be nested within a time series; and time series in the donor pool are allowed be dependent. As an example, we could consider a dependency structure for the September 2008 shock effects in our analysis of Conoco Phillips stock.
+Our proposed model in Section \ref{modelsetup} is a simple model with results in Section \ref{properties} easily generalizing to other more complicated models. Our simple AR(1) model can be extended to AR($p$) settings. %for $y_{i,t}$ with an additional component $\alpha_i 1(D_{i,t}=T_i^* + 1)$. 
+Moreover, the mean function for $\alpha_i$ under $\mc{M}_2$ can be extended to include more lagged predictors. Similarly, LOOCV with $k$ random draws can be adapted to AR($p$). Besides, the functional form for the mean function for $y_{i,t}$ can be extended beyond the linear regression model under $\mc{M}_2$. Multiple shock-effects can be nested within a time series; and time series in the donor pool are allowed be dependent. As an example, we could consider a dependency structure for the September 2008 shock effects in our analysis of Conoco Phillips stock. But we note that consistency estimates from LOOCV with $k$ random draws may not work well if donor pool candidates are not mutually independent since the almost unbiased property hinges on the mutual independence among candidates in the donor pool.
 %This generalization is possible since our risk-reduction propositions in Section \ref{properties} assumes the shock-effect estimates are independent of $\alpha_1$, the shock effect for the time series of interest; and allows arbitrary dependence of shock-effects in the donor pool. 
 %Specific to this generalization, we edit the model of $\alpha_i$ to $\alpha_i = \mu_{\alpha} + \delta_i'\mathbf{x}_{3, T_i^* + 1} + \gamma_i'\mathbf{x}_{3, T_i^*} + \tilde{\varepsilon}_i$ for $i = 3, 4, 5$ and $\alpha_i = \mu_{\alpha} + \delta_i'\mathbf{x}_{4, T_i^* + 1} + \gamma_i'\mathbf{x}_{4, T_i^*} + \tilde{\varepsilon}_i$ for $i = 6$.
 %This generalization was adopted in Section \ref{forecasting}. In this case, the variance expressions proposed in Section \ref{properties} will not work. However, the risk-reduction propositions in Section \ref{properties} will work  as long as those shock-effects (not necessarily mutually independent) in the donor pool are independent of the one of interest. 
@@ -965,12 +1012,14 @@ Our bootstrap procedures can be extended to approximate the distribution of shoc
 
 
 
-Recall that in Section \ref{varbootstrap}, we proposed two possible bootstrap procedures, $\mc{B}_u$  and $\mc{B}_c$. There are some philosophical distinctions between $\mc{B}_u$  and $\mc{B}_c$. $\mc{B}_u$ treats the donor pool as realizations from some infinite super-population of potential donors. In contrast $\mc{B}_c$ treats the donor pool as being fixed  and known before the analysis is conducted, where the randomness comes from parameters and idiosyncratic error. 
+Recall that in Section \ref{varbootstrap}, we proposed two possible bootstrap procedures, $\mc{B}_u$  and $\mc{B}_c$. There are some philosophical distinctions between $\mc{B}_u$  and $\mc{B}_c$. $\mc{B}_u$ treats the donor pool as realizations from some infinite super-population of potential donors. In contrast, $\mc{B}_c$ treats the donor pool as being fixed  and known before the analysis is conducted, where the randomness comes from parameters and idiosyncratic error. 
 
 In this study, for the use of $\mc{B}_u$, we assume $\mathbf{W}^*$ is non-degenerate in the population without taking zero weight.  Recall that in Section \ref{constructionofestimators} we note that if there exists some $\mathbf{W}^*$ satisfies (\ref{SCM}) and $2p < n$, there will be infinitely many solutions to $\mathbf{W}^*$. In the simulation setup, we consider $2p >n$ such that the assumption can be reasonably satisfied. However, in the application, it is likely that $\mathbf{W}^*$ may  take values on the boundary of $\mc{W}$, in which case $\mc{B}_u$ may fail for $\hat{\alpha}_{\mrm{wadj}}$ \citep{andrews2000inconsistency}. For example, if $\mathbf{W}^*$ is observed to fall in the boundary, $\mc{B}_u$ will fail.  Moreover, if $2p < n$, $\mc{B}_u$ fails since the existence of infinitely many solutions is certain (if there exists some $\mathbf{W}^*$ satisfies (\ref{SCM})), and will guarantee degeneracy of  $\mathbf{W}^*$. In this regard, the subsampling in Section 4 of \citet{li2019statistical} may adapt to our scenario to solve this problem by resampling $m$ candidates from donor pool with the conditions $m \to \infty$, and $m/n \to 0$ as $n \to \infty$. But we may leave its mathematical justification for future research. Note that this problem will not occur under  $\mc{B}_c$ because  if $w_i^*=0$ for some $i$ and the weights are known, $w_i^*=0$ makes it impossible for bootstrap estimate of $\hat{\alpha}_i$ to contribute to the bootstrap estimate of distribution of $\hat{\alpha}_{\mrm{wadj}}$. 
 
 
-For the use of our methodology, caution should be dedicated to the construction of donor pool. If the donor pool includes some individuals that are not similar to the time series of interest, the result will possibly not be robust to the introduced noises.   Moreover, according to Section \ref{parametricbootstrapsimulation}, we recommend using estimated risk-reduction quantities for voting best shock-effect estimator only when $n$ is large. It is  due to the fact that plug-in estimation of  risk-reduction quantities gains more precision when $n$ becomes large.
+Double bootstrap can be another general bootstrap alternative to the one proposed in Section \ref{varbootstrap}. For example, for $\mc{B}_u$, double bootstrap adds another layer of residual bootstrap between the donor pool non-parametric bootstrap and the original residual bootstrap. It enables an estimation for distribution of $\Delta(\hat{\alpha})$ for $\hat{\alpha} \in \mc{A}$. In the framework of double bootstrap, instead of checking whether $\Delta(\hat{\alpha})>0$, we can check whether non-parametric 95\% confidence intervals contain 0. Likewise, we can compare two shock-effect estimators by checking whether their 95\% confidence intervals of risk-reduction overlap though an exhaustive ranking may not be feasible. We have attempted Monte Carlo simulations using the same setting in Section \ref{simulation} for the double bootstrap procedure, the results of which are quite similar to those of Section \ref{varbootstrap}.
+
+For the use of our methodology, caution should be dedicated to the construction of donor pool. If the donor pool includes some individuals that are not similar to the time series of interest, the result will possibly not be robust to the introduced noises.   Moreover, according to Section \ref{parametricbootstrapsimulation}, we recommend using estimated risk-reduction quantities for voting best shock-effect estimator only when $n$ is large. It is  due to the fact that plug-in estimation of  risk-reduction quantities in Section \ref{varbootstrap} gains more precision when $n$ becomes large.
 
 \section{Appendix}
 
