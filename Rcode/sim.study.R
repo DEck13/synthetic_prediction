@@ -422,9 +422,10 @@ cv <- function(k, X, Y, Tstar, np, B) {
 }
 
 # simulation study normal
-sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma, 
-                                    sigma.alpha, sigma.delta.gamma, 
-                                    p, B, n, k, scale, np = c(TRUE, FALSE)) {
+sim.study.normal.gammaX <- function(mu.gamma.delta = 1, mu.alpha, sigma, 
+                                    sigma.alpha, sigma.delta.gamma = 0.5, 
+                                    p, B, n, k, scale, np = c(TRUE, FALSE),
+                                    model = 2) {
   T <- round(rgamma(n = n + 1, shape = 15, scale = 10)) # Time Length
   T[which(T < 90)] <- 90
   Tstar <- c() # Shock Time Points
@@ -433,37 +434,56 @@ sim.study.normal.gammaX <- function(mu.gamma.delta, mu.alpha, sigma,
   }
   phi <- round(runif(n + 1, 0, 1), 3) # autoregressive parameters
 
-  
-  # construction of design matrix and shock effects
   X <- c()
   alpha <- c()
-  delta <- c()
-  gamma <- c()
-  for (i in 1:(n + 1)) {
-    Ti <- T[i]
-    Tstari <- Tstar[i]
-    X[[i]] <- matrix(rgamma(n = p * (Ti + 1), shape = 1, scale = scale), ncol = p, byrow = T) 
-    # matrix(rnorm(n = (Ti + 1) * p), ncol = p, byrow = T)
-    # parameter setup
-    delta[[i]] <- matrix(rnorm(p, mean = mu.gamma.delta, sd = sigma.delta.gamma), nrow = 1)
-    gamma[[i]] <- matrix(rnorm(p, mean = mu.gamma.delta, sd = sigma.delta.gamma), nrow = 1)
-    epsilontildei <- rnorm(n = 1, sd = sigma.alpha)
-    # alpha
-    alpha <- c(alpha, mu.alpha + delta[[i]] %*% X[[i]][Tstari + 1, ] + 
-                 gamma[[i]] %*% X[[i]][Tstari, ] + epsilontildei)
+  if (model == 2) {
+    # construction of design matrix and shock effects
+    delta <- c()
+    gamma <- c()
+    for (i in 1:(n + 1)) {
+      Ti <- T[i]
+      Tstari <- Tstar[i]
+      X[[i]] <- matrix(rgamma(n = p * (Ti + 1), shape = 1, scale = scale), ncol = p, byrow = T) 
+      # matrix(rnorm(n = (Ti + 1) * p), ncol = p, byrow = T)
+      # parameter setup
+      delta[[i]] <- matrix(rnorm(p, mean = mu.gamma.delta, sd = sigma.delta.gamma), nrow = 1)
+      gamma[[i]] <- matrix(rnorm(p, mean = mu.gamma.delta, sd = sigma.delta.gamma), nrow = 1)
+      epsilontildei <- rnorm(n = 1, sd = sigma.alpha)
+      # alpha
+      alpha <- c(alpha, mu.alpha + delta[[i]] %*% X[[i]][Tstari + 1, ] + 
+                   gamma[[i]] %*% X[[i]][Tstari, ] + epsilontildei)
+    }
+  } else if (model == 1) {
+    for (i in 1:(n + 1)) {
+      Ti <- T[i]
+      Tstari <- Tstar[i]
+      X[[i]] <- matrix(rgamma(n = p * (Ti + 1), shape = 1, scale = scale), ncol = p, byrow = T) 
+      # matrix(rnorm(n = (Ti + 1) * p), ncol = p, byrow = T)
+      epsilontildei <- rnorm(n = 1, sd = sigma.alpha)
+      # alpha
+      alpha <- c(alpha, mu.alpha + epsilontildei)
+    }
   }
   
   # E(alpha1)
-  Ealpha1 <- mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1] + 1, ] + 
-    matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1], ]
+  if (model == 2) {
+    Ealpha1 <- mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1] + 1, ] + 
+      matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1], ]
+  } else if (model == 1) {
+    Ealpha1 <- mu.alpha
+  }
   
   # E(alpha_adj)
-  alphas.2.np1 <- c()
-  for (i in 2:(n + 1)) {
-    alphas.2.np1 <- c(alphas.2.np1, mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i] + 1, ] + 
-                        matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i], ])
+  if (model == 2) {
+    alphas.2.np1 <- c()
+    for (i in 2:(n + 1)) {
+      alphas.2.np1 <- c(alphas.2.np1, mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i] + 1, ] + 
+                          matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i], ])
+    }
+    Ealpha.adj <- mean(alphas.2.np1)
+  } else if (model == 1) {
+    Ealpha.adj <- mu.alpha
   }
-  Ealpha.adj <- mean(alphas.2.np1)
   
   # generation of yit
   Y <- c()
@@ -703,6 +723,7 @@ sim.study.normal.gammaX.ddboots <- function(mu.gamma.delta, mu.alpha, sigma,
   return(result)
 }
 
+############################ Simulations for model 2
 # MC
 library("parallel")
 library("doParallel")
@@ -838,154 +859,6 @@ riskprop <- result[, c(1:4, 8:13)]
 pred <- result[, -c(3:4, 8:14)]
 require('xtable')
 xtable(riskprop)
-
-
-
-
-
-# MC
-library("parallel")
-library("doParallel")
-library("foreach")
-# 8 cores -- use 7
-ncores <- detectCores() - 1
-registerDoParallel(cores = ncores)
-set.seed(2020)
-RNGkind("L'Ecuyer-CMRG")
-nsim <- 100
-# parameter setup
-sigma <- c(5, 10, 25, 50, 100)
-sigma.alphas <- c(5, 10, 25, 50, 100)
-sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, sigma = sigma))
-
-# simulation time
-system.time(
-  output <- lapply(1:nrow(sim_params), FUN = function(j) {
-    # parameters
-    sigma.alpha <- sim_params[j, 1]
-    sigma <- sim_params[j, 2]
-    # %do% evaluates sequentially
-    # %dopar% evaluates in parallel
-    # .combine results
-    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
-      # result
-      study <- sim.study.normal.gammaX(mu.gamma.delta = 1, 
-                                       mu.alpha = 2, sigma = sigma, 
-                                       sigma.alpha = sigma.alpha,
-                                       sigma.delta.gamma = 0.5, 
-                                       p = 13, B = 200, scale = 2, 
-                                       n = 10, np = FALSE)
-      result <- rbind(study$boot, study$samp)
-      return(result)
-    }
-    # return results
-    out
-  })
-)
-
-# store results
-# load packages
-require('readxl')
-require('writexl')
-setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
-write_xlsx(lapply(output, as.data.frame), 'parametricssigma.xlsx')
-
-
-result <- c()
-for (i in 1:nrow(sim_params)) {
-  table <- output[[i]][1:100 * 2, ]
-  # means and sds
-  means <- apply(table, 2, function(x) mean(x))
-  sds <- apply(table, 2, function(x) sd(x))
-  result.i <- c()
-  for (j in 1:16) {
-    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
-                                       ' (', round(sds[j] / sqrt(100), 
-                                                   digits = 3), ')'))
-  }
-  result <- rbind(result, result.i)
-}
-result <- cbind(sim_params[, c(2,1)], result)
-# results
-riskprop <- result[, c(1:4, 8:14)]
-pred <- result[, -c(3:4, 8:14)]
-require('xtable')
-xtable(riskprop)
-xtable(pred)
-
-
-
-# MC
-library("parallel")
-library("doParallel")
-library("foreach")
-# 8 cores -- use 7
-ncores <- detectCores() - 1
-registerDoParallel(cores = ncores)
-set.seed(2020)
-RNGkind("L'Ecuyer-CMRG")
-nsim <- 100
-
-
-# parameter setup
-ns <- c(5, 10, 15, 25)
-sigma.alphas <- c(5, 10, 25, 50, 100)
-sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, ns = ns))
-
-# simulation time
-system.time(
-  output <- lapply(1:nrow(sim_params), FUN = function(j) {
-    # parameters
-    sigma.alpha <- sim_params[j, 1]
-    n <- sim_params[j, 2]
-    # %do% evaluates sequentially
-    # %dopar% evaluates in parallel
-    # .combine results
-    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
-      # result
-      study <- sim.study.normal.gammaX(mu.gamma.delta = 1, 
-                                       mu.alpha = 2, sigma = 10, 
-                                       sigma.alpha = sigma.alpha,
-                                       sigma.delta.gamma = 0.5, 
-                                       p = 13, B = 100, k = 10, scale = 2, 
-                                       n = n, np = FALSE)
-      return(study)
-    }
-    # return results
-    out
-  })
-)
-
-
-# store results
-# load packages
-require('readxl')
-require('writexl')
-setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
-write_xlsx(lapply(output, as.data.frame), 'parametricnsigma.xlsx')
-
-result <- c()
-for (i in 1:nrow(sim_params)) {
-  table <- output[[i]]
-  # means and sds
-  means <- apply(table, 2, function(x) mean(x))
-  sds <- apply(table, 2, function(x) sd(x))
-  result.i <- c()
-  for (j in 1:20) {
-    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
-                                       ' (', round(sds[j] / sqrt(100), 
-                                                   digits = 3), ')'))
-  }
-  result <- rbind(result, result.i)
-}
-result <- cbind(sim_params[, c(2,1)], result)
-# results
-riskprop <- result[, c(1:2, 8:14, 19:22)]
-pred <- result[, -c(3:4, 8:14)]
-require('xtable')
-xtable(riskprop)
-xtable(pred)
-
 
 
 # MC
@@ -1132,4 +1005,494 @@ pred <- result[, -c(3:4, 8:14, 19:22)]
 require('xtable')
 xtable(riskprop)
 xtable(pred)
+
+
+
+
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 30
+
+
+# parameter setup
+sigma <- c(5, 10, 25, 50, 100)
+sigma.alphas <- c(5, 10, 25, 50, 100)
+sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, sigma = sigma))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.alpha <- sim_params[j, 1]
+    sigma <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.gamma.delta = 1, 
+                                       mu.alpha = 2, sigma = sigma, 
+                                       sigma.alpha = sigma.alpha,
+                                       sigma.delta.gamma = 0.5, 
+                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       n = 10, np = FALSE)
+      return(study)
+    }
+    # return results
+    out
+  })
+)
+
+
+# store results
+# load packages
+require('readxl')
+require('writexl')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'parametricnsigma.xlsx')
+
+
+result <- c()
+for (i in 1:nrow(sim_params)) {
+  table <- output[[i]]
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+  result.i <- c()
+  for (j in 1:20) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
+                                       ' (', round(sds[j] / sqrt(30), 
+                                                   digits = 3), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+# results
+riskprop <- result[, c(1:2, 8:10, 19:22)]
+pred <- result[, -c(3:4, 8:14, 19:22)]
+require('xtable')
+xtable(riskprop)
+xtable(pred)
+
+
+
+
+
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 30
+
+
+# parameter setup
+ns <- c(5, 10, 15, 25)
+sigma.alphas <- c(5, 10, 25, 50, 100)
+sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, ns = ns))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.alpha <- sim_params[j, 1]
+    n <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.gamma.delta = 1, 
+                                       mu.alpha = 2, sigma = 10, 
+                                       sigma.alpha = sigma.alpha,
+                                       sigma.delta.gamma = 0.5, 
+                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       n = n, np = FALSE)
+      return(study)
+    }
+    # return results
+    out
+  })
+)
+
+
+# store results
+# load packages
+require('readxl')
+require('writexl')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'parametricnsigma.xlsx')
+
+result <- c()
+for (i in 1:nrow(sim_params)) {
+  table <- output[[i]]
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+  result.i <- c()
+  for (j in 1:20) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
+                                       ' (', round(sds[j] / sqrt(nsim), 
+                                                   digits = 3), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+# results
+riskprop <- result[, c(1:2, 8:10, 19:22)]
+pred <- result[, -c(3:4, 8:14, 19:22)]
+require('xtable')
+xtable(riskprop)
+xtable(pred)
+
+
+
+
+####################### Simulations for Model 1
+
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 30
+
+
+# parameter setup
+ns <- c(5, 10, 15, 25)
+sigma.alphas <- c(5, 10, 25, 50, 100)
+sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, ns = ns))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.alpha <- sim_params[j, 1]
+    n <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.alpha = 50, sigma = 10, 
+                                       sigma.alpha = sigma.alpha,
+                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       n = n, np = TRUE, model = 1)
+      return(study)
+    }
+    # return results
+    out
+  })
+)
+
+
+# store results
+# load packages
+require('readxl')
+require('writexl')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'model1nonparametricnsigma.xlsx')
+
+result <- c()
+for (i in 1:nrow(sim_params)) {
+  table <- output[[i]]
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+  result.i <- c()
+  for (j in 1:20) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 2), 
+                                       ' (', round(sds[j] / sqrt(nsim), 
+                                                   digits = 2), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+# results
+report <- result[, c(1:2, 8:10, 19:21, 15:18)]
+require('xtable')
+xtable(report)
+
+
+
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 30
+
+
+# parameter setup
+sigma <- c(5, 10, 25, 50, 100)
+sigma.alphas <- c(5, 10, 25, 50, 100)
+sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, sigma = sigma))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.alpha <- sim_params[j, 1]
+    sigma <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.alpha = 50, sigma = sigma, 
+                                       sigma.alpha = sigma.alpha,
+                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       n = 10, np = TRUE, model = 1)
+      return(study)
+    }
+    # return results
+    out
+  })
+)
+# store results
+# load packages
+require('readxl')
+require('writexl')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'model1nonparametricssigma.xlsx')
+
+result <- c()
+for (i in 1:nrow(sim_params)) {
+  table <- output[[i]]
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+  result.i <- c()
+  for (j in 1:20) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 2), 
+                                       ' (', round(sds[j] / sqrt(nsim), 
+                                                   digits = 2), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+# results
+report <- result[, c(1:2, 8:10, 19:21, 15:18)]
+require('xtable')
+xtable(report)
+
+
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 30
+
+
+# parameter setup
+ns <- c(5, 10, 15, 25)
+sigma.alphas <- c(5, 10, 25, 50, 100)
+sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, ns = ns))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.alpha <- sim_params[j, 1]
+    n <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.alpha = 50, sigma = 10, 
+                                       sigma.alpha = sigma.alpha,
+                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       n = n, np = FALSE, model = 1)
+      return(study)
+    }
+    # return results
+    out
+  })
+)
+
+
+# store results
+# load packages
+require('readxl')
+require('writexl')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'model1parametricnsigma.xlsx')
+
+result <- c()
+for (i in 1:nrow(sim_params)) {
+  table <- output[[i]]
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+  result.i <- c()
+  for (j in 1:20) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 2), 
+                                       ' (', round(sds[j] / sqrt(nsim), 
+                                                   digits = 2), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+# results
+report <- result[, c(1:2, 8:10, 19:21, 15:18)]
+require('xtable')
+xtable(report)
+
+
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 30
+
+
+# parameter setup
+sigma <- c(5, 10, 25, 50, 100)
+sigma.alphas <- c(5, 10, 25, 50, 100)
+sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, sigma = sigma))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.alpha <- sim_params[j, 1]
+    sigma <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.alpha = 50, sigma = sigma, 
+                                       sigma.alpha = sigma.alpha,
+                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       n = 10, np = FALSE, model = 1)
+      return(study)
+    }
+    # return results
+    out
+  })
+)
+# store results
+# load packages
+require('readxl')
+require('writexl')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'model1parametricssigma.xlsx')
+
+result <- c()
+for (i in 1:nrow(sim_params)) {
+  table <- output[[i]]
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+  result.i <- c()
+  for (j in 1:20) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 2), 
+                                       ' (', round(sds[j] / sqrt(nsim), 
+                                                   digits = 2), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+# results
+report <- result[, c(1:2, 8:10, 19:21, 15:18)]
+require('xtable')
+xtable(report)
+
+
+################ Boundary Case
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 30
+
+
+# parameter setup
+ns <- c(5, 10, 15, 25)
+sigma.alphas <- c(1, 5, 10, 25, 50)
+sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, ns = ns))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.alpha <- sim_params[j, 1]
+    n <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.alpha = 50, sigma = 10, 
+                                       sigma.alpha = sigma.alpha,
+                                       p = 2, B = 200, k = 5, scale = 2, 
+                                       n = n, np = TRUE, model = 2)
+      return(study)
+    }
+    # return results
+    out
+  })
+)
+# store results
+# load packages
+require('readxl')
+require('writexl')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'boundaryBu.xlsx')
+
+result <- c()
+for (i in 1:nrow(sim_params)) {
+  table <- output[[i]]
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+  result.i <- c()
+  for (j in 1:20) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 2), 
+                                       ' (', round(sds[j] / sqrt(nsim), 
+                                                   digits = 2), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+# results
+report <- result[, c(1:2, 8:10, 19:21, 15:18)]
+require('xtable')
+xtable(report)
 
