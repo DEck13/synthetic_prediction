@@ -226,8 +226,12 @@ risk.reduction <- function(means, vars) {
   names(est) <- c('adj', 'wadj', 'IVW')
   return(list(usable = ifelse(est > 0, yes = 1, no = 0), best = which.max(est)))
 }
-risk.reduction2 <- function(est, vars) {
-  rr.adj <- (est['wadj']) ^ 2 - vars['adj'] - (est['adj'] - est['wadj']) ^ 2
+risk.reduction2 <- function(est, vars, model = 2) {
+  if (model == 2) {
+    rr.adj <- (est['wadj']) ^ 2 - vars['adj'] - (est['adj'] - est['wadj']) ^ 2
+  } else if (model == 1) {
+    rr.adj <- (est['wadj']) ^ 2 - vars['adj'] 
+  }
   rr.wadj <- (est['wadj']) ^ 2 - vars['wadj']
   rr.IVW <- (est['wadj']) ^ 2 - vars['IVW'] - (est['IVW'] - est['wadj']) ^ 2
   rest <- c(rr.adj, rr.wadj, rr.IVW)
@@ -559,12 +563,12 @@ sim.study.normal.gammaX <- function(mu.gamma.delta = 1, mu.alpha, sigma,
   names(bias) <- c('E.adj', 'E.wadj')
       
   # comparison
-  guess <- risk.reduction2(est = est, vars = vars)$usable
+  guess <- risk.reduction2(est = est, vars = vars, model = model)$usable
   consistency <- ifelse(truth == guess, yes = 1, no = 0)
       
   # best consistency
   best.consistency <- ifelse(which.min(abs(Y[[1]][Tstar[1] + 2] - yhat2s)) == 
-                                   risk.reduction2(est = est, vars = vars)$best, yes = 1, no = 0)
+                                   risk.reduction2(est = est, vars = vars, model = model)$best, yes = 1, no = 0)
   
   # cv consistency
   cv.consistency <- cv(k = k, X = X, Y = Y, Tstar = Tstar, np = np, B = B)
@@ -1199,6 +1203,7 @@ system.time(
     out
   })
 )
+
 
 
 # store results
