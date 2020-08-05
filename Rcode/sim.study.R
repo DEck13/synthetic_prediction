@@ -15,12 +15,12 @@ scm <- function(X, Tstar) {
   n <- length(X) - 1
   
   # covariate for time series for prediction
-  X1 <- X[[1]][c(Tstar[1], Tstar[1] + 1), , drop = FALSE]
+  X1 <- X[[1]][Tstar[1] + 1, , drop = FALSE]
   
   # covariates for time series pool
   X0 <- c()
   for (i in 1:n) {
-    X0[[i]] <- X[[i + 1]][c(Tstar[i + 1], Tstar[i + 1] + 1), ,drop = FALSE]
+    X0[[i]] <- X[[i + 1]][Tstar[i + 1] + 1, , drop = FALSE]
   }
   
   # objective function
@@ -28,7 +28,7 @@ scm <- function(X, Tstar) {
     # W is a vector of weight of the same length of X0
     n <- length(W)
     p <- ncol(X1)
-    XW <- matrix(0, nrow = 2, ncol = p)
+    XW <- matrix(0, nrow = 1, ncol = p)
     for (i in 1:n) {
       XW <- XW + W[i] * X0[[i]]
     }
@@ -44,6 +44,7 @@ scm <- function(X, Tstar) {
   solnp(par = rep(1/n, n), fun = weightedX0, eqfun = Wcons, eqB = 0, 
         LB = rep(0, n), UB = rep(1, n), control = list(trace = 0))
 }
+
 ols.est.alphahat <- function(Tstar, Y, X) {
   
   n <- length(Y) - 1
@@ -69,11 +70,10 @@ ols.est.alphahat <- function(Tstar, Y, X) {
     
     # lag
     yilag <- Y[[i]][-(Ti + 1)]
-    xilag <- X[[i]][-(Ti + 1), ]
     
     # OLS
     lmodi <- lm(yi ~ 1 + ifelse(1:Ti == Tstari + 1, yes = 1, no = 0) + 
-                  yilag + xi + xilag)
+                  yilag + xi)
     
     # find estimates
     alphahat <- c(alphahat, coef(lmodi)[2])
@@ -138,18 +138,16 @@ boots <- function(B, ols) {
       Tstari <- Tstar[i]
       lmodi <- lmod[[i - 1]]
       xi <- X[[i]][-1,]
-      xilag <- X[[i]][-(Ti + 1), ]
       
       # parameter
       etahati <- coef(lmodi)[1]
       alphahati <- coef(lmodi)[2]
       phihati <- coef(lmodi)[3]
       thetahati <- coef(lmodi)[4:(4 + p - 1)]
-      betahati <- coef(lmodi)[(4 + p):(3 + 2 * p)]
       
       for (t in 1: Ti) {
         yitb <- c(yitb, etahati + alphahati * ifelse(t == Tstari + 1, yes = 1, no = 0) +
-                    phihati * yitb[t] + thetahati %*% xi[t, ] + betahati %*% xilag[t, ] + resit[t])
+                    phihati * yitb[t] + thetahati %*% xi[t, ] + resit[t])
       }
       Yb[[i]] <- yitb
     }
@@ -193,18 +191,16 @@ boots.mix <- function(B, ols) {
       Tstari <- Tstar[index]
       lmodi <- lmod[[index - 1]]
       xi <- X[[index]][-1,]
-      xilag <- X[[index]][-(Ti + 1), ]
       
       # parameter
       etahati <- coef(lmodi)[1]
       alphahati <- coef(lmodi)[2]
       phihati <- coef(lmodi)[3]
       thetahati <- coef(lmodi)[4:(4 + p - 1)]
-      betahati <- coef(lmodi)[(4 + p):(3 + 2 * p)]
       
       for (t in 1:Ti) {
         yitb <- c(yitb, etahati + alphahati * ifelse(t == Tstari + 1, yes = 1, no = 0) +
-                    phihati * yitb[t] + thetahati %*% xi[t, ] + betahati %*% xilag[t, ] + resit[t])
+                    phihati * yitb[t] + thetahati %*% xi[t, ] + resit[t])
       }
       Yb[[i + 1]] <- yitb
       Xb[[i + 1]] <- X[[index]]
@@ -248,16 +244,15 @@ nowcast.alpha <- function(X, Y, Tstar, best = c('adj', 'wadj', 'IVW')) {
   
   # lag
   y1lag <- Y[[1]][-(T1 + 1)]
-  x1lag <- X[[1]][-(T1 + 1), ]
   
   # OLS
-  lmod1 <- lm(y1 ~ 1 + y1lag + x1 + x1lag, subset = 1:Tstar1)
+  lmod1 <- lm(y1 ~ 1 + y1lag + x1, subset = 1:Tstar1)
   
   # ols object
   ols <- ols.est.alphahat(Tstar = Tstar, Y = Y, X = X)
   
   # design matrix
-  design <- rbind(c(1, y1lag[Tstar1 + 1], x1[Tstar1 + 1, ], x1lag[Tstar1 + 1, ]))
+  design <- rbind(c(1, y1lag[Tstar1 + 1], x1[Tstar1 + 1, ]))
   
   # forecast 1
   yhat1 <- design %*% coef(lmod1)
@@ -314,18 +309,16 @@ ddboots <- function(B, K, ols, np) {
       Tstari <- Tstar[index]
       lmodi <- lmod[[index - 1]]
       xi <- X[[index]][-1,]
-      xilag <- X[[index]][-(Ti + 1), ]
       
       # parameter
       etahati <- coef(lmodi)[1]
       alphahati <- coef(lmodi)[2]
       phihati <- coef(lmodi)[3]
       thetahati <- coef(lmodi)[4:(4 + p - 1)]
-      betahati <- coef(lmodi)[(4 + p):(3 + 2 * p)]
       
       for (t in 1:Ti) {
         yitb <- c(yitb, etahati + alphahati * ifelse(t == Tstari + 1, yes = 1, no = 0) +
-                    phihati * yitb[t] + thetahati %*% xi[t, ] + betahati %*% xilag[t, ] + resit[t])
+                    phihati * yitb[t] + thetahati %*% xi[t, ] + resit[t])
       }
       Yb[[i + 1]] <- yitb
       Xb[[i + 1]] <- X[[index]]
@@ -434,7 +427,7 @@ sim.study.normal.gammaX <- function(mu.gamma.delta = 1, mu.alpha, sigma,
   T[which(T < 90)] <- 90
   Tstar <- c() # Shock Time Points
   for (t in T) {
-    Tstar <- c(Tstar, sample((2 * p + 3 + 1):(t - 1), size = 1))
+    Tstar <- c(Tstar, sample((p + 3 + 1):(t - 1), size = 1))
   }
   phi <- round(runif(n + 1, 0, 1), 3) # autoregressive parameters
 
@@ -451,11 +444,9 @@ sim.study.normal.gammaX <- function(mu.gamma.delta = 1, mu.alpha, sigma,
       # matrix(rnorm(n = (Ti + 1) * p), ncol = p, byrow = T)
       # parameter setup
       delta[[i]] <- matrix(rnorm(p, mean = mu.gamma.delta, sd = sigma.delta.gamma), nrow = 1)
-      gamma[[i]] <- matrix(rnorm(p, mean = mu.gamma.delta, sd = sigma.delta.gamma), nrow = 1)
       epsilontildei <- rnorm(n = 1, sd = sigma.alpha)
       # alpha
-      alpha <- c(alpha, mu.alpha + delta[[i]] %*% X[[i]][Tstari + 1, ] + 
-                   gamma[[i]] %*% X[[i]][Tstari, ] + epsilontildei)
+      alpha <- c(alpha, mu.alpha + delta[[i]] %*% X[[i]][Tstari + 1, ] + epsilontildei)
     }
   } else if (model == 1) {
     for (i in 1:(n + 1)) {
@@ -481,8 +472,7 @@ sim.study.normal.gammaX <- function(mu.gamma.delta = 1, mu.alpha, sigma,
   if (model == 2) {
     alphas.2.np1 <- c()
     for (i in 2:(n + 1)) {
-      alphas.2.np1 <- c(alphas.2.np1, mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i] + 1, ] + 
-                          matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i], ])
+      alphas.2.np1 <- c(alphas.2.np1, mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i] + 1, ])
     }
     Ealpha.adj <- mean(alphas.2.np1)
   } else if (model == 1) {
@@ -504,14 +494,13 @@ sim.study.normal.gammaX <- function(mu.gamma.delta = 1, mu.alpha, sigma,
     
     # parameter setup
     thetai <- matrix(rnorm(p), nrow = 1)
-    betai <- matrix(rnorm(p), nrow = 1)
     etai <- rnorm(1)
     
     yi <- yi0
     for (t in 2:(T[i] + 1)) {
       epsilonit <- rnorm(n = 1, sd = sigma)
       yi <- c(yi, etai + alphai * ifelse(t == Tstari + 2, yes = 1, no = 0) +
-                phii * yi[t - 1] + thetai %*% xi[t, ] + betai %*% xi[t - 1, ] + epsilonit)
+                phii * yi[t - 1] + thetai %*% xi[t, ] + epsilonit)
     }
     
     Y[[i]] <- yi
@@ -586,7 +575,7 @@ sim.study.normal.gammaX.ddboots <- function(mu.gamma.delta, mu.alpha, sigma,
   T[which(T < 90)] <- 90
   Tstar <- c() # Shock Time Points
   for (t in T) {
-    Tstar <- c(Tstar, sample((2 * p + 3 + 1):(t - 1), size = 1))
+    Tstar <- c(Tstar, sample((p + 3 + 1):(t - 1), size = 1))
   }
   phi <- round(runif(n + 1, 0, 1), 3) # autoregressive parameters
   
@@ -603,22 +592,18 @@ sim.study.normal.gammaX.ddboots <- function(mu.gamma.delta, mu.alpha, sigma,
     # matrix(rnorm(n = (Ti + 1) * p), ncol = p, byrow = T)
     # parameter setup
     delta[[i]] <- matrix(rnorm(p, mean = mu.gamma.delta, sd = sigma.delta.gamma), nrow = 1)
-    gamma[[i]] <- matrix(rnorm(p, mean = mu.gamma.delta, sd = sigma.delta.gamma), nrow = 1)
     epsilontildei <- rnorm(n = 1, sd = sigma.alpha)
     # alpha
-    alpha <- c(alpha, mu.alpha + delta[[i]] %*% X[[i]][Tstari + 1, ] + 
-                 gamma[[i]] %*% X[[i]][Tstari, ] + epsilontildei)
+    alpha <- c(alpha, mu.alpha + delta[[i]] %*% X[[i]][Tstari + 1, ] + epsilontildei)
   }
   
   # E(alpha1)
-  Ealpha1 <- mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1] + 1, ] + 
-    matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1], ]
+  Ealpha1 <- mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[1]][Tstar[1] + 1, ]
   
   # E(alpha_adj)
   alphas.2.np1 <- c()
   for (i in 2:(n + 1)) {
-    alphas.2.np1 <- c(alphas.2.np1, mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i] + 1, ] + 
-                        matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i], ])
+    alphas.2.np1 <- c(alphas.2.np1, mu.alpha + matrix(mu.gamma.delta, nrow = 1, ncol = p) %*% X[[i]][Tstar[i] + 1, ])
   }
   Ealpha.adj <- mean(alphas.2.np1)
   
@@ -637,14 +622,13 @@ sim.study.normal.gammaX.ddboots <- function(mu.gamma.delta, mu.alpha, sigma,
     
     # parameter setup
     thetai <- matrix(rnorm(p), nrow = 1)
-    betai <- matrix(rnorm(p), nrow = 1)
     etai <- rnorm(1)
     
     yi <- yi0
     for (t in 2:(T[i] + 1)) {
       epsilonit <- rnorm(n = 1, sd = sigma)
       yi <- c(yi, etai + alphai * ifelse(t == Tstari + 2, yes = 1, no = 0) +
-                phii * yi[t - 1] + thetai %*% xi[t, ] + betai %*% xi[t - 1, ] + epsilonit)
+                phii * yi[t - 1] + thetai %*% xi[t, ] + epsilonit)
     }
     
     Y[[i]] <- yi

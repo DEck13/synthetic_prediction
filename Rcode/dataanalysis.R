@@ -65,7 +65,7 @@ COP_close <- COP_close %>% mutate(start_day_20080317 = start_day_20080317)
 TS2 <- COP_close[(start-30):start, ]
 # inflation adjustment
 TS2[, 2:7] <- TS2[, 2:7] * inflation_adj$dollars_2020[inflation_adj$year == 2008] 
-m_COP_3_17 <- lm(Y ~ COP_Close + start_day_20080317 + GSPC_Close + WTI_Close + WTI_Close_lag1 + GSPC_Close_lag1, 
+m_COP_3_17 <- lm(Y ~ COP_Close + start_day_20080317 + GSPC_Close + WTI_Close, 
                  data = TS2)
 alpha_3_17 <- summary(m_COP_3_17)$coef[3,1:2] 
 # shock-effects
@@ -92,8 +92,7 @@ TS3 <- COP_close[which(COP_close$Date == "2008-07-28"):which(COP_close$Date == "
 TS3[, 2:7] <- TS3[, 2:7] * inflation_adj$dollars_2020[inflation_adj$year == 2008] 
 # AR(1)
 m_COP_Sept_08 <- lm(Y ~ COP_Close + start_day_09_08_08 + start_day_09_12_08 + 
-                      start_day_09_26_08 + GSPC_Close + WTI_Close +
-                      WTI_Close_lag1 + GSPC_Close_lag1, data = TS3)
+                      start_day_09_26_08 + GSPC_Close + WTI_Close, data = TS3)
 alpha_Sept_08 <- summary(m_COP_Sept_08)$coef[3:5,1:2] 
 cov2cor(vcov(m_COP_Sept_08)[3:5, 3:5])
 # shock-effects
@@ -141,7 +140,7 @@ TS4 <- COP_close[(start - 30):start,]
 # adjust for inflation
 TS4[, 2:7] <- TS4[, 2:7] * inflation_adj$dollars_2020[inflation_adj$year == 2014] 
 # AR(1)
-m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day_20141127 + GSPC_Close + WTI_Close + WTI_Close_lag1 + GSPC_Close_lag1,
+m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day_20141127 + GSPC_Close + WTI_Close,
                      data = TS4)
 alpha_11_27_14 <- summary(m_COP_11_27_14)$coef[3,1:2] 
 # shock-effects
@@ -159,7 +158,7 @@ COP_close <- COP_close %>% mutate(start_day_20200309 = start_day_20200309)
 TS1 <- COP_close[(start-30):(start), ]
 
 # shock-effect estimate
-m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day_20200309 + GSPC_Close + WTI_Close + WTI_Close_lag1 + GSPC_Close_lag1, 
+m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day_20200309 + GSPC_Close + WTI_Close, 
                      data = TS1)
 alpha_03_09_20 <- summary(m_COP_03_09_20)$coef[3,1:2]
 # shock-effects
@@ -185,12 +184,12 @@ alpha_IVW <- sum(weights * estimates[, 1])
 Tstar.Date <- c("2020-03-05", "2008-03-13", "2008-09-05", "2008-09-11", "2008-09-25",  "2014-11-25")
 Tstar <- sapply(Tstar.Date, function(x) which(COP_close$Date == x))
 # X1
-X1 <- as.matrix(TS1[c(nrow(TS1) - 1, nrow(TS1)), c(3, 4)])
+X1 <- as.matrix(TS1[nrow(TS1), c(3, 4)])
 # X1 <- as.matrix(COP_close[c(Tstar[1], Tstar[1] + 1), c(3, 4)])
 # X0
 X0 <- c()
 for (i in 1:5) {
- X0[[i]] <- as.matrix(COP_close[c(Tstar[i + 1], Tstar[i + 1] + 1), c(3, 4)])
+ X0[[i]] <- as.matrix(COP_close[Tstar[i + 1] + 1, c(3, 4)])
 }
 
 # SCM
@@ -203,7 +202,7 @@ scmm <- function(X1, X0) {
     # W is a vector of weight of the same length of X0
     n <- length(W)
     p <- ncol(X1)
-    XW <- matrix(0, nrow = 2, ncol = p)
+    XW <- matrix(0, nrow = 1, ncol = p)
     for (i in 1:n) {
       XW <- XW + W[i] * X0[[i]]
     }
@@ -229,7 +228,7 @@ weightedX0 <- function(W) {
   # W is a vector of weight of the same length of X0
   n <- length(W)
   p <- ncol(X1)
-  XW <- matrix(0, nrow = 2, ncol = p)
+  XW <- matrix(0, nrow = 1, ncol = p)
   for (i in 1:n) {
     XW <- XW + W[i] * X0[[i]]
   }
@@ -293,7 +292,7 @@ for (b in 1:B) {
       for (t in 1:Ti) {
         datt <- matrix(c(1, yib[t], 
                          ifelse(t == Tstari+ 1, yes = 1, no = 0), 
-                         as.numeric(dat[t, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])))
+                         as.numeric(dat[t, c('GSPC_Close', 'WTI_Close')])))
         yib <- c(yib, resb[t] + coef %*% datt)
       }
       
@@ -303,12 +302,12 @@ for (b in 1:B) {
                           ifelse(1:Ti == Tstari[1] + 1, yes = 1, no = 0), 
                           ifelse(1:Ti == Tstari[2] + 1, yes = 1, no = 0),
                           ifelse(1:Ti == Tstari[3] + 1, yes = 1, no = 0),
-                          dat[, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])
+                          dat[, c('GSPC_Close', 'WTI_Close')])
       # New colnames
-      colnames(datbi) <- c('yblag', 'shock1', 'shock2', 'shock3', c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1'))
+      colnames(datbi) <- c('yblag', 'shock1', 'shock2', 'shock3', c('GSPC_Close', 'WTI_Close'))
       
       # New Linear Model
-      lmodbi <- lm(yb ~ 1 + yblag + shock1 + shock2 + shock3 + GSPC_Close + WTI_Close + WTI_Close_lag1 + GSPC_Close_lag1, dat = datbi)
+      lmodbi <- lm(yb ~ 1 + yblag + shock1 + shock2 + shock3 + GSPC_Close + WTI_Close, dat = datbi)
       
       # 3 Shock Effects
       alphahatsb <- c(alphahatsb, coef(lmodbi)[3:5])
@@ -327,19 +326,19 @@ for (b in 1:B) {
       
       for (t in 1:Ti) {
         datt <- matrix(c(1, yib[t], ifelse(t == Tstari + 1, yes = 1, no = 0), 
-                         as.numeric(dat[t, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])))
+                         as.numeric(dat[t, c('GSPC_Close', 'WTI_Close')])))
         yib <- c(yib, resb[t] + coef %*% datt)
       }
       
       # Prepare for new data
       yb <- yib[-1]; yblag <- yib[-(Ti + 1)]
-      datbi <- data.frame(yblag, ifelse(1:Ti == Tstari + 1, yes = 1, no = 0), dat[, c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1')])
+      datbi <- data.frame(yblag, ifelse(1:Ti == Tstari + 1, yes = 1, no = 0), dat[, c('GSPC_Close', 'WTI_Close')])
       
       # New colnames
-      colnames(datbi) <- c('yblag', 'shock', c('GSPC_Close', 'WTI_Close', 'WTI_Close_lag1', 'GSPC_Close_lag1'))
+      colnames(datbi) <- c('yblag', 'shock', c('GSPC_Close', 'WTI_Close'))
       
       # New Linear Model
-      lmodbi <- lm(yb ~ 1 + yblag + shock + GSPC_Close + WTI_Close + WTI_Close_lag1 + GSPC_Close_lag1, dat = datbi)
+      lmodbi <- lm(yb ~ 1 + yblag + shock + GSPC_Close + WTI_Close, dat = datbi)
       
       # Shock Effects
       alphahatsb <- c(alphahatsb, coef(lmodbi)[3])
@@ -391,18 +390,9 @@ weights <- (1 / estimates[1:4,2]) / sum(1 / estimates[1:4, 2])
 alpha.IVW.additive <- sum(weights * estimates[1:4, 1])
 alpha.IVW.additive <- as.numeric(alpha.IVW.additive + estimates[5, 1])
 
-# Weighted Adjustment Estimator
-# X0
-# X0 <- c()
-# for (i in 1:4) {
-  # X0[[i]] <- as.matrix(COP_close[c(Tstar[i + 1], Tstar[i + 1] + 1), c(3, 4)])
-# }
-# SCM
 X0 <- c()
-X0[[1]] <- as.matrix(TS2[c(nrow(TS2) - 1, nrow(TS2)), c(3, 4)])
-indrow <- apply(TS3[, 9:11], 2, function(x) which(x == 1))
-for (i in 2:4) {
-  X0[[i]] <- as.matrix(TS3[c(indrow[i - 1], indrow[i - 1]), c(3, 4)])
+for (i in 1:4) {
+  X0[[i]] <- as.matrix(COP_close[Tstar[i + 1] + 1, c(3, 4)])
 }
 n <- 4
 # optimization

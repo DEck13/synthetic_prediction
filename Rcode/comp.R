@@ -13,24 +13,18 @@ eta <- rnorm(n + 1)
 phi <- runif(n + 1, 0, .1)
 theta <- rnorm(n + 1)
 theta <- theta / as.vector(sqrt(crossprod(theta)))
-beta <- rnorm(n + 1)
-beta <- beta / as.vector(sqrt(crossprod(beta)))
-beta.X <- rnorm(n + 1)
-beta.X <- beta.X / as.vector(sqrt(crossprod(beta.X)))
 alpha <- rnorm(n + 1, mean = mu.alpha, sd = sigma.alpha)
 # T: time points; n: different time series
-X <- matrix(0, nrow = T + 1, ncol = n + 1)
-X[1, ] <- rnorm(n + 1)
+X <- matrix(rnorm((n + 1) * (T + 1), sd = sigma.X), nrow = T + 1, ncol = n + 1)
 Y <- matrix(0, nrow = T + 1, ncol = n + 1)
 Y[1,] <- rnorm(n + 1)
 
 # i represents for time -- T
 for(i in 2:(T + 1)){
-  X[i,] <- beta.X * X[i - 1,] + rnorm(n + 1, sd = sigma.X)
   if (i - 2 == Tstar) {
-    Y[i, ] <- eta + phi * Y[i - 1,] + beta * X[i,]  + rnorm(n + 1, sd = sigma) + alpha
+    Y[i, ] <- eta + phi * Y[i - 1,] + theta * X[i,]  + rnorm(n + 1, sd = sigma) + alpha
   } else {
-    Y[i, ] <- eta + phi * Y[i - 1,] + beta * X[i,]  + rnorm(n + 1, sd = sigma)
+    Y[i, ] <- eta + phi * Y[i - 1,] + theta * X[i,]  + rnorm(n + 1, sd = sigma)
     } 
 }
 
@@ -44,7 +38,6 @@ for (j in 2:(n + 1)){
   mu.alpha.hat[j - 1] <- coefficients(m1)[4]
   se[j - 1] <- summary(m1)$coef[4, 2]
 }
-
 alpha.hat <- mean(mu.alpha.hat)
 
 # sum(mu.alpha.hat / se ^ 2) /  (sum(1 / se ^ 2))
@@ -64,12 +57,12 @@ scm <- function(X, Tstar) {
   n <- length(X) - 1
   
   # covariate for time series for prediction
-  X1 <- X[[1]][c(Tstar[1] - 1, Tstar[1]), , drop = FALSE]
+  X1 <- X[[1]][Tstar[1], , drop = FALSE]
   
   # covariates for time series pool
   X0 <- c()
   for (i in 1:n) {
-    X0[[i]] <- X[[i + 1]][c(Tstar[i + 1] - 1, Tstar[i + 1]), ,drop = FALSE]
+    X0[[i]] <- X[[i + 1]][Tstar[i + 1], ,drop = FALSE]
   }
   
   # objective function
@@ -77,7 +70,7 @@ scm <- function(X, Tstar) {
     # W is a vector of weight of the same length of X0
     n <- length(W)
     p <- ncol(X1)
-    XW <- matrix(0, nrow = 2, ncol = p)
+    XW <- matrix(0, nrow = 1, ncol = p)
     for (i in 1:n) {
       XW <- XW + W[i] * X0[[i]]
     }
@@ -113,7 +106,7 @@ Ypred.adjusted <- Ypred.original + alpha.hat * as.matrix(ifelse(2:(Tstar + 2) ==
 # set working directory
 setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
 # figure setting
-tikz('comp.tex', standAlone = TRUE, width = 8, height = 4)
+tikz('comp.tex', standAlone = TRUE, width = 8, height = 3.5)
 # plot
 par(mar = c(4, 4, 1, 2))
 # original
@@ -137,7 +130,7 @@ text(x = 150, y = mean(c(Ypred.original[Tstar + 1], max(Ypred.adjusted[Tstar + 1
      col = 'magenta',
      labels = paste0('$\\displaystyle \\hat{\\alpha} = \\frac{1}{n}\\sum_{i=1}^{n} \\hat{\\alpha}_i= \\;$',
                      round(alpha.hat, digits = 2)))
-text(x = 142, y = mean(Y[Tstar + 2] - alpha[1], Y[Tstar + 2]) + 1, col = 'black',
+text(x = 142, y = mean(Y[Tstar + 2] - alpha[1], Y[Tstar + 2]) +1, col = 'black',
      labels = paste0('$\\alpha = ', round(alpha[1], digits = 2), '$'))
 # shock time points
 text(x = Tstar + 25, y = -4, 'shock time point $T^*_1 + 1$')
@@ -153,8 +146,22 @@ legend(x = 0, y = max(Ypred.adjusted),
        col = c('indianred1', 'magenta'),
        lwd = 2, lty = c(2, 3),
        c('$\\hat{y}_{t}^{1}$ without shock effects', '$\\hat{y}_{t}^{2}$ with shock effects'))
-# output
 dev.off()
 
-
+# figure setting
+tikz('alphahist.tex', standAlone = TRUE, width = 8, height = 3.5)
+# plot
+par(mar = c(4, 4, 1, 2))
+# Histogram
+hist(mu.alpha.hat, breaks = 15, col = 'deepskyblue', 
+     xlab = '$\\hat{\\alpha}_i$', plot = TRUE,
+     density = TRUE, main = '')
+abline(v = alpha.hat, col = 'magenta')
+arrows(x1 = alpha.hat + .05, x0 = alpha.hat + .6, col = 'magenta',
+       y0 = 6.7, code = 2, length = 0.07)
+text(x = 6.5, y = 6.7,
+     col = 'magenta',
+     labels = paste0('$\\displaystyle \\hat{\\alpha} = \\frac{1}{n}\\sum_{i=1}^{n} \\hat{\\alpha}_i= \\;$',
+                     round(alpha.hat, digits = 2)))
+dev.off()
 
