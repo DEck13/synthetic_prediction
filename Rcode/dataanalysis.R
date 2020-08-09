@@ -127,7 +127,7 @@ lrindcov <- function(cov, cols, v){
 # not significant => Independence
 lrindcov(vcov(m_COP_Sept_08)[3:5, 3:5], cols = list(1, 2, 3), v = df.residual(m_COP_Sept_08))
 
-xtable(vcov(m_COP_Sept_08)[3:5, 3:5])
+xtable(vcov(m_COP_Sept_08)[3:5, 3:5], digits = 3)
 
 #### Thursday, November 27, 2014
 

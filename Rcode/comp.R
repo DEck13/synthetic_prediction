@@ -3,7 +3,7 @@ require('tikzDevice')
 # set seed
 set.seed(2020)
 # parameter setup
-n = 40; T = 250; mu.alpha = 5; sigma.alpha = 1; sigma.X = 1; sigma = 1
+n = 40; T = 250; mu.alpha = 10; sigma.alpha = 1; sigma.X = 1; sigma = 1
 
 # T* is the shock time point
 Tstar <- floor(T / 2)
@@ -121,17 +121,17 @@ segments(x0 = Tstar + 1, y0 = min(mu.alpha.hat, Y), y1 = max(c(Ypred.adjusted, m
          col = 'deepskyblue', lty = 2, lwd = 2)
 points(x = rep(Tstar, n), y = mu.alpha.hat, col = 'magenta')
 # add arrows
-arrows(x0 = Tstar + 7, y0 = Ypred.original[Tstar + 1], col = 'magenta',
+arrows(x0 = Tstar + 5, y0 = Ypred.original[Tstar + 1], col = 'magenta',
        y1 = Ypred.adjusted[Tstar + 1],  code = 3, length = 0.07)
-arrows(x0 = Tstar + 4, y0 = Y[Tstar + 2] - alpha[1],
-       y1 = Y[Tstar + 2],  code = 3, length = 0.07)
 # \hat{\alpha}
-text(x = 150, y = mean(c(Ypred.original[Tstar + 1], max(Ypred.adjusted[Tstar + 1]))),
+text(x = 148, y = mean(c(Ypred.original[Tstar + 1], max(Ypred.adjusted[Tstar + 1]))),
      col = 'magenta',
-     labels = paste0('$\\displaystyle \\hat{\\alpha} = \\frac{1}{n}\\sum_{i=1}^{n} \\hat{\\alpha}_i= \\;$',
+     paste0('$\\displaystyle \\hat{\\alpha} = \\frac{1}{n}\\sum_{i=1}^{n} \\hat{\\alpha}_i= \\;$',
                      round(alpha.hat, digits = 2)))
-text(x = 142, y = mean(Y[Tstar + 2] - alpha[1], Y[Tstar + 2]) +1, col = 'black',
-     labels = paste0('$\\alpha = ', round(alpha[1], digits = 2), '$'))
+arrows(x1 =  Tstar + 2, x0 = 140, y0 = Ypred.original[Tstar + 1], 
+       col = 'black', code = 2, length = 0.07)
+text(x = 152, y = Ypred.original[Tstar + 1],
+     labels = paste0('$\\hat{y}^{1}_{T_1^*+1} = ', round(Ypred.original[Tstar + 1], digits = 2), '$'))
 # shock time points
 text(x = Tstar + 25, y = -4, 'shock time point $T^*_1 + 1$')
 # forecasts
@@ -159,7 +159,7 @@ hist(mu.alpha.hat, breaks = 15, col = 'deepskyblue',
 abline(v = alpha.hat, col = 'magenta')
 arrows(x1 = alpha.hat + .05, x0 = alpha.hat + .6, col = 'magenta',
        y0 = 6.7, code = 2, length = 0.07)
-text(x = 6.5, y = 6.7,
+text(x = 11.6, y = 6.7,
      col = 'magenta',
      labels = paste0('$\\displaystyle \\hat{\\alpha} = \\frac{1}{n}\\sum_{i=1}^{n} \\hat{\\alpha}_i= \\;$',
                      round(alpha.hat, digits = 2)))

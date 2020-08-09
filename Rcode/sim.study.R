@@ -436,7 +436,6 @@ sim.study.normal.gammaX <- function(mu.gamma.delta = 1, mu.alpha, sigma,
   if (model == 2) {
     # construction of design matrix and shock effects
     delta <- c()
-    gamma <- c()
     for (i in 1:(n + 1)) {
       Ti <- T[i]
       Tstari <- Tstar[i]
@@ -919,7 +918,7 @@ xtable(riskprop)
 xtable(pred)
 
 
-
+############################################ true start for simulation 2
 
 # MC
 library("parallel")
@@ -953,7 +952,7 @@ system.time(
                                        mu.alpha = 2, sigma = 10, 
                                        sigma.alpha = sigma.alpha,
                                        sigma.delta.gamma = 0.5, 
-                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       p = 25, B = 200, k = 5, scale = 2, 
                                        n = n, np = TRUE)
       return(study)
     }
@@ -980,20 +979,17 @@ for (i in 1:nrow(sim_params)) {
   sds <- apply(table, 2, function(x) sd(x))
   result.i <- c()
   for (j in 1:20) {
-    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
-                                       ' (', round(sds[j] / sqrt(30), 
-                                                   digits = 3), ')'))
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 2), 
+                                       ' (', round(sds[j] / sqrt(nsim), 
+                                                   digits = 2), ')'))
   }
   result <- rbind(result, result.i)
 }
 result <- cbind(sim_params[, c(2,1)], result)
 # results
-riskprop <- result[, c(1:2, 8:10, 19:22)]
-pred <- result[, -c(3:4, 8:14, 19:22)]
+report <- result[, c(1:2, 8:10, 19:21, 15:18)]
 require('xtable')
-xtable(riskprop)
-xtable(pred)
-
+xtable(report)
 
 
 
@@ -1029,8 +1025,8 @@ system.time(
                                        mu.alpha = 2, sigma = sigma, 
                                        sigma.alpha = sigma.alpha,
                                        sigma.delta.gamma = 0.5, 
-                                       p = 13, B = 200, k = 5, scale = 2, 
-                                       n = 10, np = FALSE)
+                                       p = 25, B = 200, k = 5, scale = 2, 
+                                       n = 10, np = TRUE)
       return(study)
     }
     # return results
@@ -1044,7 +1040,7 @@ system.time(
 require('readxl')
 require('writexl')
 setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
-write_xlsx(lapply(output, as.data.frame), 'parametricnsigma.xlsx')
+write_xlsx(lapply(output, as.data.frame), 'nonparametricssigma.xlsx')
 
 
 result <- c()
@@ -1055,21 +1051,17 @@ for (i in 1:nrow(sim_params)) {
   sds <- apply(table, 2, function(x) sd(x))
   result.i <- c()
   for (j in 1:20) {
-    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
-                                       ' (', round(sds[j] / sqrt(30), 
-                                                   digits = 3), ')'))
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 2), 
+                                       ' (', round(sds[j] / sqrt(nsim), 
+                                                   digits = 2), ')'))
   }
   result <- rbind(result, result.i)
 }
 result <- cbind(sim_params[, c(2,1)], result)
 # results
-riskprop <- result[, c(1:2, 8:10, 19:22)]
-pred <- result[, -c(3:4, 8:14, 19:22)]
+report <- result[, c(1:2, 8:10, 19:21, 15:18)]
 require('xtable')
-xtable(riskprop)
-xtable(pred)
-
-
+xtable(report)
 
 
 
@@ -1105,7 +1097,7 @@ system.time(
                                        mu.alpha = 2, sigma = 10, 
                                        sigma.alpha = sigma.alpha,
                                        sigma.delta.gamma = 0.5, 
-                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       p = 25, B = 200, k = 5, scale = 2, 
                                        n = n, np = FALSE)
       return(study)
     }
@@ -1130,21 +1122,88 @@ for (i in 1:nrow(sim_params)) {
   sds <- apply(table, 2, function(x) sd(x))
   result.i <- c()
   for (j in 1:20) {
-    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 2), 
                                        ' (', round(sds[j] / sqrt(nsim), 
-                                                   digits = 3), ')'))
+                                                   digits = 2), ')'))
   }
   result <- rbind(result, result.i)
 }
 result <- cbind(sim_params[, c(2,1)], result)
 # results
-riskprop <- result[, c(1:2, 8:10, 19:22)]
-pred <- result[, -c(3:4, 8:14, 19:22)]
+report <- result[, c(1:2, 8:10, 19:21, 15:18)]
 require('xtable')
-xtable(riskprop)
-xtable(pred)
+xtable(report)
 
 
+# MC
+library("parallel")
+library("doParallel")
+library("foreach")
+# 8 cores -- use 7
+ncores <- detectCores() - 1
+registerDoParallel(cores = ncores)
+set.seed(2020)
+RNGkind("L'Ecuyer-CMRG")
+nsim <- 30
+
+
+# parameter setup
+sigma <- c(5, 10, 25, 50, 100)
+sigma.alphas <- c(5, 10, 25, 50, 100)
+sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, sigma = sigma))
+
+# simulation time
+system.time(
+  output <- lapply(1:nrow(sim_params), FUN = function(j) {
+    # parameters
+    sigma.alpha <- sim_params[j, 1]
+    sigma <- sim_params[j, 2]
+    # %do% evaluates sequentially
+    # %dopar% evaluates in parallel
+    # .combine results
+    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+      # result
+      study <- sim.study.normal.gammaX(mu.gamma.delta = 1, 
+                                       mu.alpha = 2, sigma = sigma, 
+                                       sigma.alpha = sigma.alpha,
+                                       sigma.delta.gamma = 0.5, 
+                                       p = 25, B = 200, k = 5, scale = 2, 
+                                       n = 10, np = FALSE)
+      return(study)
+    }
+    # return results
+    out
+  })
+)
+
+
+# store results
+# load packages
+require('readxl')
+require('writexl')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'parametricssigma.xlsx')
+
+
+result <- c()
+for (i in 1:nrow(sim_params)) {
+  table <- output[[i]]
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+  result.i <- c()
+  for (j in 1:20) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 2), 
+                                       ' (', round(sds[j] / sqrt(nsim), 
+                                                   digits = 2), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(2,1)], result)
+# results
+report <- result[, c(1:2, 8:10, 19:21, 15:18)]
+require('xtable')
+xtable(report)
 
 
 ####################### Simulations for Model 1
@@ -1179,7 +1238,7 @@ system.time(
       # result
       study <- sim.study.normal.gammaX(mu.alpha = 50, sigma = 10, 
                                        sigma.alpha = sigma.alpha,
-                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       p = 25, B = 200, k = 5, scale = 2, 
                                        n = n, np = TRUE, model = 1)
       return(study)
     }
@@ -1249,7 +1308,7 @@ system.time(
       # result
       study <- sim.study.normal.gammaX(mu.alpha = 50, sigma = sigma, 
                                        sigma.alpha = sigma.alpha,
-                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       p = 25, B = 200, k = 5, scale = 2, 
                                        n = 10, np = TRUE, model = 1)
       return(study)
     }
@@ -1315,7 +1374,7 @@ system.time(
       # result
       study <- sim.study.normal.gammaX(mu.alpha = 50, sigma = 10, 
                                        sigma.alpha = sigma.alpha,
-                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       p = 25, B = 200, k = 5, scale = 2, 
                                        n = n, np = FALSE, model = 1)
       return(study)
     }
@@ -1383,7 +1442,7 @@ system.time(
       # result
       study <- sim.study.normal.gammaX(mu.alpha = 50, sigma = sigma, 
                                        sigma.alpha = sigma.alpha,
-                                       p = 13, B = 200, k = 5, scale = 2, 
+                                       p = 25, B = 200, k = 5, scale = 2, 
                                        n = 10, np = FALSE, model = 1)
       return(study)
     }
