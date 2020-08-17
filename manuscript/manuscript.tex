@@ -125,8 +125,7 @@
 
 \maketitle
 \begin{abstract}
-    We developed a forecasting methodology for providing credible forecasts for the time series data that have undergone a shock  by borrowing knowledge from disparate time series that have undergone similar shocks for which post-shock outcome is recorded. Three shock effects estimators were constructed for minimizing average forecast risk. We proposed risk-reduction propositions providing conditions when our methodology works. Bootstrap procedures are provided to estimate the variability of our shock effect estimators; and these procedures can be used to assess the potential prospective success of post-shock forecasts. %The risk-reduction propositions and risk-reduction quantities are powerful tools for users because we can empirically aid a prospective evaluation about whether the three aggregation techniques  will work well. 
-    Leave-one-out cross validation is proposed to estimate correctness of risk-reduction propositions, prospectively informing users of the probabilities that this prospective evaluation is in line with the reality. Several simulated data examples, and a real data example of forecasting Conoco Phillips stock price are provided for verification and illustration.
+    We develop a forecasting methodology for providing credible forecasts for time series that have recently undergone a shock. We achieve this by borrowing knowledge from disparate time series that have undergone similar shocks for which post-shock outcome is recorded. Three shock effect estimators are motivated with the aim of minimizing average forecast risk. We propose risk-reduction propositions that provide conditions that establish when our methodology works. Bootstrap procedures are provided to estimate the variability of our shock effect estimators; and these procedures can be used to assess the potential prospective success of post-shock forecasts. Leave-one-out cross validation is proposed to estimate correctness of risk-reduction propositions, prospectively informing users of the probabilities that this prospective evaluation is in line with the reality. Several simulated data examples, and a real data example of forecasting Conoco Phillips stock price are provided for verification and illustration.
 \end{abstract}
 
 
@@ -135,9 +134,9 @@
 \section{Introduction}
 
 
-We provide forecasting adjustment techniques with the goal of lowering overall forecast error when the time series under study has undergone a structural shock in real-time. Standard forecasting methods may not allow users to explore the consequences that structural shocks have on baseline forecasts \citep{baumeister2014real}. This is a general problem that has many real life applications. For example, one may be interested in forecasting the stock price of a company tomorrow after hearing terrible or great news about the company  after hours trading. Companies may be interested in forecasting the demand of their products to adjust production after they were involved in a brand crisis, but they only have recent sales data for which the company is operating well. All is not lost in this setting, one may be able to supplement the present forecast with past data borrowed from disparate time series which contain similar structural shocks. The core idea of our methodology is to sensibly aggregate similar past realized shock effects which arose from disparate time series, and then incorporate the aggregated shock effect estimator into the present forecast. Our method of combining disparate shock effects embraces ideas from conditional forecasting \citep{baumeister2014real, kilian2017structural}, time series pooling using cross-sectional panel data \citep{ramaswamy1993empirical, pesaran1999pooled, hoogstrate2000pooling, baltagi2008forecasting, koop2012forecasting, liu2020forecasting}, forecasting with judgement and models \citep{svensson2005monetary, monti2008forecast}, synthetic control methodology \citep{abadie2010synthetic, agarwal2020two}, and expectation shocks \citep{croushore2006data, baumeister2014general, clements2019measuring}. 
+We provide forecasting adjustment techniques with the goal of lowering overall forecast error when the time series under study has undergone a structural shock. We focus on the specific setting in which a structural shock has occurred and one desires a prediction for the post-shock response at the next time point. Standard forecasting methods may not yield accurate predictions in the presence of such structural shocks \citep{baumeister2014real}. This is a general problem that has many real life applications. For example, one may be interested in forecasting the stock price of a company tomorrow after hearing terrible or great news about the company  after hours trading. Companies may be interested in forecasting the demand of their products to adjust production after they were involved in a brand crisis, but they only have recent sales data for which the company is operating well. All is not lost in this setting, one may be able to supplement the present forecast with past data borrowed from disparate time series which contain similar structural shocks. The core idea of our methodology is to sensibly aggregate similar past realized shock effects which arose from disparate time series, and then incorporate the aggregated shock effect estimator into the present forecast. Our method of combining disparate shock effects embraces ideas from conditional forecasting \citep{baumeister2014real, kilian2017structural}, time series pooling using cross-sectional panel data \citep{ramaswamy1993empirical, pesaran1999pooled, hoogstrate2000pooling, baltagi2008forecasting, koop2012forecasting, liu2020forecasting}, forecasting with judgement and models \citep{svensson2005monetary, monti2008forecast}, synthetic control methodology \citep{abadie2010synthetic, agarwal2020two}, and expectation shocks \citep{croushore2006data, baumeister2014general, clements2019measuring}. 
 
-We study the post-shock forecasting problem in the context of additive shock effects in linear autoregressive models. In this post-shock forecasting setting, the researcher has a time series of interest which is known to have recently undergone a structural shock, and the post-shock response is not observed. In this setting, the additive shock effect is a random effect that is parameterized in the autoregressive model. The shock effect is then estimated using ordinary least squares (OLS). The researcher must move beyond the modeling paradigm that they were previously working under to accommodate this new shock effect \citep{monti2008forecast, svensson2005monetary}. One method for estimating the shock effect is to produce a conditional point forecast where a sequence of non-zero future structural shocks are conditioned upon and estimated \citep{baumeister2014real}. Such conditional point forecasts are appropriate when the shock sequence considered is within the range of historical experience \citep{kilian2017structural}. On the other hand, our methodology allows for the inclusion of outside data sources and covariates into this conditional forecasting context provided that the shock effects are all thought to arise from a similar data generating process. For further differences of assumptions on shocks, our methodology allows for \emph{unprecedented} shocks and no observation of past shocks. 
+We study the post-shock forecasting problem in the context of additive shock effects in linear autoregressive models. In this post-shock forecasting setting, the researcher has a time series of interest which is known to have recently undergone a structural shock, and the post-shock response is not observed. In this setting, the additive shock effect is a random effect that is parameterized in the autoregressive model. The shock effect is then estimated using ordinary least squares (OLS). The researcher must move beyond the modeling paradigm that they were previously working under to accommodate this new shock effect \citep{monti2008forecast, svensson2005monetary}. One method for estimating the shock effect is to produce a conditional point forecast where a sequence of non-zero future structural shocks are conditioned upon and estimated \citep{baumeister2014real}. Such conditional point forecasts are appropriate when the shock sequence considered is within the range of historical experience \citep{kilian2017structural}. On the other hand, our methodology allows for the inclusion of outside data sources and covariates into this conditional forecasting context provided that the shock effects are all thought to arise from a similar data generating process. For further differences of assumptions on shocks, our methodology allows for unprecedented shocks and no observation of past shocks. 
 
 In our methodological framework, the researcher creates a synthetic panel of disparate time series which have undergone similar structural shocks in the past. Construction of the donor pool that forms this synthetic panel is similar to that in synthetic control methodology (SCM) \citep{abadie2010synthetic}. As in SCM, care is needed when forming the donor pool of disparate time series. However, there are key differences between our framework and SCM. We assume that the disparate time series are independent from the time series under study before the timing of the shock. We also assume that the shock effects for each disparate time series are independent realizations from some unknown distribution with existing first and second moments. 
 
@@ -154,8 +153,7 @@ We estimate the shock effects that are present in the disparate time series for 
 
 In this article, we will assume a simple auto regressive data generating process similar to that in \citet{blundell1998initial} with a general random effects structure. Therefore, our methodology is similar to the ``$K$ latent pooling'' framework of \cite{ramaswamy1993empirical}. However, our model formulation is more general than \cite{ramaswamy1993empirical}. In our model, the donor pool can consist of dependent time series but time series within the donor pool should be independent of the time series of interest. However, mutual independence among time series in the donor pool can aid prospective evaluation of the reliability of our method. 
 %The main idea of our methodology is to provide a scalar adjustment, based on estimated shock effects from the disparate time series, which is added to the original forecast at the known shock time point. 
-We consider three aggregation techniques: simple averaging, inverse-variance weighted averaging, and similarity weighting. The latter technique is similar to the weighting in synthetic control methodology \citep{abadie2010synthetic}. Our auto regressive model will consider present day covariates to better motivate similarity weighting. The considered adjustment strategies all target the mean of the shock effect distribution. However, such an estimation strategy can reduce mean squared error (MSE) when variation in the shock effect distribution is small relative to the mean. We provide risk-reduction propositions that detail the conditions when the adjusted forecasts will work better than the original forecast. The involved parameters in the risk-reduction propositions and risk-reduction quantities can be estimated by a residual bootstrap procedure that we develop within. %These propositions and risk-reduction quantities are powerful tools for users in the sense that we can empirically aid a prospective evaluation about whether the three aggregation techniques will work well before the post-shock response is observed. 
-We also motivate a simple leave-one-out cross validation procedure which can prospectively assess the performance of our shock effect adjustment estimators. This prospective assessment does not require the observation of the post-shock response. Our Monte Carlo simulation results show that the risk-reduction propositions are nearly perfectly correct when the model for the shock effects is identified well with appropriate covariates under a fixed design. We demonstrate the utility of our methodology in a real data analysis in which we forecast the stock price of Conoco Phillips shares that experienced a large structural shock on March 9th, 2020. We show that our proposed adjustment estimators yield much better results than no adjustment in this setting. We also use this example to demonstrate settings in which the shock effect may be decomposed into separate estimable parts. We now motivate our framework for post-shock forecasting.
+We consider three aggregation techniques: simple averaging, inverse-variance weighted averaging, and similarity weighting. The latter technique is similar to the weighting in synthetic control methodology \citep{abadie2010synthetic}. Our auto regressive model will consider present day covariates to better motivate similarity weighting. The considered adjustment strategies all target the mean of the shock effect distribution. However, such an estimation strategy can reduce mean squared error (MSE) when variation in the shock effect distribution is small relative to the mean. We provide risk-reduction propositions that detail the conditions when the adjusted forecasts will work better than the original forecast. The involved parameters in the risk-reduction propositions can be estimated by a residual bootstrap procedure that we develop. We also motivate a simple leave-one-out cross validation procedure which can prospectively assess the performance of our shock effect adjustment estimators. This prospective assessment does not require the observation of the post-shock response. Our Monte Carlo simulation results show that the risk-reduction propositions are nearly perfectly correct when the model for the shock effects is identified well with appropriate covariates under a fixed design. We demonstrate the utility of our methodology in a real data analysis in which we forecast the stock price of Conoco Phillips shares that experienced a large structural shock on March 9th, 2020. We show that our proposed adjustment estimators yield much better results than no adjustment in this setting. We also use this example to demonstrate settings in which the shock effect may be decomposed into separate estimable parts. We now motivate our framework for post-shock forecasting.
 
 
 % Note that this methodology is not motivated with the goal of unbiased, asymptotically unbiased, or consistent estimation for the shock effect of the time series under study.
@@ -177,16 +175,11 @@ We also motivate a simple leave-one-out cross validation procedure which can pro
 \section{Setting}
 \label{setting}
 
-We will suppose that a researcher has time series data ($y_{i,t}$,$\x_{i,t}$), $t = 1$, $\ldots$, $T_i$, $i = 1$, $\ldots$, $n+1$, where $y_{i,t}$ is a scalar response and $\x_{i,t}$ is a vector of covariates that are revealed to the analyst prior to the observation of $y_{1,t}$.  Suppose that the analyst is interested in forecasting $y_{1,t}$, the first time series in the collection. 
-%$y_1, y_2, \ldots$.  
-%Given each time point $t \geq 1$, let $\x_{1,t}$ be a vector of covariates 
-%revealed prior to the observation of $y_{1,t}$.  
-
-We will suppose that specific interest is in forecasting the response after the occurrence of a structural shock. To gauge the performance of forecasts, we consider forecast risk in the form of mean squared error (MSE),
+We will suppose that a researcher has time series data ($y_{i,t}$,$\x_{i,t}$), $t = 1$, $\ldots$, $T_i$, $i = 1$, $\ldots$, $n+1$, where $y_{i,t}$ is a scalar response and $\x_{i,t}$ is a vector of covariates that are revealed to the analyst prior to the observation of $y_{1,t}$.  Suppose that the analyst is interested in forecasting $y_{1,t}$, the first time series in the collection. We will suppose that specific interest is in forecasting the response after the occurrence of a structural shock. To gauge the performance of forecasts, we consider forecast risk in the form of MSE,
 $$
   R_T = \frac{1}{T}\sum_{t=1}^T\E{\hat y_{1,t} - y_{1,t}}^2,
 $$
-and root mean squared error (RMSE), given by $\sqrt{R_T}$, in our analyses. Specific emphasis will be given to post-shock prediction where forecasts methods only differ at one future time point. In this setting we will consider the magnitude $|\E{\hat y_{1,t} - y_{1,t}}|$.
+and root mean squared error (RMSE), given by $\sqrt{R_T}$, in our analyses. In this article, we focus on post-shock prediction where forecasts methods only differ at the next future time point. Thus the MSE reduces to the magnitude $|\E{\hat y_{1,t} - y_{1,t}}|$.
 
 
 %The forecast consists of three steps: (1) pick a model, (2) selection of covariates, (3) choices of donor pool.
@@ -213,7 +206,7 @@ In this section, we will describe the assumed dynamic panel models for which
 post-shock aggregated estimators are provided. The basic structures of these models 
 are the same for all time-series in the analysis, the differences between them lie in the setup of the shock effect distribution.
 
-Let $I(\cdot)$ be an indicator function, $T_i$ be the time length of the time series $i$ for $i = 1, \ldots, n+1$, and $T_i^*$ be the time point just before the one when the shock is \emph{known} to occur, with $T_i^* < T_i$.  For $t= 1, \ldots, T_i$ and $i = 1, \ldots, n+1$, the model $\mc{M}_1$ is defined as
+Let $I(\cdot)$ be an indicator function, $T_i$ be the time length of the time series $i$ for $i = 1, \ldots, n+1$, and $T_i^*$ be the time point just before the one when the shock is known to occur, with $T_i^* < T_i$.  For $t= 1, \ldots, T_i$ and $i = 1, \ldots, n+1$, the model $\mc{M}_1$ is defined as
 \begin{align}
 \mc{M}_1 \colon y_{i,t} =\eta_i +\alpha_i D_{i,t} + \phi_i y_{i, t-1} + \theta_i'\mbf{x}_{i,t} + \varepsilon_{i,t}\label{equation1}
 \end{align}
@@ -244,8 +237,7 @@ For $i = 1, \ldots, n+1$, the random effects structure for this model (model $\m
 \begin{align*}
 \t{\varepsilon}_{i} &\simiid  \E{\t{\varepsilon}}=0, \var{\t{\varepsilon}}=\sigma^2_{\alpha} \where \sigma_{\alpha}>0\\
 \eta_i &\indep  \alpha_i \indep \phi_i \indep \theta_i \indep \varepsilon_{i,t} \indep \t{\varepsilon}_{i}.
-\end{align*}
-%and $\delta_i$ and $\gamma_i$ will be discussed shortly. 
+\end{align*} 
 We further define 
 $\tilde{\alpha}_i=\mu_{\alpha}+\delta_i'\mbf{x}_{i, T_i^*+1}$. 
 We will investigate the post-shock aggregated estimators in $\mc{M}_2$ 
@@ -294,7 +286,7 @@ $y_{1,t}$, $t = 1,\ldots T_1^*$. Instead, they only differ in predicting
 $y_{1,T_1^*+1}$. Throughout the rest of this article we show that the collection of 
 disparate time series $\{y_{i,t}, t = 1,\ldots,T_i, i = 2,\ldots,n+1\}$ has 
 the potential to improve the forecasts for $y_{1, t}$ when $t > T_1^*$ under different 
-circumstances for the dynamic panel model $\mc{M}_1$, $\mc{M}_{21}$, and $\mc{M}_{22}$. Improvement will be  measured by \emph{risk-reduction quantity}, which is the difference between the risk of Forecast 1 and Forecast 2. We will return to the theoretical details of risk-reduction quantity in Section \ref{properties}.
+circumstances for the dynamic panel model $\mc{M}_1$, $\mc{M}_{21}$, and $\mc{M}_{22}$. Improvement will be measured by assessing the reduction in risk that Forecast 2 offers over Forecast 1. We will return to the theoretical details of risk-reduction in Section \ref{properties}.
 
 We specifically focus on predictions for $y_{1,T_1^*+1}$, the first post-shock response. It is important to note that in general $\hat{\alpha}$ 
 is not a consistent estimator of the unobserved $\alpha_1$ nor does it converge 
@@ -329,7 +321,7 @@ for $\mc{M}_1$ is identically the same as that for $\mc{M}_{21}$ or $\mc{M}_{22}
 
 
 Second, we introduce the candidate estimators for $\alpha_1$. Define the 
-\emph{adjustment estimator} for time series $i=1$ by
+adjustment estimator for time series $i=1$ by
 \begin{equation} \label{adjusted}
   \hat{\alpha}_{\text{adj}} = \frac{1}{n}\sum_{i=2}^{n+1}\hat{\alpha}_i,
 \end{equation}
@@ -342,7 +334,7 @@ for $i= 1, \ldots, n+1$. However, it can also be shown that
 $\hat{\alpha}_{\rm adj}$ may be less favorable in $\mc{M}_{21}$ 
 and $\mc{M}_{22}$, which will be discussed in detail in Section \ref{properties}. 
 
-We also consider the \emph{inverse-variance weighted estimator} 
+We also consider the inverse-variance weighted estimator 
 in practical settings where the $T_i$'s and $T_i^*$'s vary greatly across $i=2, \ldots, n+1$. 
 The inverse-variance weighted estimator is defined as 
 \begin{align*}
@@ -367,8 +359,8 @@ and $\var{\hat{\alpha}_{\rm IVW}}$ but empirical performance of
 $\hat{\alpha}_{\rm IVW}$ is assessed via Monte Carlo simulation 
 (see Section \ref{simulation}).
 
-%More importantly, we introduce the backgrounds and procedures of constructing \emph{weighted-adjustment estimator} as follows. 
-We now motivate a \emph{weighted-adjustment estimator} for model $\mc{M}_{21}$ 
+
+We now motivate a weighted-adjustment estimator for model $\mc{M}_{21}$ 
 and $\mc{M}_{22}$. Our weighted-adjustment estimator is inspired by the 
 weighting techniques in synthetic control methodology (SCM) developed 
 in \cite{abadie2010synthetic}. 
@@ -488,7 +480,7 @@ Formal justification for these results can be found in Appendix. Note that $\hat
 \end{prop}
 
 
-Unbiasedness properties for $\E{\alpha_1}$ of $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ allow for simple risk-reduction conditions, and more importantly motivates a bootstrap estimation for evaluation of these conditions. % for $\hat{\alpha}_{\rm adj}$ and  $\hat{\alpha}_{\rm wadj}$ to reduce risk, and make it more clear with respect to when one is better than the other. 
+Unbiasedness properties for $\E{\alpha_1}$ of $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ allow for simple conditions for risk-reduction to hold, and more importantly motivates a bootstrap estimation for evaluation of these conditions. % for $\hat{\alpha}_{\rm adj}$ and  $\hat{\alpha}_{\rm wadj}$ to reduce risk, and make it more clear with respect to when one is better than the other. 
 These conditions and bootstrap will be discussed in Section \ref{conditions} and \ref{varbootstrap}, respectively. Next, we present the variance expressions for $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ as below.
 
 \begin{enumerate}[label = (\roman*)]
@@ -508,7 +500,7 @@ These conditions and bootstrap will be discussed in Section \ref{conditions} and
 \end{align*}
 \end{enumerate}
 Formal justification for these results can be found in Appendix. Note that the variances are not comparable in closed-form %we shall see that it is difficult to compare variances between $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ 
-because of the term $\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}$.  This term exists because of the inclusion of the random lagged response in our auto regressive model formulation.  Under $\mc{M}_{22}$, the expression for $\var{\alpha_i}$ is not of closed form because $\gamma_i$ and $\delta_i$ may be dependent when they are placed in a random-effects model.  
+because of the term $\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}$.  This term exists because of the inclusion of the random lagged response in our auto regressive model formulation.  Under $\mc{M}_{22}$, the expression for $\var{\alpha_i}$ is not of closed form because $\delta_i$ may be dependent when they are placed in a random-effects model.  
 
 
 
@@ -519,6 +511,7 @@ Section \ref{conditions} details conditions needed for risk-reduction and compar
 \label{conditions}
 
 In this section we will discuss the conditions for risk reduction for individual shock effects estimators under $\mc{M}_1$, $\mc{M}_{21}$, and $\mc{M}_{22}$. %The reason is that if the estimator of $\alpha_1$ turns out to be an unbiased estimator of $\E{\alpha_1}$, the conditions get  simplified. 
+For an adjustment estimator $\hat{\alpha}$, we will write the risk-reduction as $\Delta(\hat{\alpha})=R_{T_1^*+1,1}-R_{T_1^*+1,2}$ where $R_{T_1^*+1,2}$ is the risk of Forecast 2 calculated using the adjustment estimator $\hat{\alpha}$. 
 
 \subsubsection{Conditions under $\mc{M}_1$}
  \label{conditionsmodel1}
@@ -528,13 +521,15 @@ Recall that Proposition \ref{unbiased} implies that the adjustment estimator $\h
 \begin{prop}
 \label{proprisk}Under $\mc{M}_1$,
 \begin{enumerate}[label = (\roman*)]
-  \item  $R_{T_1^*+1, 2} < R_{T_1^*+1, 1}$ when 
+  \item $\Delta(\hat\alpha_{\rm adj}) > 0$  when 
 $\Var(\hat{\alpha}_{\rm adj}) < \mu_{\alpha}^2$.
-  \item if $\mbf{W}^*$ satisfies (\ref{SCM}), $R_{T_1^*+1,2}<R_{T_1^*+1,1}$ when $\var{\hat{\alpha}_{\rm wadj}}<\mu_{\alpha}^2$. 
+  \item if $\mbf{W}^*$ satisfies (\ref{SCM}), then $\Delta(\hat\alpha_{\rm wadj}) > 0$ when $\var{\hat{\alpha}_{\rm wadj}}<\mu_{\alpha}^2$. 
 \end{enumerate}
 \end{prop}
 
-Proposition \ref{proprisk} tells that under $\mc{M}_1$ if the variance of the estimator is smaller than the squared mean of $\alpha_1$, those estimators will enjoy the risk reduction properties. Recalling from variance expression at the beginning of Section \ref{properties}, Proposition \ref{proprisk} shows that the risk-reduction condition is
+
+Proposition \ref{proprisk} says that under $\mc{M}_1$ if the variance of the estimator is smaller than the squared mean of $\alpha_1$, those estimators will enjoy the risk reduction properties.   In this setting, under $\mc{M}_1$, $\Delta(\hat{\alpha}_{\rm adj})= \mu_{\alpha}^2-\var{\hat{\alpha}_{\rm adj}}$ and $\Delta(\hat{\alpha}_{\rm wadj})= \mu_{\alpha}^2-\var{\hat{\alpha}_{\rm wadj}}$. % from Proposition \ref{proprisk}.
+From Proposition \ref{proprisk}, we obtain a risk-reduction condition
 \begin{align}
   \var{\hat{\alpha}_{\rm adj}} 
   &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2} < \mu_{\alpha}^2. \label{riskconditionadj}
@@ -542,27 +537,26 @@ Proposition \ref{proprisk} tells that under $\mc{M}_1$ if the variance of the es
 
 Condition (\ref{riskconditionadj}) implies two facts: (1) adjustment (Forecast 2) is preferable to no adjustment (Forecast 1) asymptotically in $n$ whenever $\mu_{\alpha} \neq 0$ (see Forecast in Section \ref{forecast}); (2) In finite donor pool settings, adjustment is preferable to no adjustment when $\mu_{\alpha}$ is large relative to its variability and overall regression variability.   %This result is also intuitive. For example, if  $\mu_{\alpha}$ is large, Forecast 1 will definitely work poor because large  $\mu_{\alpha}$ implies shock effects that cannot be ignored.  See Section \ref{forecast} for forecast formulation for details.
 
-For the weighted-adjustment estimator $\hat{\alpha}_{\rm wadj}$, if  $\mathbf{W}^*$ does not satisfy (\ref{SCM}), its unbiased properties for $\E{\alpha_1}$ should hold approximately when the fit in (\ref{W}) is appropriate as commented in Section \ref{constructionofestimators}. From Proposition \ref{proprisk} and the variance expression for $\hat{\alpha}_{\rm wadj}$, the risk-reduction condition for $\hat{\alpha}_{\rm wadj}$ is
+If  $\mathbf{W}^*$ does not satisfy (\ref{SCM}), its unbiased properties for $\E{\alpha_1}$ should hold approximately when the fit in (\ref{W}) is appropriate as commented in Section \ref{constructionofestimators}. From Proposition \ref{proprisk} and the variance expression for $\hat{\alpha}_{\rm wadj}$, the risk-reduction condition for $\hat{\alpha}_{\rm wadj}$ is
 \begin{equation} \label{varwadj}
 \var{\hat{\alpha}_{\rm wadj}}
  = \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2 < \mu_{\alpha}^2.
 \end{equation}
-In this case, adjustment is preferable to no adjustment when $\mu_{\alpha}$ is large relative to the weighted sum of variances for shock effects for other time series and overall regression variability.  However, the above criteria are generally difficult to evaluate in practice due to the term $\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}$. 
+In this case, adjustment is preferable to no adjustment when $\mu_{\alpha}$ is large relative to the weighted sum of variances for shock effects for other time series and overall regression variability.  However, the above criteria are generally difficult to evaluate in practice.  Sections \ref{varbootstrap} and \ref{loocv} will provide detailed treatment on how to estimate the sign of $\Delta(\hat\alpha)$ in practice.
 
 
-In fact, we can extend checking risk-reduction conditions to verifying the sign of risk-reduction quantities for generalization. For an adjustment estimator $\hat{\alpha}$, the risk-reduction quantity is defined as  $\Delta(\hat{\alpha})=R_{T_1^*+1,1}-R_{T_1^*+1,2}$. If $\Delta(\hat{\alpha})>0$, $\hat{\alpha}$ will improve the Forecast 1. In this context, according to Proposition \ref{proprisk}, under $\mc{M}_1$, $\Delta(\hat{\alpha}_{\rm adj})= \mu_{\alpha}^2-\var{\hat{\alpha}_{\rm adj}}$ and $\Delta(\hat{\alpha}_{\rm wadj})= \mu_{\alpha}^2-\var{\hat{\alpha}_{\rm wadj}}$. Sections \ref{varbootstrap} and \ref{loocv} will provide a detailed treatment about how to checking the sign  in practice.
 
 
 
 \subsubsection{Conditions under $\mc{M}_{21}$ and $\mc{M}_{22}$}
 \label{conditionsm2122}
 
-The shock effects $\alpha_i$s have different means under $\mc{M}_{21}$ and $\mc{M}_{22}$ unlike under $\mc{M}_1$. %It is a more reasonable and general model since it is often the case that shock effects differ by means among disparate time series in practice. $\mc{M}_{22}$  further adds the random effect structure of $\delta$ and $\gamma$ to  $\mc{M}_{21}$ for generalization.
+The shock effects $\alpha_i$s have different means under $\mc{M}_{21}$ and $\mc{M}_{22}$ unlike under $\mc{M}_1$. %It is a more reasonable and general model since it is often the case that shock effects differ by means among disparate time series in practice. $\mc{M}_{22}$  further adds the random effect structure of $\delta$ to  $\mc{M}_{21}$ for generalization.
 However, Proposition \ref{unbiased} implies that $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator of $\E{\alpha_1}$. %From Proposition \ref{varprop}, the risk-reduction condition for $\hat{\alpha}_{\rm wadj}$  will be as in Proposition \ref{propriskwadj2}. 
 We now state conditions for risk-reduction.
 
 \begin{prop}
-\label{propriskwadj2} If $\mbf{W}^*$ satisfies (\ref{SCM}), under $\mc{M}_{21}$ and $\mc{M}_{22}$, $R_{T_1^*+1,2}<R_{T_1^*+1,1}$ when $\var{\hat{\alpha}_{\rm wadj}}<(\E{\alpha_1})^2$. 
+\label{propriskwadj2} If $\mbf{W}^*$ satisfies (\ref{SCM}) then $\Delta(\hat\alpha_{\rm wadj}) > 0$ when $\var{\hat{\alpha}_{\rm wadj}}<(\E{\alpha_1})^2$  under $\mc{M}_{21}$ and $\mc{M}_{22}$. 
 \end{prop}
 Under Proposition \ref{propriskwadj2}, we can obtain a risk-reduction inequality that is similar to \eqref{varwadj},
 \begin{align*}
@@ -593,7 +587,7 @@ The above inequality simplifies to
  
 
 
-As mentioned in Section \ref{constructionofestimators}, it is difficult to evaluate the expectation and variance of $\hat{\alpha}_{\rm IVW}$. We note that $\hat{\alpha}_{\rm IVW}$ is generally biased for $\E{\alpha_1}$. That is to say we can adapt the above proof to derive the risk-reduction conditions for $\hat{\alpha}_{\rm IVW}$: under $\mc{M}_{1}$, $\mc{M}_{21}$, and $\mc{M}_{22}$, $R_{T_1^*+1,2}<R_{T_1^*+1,1}$ when $\var{\hat{\alpha}_{\rm IVW}} +(\E{\hat{\alpha}_{\rm IVW}}-\E{\alpha_1})^2<(\E{\alpha_1})^2$.  Therefore, using the generalization mentioned in Section \ref{conditionsmodel1}, under $\mc{M}_2$, it can be shown that the risk-reduction quantities are
+As mentioned in Section \ref{constructionofestimators}, it is difficult to evaluate the expectation and variance of $\hat{\alpha}_{\rm IVW}$. We note that $\hat{\alpha}_{\rm IVW}$ is generally biased for $\E{\alpha_1}$. That is to say we can adapt the above proof to derive the risk-reduction conditions for $\hat{\alpha}_{\rm IVW}$: under $\mc{M}_{1}$, $\mc{M}_{21}$, and $\mc{M}_{22}$, $\Delta(\hat\alpha_{\rm IVW}) > 0$ when $\var{\hat{\alpha}_{\rm IVW}} +(\E{\hat{\alpha}_{\rm IVW}}-\E{\alpha_1})^2<(\E{\alpha_1})^2$.  Therefore, using the generalization mentioned in Section \ref{conditionsmodel1}, under $\mc{M}_2$, it can be shown that the risk-reduction quantities are
 \begin{align*}
   \Delta(\hat{\alpha}_{\rm adj}) 
   &= (\E{\alpha_1})^2 -\var{\hat{\alpha}_{\rm adj}}-(\E{\hat{\alpha}_{\rm adj}}-\E{\alpha_1})^2\\
@@ -602,7 +596,7 @@ As mentioned in Section \ref{constructionofestimators}, it is difficult to evalu
   \Delta(\hat{\alpha}_{\rm wadj}) 
   &= (\E{\alpha_1})^2 -\var{\hat{\alpha}_{\rm adj}},
 \end{align*}
-where we estimate $\Delta(\hat{\alpha})$  using the bootstrap and LOOCV techniques developed in Sections \ref{varbootstrap} and \ref{loocv}. 
+where we estimate $\Delta(\hat{\alpha})$ for estimator $\hat\alpha$  using the bootstrap and LOOCV techniques developed in Sections \ref{varbootstrap} and \ref{loocv}. 
  
 %%%%%%%%%%% Commenting out Section 3.2 %%%%%%%%%%%%
 %\subsection{Comparisons among estimators}
@@ -745,12 +739,12 @@ where $\mc{J}$ is the set of the $k$ randomly sampled indicies. %Similarly, assu
 
 \subsection{Modeling setup}
 
-In this section we provide justification for our methods based on Monte Carlo simulation. We implemented our simulation based on $\mc{M}_{22}$ with negligibly small $\Sigma_{\gamma}$ and $\Sigma_{\delta}$ approximating the design of $\mathcal{M}_{21}$.  We consider $p=25$ and $\mu_{\alpha}=2$, where $p = 25$ is set to satisfy conditions in Proposition \ref{uniqueness}. Parameter setup of our simulations is detailed as follows: the $\phi_i$'s are sampled independently from $\mrm{Uniform}(0,1)$. We sampled $T_i$'s independently from  $\text{Gamma}(15, 10)$ that are further rounded to integers, where the minimum allowable value of $T_i$ is fixed to be 90. We will randomly draw $T_i^*$ from $\{p + 4, \ldots, T_i-1\}$. The choices of $T_i$ and $T_i^*$ are set up to satisfy a necessary condition for the design matrix of OLS estimation to have full rank. Moreover, it is  designed to illustrate the performance of $\hat{\alpha}_{\rm IVW}$ that may perform well in time series with varying lengths. Additionally, we generated the covariates from $\text{Gamma}(1,2)$ to set up a setting when the $\hat{\alpha}_{\rm wadj}$ may perform well. Last, we set $\gamma_i, \delta_i\simiid  \normal{1}{0.5}$ and $\theta_i \sim \normal{0}{1}$. We will consider parameter setup by varying $\sigma$ in the model of $y_{i,t}$, $n$, the donor pool size, and $\sigma_{\alpha}$ in the model of $\alpha_i$. We choose a Monte Carlo sample size of $30$ replications and a bootstrap sample size of $B = 200$ for computation. Means and standard errors for estimated quantities will be recorded. Our LOOCV procedure will consider $k=5$ random draws. Recall in Section \ref{loocv} that $k$ times of bootstrap are nested in a LOOCV with $k$ random draws. It implies that $B(k+1)$ times of bootstrap replications are required for each Monte Carlo simulation.
+In this section we provide justification for our methods based on Monte Carlo simulation. We implemented our simulation based on $\mc{M}_{22}$ with negligibly small $\Sigma_{\delta}$ approximating the design of $\mathcal{M}_{21}$.  We consider $p=25$ and $\mu_{\alpha}=2$, where $p = 25$ is set to satisfy conditions in Proposition \ref{uniqueness}. Parameter setup of our simulations is detailed as follows: the $\phi_i$'s are sampled independently from $\mrm{Uniform}(0,1)$. We sampled $T_i$'s independently from  $\text{Gamma}(15, 10)$ that are further rounded to integers, where the minimum allowable value of $T_i$ is fixed to be 90. We will randomly draw $T_i^*$ from $\{p + 4, \ldots, T_i-1\}$. The choices of $T_i$ and $T_i^*$ are set up to satisfy a necessary condition for the design matrix of OLS estimation to have full rank. Moreover, it is  designed to illustrate the performance of $\hat{\alpha}_{\rm IVW}$ that may perform well in time series with varying lengths. Additionally, we generated the covariates from $\text{Gamma}(1,2)$ to set up a setting when the $\hat{\alpha}_{\rm wadj}$ may perform well. Last, we set $\delta_i\simiid  \normal{1}{0.5}$ and $\theta_i \sim \normal{0}{1}$. We will consider parameter setup by varying $\sigma$ in the model of $y_{i,t}$, $n$, the donor pool size, and $\sigma_{\alpha}$ in the model of $\alpha_i$. We choose a Monte Carlo sample size of $30$ replications and a bootstrap sample size of $B = 200$ for computation. Means and standard errors for estimated quantities will be recorded. Our LOOCV procedure will consider $k=5$ random draws. Recall in Section \ref{loocv} that $k$ times of bootstrap are nested in a LOOCV with $k$ random draws. It implies that $B(k+1)$ times of bootstrap replications are required for each Monte Carlo simulation.
 
 
 \subsection{Performance metrics}
 
-Our adjustment estimators will be evaluated by multiple criteria. We interpret $\delta_{\hat{\alpha}}= I(\hat{\Delta}(\hat{\alpha})>0)$ for $\hat{\alpha}\in \mc{A}$ as the \emph{guess}, with 1 indicating that $\hat{\alpha}$ provides risk-reduction over the simple no-adjustment forecast, and 0 indicates the converse. We will consider the LOOCV estimators \eqref{loocvm} and \eqref{loocvk} to assess correct decision making. We will also consider the Euclidean distance between the post-shock forecasts $\hat{y}_{1,T_1^*+1}$, $\hat{y}_{1,T_1^*+1}+ \hat{\alpha}_{\rm adj}$, $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm wadj}$, and $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm IVW}$ and the realized post-shock response $y_{1,T_1^*+1}$. The first two metrics can combine to assess our forecasting methodology prospectively while the latter requires the realization of the post-shock response $y_{1,T_1^*+1}$. 
+Our adjustment estimators will be evaluated by multiple criteria. We interpret $\delta_{\hat{\alpha}}= I(\hat{\Delta}(\hat{\alpha})>0)$ for $\hat{\alpha}\in \mc{A}$ as the guess, with 1 indicating that $\hat{\alpha}$ provides risk-reduction over the simple no-adjustment forecast, and 0 indicates the converse. We will consider the LOOCV estimators \eqref{loocvm} and \eqref{loocvk} to assess correct decision making. We will also consider the Euclidean distance between the post-shock forecasts $\hat{y}_{1,T_1^*+1}$, $\hat{y}_{1,T_1^*+1}+ \hat{\alpha}_{\rm adj}$, $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm wadj}$, and $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm IVW}$ and the realized post-shock response $y_{1,T_1^*+1}$. The first two metrics can combine to assess our forecasting methodology prospectively while the latter requires the realization of the post-shock response $y_{1,T_1^*+1}$. 
 
 
 
@@ -796,7 +790,7 @@ From Table \ref{table2}, we observe that as $\sigma_{\alpha}$ increases fixing $
 
 
 
-With respect to averaged $I(\hat{\Delta}(\hat{\alpha})>0)$ (i.e., the guess), it starts to decrease as $\sigma$ increases. This is reasonable if we believe the bootstrap estimate $S^2_{\hat{\alpha}}$ provides a good approximation for $\var{\hat{\alpha}}$ for $\hat{\alpha}\in \mc{A}$. The reasons can be outlined as below. Recall in Section \ref{conditionsm2122}, the conditions of risk-reduction propositions involve $(\E{\alpha_1})^2 > \var{\hat{\alpha}} + (\E{\hat{\alpha}}-\E{\alpha_1})^2$ for $\hat{\alpha}\in \mc{A}$, where we note that those parameters are \emph{true} ones but not estimated ones. Notice that $\var{\hat{\alpha}}$ is  an increasing function of $\sigma$ since $\hat{\alpha}$ is estimated by OLS. Therefore, it explains the reason why the increase of $\sigma$ would result in a decrease of averaged $I(\hat{\Delta}(\hat{\alpha})>0)$ since the inequality is not likely to hold when  $\var{\hat{\alpha}}$ increases.
+With respect to averaged $I(\hat{\Delta}(\hat{\alpha})>0)$ (i.e., the guess), it starts to decrease as $\sigma$ increases. This is reasonable if we believe the bootstrap estimate $S^2_{\hat{\alpha}}$ provides a good approximation for $\var{\hat{\alpha}}$ for $\hat{\alpha}\in \mc{A}$. The reasons are outlined as follows: Recall in Section \ref{conditionsm2122}, the conditions of risk-reduction propositions involve $(\E{\alpha_1})^2 > \var{\hat{\alpha}} + (\E{\hat{\alpha}}-\E{\alpha_1})^2$ for $\hat{\alpha}\in \mc{A}$. Notice that $\var{\hat{\alpha}}$ is an increasing function of $\sigma$ since $\hat{\alpha}$ is estimated by OLS. Therefore, it explains the reason why the increase of $\sigma$ would result in a decrease of averaged $I(\hat{\Delta}(\hat{\alpha})>0)$ since the inequality is not likely to hold when  $\var{\hat{\alpha}}$ increases.
 
 
 Simulation for $\mc{B}_f$ with the same parameter setup as that of $\mc{B}_u$ are implemented. See Table \ref{table3} and Table \ref{table4} for results. Comparing Table \ref{table1}
@@ -901,7 +895,7 @@ the use of $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$, and $\hat{
 The true shock effect is not fully recovered by $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$, and $\hat{\alpha}_{\text{IVW}}$. This may be a result of a poorly constructed donor pool. The shock on March 9th, 2020 is in the midst of the COVID-19 pandemic and oil production volatility. It is difficult to find available stock market time series data that were generated under a similar setting. In any event, the shock on March 9th, 2020 was the largest price shock to Conoco Phillips shares by a wide margin, even after adjusting for inflation.
 
 
-From another perspective, it is possible that the stock of Conoco Phillips actually experienced multiple shocks on 2020 March 9th. For example, \citet{kilian2009not} studied the effect that different supply and demand shocks have on oil prices through a vector auto regressive model. Their model postulates an additive nature of shock effects, although the additivity parameters requires estimation in their context. Motivated by his study, we also studied additive shock effect estimators where the shock effects corresponding to separate supply and demand shocks are added to estimate the unknown shock effect. The supply shock donor pool consists of the November 27, 2014 shock effect; and the demand shock donor pool consists of the remaining shock effects. The additive adjustment estimator computed by adding the $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$, and $\hat{\alpha}_{\text{IVW}}$ estimators for the demand and supply shock effects have  RMSEs of $1.136$, $2.421$, and $0.818$ dollars, respectively. These additive adjustment estimators do extremely well. 
+From another perspective, it is possible that the stock of Conoco Phillips actually experienced multiple shocks on 2020 March 9th. For example, \citet{kilian2009not} studied the effect that different supply and demand shocks have on oil prices through a vector auto regressive model. Their model postulates an additive nature of shock effects, although the additivity parameters requires estimation in their context. Motivated by his study, we also studied additive shock effect estimators where the shock effects corresponding to separate supply and demand shocks are added to estimate the unknown shock effect. The supply shock donor pool consists of the November 27, 2014 shock effect; and the demand shock donor pool consists of the remaining shock effects. The additive adjustment estimator computed by adding the $\hat{\alpha}_{\text{adj}}$, $\hat{\alpha}_{\text{wadj}}$, and $\hat{\alpha}_{\text{IVW}}$ estimators for the demand and supply shock effects only, respectively, miss the post-shock Conoco Philips share price by $1.136$, $2.421$, and $0.818$ dollars. These additive adjustment estimators do extremely well in this additive shock setting. 
 %There is apriori justification for the use of these simply additive adjustment estimators, although their nearly perfect performance in this example is a retrospective finding.  %This provides some anecdotal justification for apriori estimation of the March 9th Conoco Phillips shock effect with the addition of the adjustment estimator corresponding to the separate supply and demand aspects of this shock effect.
 
 
@@ -916,9 +910,9 @@ We developed methodology for forecasting post-shock response values after the oc
 
 Generally, multiple shock effects can be nested within a time series; and time series in the donor pool can be dependent. As an example, we could consider a dependency structure for the September 2008 shock effects in our analysis of Conoco Phillips stock. But we note that consistency estimates from LOOCV with $k$ random draws may not work well if donor pool candidates are not mutually independent since the almost unbiased property hinges on the mutual independence among candidates in the donor pool.
 %This generalization is possible since our risk-reduction propositions in Section \ref{properties} assumes the shock effect estimates are independent of $\alpha_1$, the shock effect for the time series of interest; and allows arbitrary dependence of shock effects in the donor pool. 
-%Specific to this generalization, we edit the model of $\alpha_i$ to $\alpha_i = \mu_{\alpha} + \delta_i'\mathbf{x}_{3, T_i^* + 1} + \gamma_i'\mathbf{x}_{3, T_i^*} + \tilde{\varepsilon}_i$ for $i = 3, 4, 5$ and $\alpha_i = \mu_{\alpha} + \delta_i'\mathbf{x}_{4, T_i^* + 1} + \gamma_i'\mathbf{x}_{4, T_i^*} + \tilde{\varepsilon}_i$ for $i = 6$.
+%Specific to this generalization, we edit the model of $\alpha_i$ to $\alpha_i = \mu_{\alpha} + \delta_i'\mathbf{x}_{3, T_i^* + 1} + \tilde{\varepsilon}_i$ for $i = 3, 4, 5$ and $\alpha_i = \mu_{\alpha} + \delta_i'\mathbf{x}_{4, T_i^* + 1} + \tilde{\varepsilon}_i$ for $i = 6$.
 %This generalization was adopted in Section \ref{forecasting}. In this case, the variance expressions proposed in Section \ref{properties} will not work. However, the risk-reduction propositions in Section \ref{properties} will work  as long as those shock effects (not necessarily mutually independent) in the donor pool are independent of the one of interest. 
-Although it is reflected in $\mc{M}_2$, we stress that our proposed methods allow $\alpha_i$ to follow arbitrary distributions provided that its first and second moments exist. The covariates in the model for $\alpha_i$ under $\mc{M}_2$ can be different from the covariates in the model of $y_{i,t}$.  We also note that our post-shock framework can be extended to settings where the shock effect can be decomposed into separable estimable parts. An example of this is the additive shock effect estimators that we studied in our Conoco Phillips analysis. Although our work is developed for  time-series or AR$(p)$ models, in fact, it can be generalized to any similar setting with a model of the response, whose parameters can be estimated \emph{unbiasedly}, and an additive shock-effect structure.
+Although it is reflected in $\mc{M}_2$, we stress that our proposed methods allow $\alpha_i$ to follow arbitrary distributions provided that its first and second moments exist. The covariates in the model for $\alpha_i$ under $\mc{M}_2$ can be different from the covariates in the model of $y_{i,t}$.  We also note that our post-shock framework can be extended to settings where the shock effect can be decomposed into separable estimable parts. An example of this is the additive shock effect estimators that we studied in our Conoco Phillips analysis. Although our work is developed for time-series or AR$(p)$ models, in fact, it can be generalized to any similar setting with a model of the response, whose parameters can be estimated unbiasedly, and an additive shock-effect structure.
 
 
 
@@ -987,7 +981,7 @@ Under $\mc{M}_{21}$ where $\delta_i=\delta$ are fixed unknown parameters,  we wi
   &= \mrm{E} \left\{\sum_{i=2}^{n+1}(w_i^*)^2(\sigma^2(\mbf{U}'_i\mbf{U}_i)^{-1}_{22})\right\} +\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2  \nonumber\\
   &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2.\label{equation6}
 \end{align}
-Similarly, under $\mc{M}_{22}$ where we assume $\delta_i \indep \gamma_i \indep \varepsilon_{i,t}$, we have
+Similarly, under $\mc{M}_{22}$ where we assume $\delta_i \indep \varepsilon_{i,t}$, we have
  \begin{align*}
   \var{\hat{\alpha}_{\rm wadj}} 
   &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}
