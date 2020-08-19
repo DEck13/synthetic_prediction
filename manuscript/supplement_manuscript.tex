@@ -132,12 +132,12 @@ In the supplementary materials, we provide details for some procedures that are 
 The independence of the estimated September, 2008 shock-effects are further tested using likelihood ratio test (LRT) based on their estimated covariance matrix. The estimated covariance matrix is
 \begin{align*}
   \hat{\mathbf{\Sigma}}=\left(\begin{array}{rrr}
-    3.870 & 0.311 & -0.048 \\
-    0.311 & 3.857 & 0.049 \\
-    -0.048 & 0.049 & 3.801
+    4.836 & 0.418 & -0.552 \\
+    0.418 & 4.269 & 0.161 \\
+    -0.552 & 0.161 & 4.170
   \end{array}\right).
 \end{align*}
-with degrees of freedoms 37. Using hte LRT for independence between blocks of random variables \citep[Section 10.2]{msos}, the LRT test statistic is $0.254$ with $p$-value of 0,614. Therefore, we do not reject  the null hypothesis that the three estimated shock-effects are independent. 
+with degrees of freedoms 14. Using the LRT for independence between blocks of random variables \citep[Section 10.2]{msos}, the LRT test statistic is $0.367$ with $p$-value of 0.545. Therefore, we do not reject  the null hypothesis that the three estimated shock-effects are independent under a significance level of 5\%. 
 
 \section{Bootstrap algorithms of  $\mc{B}_f$ and $\mc{B}_u$}
 \label{bf}
@@ -248,11 +248,11 @@ In this section, we present the simulation results for $\mc{M}_1$. To make it co
       \vspace{-.5cm}
 \end{table}
 
-\section{Simulation for the Boundary Case ($2p < n$)}
+\section{Simulation for the Boundary Case ($p < n$)}
 
 \label{boundary}
 
-In this section, we briefly present the result for the boundary case when $2p < n$ with the example $p = 2$ under $\mc{B}_u$ and $\mc{M}_2$. Proposition 1 in the main text tells that there are infinitely many solutions of $\mbf{W}^*$ in this setup. To make it comparable to the main results of Section 4.3 in the main text, we set $\mu_{\alpha}=50$. It is because in our simulation, as $p$ decreases, $\E{\alpha_1}$ will decreases as well. The result is attached as below. See discussion in Section 6 in the main text.
+In this section, we briefly present the result for the non-uniqueness and the boundary case when $p < n$ with the example $p = 2$ under $\mc{B}_u$ and $\mc{M}_2$. Proposition 1 in the main text tells that there are infinitely many solutions of $\mbf{W}^*$ in this setup. To make it comparable to the main results of Section 4.3 in the main text, we set $\mu_{\alpha}=50$. It is because in our simulation, as $p$ decreases, $\E{\alpha_1}$ will decreases as well. The result is attached as below. See discussion in  Section 3.2 and Section 6 in the main text. The following table verifies the claim  at the end of Section 3.2 that non-uniqueness is not a serious problem for inferential purposes and the point in the discussion that boundary problems for $\mc{B}_u$ do not  compromise inference.
 
 
 \begin{table}[H]\caption{30 Monte Carlo simulations of $\mc{M}_2$ for $\mc{B}_u$ with varying $n$ and $\sigma_{\alpha}$ ($p = 2$, boundary case)} \vspace{.3cm} 
