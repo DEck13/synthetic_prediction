@@ -153,7 +153,7 @@ tikz('alphahist.tex', standAlone = TRUE, width = 8, height = 3.5)
 # plot
 par(mar = c(4, 4, 1, 2))
 # Histogram
-hist(mu.alpha.hat, breaks = 15, col = 'deepskyblue', 
+hist(mu.alpha.hat, breaks = 15, col = 'white', border = 'deepskyblue', 
      xlab = '$\\hat{\\alpha}_i$', plot = TRUE,
      density = TRUE, main = '')
 abline(v = alpha.hat, col = 'magenta')
@@ -164,4 +164,8 @@ text(x = 11.6, y = 6.7,
      labels = paste0('$\\displaystyle \\hat{\\alpha} = \\frac{1}{n}\\sum_{i=1}^{n} \\hat{\\alpha}_i= \\;$',
                      round(alpha.hat, digits = 2)))
 dev.off()
+
+
+hist(mu.alpha.hat, breaks = 15, plot = TRUE, col = 'white', border = 'deepskyblue', angle = 0)
+
 
