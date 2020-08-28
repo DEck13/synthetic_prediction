@@ -1,0 +1,277 @@
+\documentclass[11pt]{article}
+
+% use packages
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+%\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{authblk}
+\usepackage{bm}
+\usepackage[usenames]{color}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage[linesnumbered, ruled,vlined]{algorithm2e}
+\usepackage{pdflscape}
+% margin setup
+\geometry{margin=.7in}
+
+
+% function definition
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\w}{\textbf{w}}
+\newcommand{\x}{\textbf{x}}
+\newcommand{\X}{\textbf{X}}
+\newcommand{\Y}{\textbf{Y}}
+\newcommand{\Hist}{\mathcal{H}}
+\def\mbf#1{\mathbf{#1}} % bold but not italic
+\def\ind#1{\mathrm{1}(#1)} % indicator function
+\newcommand{\simiid}{\stackrel{iid}{\sim}} % IID 
+\def\where{\text{ where }} % where
+\newcommand{\indep}{\perp \!\!\! \perp } % independent symbols
+\def\cov#1#2{\mathrm{Cov}(#1, #2)} % covariance 
+\def\mrm#1{\mathrm{#1}} % remove math
+\newcommand{\reals}{\mathbb{R}} % Real number symbol
+\def\t#1{\tilde{#1}} % tilde
+\def\normal#1#2{\mathcal{N}(#1,#2)} % normal
+\def\mbi#1{\boldsymbol{#1}} % Bold and italic (math bold italic)
+\def\v#1{\mbi{#1}} % Vector notation
+\def\mc#1{\mathcal{#1}} % mathical
+\DeclareMathOperator*{\argmax}{arg\,max} % arg max
+\DeclareMathOperator*{\argmin}{arg\,min} % arg min
+\def\E#1{\mathrm{E}(#1)} % Expectation symbol
+\def\var#1{\mathrm{Var}(#1)} % Variance symbol
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} % checkmark
+\newcommand\red[1]{{\color{red}#1}}
+
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert} % A norm with 1 argument
+\DeclareMathOperator{\Var}{Var} % Variance symbol
+
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+\hypersetup{
+  linkcolor  = blue,
+  citecolor  = blue,
+  urlcolor   = blue,
+  colorlinks = true,
+} % color setup
+
+% proof to proposition 
+\newenvironment{proof-of-proposition}[1][{}]{\noindent{\bf
+    Proof of Proposition {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+% general proof of corollary
+  \newenvironment{proof-of-corollary}[1][{}]{\noindent{\bf
+    Proof of Corollary {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+% general proof of lemma
+  \newenvironment{proof-of-lemma}[1][{}]{\noindent{\bf
+    Proof of Lemma {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+
+\allowdisplaybreaks
+
+
+
+% title
+\title{Supplemental Materials for ``Minimizing post shock forecasting error using disparate information''}
+\author{Jilei Lin\thanks{jileil2@ilinois.edu}}
+\author{Ziyu Liu\thanks{ziyuliu3@illinois.edu}}
+\author{Daniel J. Eck\thanks{dje13@illinois.edu}}
+\affil{Department of Statistics, University of Illinois at Urbana-Champaign}
+
+%%% New version of \caption puts things in smaller type, single-spaced 
+%%% and indents them to set them off more from the text.
+\makeatletter
+\long\def\@makecaption#1#2{
+  \vskip 0.8ex
+  \setbox\@tempboxa\hbox{\small {\bf #1:} #2}
+  \parindent 1.5em  %% How can we use the global value of this???
+  \dimen0=\hsize
+  \advance\dimen0 by -3em
+  \ifdim \wd\@tempboxa >\dimen0
+  \hbox to \hsize{
+    \parindent 0em
+    \hfil 
+    \parbox{\dimen0}{\def\baselinestretch{0.96}\small
+      {\bf #1.} #2
+      %%\unhbox\@tempboxa
+    } 
+    \hfil}
+  \else \hbox to \hsize{\hfil \box\@tempboxa \hfil}
+  \fi
+}
+\makeatother
+
+
+
+\begin{document}
+
+\maketitle
+
+In the supplementary materials, we provide details for some procedures that are not discussed in the manuscript. Section \ref{smfda} provides statistical evidence for approximate independence between  the shock-effects nested in 2008 September time series in the analysis of Conoco Phillips stock. Section \ref{bf} details the algorithms of $\mc{B}_f$ and $\mc{B}_u$. Section  \ref{tablesm1} lists the tables for simulations under $\mc{M}_1$, whose results are discussed in Section 4 in the manuscript. Section \ref{boundary} lists an example for the non-uniqueness of $\mbf{W}^*$ when $p < n$, where $\mbf{W}^*$ is very likely to lie in the boundary of parameter space $\mc{W}$.
+
+
+\section{Supplementary materials for data analysis}
+\label{smfda}
+The independence of the estimated September, 2008 shock-effects are further tested using likelihood ratio test (LRT) based on their estimated covariance matrix. The estimated covariance matrix is
+\begin{align*}
+  \hat{\mathbf{\Sigma}}=\left(\begin{array}{rrr}
+    4.836 & 0.418 & -0.552 \\
+    0.418 & 4.269 & 0.161 \\
+    -0.552 & 0.161 & 4.170
+  \end{array}\right).
+\end{align*}
+with degrees of freedoms 14. Using the LRT for independence between blocks of random variables \citep[Section 10.2]{msos}, the LRT test statistic is $0.367$ with $p$-value of 0.545. Therefore, we do not reject  the null hypothesis that the three estimated shock-effects are independent under a significance level of 5\%. 
+
+\section{Bootstrap algorithms of  $\mc{B}_f$ and $\mc{B}_u$}
+\label{bf}
+
+Algorithm \ref{Bf} presents the algorithms for the fixed donor pool bootstrapping  $\mc{B}_f$ and Algorithm 2 outlines the steps for the unfixed donor pool bootstrapping $\mc{B}_u$.
+
+\begin{algorithm}[H]
+\SetAlgoLined \label{boots}
+
+\SetKwInOut{Input}{Input}
+\Input{$B$ --  the number of parametric bootstraps  \\  $\{(y_{i,t}, \mbf{x}_{i,t})\colon i = 2,\ldots, n+1, t = 0, \ldots, T_i\}$ -- the data\\ $\{T_i^* \colon i = 1, \ldots, n+1\}$ -- the time point just before the shock\\$\{\hat{\varepsilon}_{i, t} \colon t = 1, \ldots, T_i\}$ -- the collection of  residuals for $t = 1,\ldots, T_i$ \\ $\{\hat{\eta}_i, \hat{\alpha}_i, \hat{\phi}_i, \hat{\theta}_i, \hat{\beta}_i\colon i = 2, \ldots, n+1\}$ -- the OLS estimates \\
+}
+
+\KwResult{The sample variance of bootstrapped adjustment estimator, inverse-variance weighted estimator, and weighted-adjustment estimator.}
+
+  \For{$b = 1:B$}{
+  \For{$i = 2, \ldots, n+1$}{
+  
+    Sample with replacement from $\{\hat{\varepsilon}_{i, t} \colon t = 1, \ldots, T_i\}$ to obtain $\{\hat{\varepsilon}_{i, t}^{(b)} \colon t = 1, \ldots, T_i\}$
+    
+     Define $y_{i,0}^{(b)}=y_{i,0}$
+    
+    \For{$t = 1,\ldots, T_i$}{
+     
+
+         
+     Compute $y_{i,t}^{(b)}=\hat{\eta}_i +\hat{\alpha}_i 1(t=T_i^*+1)+\hat{\phi}_iy_{i,t-1}^{(b)}+\theta_i'\mbf{x}_{i,t} + \beta_i'\mbf{x}_{i, t-1}+\hat{\varepsilon}_{i,t}^{(b)}$
+    }
+    Compute $\hat{\alpha}_i^{(b)}$ based on OLS estimation  with $\{(y_{i,t}^{(b)}, \mbf{x}_{i,t}) \colon t= 0, \ldots, T_i\}$
+  }
+   Compute the $b$th shock-effect estimate $\hat{\alpha}^{(b)}_{\rm est}$ for $\mrm{est} \in \{\mrm{adj}, \mrm{wadj}, \mrm{IVW}\}$
+  }
+   Compute the sample variance of $\{\hat{\alpha}_{\rm est}^{(b)} \colon b = 1, \ldots, B\}$ for $\mrm{est} \in \{\mrm{adj}, \mrm{wadj}, \mrm{IVW}\}$
+ \caption{Fixed donor pool bootstrapping $\mc{B}_f$  for estimation of shock-effect estimators}\label{Bf}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\SetAlgoLined \label{boots}
+
+\SetKwInOut{Input}{Input}
+\Input{$B$ --  the number of parametric bootstraps  \\  $\{(y_{i,t}, \mbf{x}_{i,t})\colon i = 2,\ldots, n+1, t = 0, \ldots, T_i\}$ -- the data\\ $\{T_i^* \colon i = 1, \ldots, n+1\}$ -- the time point just before the shock\\$\{\hat{\varepsilon}_{i, t} \colon t = 1, \ldots, T_i\}$ -- the collection of  residuals for $t = 1,\ldots, T_i$ \\ $\{\hat{\eta}_i, \hat{\alpha}_i, \hat{\phi}_i, \hat{\theta}_i, \hat{\beta}_i\colon i = 2, \ldots, n+1\}$ -- the OLS estimates \\
+}
+
+\KwResult{The sample variance of bootstrapped adjustment estimator, inverse-variance weighted estimator, and weighted-adjustment estimator.}
+
+  \For{$b = 1:B$}{
+  Sample $n$ elements with replacement from $I=\{2, \ldots, n+1\}$ to form $I^{(b)}$, where elements of $I^{(b)}$ are not necessarily unique in terms of their indices \\
+  \For{$i \in I^{(b)}$}{
+  
+    Sample with replacement from $\{\hat{\varepsilon}_{i, t} \colon t = 1, \ldots, T_i\}$ to obtain $\{\hat{\varepsilon}_{i, t}^{(b)} \colon t = 1, \ldots, T_i\}$
+    
+     Define $y_{i,0}^{(b)}=y_{i,0}$
+    
+    \For{$t = 1,\ldots, T_i$}{
+     
+
+         
+     Compute $y_{i,t}^{(b)}=\hat{\eta}_i +\hat{\alpha}_i 1(t=T_i^*+1)+\hat{\phi}_iy_{i,t-1}^{(b)}+\theta_i'\mbf{x}_{i,t} + \beta_i'\mbf{x}_{i, t-1}+\hat{\varepsilon}_{i,t}^{(b)}$
+    }
+    Compute $\hat{\alpha}_i^{(b)}$ based on OLS estimation  with $\{(y_{i,t}^{(b)}, \mbf{x}_{i,t}) \colon t= 0, \ldots, T_i\}$
+  }
+   Compute the $b$th shock-effect estimate $\hat{\alpha}^{(b)}_{\rm est}$ for $\mrm{est} \in \{\mrm{adj}, \mrm{wadj}, \mrm{IVW}\}$
+  }
+   Compute the sample variance of $\{\hat{\alpha}_{\rm est}^{(b)} \colon b = 1, \ldots, B\}$ for $\mrm{est} \in \{\mrm{adj}, \mrm{wadj}, \mrm{IVW}\}$
+ \caption{Unfixed donor pool bootstrapping $\mc{B}_u$  for estimation of shock-effect estimators}\label{Bu}
+\end{algorithm}
+
+
+
+% Note that degeneracy of $\mathbf{W}^*$ will not occur under $\mc{B}_c$ because  if $w_i^*=0$ for some $i$ and the weights are known, $w_i^*=0$ makes it impossible for bootstrap estimate of $\hat{\alpha}_i$ to contribute to the bootstrap estimate of distribution of $\hat{\alpha}_{\mrm{wadj}}$. 
+
+
+ 
+\section{Simulations for $\mc{M}_1$}\
+
+\label{tablesm1}
+
+
+In this section, we present the simulation results for $\mc{M}_1$. To make it comparable to $\mc{M}_2$, we set $\mu_\alpha = 50$ with other parameter setup the same as that of $\mc{M}_2$. The corresponding tables are attached as follows.
+
+\begin{landscape}
+\begin{table}[b]\caption{30 Monte Carlo simulations of $\mc{M}_1$ for $\mc{B}_u$ with varying $n$ and $\sigma_{\alpha}$} \vspace{.3cm} 
+\begin{center}\resizebox{1.4\textwidth}{!}{\begin{tabular}{cc|ccc|ccc|cccc|}
+   &   & \multicolumn{3}{|c|}{Guess} & \multicolumn{3}{|c|}{LOOCV with $k$ random draws} &  \multicolumn{4}{|c|}{Distance to $y_{1, T_1^*+1}$} \\  $n$   & $\sigma_{\alpha}$ &  $\delta_{\hat{\alpha}_{\rm adj}}$  & $\delta_{\hat{\alpha}_{\rm wadj}}$ & $\delta_{\hat{\alpha}_{\rm IVW}}$  & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm adj}})$  & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm wadj}})$ & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm IVW}})$ & Original & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$\\[.15cm]   \hline \multirow{5}{*}{5} & 5  & 1 (0) & 1 (0) & 1 (0) & 0.97 (0.01) & 0.97 (0.01) & 0.97 (0.01) & 50.44 (3.04) & 14.42 (2.64) & 14.58 (2.69) & 14.37 (2.64) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.93 (0.02) & 0.93 (0.02) & 0.93 (0.02) & 51.17 (3.43) & 16.97 (2.88) & 16.82 (2.91) & 17.04 (2.87) \\   & 25  & 1 (0) & 1 (0) & 1 (0) & 0.85 (0.02) & 0.83 (0.03) & 0.85 (0.02) & 53.63 (5.49) & 27.12 (4.56) & 28.8 (4.26) & 27.31 (4.54) \\   & 50  & 0.97 (0.03) & 0.97 (0.03) & 0.9 (0.06) & 0.61 (0.05) & 0.63 (0.05) & 0.63 (0.05) & 63.4 (8.74) & 47.94 (8.09) & 52.66 (7.56) & 48.28 (8.06) \\   & 100  & 0.7 (0.09) & 0.63 (0.09) & 0.63 (0.09) & 0.55 (0.05) & 0.6 (0.04) & 0.55 (0.05) & 92.54 (15.54) & 91.55 (15.74) & 102.28 (14.95) & 92.35 (15.7) \\[.3cm]  \multirow{5}{*}{10} & 5  & 1 (0) & 1 (0) & 1 (0) & 0.94 (0.02) & 0.93 (0.02) & 0.93 (0.02) & 51.41 (2.47) & 11.95 (1.75) & 12.26 (1.88) & 12.02 (1.78) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.93 (0.02) & 0.9 (0.02) & 0.92 (0.02) & 50.22 (3.12) & 14.17 (2.41) & 14.54 (2.46) & 14.17 (2.47) \\   & 25  & 1 (0) & 0.97 (0.03) & 0.97 (0.03) & 0.79 (0.03) & 0.79 (0.03) & 0.79 (0.03) & 47 (5.94) & 28.21 (4.39) & 26.37 (4.8) & 28.37 (4.46) \\   & 50  & 0.87 (0.06) & 0.9 (0.06) & 0.73 (0.08) & 0.65 (0.04) & 0.64 (0.04) & 0.63 (0.04) & 52.83 (9.71) & 54.55 (8.17) & 51.15 (8.89) & 54.71 (8.26) \\   & 100  & 0.77 (0.08) & 0.73 (0.08) & 0.57 (0.09) & 0.47 (0.04) & 0.53 (0.05) & 0.47 (0.04) & 85.79 (17.29) & 108.57 (15.99) & 106.48 (16.44) & 108.85 (16.09) \\[.3cm]  \multirow{5}{*}{15} & 5  & 1 (0) & 1 (0) & 1 (0) & 0.95 (0.02) & 0.95 (0.02) & 0.95 (0.02) & 47.84 (2.91) & 13.2 (1.81) & 12.78 (1.63) & 13.04 (1.82) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.95 (0.02) & 0.93 (0.02) & 0.95 (0.02) & 48.16 (3.24) & 14.63 (2) & 14.14 (1.91) & 14.58 (1.98) \\   & 25  & 1 (0) & 1 (0) & 0.97 (0.03) & 0.79 (0.03) & 0.79 (0.03) & 0.79 (0.03) & 49.39 (4.94) & 21.64 (3.28) & 23.4 (3.27) & 21.59 (3.29) \\   & 50  & 0.9 (0.06) & 0.9 (0.06) & 0.83 (0.07) & 0.57 (0.05) & 0.62 (0.04) & 0.55 (0.04) & 56.69 (7.53) & 38.83 (5.67) & 45.4 (5.59) & 39.2 (5.56) \\   & 100  & 0.67 (0.09) & 0.63 (0.09) & 0.47 (0.09) & 0.47 (0.04) & 0.44 (0.04) & 0.46 (0.04) & 85 (12.02) & 77.64 (10.39) & 91.43 (10.65) & 77.98 (10.23) \\[.3cm]  \multirow{5}{*}{25} & 5  & 1 (0) & 1 (0) & 1 (0) & 0.98 (0.01) & 0.97 (0.01) & 0.98 (0.01) & 47.68 (3.18) & 12.86 (1.96) & 12.6 (2.09) & 12.75 (1.98) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.95 (0.02) & 0.95 (0.02) & 0.95 (0.02) & 46.14 (3.34) & 14.31 (1.86) & 13.74 (2.1) & 14.33 (1.85) \\   & 25  & 1 (0) & 1 (0) & 0.97 (0.03) & 0.79 (0.03) & 0.8 (0.03) & 0.79 (0.03) & 42.26 (4.45) & 21.32 (2.55) & 22.65 (2.87) & 21.46 (2.52) \\   & 50  & 0.93 (0.05) & 0.9 (0.06) & 0.87 (0.06) & 0.62 (0.04) & 0.61 (0.04) & 0.63 (0.04) & 44.43 (6.07) & 38.19 (4.48) & 43.57 (4.93) & 38.6 (4.44) \\   & 100  & 0.9 (0.06) & 0.8 (0.07) & 0.73 (0.08) & 0.53 (0.04) & 0.54 (0.04) & 0.51 (0.04) & 71.69 (9.1) & 72.64 (9.64) & 87.82 (9.85) & 73.73 (9.57) \\  \end{tabular}}
+   \end{center}
+\end{table}
+\end{landscape}
+
+\begin{landscape}
+\begin{table}[b]\caption{30 Monte Carlo simulations of $\mc{M}_1$ for $\mc{B}_u$ with varying $\sigma$ and $\sigma_{\alpha}$} \vspace{.3cm} 
+\begin{center}\resizebox{1.4\textwidth}{!}{\begin{tabular}{cc|ccc|ccc|cccc|}
+   &   & \multicolumn{3}{|c|}{Guess} & \multicolumn{3}{|c|}{LOOCV with $k$ random draws} &  \multicolumn{4}{|c|}{Distance to $y_{1, T_1^*+1}$} \\  $\sigma$   & $\sigma_{\alpha}$ &  $\delta_{\hat{\alpha}_{\rm adj}}$  & $\delta_{\hat{\alpha}_{\rm wadj}}$ & $\delta_{\hat{\alpha}_{\rm IVW}}$  & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm adj}})$  & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm wadj}})$ & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm IVW}})$ & Original & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$\\[.15cm]   \hline\multirow{5}{*}{5} & 5  & 1 (0) & 1 (0) & 1 (0) & 0.99 (0.01) & 0.99 (0.01) & 0.99 (0.01) & 49.68 (1.63) & 7.62 (1.21) & 7.77 (1.28) & 7.62 (1.24) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.99 (0.01) & 0.99 (0.01) & 0.99 (0.01) & 48.5 (2.53) & 11.95 (1.85) & 11.49 (2) & 12.03 (1.88) \\    & 25  & 1 (0) & 1 (0) & 0.93 (0.05) & 0.85 (0.03) & 0.85 (0.03) & 0.85 (0.03) & 44.99 (5.78) & 27.75 (4.03) & 26.06 (4.42) & 27.85 (4.07) \\   & 50  & 0.9 (0.06) & 0.93 (0.05) & 0.8 (0.07) & 0.65 (0.03) & 0.66 (0.03) & 0.63 (0.04) & 52.5 (9.41) & 54.76 (7.92) & 53.73 (8.17) & 54.92 (7.97) \\   & 100  & 0.73 (0.08) & 0.73 (0.08) & 0.57 (0.09) & 0.48 (0.04) & 0.51 (0.04) & 0.47 (0.04) & 86.04 (17.13) & 110.35 (15.5) & 109.21 (15.79) & 110.42 (15.62) \\[.3cm]  \multirow{5}{*}{10} & 5  & 1 (0) & 1 (0) & 1 (0) & 0.94 (0.02) & 0.93 (0.02) & 0.93 (0.02) & 51.41 (2.47) & 11.95 (1.75) & 12.26 (1.88) & 12.02 (1.78) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.93 (0.02) & 0.9 (0.02) & 0.92 (0.02) & 50.22 (3.12) & 14.17 (2.41) & 14.54 (2.46) & 14.17 (2.47) \\  & 25  & 1 (0) & 0.97 (0.03) & 0.97 (0.03) & 0.79 (0.03) & 0.79 (0.03) & 0.79 (0.03) & 47 (5.94) & 28.21 (4.39) & 26.37 (4.8) & 28.37 (4.46) \\   & 50  & 0.87 (0.06) & 0.9 (0.06) & 0.73 (0.08) & 0.65 (0.04) & 0.64 (0.04) & 0.63 (0.04) & 52.83 (9.71) & 54.55 (8.17) & 51.15 (8.89) & 54.71 (8.26) \\     & 100  & 0.77 (0.08) & 0.73 (0.08) & 0.57 (0.09) & 0.47 (0.04) & 0.53 (0.05) & 0.47 (0.04) & 85.79 (17.29) & 108.57 (15.99) & 106.48 (16.44) & 108.85 (16.09)\\[.3cm]     \multirow{5}{*}{25} & 5  & 0.97 (0.03) & 0.93 (0.05) & 0.9 (0.06) & 0.77 (0.03) & 0.79 (0.03) & 0.77 (0.03) & 56.81 (5.73) & 28.42 (3.9) & 28.84 (4.24) & 28.31 (4) \\     & 10  & 0.97 (0.03) & 0.93 (0.05) & 0.9 (0.06) & 0.77 (0.03) & 0.79 (0.03) & 0.77 (0.03) & 55.69 (5.99) & 29.55 (4.17) & 29.47 (4.56) & 29.6 (4.26) \\     & 25  & 0.93 (0.05) & 0.9 (0.06) & 0.87 (0.06) & 0.71 (0.04) & 0.69 (0.04) & 0.69 (0.04) & 54.03 (7.4) & 35.79 (6.05) & 35.34 (6.29) & 35.8 (6.21) \\     & 50  & 0.8 (0.07) & 0.73 (0.08) & 0.67 (0.09) & 0.59 (0.05) & 0.59 (0.05) & 0.59 (0.05) & 58.47 (10.63) & 57.13 (9.47) & 53.81 (10.1) & 57.46 (9.61) \\     & 100  & 0.7 (0.09) & 0.73 (0.08) & 0.6 (0.09) & 0.48 (0.05) & 0.53 (0.04) & 0.47 (0.04) & 89.65 (17.56) & 108.87 (16.85) & 100.54 (18.43) & 109.32 (17.01) \\[.3cm]    \multirow{5}{*}{50} & 5  & 0.77 (0.08) & 0.73 (0.08) & 0.7 (0.09) & 0.48 (0.04) & 0.49 (0.04) & 0.48 (0.04) & 74.3 (9.4) & 56.62 (7.74) & 57.8 (8.28) & 56.64 (7.83) \\     & 10  & 0.77 (0.08) & 0.73 (0.08) & 0.7 (0.09) & 0.47 (0.05) & 0.49 (0.04) & 0.47 (0.04) & 73.97 (9.36) & 57.3 (7.84) & 57.88 (8.45) & 57.29 (7.97) \\     & 25  & 0.73 (0.08) & 0.63 (0.09) & 0.67 (0.09) & 0.49 (0.04) & 0.5 (0.04) & 0.5 (0.04) & 74.15 (9.79) & 61.5 (8.75) & 60.05 (9.58) & 61.64 (8.95) \\     & 50  & 0.67 (0.09) & 0.6 (0.09) & 0.57 (0.09) & 0.5 (0.04) & 0.55 (0.04) & 0.49 (0.04) & 77.11 (12.25) & 72.31 (12.11) & 71.3 (12.48) & 72.47 (12.4) \\     & 100  & 0.67 (0.09) & 0.6 (0.09) & 0.5 (0.09) & 0.47 (0.05) & 0.51 (0.04) & 0.47 (0.04) & 100.81 (18.65) & 114.75 (18.98) & 107.41 (20.26) & 115.39 (19.27) \\[.3cm]   \multirow{5}{*}{100} & 5  & 0.57 (0.09) & 0.5 (0.09) & 0.53 (0.09) & 0.51 (0.04) & 0.49 (0.04) & 0.53 (0.05) & 120.39 (16.06) & 113.53 (15.4) & 116.64 (16.14) & 113.57 (15.53) \\     & 10  & 0.57 (0.09) & 0.5 (0.09) & 0.53 (0.09) & 0.52 (0.05) & 0.49 (0.04) & 0.53 (0.05) & 119.9 (16.04) & 113.73 (15.47) & 115.28 (16.51) & 113.78 (15.63) \\     & 25  & 0.6 (0.09) & 0.5 (0.09) & 0.53 (0.09) & 0.51 (0.04) & 0.55 (0.04) & 0.53 (0.04) & 120.59 (15.93) & 115.82 (15.92) & 115.95 (17.06) & 115.74 (16.23) \\     & 50  & 0.6 (0.09) & 0.47 (0.09) & 0.53 (0.09) & 0.53 (0.05) & 0.58 (0.05) & 0.53 (0.04) & 122.37 (17.24) & 123.37 (17.55) & 120.3 (18.99) & 123.69 (17.93) \\     & 100  & 0.63 (0.09) & 0.47 (0.09) & 0.5 (0.09) & 0.47 (0.05) & 0.53 (0.05) & 0.48 (0.04) & 137.56 (21.94) & 145.22 (24.23) & 143.1 (24.73) & 145.67 (24.77) \\\end{tabular}}
+   \end{center}
+\end{table}
+\end{landscape}
+
+
+\begin{landscape}
+\begin{table}[b]\caption{30 Monte Carlo simulations of $\mc{M}_1$ for $\mc{B}_f$ with varying $n$ and $\sigma_{\alpha}$} \vspace{.3cm} 
+\begin{center}\resizebox{1.4\textwidth}{!}{\begin{tabular}{cc|ccc|ccc|cccc|}
+   &   & \multicolumn{3}{|c|}{Guess} & \multicolumn{3}{|c|}{LOOCV with $k$ random draws} &  \multicolumn{4}{|c|}{Distance to $y_{1, T_1^*+1}$} \\  $n$   & $\sigma_{\alpha}$ &  $\delta_{\hat{\alpha}_{\rm adj}}$  & $\delta_{\hat{\alpha}_{\rm wadj}}$ & $\delta_{\hat{\alpha}_{\rm IVW}}$  & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm adj}})$  & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm wadj}})$ & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm IVW}})$ & Original & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$\\[.15cm]   \hline \multirow{5}{*}{5} & 5  & 1 (0) & 1 (0) & 1 (0) & 0.93 (0.02) & 0.93 (0.02) & 0.93 (0.02) & 49.36 (2.51) & 12.52 (2.39) & 12.82 (2.25) & 12.27 (2.39) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.89 (0.02) & 0.9 (0.02) & 0.89 (0.02) & 49.62 (2.89) & 15.15 (2.61) & 14.75 (2.55) & 14.93 (2.59) \\   & 25  & 1 (0) & 1 (0) & 1 (0) & 0.81 (0.03) & 0.79 (0.03) & 0.81 (0.03) & 50.39 (5.33) & 28.01 (3.76) & 28 (3.52) & 27.66 (3.72) \\   & 50  & 0.97 (0.03) & 0.97 (0.03) & 0.97 (0.03) & 0.66 (0.03) & 0.65 (0.04) & 0.67 (0.03) & 61.3 (8.41) & 51.79 (6.68) & 51.84 (6.45) & 51.36 (6.62) \\   & 100  & 0.93 (0.05) & 0.9 (0.06) & 0.9 (0.06) & 0.53 (0.05) & 0.45 (0.05) & 0.55 (0.05) & 102.54 (13.46) & 100.42 (13.26) & 99.48 (13.38) & 99.81 (13.15) \\[.3cm]  \multirow{5}{*}{10} & 5  & 1 (0) & 1 (0) & 1 (0) & 0.93 (0.02) & 0.92 (0.02) & 0.93 (0.02) & 52.85 (2.66) & 11.93 (1.97) & 13.19 (2.07) & 11.85 (2.01) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.89 (0.02) & 0.9 (0.02) & 0.9 (0.02) & 53.22 (3) & 13.55 (2.1) & 14.51 (2.19) & 13.43 (2.15) \\   & 25  & 1 (0) & 1 (0) & 1 (0) & 0.75 (0.04) & 0.79 (0.04) & 0.76 (0.04) & 54.31 (4.77) & 23.71 (2.71) & 21.37 (3.47) & 23.58 (2.72) \\   & 50  & 1 (0) & 0.97 (0.03) & 0.77 (0.08) & 0.59 (0.04) & 0.64 (0.04) & 0.59 (0.04) & 58.73 (7.88) & 41.53 (5.24) & 37.18 (6.44) & 41.37 (5.15) \\   & 100  & 1 (0) & 0.97 (0.03) & 0.73 (0.08) & 0.48 (0.05) & 0.48 (0.05) & 0.48 (0.04) & 82.13 (12.74) & 77.4 (11.24) & 72.81 (12.65) & 77.07 (11.02) \\[.3cm]  \multirow{5}{*}{15} & 5  & 1 (0) & 1 (0) & 1 (0) & 0.94 (0.02) & 0.93 (0.02) & 0.94 (0.02) & 46.76 (2.5) & 11.39 (1.4) & 13.23 (1.68) & 11.38 (1.39) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.92 (0.02) & 0.91 (0.02) & 0.92 (0.02) & 46.37 (2.59) & 11.65 (1.56) & 13.88 (1.96) & 11.66 (1.55) \\   & 25  & 1 (0) & 1 (0) & 1 (0) & 0.81 (0.03) & 0.81 (0.03) & 0.81 (0.03) & 45.21 (3.62) & 17.31 (2.23) & 21.19 (2.76) & 17.16 (2.33) \\   & 50  & 1 (0) & 1 (0) & 0.87 (0.06) & 0.64 (0.05) & 0.67 (0.04) & 0.65 (0.04) & 44.29 (6.1) & 30.7 (4.15) & 36.42 (4.91) & 31.17 (4.18) \\   & 100  & 0.9 (0.06) & 0.87 (0.06) & 0.7 (0.09) & 0.55 (0.04) & 0.52 (0.05) & 0.56 (0.04) & 57.73 (9.79) & 61.28 (8.18) & 71.42 (9.17) & 62.33 (8.22) \\[.3cm]  \multirow{5}{*}{25} & 5  & 1 (0) & 1 (0) & 1 (0) & 0.95 (0.02) & 0.95 (0.02) & 0.95 (0.02) & 47.87 (3.13) & 12.4 (2.09) & 13.37 (1.95) & 12.4 (2.09) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.95 (0.02) & 0.93 (0.02) & 0.95 (0.02) & 46.81 (3.5) & 14.31 (2.26) & 15.8 (2.17) & 14.23 (2.26) \\   & 25  & 1 (0) & 1 (0) & 0.93 (0.05) & 0.74 (0.03) & 0.77 (0.03) & 0.74 (0.03) & 45.32 (4.84) & 23.24 (3.26) & 25.45 (3.64) & 23.12 (3.23) \\   & 50  & 1 (0) & 0.97 (0.03) & 0.77 (0.08) & 0.61 (0.03) & 0.59 (0.03) & 0.6 (0.03) & 52.43 (6.48) & 43.31 (5.03) & 46.98 (6.12) & 43.24 (4.93) \\   & 100  & 1 (0) & 0.97 (0.03) & 0.67 (0.09) & 0.53 (0.04) & 0.53 (0.03) & 0.53 (0.04) & 85.99 (9.26) & 83.52 (9.56) & 90.95 (11.69) & 83.53 (9.39) \\\end{tabular}}
+   \end{center}
+\end{table}
+\end{landscape}
+
+\begin{landscape}
+\begin{table}[b]\caption{30 Monte Carlo simulations of $\mc{M}_1$ for $\mc{B}_f$ with varying $\sigma$ and $\sigma_{\alpha}$} \vspace{.3cm} 
+\begin{center}\resizebox{1.4\textwidth}{!}{\begin{tabular}{cc|ccc|ccc|cccc|}
+   &   & \multicolumn{3}{|c|}{Guess} & \multicolumn{3}{|c|}{LOOCV with $k$ random draws} &  \multicolumn{4}{|c|}{Distance to $y_{1, T_1^*+1}$} \\  $\sigma$   & $\sigma_{\alpha}$ &  $\delta_{\hat{\alpha}_{\rm adj}}$  & $\delta_{\hat{\alpha}_{\rm wadj}}$ & $\delta_{\hat{\alpha}_{\rm IVW}}$  & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm adj}})$  & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm wadj}})$ & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm IVW}})$ & Original & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$\\[.15cm]   \hline \multirow{5}{*}{5} & 5  & 1 (0) & 1 (0) & 1 (0) & 0.99 (0.01) & 0.99 (0.01) & 0.99 (0.01) & 51.6 (1.52) & 6.91 (1.05) & 7.35 (1.09) & 6.85 (1.07) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.99 (0.01) & 0.99 (0.01) & 0.99 (0.01) & 51.96 (2.07) & 10.22 (1.19) & 9.5 (1.47) & 10.18 (1.2) \\   & 25  & 1 (0) & 1 (0) & 1 (0) & 0.79 (0.03) & 0.82 (0.03) & 0.79 (0.03) & 53.05 (4.27) & 20.92 (2.62) & 18.7 (3.21) & 20.87 (2.57) \\   & 50  & 1 (0) & 1 (0) & 0.87 (0.06) & 0.59 (0.04) & 0.66 (0.04) & 0.58 (0.04) & 57.88 (7.51) & 38.89 (5.61) & 36.51 (6.32) & 38.74 (5.51) \\   & 100  & 1 (0) & 1 (0) & 0.73 (0.08) & 0.45 (0.04) & 0.46 (0.05) & 0.46 (0.04) & 80.3 (12.8) & 76.09 (11.54) & 72.77 (12.71) & 75.51 (11.37) \\[.3cm]  \multirow{5}{*}{10} & 5  & 1 (0) & 1 (0) & 1 (0) & 0.93 (0.02) & 0.92 (0.02) & 0.93 (0.02) & 52.85 (2.66) & 11.93 (1.97) & 13.19 (2.07) & 11.85 (2.01) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.89 (0.02) & 0.9 (0.02) & 0.9 (0.02) & 53.22 (3) & 13.55 (2.1) & 14.51 (2.19) & 13.43 (2.15) \\   & 25  & 1 (0) & 1 (0) & 1 (0) & 0.75 (0.04) & 0.79 (0.04) & 0.76 (0.04) & 54.31 (4.77) & 23.71 (2.71) & 21.37 (3.47) & 23.58 (2.72) \\   & 50  & 1 (0) & 0.97 (0.03) & 0.77 (0.08) & 0.59 (0.04) & 0.64 (0.04) & 0.59 (0.04) & 58.73 (7.88) & 41.53 (5.24) & 37.18 (6.44) & 41.37 (5.15) \\   & 100  & 1 (0) & 0.97 (0.03) & 0.73 (0.08) & 0.48 (0.05) & 0.48 (0.05) & 0.48 (0.04) & 82.13 (12.74) & 77.4 (11.24) & 72.81 (12.65) & 77.07 (11.02) \\[.3cm]  \multirow{5}{*}{25} & 5  & 0.97 (0.03) & 0.97 (0.03) & 0.93 (0.05) & 0.77 (0.03) & 0.75 (0.03) & 0.76 (0.03) & 58.95 (5.73) & 28.82 (4.87) & 30.78 (5.44) & 29.02 (4.91) \\   & 10  & 0.97 (0.03) & 0.97 (0.03) & 0.93 (0.05) & 0.78 (0.04) & 0.76 (0.04) & 0.77 (0.04) & 59.25 (5.89) & 28.98 (4.93) & 31.55 (5.31) & 29.1 (4.99) \\   & 25  & 0.97 (0.03) & 0.97 (0.03) & 0.9 (0.06) & 0.67 (0.04) & 0.67 (0.04) & 0.67 (0.04) & 61.16 (6.63) & 33.6 (5.22) & 35.64 (5.47) & 33.34 (5.33) \\   & 50  & 0.9 (0.06) & 0.83 (0.07) & 0.77 (0.08) & 0.55 (0.04) & 0.59 (0.04) & 0.54 (0.05) & 66.95 (8.6) & 49.6 (6.03) & 46.13 (7.36) & 49.25 (6.08) \\   & 100  & 0.9 (0.06) & 0.87 (0.06) & 0.7 (0.09) & 0.49 (0.05) & 0.46 (0.05) & 0.47 (0.05) & 89.11 (12.91) & 85.23 (10.31) & 75.55 (13.03) & 84.46 (10.25) \\[.3cm]  \multirow{5}{*}{50} & 5  & 0.77 (0.08) & 0.6 (0.09) & 0.67 (0.09) & 0.62 (0.04) & 0.57 (0.05) & 0.63 (0.04) & 77.73 (9.69) & 58.31 (9.66) & 61.13 (11.05) & 59.11 (9.66) \\   & 10  & 0.77 (0.08) & 0.67 (0.09) & 0.73 (0.08) & 0.64 (0.04) & 0.58 (0.05) & 0.62 (0.04) & 78.36 (9.65) & 57.79 (9.73) & 61.58 (10.86) & 58.54 (9.74) \\   & 25  & 0.8 (0.07) & 0.67 (0.09) & 0.73 (0.08) & 0.63 (0.04) & 0.57 (0.04) & 0.61 (0.05) & 81.3 (9.66) & 59.28 (9.82) & 64.17 (10.5) & 59.24 (9.98) \\   & 50  & 0.87 (0.06) & 0.7 (0.09) & 0.67 (0.09) & 0.51 (0.05) & 0.51 (0.05) & 0.53 (0.05) & 86.76 (10.76) & 67.58 (10.33) & 70.73 (10.98) & 67.06 (10.54) \\   & 100  & 0.87 (0.06) & 0.7 (0.09) & 0.63 (0.09) & 0.48 (0.05) & 0.53 (0.04) & 0.47 (0.05) & 102.61 (14.87) & 98.97 (12.06) & 91.38 (14.79) & 98.17 (12.16) \\[.3cm]  \multirow{5}{*}{100} & 5  & 0.63 (0.09) & 0.53 (0.09) & 0.5 (0.09) & 0.55 (0.04) & 0.54 (0.03) & 0.53 (0.04) & 123.93 (17.91) & 117.54 (19.27) & 122.82 (22.17) & 119.19 (19.23) \\   & 10  & 0.6 (0.09) & 0.5 (0.09) & 0.5 (0.09) & 0.54 (0.04) & 0.54 (0.03) & 0.53 (0.04) & 124.06 (17.94) & 117.01 (19.28) & 122.57 (22.05) & 118.62 (19.25) \\   & 25  & 0.63 (0.09) & 0.47 (0.09) & 0.5 (0.09) & 0.51 (0.04) & 0.53 (0.04) & 0.52 (0.04) & 125.25 (18.06) & 115.88 (19.47) & 123.94 (21.52) & 116.93 (19.56) \\   & 50  & 0.67 (0.09) & 0.43 (0.09) & 0.53 (0.09) & 0.51 (0.05) & 0.51 (0.04) & 0.52 (0.05) & 130.4 (18.23) & 119.1 (19.58) & 128.78 (20.9) & 119.01 (19.88) \\   & 100  & 0.57 (0.09) & 0.53 (0.09) & 0.43 (0.09) & 0.49 (0.04) & 0.49 (0.04) & 0.45 (0.04) & 143.5 (20.29) & 135.98 (20.53) & 141.58 (21.93) & 134.9 (20.94) \\ \end{tabular}}
+   \end{center}
+\end{table}
+\end{landscape}
+
+\section{Simulation for the Boundary Case ($p < n$)}
+
+\label{boundary}
+
+In this section, we briefly present the result for the non-uniqueness and the boundary case when $p < n$ with the example $p = 2$ under $\mc{B}_u$ and $\mc{M}_2$. Proposition 1 in the main text tells that there are infinitely many solutions of $\mbf{W}^*$ in this setup. To make it comparable to the main results of Section 4.3 in the main text, we set $\mu_{\alpha}=50$. It is because in our simulation, as $p$ decreases, $\E{\alpha_1}$ will decreases as well. The result is attached as below. See discussion in  Section 3.2 and Section 6 in the main text. The following table verifies the claim  at the end of Section 3.2 that non-uniqueness is not a serious problem for inferential purposes and the point in the discussion that boundary problems for $\mc{B}_u$ do not  compromise inference.
+
+
+\begin{landscape}
+\begin{table}[b]\caption{30 Monte Carlo simulations of $\mc{M}_2$ for $\mc{B}_u$ with varying $n$ and $\sigma_{\alpha}$ ($p = 2$, boundary case)} \vspace{.3cm} 
+\begin{center}\resizebox{1.4\textwidth}{!}{\begin{tabular}{cc|ccc|ccc|cccc|}
+   &   & \multicolumn{3}{|c|}{Guess} & \multicolumn{3}{|c|}{LOOCV with $k$ random draws} &  \multicolumn{4}{|c|}{Distance to $y_{1, T_1^*+1}$} \\  $n$   & $\sigma_{\alpha}$ &  $\delta_{\hat{\alpha}_{\rm adj}}$  & $\delta_{\hat{\alpha}_{\rm wadj}}$ & $\delta_{\hat{\alpha}_{\rm IVW}}$  & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm adj}})$  & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm wadj}})$ & $\bar{\mc{C}}^{(k)}(\delta_{\hat{\alpha}_{\rm IVW}})$ & Original & $\hat{\alpha}_{\rm adj}$ & $\hat{\alpha}_{\rm wadj}$ & $\hat{\alpha}_{\rm IVW}$\\[.15cm]   \hline \multirow{5}{*}{5} & 1  & 1 (0) & 1 (0) & 1 (0) & 0.99 (0.01) & 0.99 (0.01) & 0.99 (0.01) & 51.71 (1.69) & 8.84 (1.23) & 9.55 (1.31) & 8.81 (1.26) \\   & 5  & 1 (0) & 1 (0) & 1 (0) & 0.99 (0.01) & 0.98 (0.01) & 0.99 (0.01) & 52.63 (1.87) & 10.14 (1.4) & 10.33 (1.39) & 10.17 (1.42) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.97 (0.01) & 0.97 (0.01) & 0.96 (0.02) & 53.78 (2.42) & 12.44 (1.84) & 13.16 (1.83) & 12.44 (1.86) \\   & 25  & 0.9 (0.06) & 1 (0) & 0.9 (0.06) & 0.75 (0.04) & 0.79 (0.04) & 0.75 (0.04) & 57.62 (4.64) & 22.34 (3.43) & 25.19 (4.13) & 22.33 (3.44) \\   & 50  & 0.7 (0.09) & 0.7 (0.09) & 0.7 (0.09) & 0.59 (0.05) & 0.57 (0.04) & 0.57 (0.05) & 68.41 (7.84) & 42.53 (5.97) & 49.34 (8.12) & 42.44 (6.01) \\[.3cm]  \multirow{5}{*}{10} & 1  & 1 (0) & 1 (0) & 1 (0) & 0.99 (0.01) & 0.98 (0.01) & 0.99 (0.01) & 52.19 (2.18) & 11.1 (1.32) & 12.18 (1.81) & 11.19 (1.32) \\   & 5  & 1 (0) & 1 (0) & 1 (0) & 0.97 (0.02) & 0.96 (0.01) & 0.97 (0.02) & 52.33 (2.5) & 12.51 (1.58) & 14.19 (1.94) & 12.61 (1.58) \\   & 10  & 0.97 (0.03) & 0.97 (0.03) & 0.93 (0.05) & 0.93 (0.02) & 0.92 (0.02) & 0.93 (0.02) & 52.5 (3.09) & 14.69 (2.12) & 17.46 (2.25) & 14.76 (2.13) \\   & 25  & 0.9 (0.06) & 0.9 (0.06) & 0.9 (0.06) & 0.74 (0.03) & 0.76 (0.03) & 0.74 (0.03) & 54.62 (4.81) & 24.86 (3.7) & 28.35 (3.96) & 24.94 (3.73) \\   & 50  & 0.7 (0.09) & 0.73 (0.08) & 0.73 (0.08) & 0.59 (0.04) & 0.55 (0.04) & 0.57 (0.04) & 62.89 (7.56) & 44.32 (6.5) & 49.12 (7.13) & 44.44 (6.54) \\[.3cm]  \multirow{5}{*}{15} & 1  & 1 (0) & 1 (0) & 1 (0) & 0.99 (0.01) & 1 (0) & 0.99 (0.01) & 53.83 (1.89) & 9.12 (0.92) & 9.95 (1.33) & 9.06 (0.93) \\   & 5  & 1 (0) & 1 (0) & 1 (0) & 0.99 (0.01) & 0.99 (0.01) & 0.99 (0.01) & 55.05 (2.25) & 10.47 (1.21) & 11.57 (1.54) & 10.39 (1.22) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.95 (0.02) & 0.98 (0.01) & 0.95 (0.02) & 56.57 (2.83) & 13.25 (1.61) & 14.78 (1.95) & 13.19 (1.6) \\   & 25  & 0.93 (0.05) & 0.93 (0.05) & 0.93 (0.05) & 0.87 (0.03) & 0.89 (0.03) & 0.88 (0.03) & 61.14 (4.94) & 24.01 (2.97) & 28.39 (3.26) & 23.98 (2.91) \\   & 50  & 0.83 (0.07) & 0.83 (0.07) & 0.83 (0.07) & 0.65 (0.04) & 0.67 (0.03) & 0.66 (0.04) & 71.22 (8.07) & 44.06 (5.29) & 52.49 (5.93) & 43.98 (5.2) \\[.3cm]  \multirow{5}{*}{25} & 1  & 1 (0) & 1 (0) & 1 (0) & 0.99 (0.01) & 0.98 (0.01) & 0.99 (0.01) & 50.84 (2.39) & 10.44 (1.51) & 11.58 (1.47) & 10.43 (1.51) \\   & 5  & 1 (0) & 1 (0) & 1 (0) & 0.98 (0.01) & 0.98 (0.01) & 0.98 (0.01) & 50.4 (2.22) & 9.97 (1.39) & 11.77 (1.34) & 9.93 (1.39) \\   & 10  & 1 (0) & 1 (0) & 1 (0) & 0.96 (0.01) & 0.97 (0.01) & 0.95 (0.02) & 49.84 (2.23) & 10.99 (1.21) & 12.97 (1.48) & 10.98 (1.21) \\   & 25  & 1 (0) & 1 (0) & 1 (0) & 0.81 (0.03) & 0.81 (0.03) & 0.81 (0.03) & 48.16 (3.49) & 16.36 (2.18) & 20.67 (2.98) & 16.52 (2.15) \\     & 50  & 0.93 (0.05) & 0.93 (0.05) & 0.93 (0.05) & 0.69 (0.03) & 0.69 (0.04) & 0.69 (0.03) & 48.56 (6.09) & 33.14 (3.88) & 41.94 (5.18) & 33.39 (3.88) \\\end{tabular}}
+   \end{center}
+\end{table}
+\end{landscape}
+
+
+\bibliographystyle{plainnat}
+\bibliography{synthetic-prediction-notes}
+
+\end{document}
+
+
+
