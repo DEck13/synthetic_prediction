@@ -1,0 +1,175 @@
+\documentclass[11pt]{article}
+
+% use packages
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+%\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{authblk}
+\usepackage{bm}
+\usepackage[usenames]{color}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{float}
+\usepackage[caption = false]{subfig}
+\usepackage{tikz}
+\usepackage{multirow}
+\usepackage[linesnumbered, ruled,vlined]{algorithm2e}
+\usepackage{pdflscape}
+% margin setup
+\geometry{margin=0.8in}
+
+
+% function definition
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\w}{\textbf{w}}
+\newcommand{\x}{\textbf{x}}
+\newcommand{\X}{\textbf{X}}
+\newcommand{\Y}{\textbf{Y}}
+\newcommand{\Hist}{\mathcal{H}}
+\def\mbf#1{\mathbf{#1}} % bold but not italic
+\def\ind#1{\mathrm{1}(#1)} % indicator function
+\newcommand{\simiid}{\stackrel{iid}{\sim}} %[] IID 
+\def\where{\text{ where }} % where
+\newcommand{\indep}{\perp \!\!\! \perp } % independent symbols
+\def\cov#1#2{\mathrm{Cov}(#1, #2)} % covariance 
+\def\mrm#1{\mathrm{#1}} % remove math
+\newcommand{\reals}{\mathbb{R}} % Real number symbol
+\def\t#1{\tilde{#1}} % tilde
+\def\normal#1#2{\mathcal{N}(#1,#2)} % normal
+\def\mbi#1{\boldsymbol{#1}} % Bold and italic (math bold italic)
+\def\v#1{\mbi{#1}} % Vector notation
+\def\mc#1{\mathcal{#1}} % mathical
+\DeclareMathOperator*{\argmax}{arg\,max} % arg max
+\DeclareMathOperator*{\argmin}{arg\,min} % arg min
+\def\E#1{\mathrm{E}(#1)} % Expectation symbol
+\def\var#1{\mathrm{Var}(#1)} % Variance symbol
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} % checkmark
+\newcommand\red[1]{{\color{red}#1}}
+
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert} % A norm with 1 argument
+\DeclareMathOperator{\Var}{Var} % Variance symbol
+
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+\hypersetup{
+  linkcolor  = blue,
+  citecolor  = blue,
+  urlcolor   = blue,
+  colorlinks = true,
+} % color setup
+
+% proof to proposition 
+\newenvironment{proof-of-proposition}[1][{}]{\noindent{\bf
+    Proof of Proposition {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+% general proof of corollary
+  \newenvironment{proof-of-corollary}[1][{}]{\noindent{\bf
+    Proof of Corollary {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+% general proof of lemma
+  \newenvironment{proof-of-lemma}[1][{}]{\noindent{\bf
+    Proof of Lemma {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+
+\allowdisplaybreaks
+
+\title{Synthetic prediction methods for minimizing post shock forecasting error}
+\author{Daniel J. Eck and Jilei Lin and Dave Zhao}
+\date{May 2019}
+
+\begin{document}
+
+
+\maketitle
+\begin{abstract}
+    We seek to develop a forecasting methodology for time series data that is 
+    thought to have undergone a shock which has origins that have not been 
+    previously observed.  We still can provide credible forecasts for a time 
+    series in the presence of such systematic shocks by drawing from disparate 
+    time series that have undergone similar shocks for which post-shock 
+    outcome data is recorded.  These disparate time series are assumed to have 
+    mechanistic similarities to the time series under study but are otherwise 
+    independent.  The inferential goal of our forecasting 
+    methodology is to supplement observed time series data with post-shock 
+    data from the disparate time series in order to minimize average forecast 
+    risk. 
+\end{abstract}
+
+
+\section{Setting}
+\label{setting}
+
+We will suppose that a researcher has time series data ($y_{i,t}$,$\x_{i,t}$), for $t = 1, \ldots,  T_i$ and $i = 1, \ldots, n+1$, where $y_{i,t}$ is a scalar response and $\x_{i,t}$ is a vector of covariates that are revealed to the analyst prior to the observation of $y_{1,t}$.  Suppose that the analyst is interested in forecasting $y_{1,t}$, the first time series in the collection. We will suppose that specific interest is in forecasting the response after the occurrence of a structural shock. To gauge the performance of forecasts, we consider forecast risk in the form of MSE,
+$$
+  R_T = \frac{1}{T}\sum_{t=1}^T\E{\hat y_{1,t} - y_{1,t}}^2,
+$$
+and root mean squared error (RMSE), given by $\sqrt{R_T}$, in our analyses. In this article, we focus on post-shock prediction where forecasts methods only differ at the next future time point. Thus the MSE reduces to the magnitude $\E{\hat y_{1,t} - y_{1,t}}^2$.
+
+\subsection{Model Setup}
+
+\label{modelsetup}
+
+In this section, we will describe the assumed dynamic panel models for which 
+post-shock aggregated estimators are provided. The basic structures of these models 
+are the same for all time-series in the analysis, the differences between them lie in the setup of the shock effect distribution.
+
+Let $I(\cdot)$ be an indicator function, $T_i$ be the time length of the time series $i$ for $i = 1, \ldots, n+1$, and $T_i^*$ be the time point just before the one when the shock is known to occur, with $T_i^* < T_i$.  For $t= 1, \ldots, T_i$ and $i = 1, \ldots, n+1$, the model $\mc{M}_1$ is defined as
+\begin{align}
+\mc{M}_1 \colon y_{i,t} =\eta_i +\alpha_i D_{i,t} + \phi_i y_{i, t-1} + \theta_i'\mbf{x}_{i,t} + \varepsilon_{i,t}\label{equation1}
+\end{align}
+ where $D_{i,t} = I(t = T_i^* + 1)$ 
+and $\x_{i,t} \in \R^{p}$ with $p \geq 1$.  We assume that the 
+$\mbf{x}_{i,t}$'s are fixed. Let $|x|$ denote the absolute value of $x$ for $x\in \reals$. For $i = 1, \ldots, n+1$ and $t=1, \ldots, T_i$, the random effects structure for $\mc{M}_1$ is:
+\begin{align*}
+  \eta_i &\simiid \mc{F}_{\eta} \\ %\text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = 0, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}\\
+  \phi_i &\simiid \mc{F}_{\phi} \text{ where } |\mc{F}_{\phi}| < 1, \\
+   \theta_i &\simiid \mc{F}_{\theta} \\%\text{ with }  \; \mrm{E}_{\mc{F}_{\theta}}(\theta_i) = \mu_{\theta}, \mrm{Var}_{\mc{F}_{\theta}}(\theta_i)  = \Sigma^2_{\theta} \\
+\alpha_i &\simiid \mc{F}_{\alpha} \\ %\text{ with }  \; \mrm{E}_{\mc{F}_{\alpha}}(\alpha_i) = \mu_{\alpha}, \mrm{Var}_{\mc{F}_{\alpha}}(\alpha_i)  = \sigma^2_{\alpha}  \\
+\varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon} \\ %\text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon}}(\varepsilon_{i,t})  = \sigma^2 \where \sigma > 0 ,  \\
+\eta_i &\indep  \alpha_i \indep \phi_i \indep \theta_i \indep \varepsilon_{i,t}.
+\end{align*}
+
+
+
+\section{What comes next}
+
+We want to consider decision rules that are nonparametric in nature. For example, suppose that we posit a classical linear regression model for \eqref{equation1} (then $\varepsilon_{i,t} \sim N(0, \sigma_i^2)$).
+
+\vspace*{0.5cm}\noindent 1. We can estimate all $\alpha$'s using OLS, and provided that $T_i$ is large enough, then $\hat\alpha_i|\alpha_i \approx N(0,\sigma^2_i)$. We could then consider estimating the distribution function of the $\alpha$'s using the noisy observations $\hat\alpha_i$, $i=2,\ldots, n$. Dave suggested that we may consider deconvolution in order to handle the fact that $\alpha = \hat\alpha + \varepsilon$, where $\varepsilon \approx N(0, \sigma^2_i)$ and $\sigma^2_i$ is either known or estimated very well. Then we can use a two step approach to first estimate the distribution $\mc{F}_{\alpha}$ using a nonparametric MLE approach and then second obtain quantiles from this estimated distribution. Perhaps a one step approach exists, but we didn't think of one in the meeting (development of such an approach is advantageous and should be thought about). 
+
+
+\vspace*{0.5cm}\noindent 2. We also discussed extreme-value distributions to handle tail events that are unlikely but potentially disastrous (think ``COVID before COVID''). There are approaches that exist which ``tack on'' an extreme-value distribution to the tail of some data-generating process where the bulk of the data is fit by some other methodology. 
+
+\vspace*{0.5cm}\noindent 3. We could also consider frameworks which allow for outcome models to be selected, we do not necessary need a linear regression model but we do need to have the ability to estimate a ``shock effect.''
+
+
+%\vspace*{0.5cm}\noindent We could also consider problems of the form 
+%$$
+%  \min_{\mc{F}_{\alpha} \in \mc{F}}\left(y_{1,T_i^*+1} - \hat y_{1,T_i^*+1}(\mc{F}_{\alpha})\right)^2
+%$$
+%where $\mc{F}$ is a function class.
+
+
+
+
+\bibliographystyle{plainnat}
+\bibliography{synthetic-prediction-notes}
+
+
+\end{document}
+
