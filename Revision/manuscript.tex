@@ -132,7 +132,8 @@ In this article, we will assume a simple autoregressive data generating process 
     \subfloat[]{\includegraphics[height = 5.5cm]{FIG1a.pdf}}\\
      \subfloat[]{\includegraphics[height = 5.5cm]{FIG1b.pdf}}
   \end{center}
-     \caption{The time series experience a shock at $T_1^*+1=126$ with true shock effect $\alpha = 9.21$. (a) presents the comparison of the prediction without adjustment and one that uses simple averaging of estimated shock effects given a donor pool of $n=40$ time series. (b) shows the histogram for the least square estimates $\hat{\alpha}_i$s used in estimating shock $\alpha_1$ for $i = 2, \ldots, 41$.  The magenta dots represent $\hat{\alpha}_i$ from the time series forming the donor pool. The prediction of $\hat{y}^{2}_{T_1^*+1}$ and $\hat{y}^{1}_{T_1^*+1}$ differs only by an adjustment $\hat{\alpha}=10.22$. It is clear that $\hat{y}^{2}_{T_1^*+1}$ performs better than $\hat{y}^{1}_{T_1^*+1}$.}\label{figure1}
+     \caption{The time series experience a shock at $T_1^*+1=126$ with true shock effect $\alpha = 9.21$. (a) presents the comparison of the prediction without adjustment and one that uses simple averaging of estimated shock effects given a donor pool of $n=40$ time series. (b) shows the histogram for the least square estimates $\hat{\alpha}_i$s used in estimating shock $\alpha_1$ for $i = 2, \ldots, 41$.  The magenta dots represent $\hat{\alpha}_i$ from the time series forming the donor pool. \textcolor{red}{$\hat{y}^{1}_{T_1^*+1}$ is the prediction without scalar adjustment of $\hat{\alpha}$ whereas $\hat{y}^{2}_{T_1^*+1}$ is the one with. In this example,
+    they differ only by an adjustment $\hat{\alpha}=10.22$.} It is clear that $\hat{y}^{2}_{T_1^*+1}$ performs better than $\hat{y}^{1}_{T_1^*+1}$.}\label{figure1}
 \end{figure*}
 
 
@@ -146,7 +147,7 @@ $$
 and root mean squared error (RMSE), given by $\sqrt{R_T}$, in our analyses. In this article, we focus on post-shock prediction where forecasts methods only differ at the next future time point. Thus the MSE reduces to the magnitude $\E{\hat y_{1,t} - y_{1,t}}^2$.
 
 
-Our post-shock forecasting methodology will consist of selecting covariates $\x_{i,t}$, constructing a suitable donor pool of candidate time series that have undergone similar structural shocks to the time series under study, and specifying a model for the time series ($y_{i,t}$,$\x_{i,t}$), for $t = 1, \ldots,  T_i$ and $i = 1, \ldots, n+1$. In this article, we consider a dynamic panel data model with autoregressive structure similar to that in \citet{blundell1998initial}. Our dynamic panel model includes an additional shock effect whose presence or absence is given by the binary variable $D_{i,t}$, and we will assume that the donor pool time series are independent of the time series under study. The details of this model are in the next section.
+Our post-shock forecasting methodology will consist of selecting covariates $\x_{i,t}$, constructing a suitable donor pool of candidate time series that have undergone similar structural shocks to the time series under study, and specifying a model for the time series ($y_{i,t}$,$\x_{i,t}$), for $t = 1, \ldots,  T_i$ and $i = 1, \ldots, n+1$. \textcolor{red}{In this article, we consider a  special case that the model includes random effects for the covariates, autoregressive structure, and an additional shock effect, whose presence or absence is given by the indicator variable $D_{i,t}$.  We will assume that the donor pool time series are independent of the time series under study. The details of this model are in the next section.}
 
 
 
@@ -265,11 +266,11 @@ in practical settings where the $T_i$'s and $T_i^*$'s vary greatly across $i=2, 
 The inverse-variance weighted estimator is defined as 
 \begin{align*}
   \hat{\alpha}_{\rm IVW} = \frac{\sum_{i=2}^{n+1} \hat{\alpha}_i / \hat{\sigma}_{i\alpha}^2}{\sum_{i=2}^{n+1} 1/\hat{\sigma}_{i\alpha}^2},
-  \quad \text{ where } \quad  \hat{\sigma}_{i\alpha}^2 = \hat{\sigma}^2_i( \mathbf{U}_i'\mbf{U}_i)_{22}^{-1},
+  \quad \text{ where } \quad  \hat{\sigma}_{i\alpha}^2 = \hat{\sigma}^2_i( \mathbf{U}_i'\mbf{M}_i)_{22}^{-1},
 \end{align*}
 where  $\hat{\alpha}_i$ is the OLS estimator of $\alpha_i$, 
 $\hat{\sigma}_i$ is the residual standard error from OLS estimation, 
-and $\mbf{U}_i$ is the design matrix for OLS with respect to time series 
+and $\mbf{M}_i$ is the design matrix for OLS with respect to time series 
 for $i = 2, \ldots, n+1$. Note that since $\sigma$ is unknown, estimation 
 is required and the numerator and denominator terms are dependent in general. 
 
@@ -395,21 +396,21 @@ These conditions and bootstrap will be discussed in Section \ref{conditions} and
   \item Under $\mc{M}_1$ and $\mc{M}_{21}$,  
 \begin{align*}
   \var{\hat{\alpha}_{\rm adj}} 
-  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2}\\
-\var{\hat{\alpha}_{\rm wadj}}  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2
+  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2}\\
+\var{\hat{\alpha}_{\rm wadj}}  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2
 \end{align*}
 \item Under $\mc{M}_{22}$, 
 \begin{align*}
 \var{\hat{\alpha}_{\rm adj}} 
-  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}\\
+  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}\\
   &  \quad +\frac{1}{n^2}(\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha})\\
   \var{\hat{\alpha}_{\rm wadj}} 
-  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}\\
+  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}\\
   &\quad + \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}).
 \end{align*}
 \end{enumerate}
 Formal justification for these results can be found in Appendix \ref{proofs}. Note that the variances are not comparable in closed-form 
-because of the term $\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}$.  This term exists because of the inclusion of the random lagged response in our autoregressive model formulation.   
+because of the term $\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}$, \textcolor{red}{where  $\mbf{M}_i$ is the design matrix for OLS with respect to time series for $i = 2, \ldots, n+1$ from Section \ref{constructionofestimators}}.  This term exists because of the inclusion of the random lagged response in our autoregressive model formulation.   
 
 
 
@@ -441,7 +442,7 @@ Proposition \ref{proprisk} says that under $\mc{M}_1$ if the variance of the est
 From Proposition \ref{proprisk}, we obtain a risk-reduction condition
 \begin{align}
   \var{\hat{\alpha}_{\rm adj}} 
-  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2} < \mu_{\alpha}^2. \label{riskconditionadj}
+  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2} < \mu_{\alpha}^2. \label{riskconditionadj}
 \end{align}
 
 Condition (\ref{riskconditionadj}) implies two facts: (1) adjustment (Forecast 2) is preferable to no adjustment (Forecast 1) asymptotically in $n$ whenever $\mu_{\alpha} \neq 0$ (see Forecast in Section \ref{forecast}); (2) In finite donor pool settings, adjustment is preferable to no adjustment when $\mu_{\alpha}$ is large relative to its variability and overall regression variability.   
@@ -449,7 +450,7 @@ Condition (\ref{riskconditionadj}) implies two facts: (1) adjustment (Forecast 2
 If  $\mathbf{W}^*$ does not satisfy (\ref{SCM}), its unbiased properties for $\E{\alpha_1}$ should hold approximately when the fit in (\ref{W}) is appropriate as commented in Section \ref{constructionofestimators}. From Proposition \ref{proprisk} and the variance expression for $\hat{\alpha}_{\rm wadj}$, the risk-reduction condition for $\hat{\alpha}_{\rm wadj}$ is
 \begin{align} \label{varwadj}
 \var{\hat{\alpha}_{\rm wadj}}
- &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2 \nonumber \\
+ &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2 \nonumber \\
  &< \mu_{\alpha}^2.
 \end{align}
 In this case, adjustment is preferable to no adjustment when $\mu_{\alpha}$ is large relative to the weighted sum of variances for shock effects for other time series and overall regression variability.  However, the above criteria are generally difficult to evaluate in practice.  Sections \ref{varbootstrap} and \ref{loocv}  provide detailed treatments on how to estimate the sign of $\Delta(\hat\alpha)$ in practice.
@@ -471,7 +472,7 @@ We now state conditions for risk-reduction.
 Under Proposition \ref{propriskwadj2}, we can obtain a risk-reduction inequality that is similar to \eqref{varwadj},
 \begin{align*}
 \var{\hat{\alpha}_{\rm wadj}}
-& = \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\} \\
+& = \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\} \\
  &+ \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha})  \\
  &< (\E{\alpha_1})^2,
 \end{align*}
@@ -669,7 +670,7 @@ We verify the consistency of the result yielded by risk-reduction propositions w
 \begin{figure*}[t!]
   \begin{center}
     \includegraphics[height = 9cm]{FIG2.pdf}
-    \caption{March 9th, 2020 post-shock forecasts for Conoco Phillips stock price.}
+    \caption{March 9th, 2020 post-shock forecasts for Conoco Phillips stock price. \textcolor{red}{Black dots and magenta line represent real data and fitted line, respectively.}}
     \label{Fig:CP}
   \end{center}  
   \vspace{-.6cm}
@@ -697,7 +698,13 @@ We provided risk-reduction propositions and empirical tools that can prospective
 
 Although it is reflected in $\mc{M}_2$, we stress that our proposed methods allow $\alpha_i$ to follow arbitrary distributions provided that its first and second moments exist. The covariates in the model for $\alpha_i$ under $\mc{M}_2$ can be different from the covariates in the model of $y_{i,t}$.  Additionally, $\alpha_i$ can be heteroskedastic; i.e.,  they can have different variances. In this scenario, all the theoretical properties still hold though variance expressions in Section \ref{conditions} may not apply. We also note that our post-shock framework can be extended to settings where the shock effect can be decomposed into separable estimable parts. An example of this is the additive shock effect estimators that we studied in our Conoco Phillips analysis. Although our work is developed for time-series or AR$(p)$ models, in fact, it can be generalized to any similar setting with a model of the response, whose parameters can be estimated unbiasedly, an additive shock-effect structure, and the structure that the time series in the donor pool are independent of the one of interest.
 
+\textcolor{red}{We can extend the proposed nowcasting to forecast  the response for $m$ periods, where $m\geq 2$. Without loss of generality, we assume $m = 2$. There are two cases. First, suppose that there is no additional shock after $T_1^*+1$. Then, the forecast boils down to standard $m$-ahead forecast in time series. Second, assume that the time series under study will experience a shock at $T_1^* + 2$, say $\alpha_1^{(2)}$.  Under our framework, users may want to construct another set of donor pool with time series that experience shock similar to  $\alpha_1^{(2)}$. Let the resulting estimator using one of  three weighting scheme be $\hat{\alpha}_1^{(2)}$.  The forecast at $t = T_1^* + 2$ is
+\begin{align*}
+  \hat{y}^2_{1, T_1^*+2}=\hat{\eta}_1 + \hat{\phi}_1 \hat{y}_{1, T_1^* + 1}^2 + \hat{\theta}_1' \mathbf{x}_{1, T_1^* +2} + \hat{\alpha}_1^{(2)},
+\end{align*} 
+where $\hat{y}_{1, T_1^* + 1}^2$ is defined as in Section \ref{forecast}. These two cases can be generalized to  forecasting $m\geq 2$ more periods. The scenarios for forecasting in AR($p$), or other general models are analogous.}
 
+\textcolor{red}{In the setup, we assume that at $t=T_1^*$, the user knows there will be a shock at $t=T_1^*+1$. The methodology can be extended to more general timing scenarios. Suppose that we know at $T_1^*$ that a shock is about to occur at $T_1^* + d$ for $d\geq 1$ and $d\in \mathbb{N}$, and that we have information about the future covariates for $t = T_1^* +1 , \ldots, T_1^* + d$. We can make a scalar adjustment for original forecast at $T_1^*+d$ using shock-effect estimator constructed from donor pool.}
 
 
 Our bootstrap procedures can be extended to approximate the distribution of shock effect estimators from more general time series. If the data are subject to heteroskedasticity of unknown form, bootstrapping tuples of regressands and regressors proposed by \citet{freedman1981bootstrapping} is robust in this situation with asymptotic validity in autoregressive models established by \citet{gonccalves2004bootstrapping}. If serial correlation exists in the data, various block bootstrapping procedures \citep{kunsch1989jackknife, liu1992moving} can be possible reasonable alternatives. Note that the pseudo time series generated by our proposed residual bootstrap are not stationary. If stationarity is of concern, one can be referred to the stationary bootstrap in \citet{politis1994stationary} for stationary and weakly dependent time series. Nevertheless, it was shown that approximation accuracy might be a cost for the stationary bootstrap in autoregressive  models in finite sample \citep{berkowitz1999finite}.  More work related to bootstrapping time series  can be referred to Chapters 3 and 4 in \citet{politis1999subsampling}, \citet{berkowitz2000recent}, and Chapter 12 in \citet{kilian2017structural}. It is up to  users in terms of selecting which procedure to choose but under different assumptions on the time series.
@@ -756,24 +763,24 @@ Notice that under the setting of OLS, the design matrix for $\mc{M}_2$ is the sa
 Under $\mc{M}_{21}$ where $\delta_i=\delta$ are fixed unknown parameters,  we will have
   \begin{align}
   \var{\hat{\alpha}_{\rm wadj}} 
-  &= \mrm{E} \left\{\sum_{i=2}^{n+1}(w_i^*)^2(\sigma^2(\mbf{U}'_i\mbf{U}_i)^{-1}_{22})\right\} +\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2  \nonumber\\
-  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2.\label{equation6}
+  &= \mrm{E} \left\{\sum_{i=2}^{n+1}(w_i^*)^2(\sigma^2(\mbf{M}'_i\mbf{M}_i)^{-1}_{22})\right\} +\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2  \nonumber\\
+  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2.\label{equation6}
 \end{align}
 Similarly, under $\mc{M}_{22}$ where we assume $\delta_i \indep \varepsilon_{i,t}$, we have
  \begin{align*}
   \var{\hat{\alpha}_{\rm wadj}} 
-  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}\\
+  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}\\
  & \quad  + \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha})
 \end{align*}
 For the adjustment estimator, we simply replace $\mbf{W}^*$ with $1/n\mbf{1}_n$. Thus, under $\mc{M}_{21}$ we have 
  \begin{align*}
   \var{\hat{\alpha}_{\rm adj}} 
-  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2}
+  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2}
 \end{align*}
 Under $\mc{M}_{22}$, we shall have
  \begin{align*}
   \var{\hat{\alpha}_{\rm adj}} 
-  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{U}'_i\mbf{U}_i)^{-1}_{22}\big\}\\
+  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}\\
   & \quad  +\frac{1}{n^2}(\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}).
 \end{align*}
 Notice that $\mc{M}_{1}$ differs from $\mc{M}_{21}$ only by its mean parameterization of $\alpha$ (see Section \ref{modelsetup}). In other words, the variances of $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ under $\mc{M}_1$ are the same for those under $\mc{M}_{21}$.
@@ -841,7 +848,7 @@ But it may be unbiased in some special circumstances when the above bias turns o
    &=  \frac{1}{n}\sum_{i=2}^{n+1}\E{\alpha_i}
    = \mu_{\alpha}=\E{\alpha_1},
   \end{align*}
-  where we used the fact that OLS estimator is unbiased when the design matrix $\mbf{U}_i$ is of full rank for all $i = 2, \ldots, n+1$. Because $\alpha_1\indep \varepsilon_{i,t}$, $\E{\hat{\alpha}_{\rm adj}\alpha_1}=\E{\hat{\alpha}_{\rm adj}}\E{\alpha_1}=(\E{\hat{\alpha}_{\rm adj}})^2$. By Lemma \ref{risklemma}, 
+  where we used the fact that OLS estimator is unbiased when the design matrix $\mbf{M}_i$ is of full rank for all $i = 2, \ldots, n+1$. Because $\alpha_1\indep \varepsilon_{i,t}$, $\E{\hat{\alpha}_{\rm adj}\alpha_1}=\E{\hat{\alpha}_{\rm adj}}\E{\alpha_1}=(\E{\hat{\alpha}_{\rm adj}})^2$. By Lemma \ref{risklemma}, 
     \begin{align*}
     R_{T_1^*+1,1}-R_{T_1^*+1,2}
     &=\E{\alpha_1^2}-\E{\hat{\alpha}_{\rm adj}-\alpha_1}^2\\

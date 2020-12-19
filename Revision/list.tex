@@ -131,6 +131,14 @@
 \newcommand{\response}[1]{\noindent \textcolor{blue}{\emph{Response:} #1}}
 \cMakeRobust\response
 
+\hypersetup{
+  linkcolor  = blue,
+  citecolor  = blue,
+  urlcolor   = blue,
+  colorlinks = true,
+} % color setup
+
+
 \title{Referee report checklist}
 \author{Jilei Lin and Daniel J. Eck}
 \date{}
@@ -143,6 +151,43 @@
 
 Thank you for the opportunity to resubmit at \emph{International Journal of Forecasting}. Thank you to the reviewers for comments that led to an improved version of this manuscript. We address all of the reviewers' comments below. An outlines of each change made or a rebuttal is provided for all of the reviewer's comments.
 
+\section*{Editors}
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+We have now received feedback on your manuscript from two reviewers as well as an Associate Editor. The reviewers' reports are attached to this message, while the AE's comments are included below this letter.
+
+Both reviewers and the AE agree that you address a relevant and interesting topic, and that your paper has the potential to provide a valuable addition to the forecaster's toolkit. That being said, the current version of the manuscript does not meet the publication standards of the IJF. A number of important points are raised by the reviewers that are either unclear or unresolved, and these need to be addressed. In addition, the Associate Editor provides some useful comments and suggestions, also pointing out that quite a substantial revision is required.
+
+In sum, I have decided to give you the opportunity to revise and resubmit your manuscript. Please do note that this is a "major revision". This means that, while we feel that the work presented in the manuscript might be of interest for the journal, re-submitting your manuscript does not necessarily mean it will be accepted, eventually.
+
+---------------------------------------------------------------------------------------------------------------------------
+
+\response{Thank you for the opportunity to submit a revision. We include a point by point response for the comments and concerns raised by the reviwers.}
+
+\section*{Associate Editor}
+
+{\bf Comment:} Firstly, this contribution seems to me to be related to two exisiting strands of literature, neither of which is cited. Describing the contribution relative to these literatures might help some readers better appreciate the achievements.
+These are the literatures on "ad hoc" model adjustments for breaks, see e.g.,  \cite{clements1996intercept} for an early contribution, and \cite{castle2015robust} for a more recent example. The second is to do with outliers (innovation, additive and level shifts) in ARMA models, see e.g., \cite{tsay1986time}. Comparing/contrasting the approach in the paper with these literatures may be illuminating. \\
+
+
+{\bf Comment 2:} Secondly, a single empirical example is presented. I would like to see the results for a range of series - this would generate confidence in the proposed approach. \\
+
+
+\textbf{Summary of \cite{clements1996intercept}:} \cite{clements1996intercept} proposes three intercept correction for $m$-ahead forecasts of VECM. They are constant adjustment throughout the $m$ periods, a one-off adjustment, simple adjustment, and tailing-off forecast. In their setup, let $\hat{\boldsymbol{\varepsilon}}_{T}$ be the residual of VECM at $t= T$ and we are interested in  $m$-ahead forecasts. Denote the $m$-ahead forecasts by $\hat{y}_{ T+ m}$ and the adjusted forecasts by $\hat{\boldsymbol{y}}_{T+m}^*$. The \emph{constant adjustment}  considers $\hat{\boldsymbol{y}}_{T+m}^*= \hat{\boldsymbol{y}}_{ T+ m} + \hat{\boldsymbol{\varepsilon}}_{T}$.  The \emph{one-off} adjustment considers $\hat{\boldsymbol{y}}_{T+1}^*= \hat{\boldsymbol{y}}_{ T+ 1} + \hat{\boldsymbol{\varepsilon}}_{T}$ and compute $m$-ahead forecasts using $\hat{\boldsymbol{y}}_{T+1}^*$; i.e., they only adjust once. The \emph{simple adjustment} considers only $\hat{\boldsymbol{y}}_{T+m}^*= \hat{\boldsymbol{y}}_{ T+ m} + \hat{\boldsymbol{\varepsilon}}_{T}$. The \emph{tailing-off} adjustment considers
+\begin{align*}
+  \hat{\boldsymbol{y}}_{T+m}^*
+  &=\hat{\boldsymbol{y}}_{T+m} + \sum_{i=0}^m \mathbf{\Pi}^i \mathbf{H}^{m-1-i}  \hat{\boldsymbol{\varepsilon}}_T,
+\end{align*}
+where $\mathbf{\Pi}$ is the parameter matrix of  the error correction term. It is shown that the forecast bias is reduced  when the long-run relationship of VECM changes. \\
+
+It is important to note that their method uses $\hat{\boldsymbol{\varepsilon}}_{T}$. In other words, the hope of reducing forecast risk depends on whether a large deviation is observed at $t=T$. That is, the method is not immune to unprecedented and unobserved shock.
+
+\textbf{Summary of \cite{castle2015robust}:} \cite{castle2015robust} proposed a number of robust forecasting in contrast to equilibrium-correction models. However, their proposed methods would depend on whether past data contain future shock signal to adjust for the forecast. As a result, similar to \cite{clements1996intercept}, it is not robust to unprecedented and unobserved shock. \\
+
+\textbf{Summary of \cite{tsay1986time}:} \cite{tsay1986time} specifies a general generating  mechanism of outliers and corresponding outlier detection methods for ARMA model. The two types of his proposed outlier generating mechanism are innovational outlier and additive outlier. The additive outlier only affects observation at $t= T_0$ for some $T_0 \in \{ 1, \ldots, T\}$. In contrast, the innovational outlier introduces a disturbance on the white noise so that it influences the entire process and impacts future values. In our study, in our AR(1) example,  the unprecedented shock is similar to innovational outlier in the sense that the contaminated response will impact future values through autoregressive structure. However, the difference is that the shock is an additive effect. 
+
 \newpage
 \section*{Reviewer 1: \texttt{Cover letter for authors.pdf}}
 
@@ -152,7 +197,7 @@ Thank you very much for taking the time to provide a thoughtful review of our ma
 %% addressed
 {\bf  Comment 1:} How could the method be applied to forecast two or more period after a shock? \\
 
-\response{The method can be extended to forecast two or more periods after a shock. There are two situations.  \\
+\response{Thanks for pointing it out. The method can be extended to forecast two or more periods after a shock. There are two situations.  \\
 
 First, suppose that there is no additional shock after $T_1^* + 1$. From equation (1) in the manuscript, the forecast at time point $T_1^*+2$ is
 \begin{align*}
@@ -166,9 +211,9 @@ where $\hat{y}_{1, T_1^*+d-1}$ can be also computed recursively using the above 
 
 Second, suppose that  there is one more shock effect after $T_1^*+1$, say, $\alpha_{T_1^* + d^*}$ for some $d^* > 1$. Without loss of generality, assume $d^* = 2$. Under our framework, users may want to construct another set of donor pool with time series that experienced shock effects similar to $\alpha_{T_1^* + 2}$. Next,  apply our proposed method to compute $\hat{\alpha}_{T_1^* + 2}$, the estimator for the shock effect at $T_1^* +2$. The forecast at the point $T_1^* + 2$ will be,  
 \begin{align*}
- \hat{y}_{i, T_i^* + 2} = \hat{\eta}_1 + \hat{\phi}_i \hat{y}_{1, T_1^*+1}^{2} + \hat{\theta}_i'\mathbf{x}_{1, T_1^*+2} + \hat{\alpha}_{T_1^* + 2}.
+ \hat{y}_{i, T_i^* + 2} = \hat{\eta}_1 + \hat{\phi}_i \hat{y}_{1, T_1^*+1}^{2} + \hat{\theta}_1'\mathbf{x}_{1, T_1^*+2} + \hat{\alpha}_{T_1^* + 2}.
 \end{align*}
-These two cases can be further combined to generalize forecasting for two or more periods. \\
+These two cases can be further combined to generalize forecasting for two or more periods. It is added to Section 6.\\
 }
 
 {\bf Comment 2:} Page 3, line 30: \citet{blundell1998initial} model is a fixed effect dynamic panel and estimate the parameters using the panel analysis. It would be nice if you clarify in what sense your work is similar to them. \\
@@ -179,13 +224,13 @@ These two cases can be further combined to generalize forecasting for two or mor
 \end{align*}
 where $|\alpha|<1$. In contrast, our model is
 \begin{align*}
- y_{i,t} =\eta_i +\alpha_i D_{i,t} + \phi_i y_{i, t-1} + \theta_i'\mbf{x}_{i,t} + \varepsilon_{i,t},
+ y_{i,t} =\eta_i +\alpha_i D_{i,t} + \phi_i y_{i, t-1} + \theta_i'\mathbf{x}_{i,t} + \varepsilon_{i,t},
 \end{align*}
-where $|\phi_i| < 1$. Our model is similar to the one of \citet{blundell1998initial}  in the sense that we have the fixed-effect decomposition of the error term $\eta_i +\varepsilon_{i,t}$ and the autoregressive structure. However, our model allows for $\eta_i$ as random effects, different time lengths for each time series, different autoregressive parameters, and a shock component.}\\
+where $|\phi_i| < 1$. Our model is similar to the one of \citet{blundell1998initial}  in the sense that we have the fixed-effect decomposition of the error term $\eta_i +\varepsilon_{i,t}$ and the autoregressive structure. However, our model allows for $\eta_i$ as random effects, different time lengths for each time series, different autoregressive parameters, and a shock component. To avoid confusion, we  remove this reference in the revised manuscript.}\\
 
 {\bf Comment 3:} Page 4, line 50: Your paper considers forecasting a time-series model. It is confusing for readers to read your sentence ”In this article, we consider a dynamic panel data model...''.\\
 
-\response{Sorry for the confusion. We will correct that in the revised version.}\\
+\response{Sorry for the confusion. It is corrected  in the revised version.}\\
 
 {\bf  Comment 4:} Figures on page 5: Figure labels, (a) and (b), are missing. What does the black line in the top graph represent? Is it the realized observations?\\
 
@@ -206,13 +251,13 @@ where $|\phi_i| < 1$. Our model is similar to the one of \citet{blundell1998init
 
 {\bf Comment 6:} Page 8, line 46: It is not clear to met how you estimate $\alpha_i$'s by OLS. Could you give the expressions for $\hat{\alpha}_i$? Also, how can you identify $\alpha_i$ from $\eta_i$? Isn't $\hat{\alpha}_{\rm adj}$ an estimator of $E(\alpha_1)$? \\
 
-\response{Sorry for not making it clear. The estimation procedures can be explained in detail as follows. Note that for $i = 2, \ldots, n+1$, the design matrix for $i$th time series is $(\mathbf{1}_{T_i}, \mathbf{D}_{i}, \mathbf{X}_{i})$, where $\mathbf{X}_i$ is the covariates  of $i$th time series and $\mathbf{D}_{i}=(D_{i,t})_{t=1}^{T_i}$ with $D_{i,t}=I(t=T_i^*+1)$. We define $\mathbf{U}_i = (\mathbf{1}_{T_i}, \mathbf{D}_{i}, \mathbf{X}_{i})$. Then the expression for $\hat{\alpha}_i$ is
+\response{Sorry for not making it clear. The estimation procedures can be explained in detail as follows. Note that for $i = 2, \ldots, n+1$, the design matrix for $i$th time series is $(\mathbf{1}_{T_i}, \mathbf{D}_{i}, \mathbf{X}_{i})$, where $\mathbf{X}_i$ is the covariates  of $i$th time series and $\mathbf{D}_{i}=(D_{i,t})_{t=1}^{T_i}$ with $D_{i,t}=I(t=T_i^*+1)$. We define $\mathbf{M}_i = (\mathbf{1}_{T_i}, \mathbf{D}_{i}, \mathbf{X}_{i})$. Then the expression for $\hat{\alpha}_i$ is
 \begin{align*}
-  \hat{\alpha}_i = [(\mathbf{U}'_i\mathbf{U}_i)^{-1}\mathbf{U}_i'\mathbf{Y}_{i}]_{2}, \quad 
+  \hat{\alpha}_i = [(\mathbf{M}'_i\mathbf{M}_i)^{-1}\mathbf{M}_i'\mathbf{Y}_{i}]_{2}, \quad 
   \text{ where }\quad \mathbf{Y}_{i}=(y_{i,t})_{t=1}^{T_i} 
  \quad  \text{ for } i = 2, \ldots, n+1.
 \end{align*}
-Note that $[\cdot]_{2}$ denotes the second element of a vector. That is, $\hat{\alpha}_i$ is the second element of the OLS estimate vector. Recall that our model is
+Note that $[\cdot]_{2}$ denotes the second element of a vector. That is, $\hat{\alpha}_i$ is the second element of the OLS estimate vector. Our model is
 \begin{align*}
   y_{i,t} = \eta_i + \alpha_i D_{i,t} + \phi_i y_{i,t-1} + \theta_i'\mathbf{x}_{i,t} + \varepsilon_{i,t}, 
   \quad i = 1, \ldots, n+1.
@@ -223,9 +268,9 @@ $\eta_i$ represents the effect of the intercept. Thus, we cannot identify $\alph
 {\bf Comment 7:} Page 9, line 10: It is not clear to me what $\mathbf{U}_i$'s are. An example could help understanding that better. \\
 
 
-\response{Thanks for pointing it out. We will clarify it in the revised version. $\mathbf{U}_i$'s represent the design matrix for the OLS estimation at the $i$th time series. For example, suppose the sample size for $i$th time series in the donor pool (i.e., $i\geq 2$) is 4; we have one covariate consisting of $x_1, \ldots, x_4$; and the shock occurs at $t = 4$. In this case, $\mathbf{U}_i$ is 
+\response{Thanks for pointing it out. We  clarify it in the revised version, and change the notation to be $\mathbf{M}_i$, which represents the design matrix of the model used in OLS estimation at the $i$th time series. For example, suppose the sample size for $i$th time series in the donor pool (i.e., $i\geq 2$) is 4; we have one covariate consisting of $x_1, \ldots, x_4$; and the shock occurs at $t = 4$. In this case, $\mathbf{U}_i$ is 
 \begin{align*}
-  \mathbf{U}_i = \begin{pmatrix}
+  \mathbf{M}_i = \begin{pmatrix}
     1 & 0 & x_1 \\
     1 & 0 & x_2 \\
     1 & 0 & x_3 \\
@@ -234,7 +279,7 @@ $\eta_i$ represents the effect of the intercept. Thus, we cannot identify $\alph
 \end{align*}
 Suppose the sample size for the time series of interest is also 4, and we have a covariate $k_1, \ldots, k_4$. Note that the design matrix of the time series of interest will not contain $D_{1,t}$ since $D_{1,t}= I(t=T_1^*+1)=0$ due to we do not observe the shock. In this case, 
 \begin{align*}
-  \mathbf{U}_1 = \begin{pmatrix}
+  \mathbf{M}_1 = \begin{pmatrix}
     1 &  k_1 \\
     1 &  k_2 \\
     1 &  k_3 \\
@@ -244,19 +289,19 @@ Suppose the sample size for the time series of interest is also 4, and we have a
 
 {\bf Comment 8:} Page 9, line 15: Why the closed form expressions for $E(\hat{\alpha}_{\rm IVW})$ and $Var(\hat{\alpha}_{\rm IVW})$ are not provided? \\
 
-\response{Recall that in page 8, we wrote \\
+\response{In page 8, we wrote \\
 \begin{tcolorbox}
 ''The inverse-variance weighted estimator is defined as 
 \begin{align*}
   \hat{\alpha}_{\rm IVW} = \frac{\sum_{i=2}^{n+1} \hat{\alpha}_i / \hat{\sigma}_{i\alpha}^2}{\sum_{i=2}^{n+1} 1/\hat{\sigma}_{i\alpha}^2},
-  \quad \text{ where } \quad  \hat{\sigma}_{i\alpha}^2 = \hat{\sigma}^2_i( \mathbf{U}_i'\mathbf{U}_i)_{22}^{-1},
+  \quad \text{ where } \quad  \hat{\sigma}_{i\alpha}^2 = \hat{\sigma}^2_i( \mathbf{M}_i'\mathbf{M}_i)_{22}^{-1},
 \end{align*}
 where  $\hat{\alpha}_i$ is the OLS estimator of $\alpha_i$, 
 $\hat{\sigma}_i$ is the residual standard error from OLS estimation, 
-and $\mathbf{U}_i$ is the design matrix for OLS with respect to time series 
+and $\mathbf{M}_i$ is the design matrix for OLS with respect to time series 
 for $i = 2, \ldots, n+1$. Note that since $\sigma$ is unknown, estimation 
 is required and the numerator and denominator terms are dependent in general.''
-\end{tcolorbox} \\
+\end{tcolorbox}
 To be more specific, $\hat{\sigma}_{i\alpha}$ depends on $\hat{\alpha}_i$. As a result, the numerator and denominator of $ \hat{\alpha}_{\rm IVW}$ are dependent. Without making distributional assumptions, it is impossible to evaluate $E(\hat{\alpha}_{\rm IVW})$ and $Var(\hat{\alpha}_{\rm IVW})$ in a closed form.}\\
 
 {\bf Comment 9:} Page 13, line 14: $\mu_{\alpha}$ is unknown, and in practice we have to estimate it. Would the results hold if one replaces $\mu_{\alpha}$ with its estimate? \\
@@ -266,7 +311,7 @@ To be more specific, $\hat{\sigma}_{i\alpha}$ depends on $\hat{\alpha}_i$. As a 
 
 {\bf Comment 10:} Page 14, line 7: Shouldn’t $E(\alpha_1)$ be $\mu_{\alpha}$? Previously $\mu_{\alpha}$ was used.\\
 
-\response{In the line 7 at Page 14, $E(\alpha_1)$ is taken under $\mathcal{M}_{21}$ or $\mathcal{M}_{22}$. In contrast, $\mu_{\alpha}$ is used under $\mathcal{M}_{1}$. Recall that in Section 2.1,
+\response{In the line 7 at Page 14, $E(\alpha_1)$ is taken under $\mathcal{M}_{21}$ or $\mathcal{M}_{22}$. In contrast, $\mu_{\alpha}$ is used under $\mathcal{M}_{1}$. In Section 2.1, we define the distribution of $\alpha_i$ as
 \begin{align*}
   &\alpha_i \sim \mathcal{F}_{\alpha} 
  \quad  \text{ with }\quad  E_{\mathcal{F}_{\alpha}}(\alpha_i) =\mu_{\alpha}, Var_{\mathcal{F}_{\alpha}}(\alpha_i)=\sigma^2_{\alpha},\quad   \text{iid under } \mathcal{M}_1\\
@@ -292,7 +337,95 @@ In practice, someone can select the shocks that are similar to the one of intere
 
 {\bf Comment 13:} Figure 2 on Page 24: Are the black dots the real data? What does the line represent?\\
 
-\response{Thanks for pointing it out. We will clarify this in the revised version. The black dots represent the real data. The line in \textcolor{magenta}{magenta} color represents the fitted line of our model.}
+\response{Thanks for pointing it out. We  clarify this in the revised version. The black dots represent the real data. The line in \textcolor{magenta}{magenta} color represents the fitted line of our model.}
+
+\newpage
+
+\section*{Reviewer 2:  \texttt{MinimizingPostShockForestError\_IJF\_pdf}}
+
+{\bf Comment 1:} The method hinges on the assumption that the time series forming the donor pool are independent from the time series under study prior to the shock. This seems to be a very restrictive assumption. The shocks that the donor pool have undergone in the past must be representative of the shock that the time series of interest is experiencing, but the series are independent. Given this restrictive assumption what practical applications are ruled out? \\
+
+\response{Yes. It could be a restrictive assumption in a number of situations. For example, if time series in a donor pool are observed in almost concurrent time as the one under study (or, the time differences are not large enough), the independence assumption may not hold. As a result, application in panel data should be ruled out. However, if the time differences are large, the dependence should diminish as time passes.} \\
+
+{\bf Comment 2:} It would be helpful to the reader to be very explicit about the timing of when information is realized. Is it correct that the researcher knows at $T_1^*$ that there will be a shock at $T_1^* + 1$, and they know the type of shock that it will be in order to identify the relevant donor pool shocks, but they do not know the magnitude? This is quite an informational advantage over unanticipated shocks. In many situations one could imagine that the shock was unanticipated. Therefore, at $T_1^* + 1$  there is a large forecast error (your model 1) but now information is available about the type of shock, so the proposed methodology of the shock effect estimator is applied at $T_1^* + 2$, yielding gains over the unadjusted forecast. The timing of information is crucial, but the methodology proposed in the paper seems to be applicable in many different timing scenarios. \\
+
+\response{It is correct that the researcher knows at $T_1^*$ that there will be a shock at $T_1^* + 1$. In practice, it usually happens to the case that when we realize that the shock is about to occur, we  know the \emph{general type}  or \emph{general cause} of the shock. The magnitude is not known. \\
+
+For example, in the Conoco Phillips stock example, when we knew the outbreak of COVID-19 was about to come, past shocks related to financial crisis may be helpful. Or, near the outbreak of COVID-19, suppose that a department in a university realized that it would be faced with declining applications. It could make use of the information about the decline of its admitted students in the past or that of other departments when similar situations (i.e., the number of applications suddenly decreases) happened.\\
+
+We admit it is quite an informational advantage over unanticipated shocks. However, in practice, if a shock is unanticipated, we may not even be able to construct such a post-shock analysis since we do not know it is about to happen.\\
+
+You are right about the timing. It can be applicable in many different timing scenarios. Generally, suppose that we know at $T_1^*$ that a shock is about to occur at $T_1^* + d$ for $d\geq 1$ and $d\in \mathbb{N}$ and that we have information about the future covariates for $t = T_1^* +1 , \ldots, T_1^* + d$. It is possible to generalize our method to this situation. \\
+
+Thank you for your remark on the timing scenarios. It is very helpful for improving our manuscript.} \\
+
+{\bf Comment 3:} Related to the point above, the model applied is an AR(1) with contemporaneous regressors. This structure requires the covariates to be known in the future for \emph{ex ante} forecasts, or for them to be forecast. The set-up assumes θ1 to be well behaved and the covariates are not subject to shocks if they need to be forecast. Empirically, we could also think of cases where the mean shift $D_{i,t}$ interacted with the covariates which would give an additional forecast error via $\mathbf{x}_{1, T_1^* + 1}$. The theoretical results seem to hinge on known $\mathbf{x}_{1,t}$ entering contemporaneously to derive unbiasedness. What are the implications of the covariates needing to be forecast? \\
+
+\response{It is a very good point. Thanks for pointing it out. Indeed, our method assumes $\mathbf{x}_{1, T_1^* + 1}$ to be given. If it is to be forecasted with errors, it will possibly result in a biased estimation of $E(\alpha_1)$ with $\hat{\alpha}_{\rm wadj}$ such that the evaluation of the proposition may not be reliable. \\
+
+In fact, the situation when  covariates are forecasted with errors is similar to the one when the variance of the shock effect is large. In both situations, the signal from covariates is weak. Our simulation discusses this situation by increasing $\sigma_{\alpha}$. It shows that a slightly weak signal will not compromise the correctness of our evaluated propositions a lot. However, if the forecast for the covariates is seriously bad (i.e., the signal from covariates is really weak), our result shows that the risk-reduction evaluation may be only as good as a random guess.} \\
+
+{\bf Comment 4:} Given the dynamic structure, what happens after $T_1^*+1$? Couldn't you use the donor pool shocks to estimate the shock transition (e.g. apply the shock effect estimator to the m periods following the shock), and produce an intercept correction dummy for the next $m$ periods? It would be interesting empirically to see if the shock is anticipated to be permanent or transitory. I wonder if the theoretical statements of when forecast risk is minimized may be adapted to assess when transitory shocks die out such that the unadjusted forecast is preferable again? \\
+
+\response{The shock transition idea you raised is interesting. We will respond to your questions one by one as follows. \\
+
+\begin{tcolorbox}
+  Given the dynamic structure, what happens after $T_1^*+1$?
+\end{tcolorbox}
+
+In our setup, we only model the time series under study up to $t = 1, \ldots, T_1^*+1$.  We do not know what happened  after $T_1^*+1$. Under our setup, there are two possible situations. First, there is no shock after $T_1^*+1$. Second, there are $k$ shocks after $T_1^*$, say, at $T_1^*+d_1, \ldots, T_1^* + d_k$. \\
+
+\begin{tcolorbox}
+  Couldn't you use the donor pool shocks to estimate the shock transition (e.g. apply the shock effect estimator to the m periods following the shock), and produce an intercept correction dummy for the next $m$ periods?
+\end{tcolorbox}
+
+As we talked above, there are two situations. When there is no shock after $T_1^*+1$, we can simply use standard forecast for $m$-ahead  prediction in time series methodologies. When there are $k$ shocks after $T_1^*$, in our method, one should construct  $k$ additional donor pools to estimate the $k$ arriving shock effects. The details are provided in the Discussion Section in the revised manuscript. \\
+
+Suppose that  the existing donor pool has time series that experience $k$ shocks, each of which is similar to the one the time series under study are going to. Then, we can readily apply the above stated method to estimate the \emph{shock transition} and adjust for the forecasts.\\
+
+\begin{tcolorbox}
+  It would be interesting empirically to see if the shock is anticipated to be permanent or transitory.
+\end{tcolorbox}
+
+In fact, it is more of a modeling assumption. If we assume an AR model, the impact of any shock will diminish as time passes by. However, if we assume an additive model, the impact will be permanent.
+
+\begin{tcolorbox}
+ I wonder if the theoretical statements of when forecast risk is minimized may be adapted to assess when transitory shocks die out such that the unadjusted forecast is preferable again?
+\end{tcolorbox}
+
+To our best knowledge, our theoretical results are not related to when the transitory shocks die out. In our proposition, the risk reduction does not depend on the autoregressive parameter $\phi_1$, which controls the rate how the impact of the shock dies out. Our proposition is related to the adjustment at time point $T_1^*+1$ but not in a dynamic fashion.
+} \\
+
+{\bf Comment 5:} While the simulations were useful, I found the discussion in section 4 quite impenetrable. There are so many decisions that a researcher would need to make, including which weighting method and all the bootstrapping and leave-one-out decisions. It would be very helpful to the reader if you could give a summary of all your results stating your preferred user decisions for generic specifications. \\
+
+\response{There are mainly three decisions to make for an user: to choose 
+  \begin{itemize}
+    \item among  $\hat{\alpha}_{\rm adj}$, $\hat{\alpha}_{\rm IVW}$, and $\hat{\alpha}_{\rm wadj}$ 
+    \item between $\mathcal{B}_f$ and $\mathcal{B}_u$ (see detailed definition in Section 3.2)
+    \item bootstrap replication $B$ and $k$ in $k$ random draws in LOOCV
+  \end{itemize}
+  First, $\hat{\alpha}_{\rm adj}$ is usually recommended when we believe the shock is i.i.d from a distribution. Second, $\hat{\alpha}_{\rm IVW}$ is recommended when the time length $T_i$ in the donor pool varies vastly across the donor pool. Third, $\hat{\alpha}_{\rm wadj}$  is recommended when we assume the shocks are from the same family of distribution, and the mean of the shock depends on some covariates. \\
+  
+  The selection between $\mathcal{B}_f$ and $\mathcal{B}_u$ is more of a philosophical question. In Section 3.2,  we noted
+  
+  \begin{tcolorbox}
+  $\mathcal{B}_u$ treats the donor pool as realizations from some infinite super-population of potential donors. In contrast, $\mathcal{B}_f$ treats the donor pool as being fixed  and known before the analysis is conducted, where the randomness arises from parameters and idiosyncratic error.   
+  \end{tcolorbox}
+
+In Section 4.3, we found that $\mathcal{B}_u$ is better than $\mathcal{B}_f$ when  the donor pool size is moderately small ($n< 10$) and the signal from the covariates is large. Otherwise, they are nearly the same. \\
+
+
+At the end of Section 4.3, we noted that when $p < n$, there are infinitely many solutions to $\mathbf{W}^*$ such that $\mathbf{W}^*$ will take values on the boundary of $\mathcal{W}$, in which case bootstrapping may fail to estimate the distribution of $\hat{\alpha}_{\rm wadj}$ \citep{andrews2000inconsistency}. $\mathcal{B}_f$  is immune to this issue. However, our simulation results in the Supplementary Materials show that the non-uniqueness does not seriously compromise the inference. \\
+
+
+
+In summary, $\mathcal{B}_u$ is preferred when  the donor pool size is moderately small ($n< 10$) and the signal from the covariates is \emph{believed} to be large. If $p < n$ and non-uniqueness problem is of concern due to theoretical reasons,  $\mathcal{B}_f$ is preferred. In other cases, the choice between  $\mathcal{B}_u$  and  $\mathcal{B}_f$ would be up to personal preferences related to philosophical differences mentioned above.  \\
+
+Lastly,  greater number of bootstrap replication $B$ is preferred. Usually, $B = 200$ is sufficient. Ideally, $k=n$ is preferred. However, if the data size is large such that $k=n$ is computationally expensive, we found that $k = 5$ or $k = 10$ works well. In practice, $(k+1) B$ number of bootstrap replications are implemented to complete the evaluation, where $k B$ is from LOOCV to estimate the correctness parameter $p$ and $B$ is from ordinary bootstrap using the whole donor pool. } \\
+
+{\bf Comment 6:} Section 2 is hard to read without defining the terms that come in the second para- graph of section 2.1 (lines 19-23 of p.6). I'd suggest moving this to the beginning of section 2. \\
+
+\response{Sorry for not making it clear. The terms not defined in the caption of Figure 1 are now defined in the revised manuscript. For other parts, we find there are no terms that are not defined. The beginning parts of Section 2 are intended to give a general picture to the reader that our method is in fact general whereas the setup we investigate in Section 2.1 is a special case. }
 
 \bibliography{synthetic-prediction-notes}
 
