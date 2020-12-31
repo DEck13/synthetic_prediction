@@ -171,22 +171,11 @@ In sum, I have decided to give you the opportunity to revise and resubmit your m
 {\bf Comment:} Firstly, this contribution seems to me to be related to two exisiting strands of literature, neither of which is cited. Describing the contribution relative to these literatures might help some readers better appreciate the achievements.
 These are the literatures on "ad hoc" model adjustments for breaks, see e.g.,  \cite{clements1996intercept} for an early contribution, and \cite{castle2015robust} for a more recent example. The second is to do with outliers (innovation, additive and level shifts) in ARMA models, see e.g., \cite{tsay1986time}. Comparing/contrasting the approach in the paper with these literatures may be illuminating. \\
 
+\response{Thanks for pointing it out. The discussion of those papers is included in the introduction section of the revised manuscript.}\\
 
 {\bf Comment 2:} Secondly, a single empirical example is presented. I would like to see the results for a range of series - this would generate confidence in the proposed approach. \\
 
-
-\textbf{Summary of \cite{clements1996intercept}:} \cite{clements1996intercept} proposes three intercept correction for $m$-ahead forecasts of VECM. They are constant adjustment throughout the $m$ periods, a one-off adjustment, simple adjustment, and tailing-off forecast. In their setup, let $\hat{\boldsymbol{\varepsilon}}_{T}$ be the residual of VECM at $t= T$ and we are interested in  $m$-ahead forecasts. Denote the $m$-ahead forecasts by $\hat{y}_{ T+ m}$ and the adjusted forecasts by $\hat{\boldsymbol{y}}_{T+m}^*$. The \emph{constant adjustment}  considers $\hat{\boldsymbol{y}}_{T+m}^*= \hat{\boldsymbol{y}}_{ T+ m} + \hat{\boldsymbol{\varepsilon}}_{T}$.  The \emph{one-off} adjustment considers $\hat{\boldsymbol{y}}_{T+1}^*= \hat{\boldsymbol{y}}_{ T+ 1} + \hat{\boldsymbol{\varepsilon}}_{T}$ and compute $m$-ahead forecasts using $\hat{\boldsymbol{y}}_{T+1}^*$; i.e., they only adjust once. The \emph{simple adjustment} considers only $\hat{\boldsymbol{y}}_{T+m}^*= \hat{\boldsymbol{y}}_{ T+ m} + \hat{\boldsymbol{\varepsilon}}_{T}$. The \emph{tailing-off} adjustment considers
-\begin{align*}
-  \hat{\boldsymbol{y}}_{T+m}^*
-  &=\hat{\boldsymbol{y}}_{T+m} + \sum_{i=0}^m \mathbf{\Pi}^i \mathbf{H}^{m-1-i}  \hat{\boldsymbol{\varepsilon}}_T,
-\end{align*}
-where $\mathbf{\Pi}$ is the parameter matrix of  the error correction term. It is shown that the forecast bias is reduced  when the long-run relationship of VECM changes. \\
-
-It is important to note that their method uses $\hat{\boldsymbol{\varepsilon}}_{T}$. In other words, the hope of reducing forecast risk depends on whether a large deviation is observed at $t=T$. That is, the method is not immune to unprecedented and unobserved shock.
-
-\textbf{Summary of \cite{castle2015robust}:} \cite{castle2015robust} proposed a number of robust forecasting in contrast to equilibrium-correction models. However, their proposed methods would depend on whether past data contain future shock signal to adjust for the forecast. As a result, similar to \cite{clements1996intercept}, it is not robust to unprecedented and unobserved shock. \\
-
-\textbf{Summary of \cite{tsay1986time}:} \cite{tsay1986time} specifies a general generating  mechanism of outliers and corresponding outlier detection methods for ARMA model. The two types of his proposed outlier generating mechanism are innovational outlier and additive outlier. The additive outlier only affects observation at $t= T_0$ for some $T_0 \in \{ 1, \ldots, T\}$. In contrast, the innovational outlier introduces a disturbance on the white noise so that it influences the entire process and impacts future values. In our study, in our AR(1) example,  the unprecedented shock is similar to innovational outlier in the sense that the contaminated response will impact future values through autoregressive structure. However, the difference is that the shock is an additive effect. 
+\response{The simulation presents the results  for a range of series. To generate confidence of our proposed approach, we will include another data example of forecasting the stock price of Apple Inc. during MacBook release to illustrate our methods.}
 
 \newpage
 \section*{Reviewer 1: \texttt{Cover letter for authors.pdf}}
@@ -343,6 +332,8 @@ In practice, someone can select the shocks that are similar to the one of intere
 
 \section*{Reviewer 2:  \texttt{MinimizingPostShockForestError\_IJF\_pdf}}
 
+Thank you for your appreciation of the potential of our methods, and for your valuable detailed comments.  We think these comments will help a lot in improving our manuscript.\\
+
 {\bf Comment 1:} The method hinges on the assumption that the time series forming the donor pool are independent from the time series under study prior to the shock. This seems to be a very restrictive assumption. The shocks that the donor pool have undergone in the past must be representative of the shock that the time series of interest is experiencing, but the series are independent. Given this restrictive assumption what practical applications are ruled out? \\
 
 \response{Yes. It could be a restrictive assumption in a number of situations. For example, if time series in a donor pool are observed in almost concurrent time as the one under study (or, the time differences are not large enough), the independence assumption may not hold. As a result, application in panel data should be ruled out. However, if the time differences are large, the dependence should diminish as time passes.} \\
@@ -373,28 +364,46 @@ In fact, the situation when  covariates are forecasted with errors is similar to
   Given the dynamic structure, what happens after $T_1^*+1$?
 \end{tcolorbox}
 
-In our setup, we only model the time series under study up to $t = 1, \ldots, T_1^*+1$.  We do not know what happened  after $T_1^*+1$. Under our setup, there are two possible situations. First, there is no shock after $T_1^*+1$. Second, there are $k$ shocks after $T_1^*$, say, at $T_1^*+d_1, \ldots, T_1^* + d_k$. \\
+In our setup, we only model the time series under study up to $t = 1, \ldots, T_1^*+1$.  We do not know what happened  after $T_1^*+1$. Under our setup, there are two possible situations.  First, there is no shock after $T_1^*+1$. If we assume an AR structure, the impact of the shock should decade along time. If we assume an additive structure without autoregressive component, the shock will be permanent.  Second, there are $k$ shocks after $T_1^*$, say, at $T_1^*+d_1, \ldots, T_1^* + d_k$. \\
 
 \begin{tcolorbox}
   Couldn't you use the donor pool shocks to estimate the shock transition (e.g. apply the shock effect estimator to the m periods following the shock), and produce an intercept correction dummy for the next $m$ periods?
 \end{tcolorbox}
 
-As we talked above, there are two situations. When there is no shock after $T_1^*+1$, we can simply use standard forecast for $m$-ahead  prediction in time series methodologies. When there are $k$ shocks after $T_1^*$, in our method, one should construct  $k$ additional donor pools to estimate the $k$ arriving shock effects. The details are provided in the Discussion Section in the revised manuscript. \\
+It is theoretically possible but the theoretical justification is left for future research. We will illustrate the idea as follows. \\
 
-Suppose that  the existing donor pool has time series that experience $k$ shocks, each of which is similar to the one the time series under study are going to. Then, we can readily apply the above stated method to estimate the \emph{shock transition} and adjust for the forecasts.\\
+Suppose that we are interested in estimating shock transition of the time series of interest for $d$ periods for time points, say, $T_1^* +1, \ldots, T_1^*+d$. Assume also that $T_i^* + d \leq T_i$ for $i = 2, \ldots, n+1$.  We can use existing change-point detection methods to identify multiple change-points such that we can generate a change-point vector $\mathbf{D}_i = (D_{i, T_i^*+1}, \ldots, D_{i, T_i^*+d})^{T}$, where $D_{i, T_i^*+j}=1$ if there is a change-point (i.e., a shock) occurring at $t=T_i^*+j$.  Or, $\mathbf{D}_i$ can be given by the user simply. Next, we can  estimate the shock effect using OLS at which $D_{i, T_i^*+j}=1$ for $j = 1, \ldots, d$. Then, we can obtain $\hat{\mathbf{S}}_i$ that is a vector with $j$th entries being $0$ if there is no shock at $T_i ^ * + j$ but being the estimated shock effect  if there is. \\
+
+Suppose we have covariates of the time series of interest up to $T_1^* +d$. Then, we can construct similar synthetic control weights  $\mathbf{W}^*$ as illustrated in the manuscript. Or, a more careful construction of synthetic control weighting is needed since we usually do not have the covariates up to $T_1^*+d$ in practice for $d$ being large. We leave it for future research. Then, we compute
+\begin{align*}
+  \hat{\mathbf{S}}_1 = \sum_{i=2}^{n+1} w_i^* \hat{\mathbf{S}}_i 
+\end{align*}
+as the estimated shock transition. However, it cannot be a simple intercept correction dummy because shock effects in $\hat{\mathbf{S}}_1$ should be considered in the $m$-ahead forecasts if we are interested in time series forecasts. For example, in computing $\hat{y}_{1, T_1^*+2}$ when there is no shock effect at $T_1^*+2$, we need to consider the adjusted forecast  $\hat{y}^2_{1, T_1^*+1}=\hat{y}^1_{1, T_1^*+1} + \hat{\alpha}_1$.
+\\
 
 \begin{tcolorbox}
   It would be interesting empirically to see if the shock is anticipated to be permanent or transitory.
 \end{tcolorbox}
 
-In fact, it is more of a modeling assumption. If we assume an AR model, the impact of any shock will diminish as time passes by. However, if we assume an additive model, the impact will be permanent.
+If all the time series in the donor pool experience more than one shock, it would be hard to judge whether the shock is anticipated to be permanent or transitory. It is because more than two sources of shocks exist.\\
+
+If all the time series in the donor pool experience  only experience one shock, it is possible to do such anticipation. We will illustrate the idea as below. \\
+
+Consider the model
+\begin{align*}
+  y_{i,t} = \eta_i + \theta_i'\mathbf{x}_{i, t} + \beta_i I( t\leq T_i^*)+ \varepsilon_{i,t}.
+\end{align*}
+Note that we consider a general model  but not AR($p$) because the shock in AR($p$)  must be transitory due to weakly stationarity assumption. If we assume $\varepsilon_{i,t} \sim N(0,1)$ i.i.d., we can estimate $\beta_i$ using OLS.  Using the weights $\mathbf{W}^*$ from previous procedure, we can  compute
+\begin{align*}
+  \hat{\beta}_1 = \sum_{i=2}^{n+1} w_i^* \hat{\beta}_i
+\end{align*}
+If $\hat{\beta}_1$ is close to 0, the shock is anticipated to be transitory. Otherwise, it is anticipated to be permanent. However, a threshold is needed. One can use bootstrap to estimate the distribution of   $\hat{\beta}_1$ and conduct hypothesis testing to test $H_0: E(\hat{\beta}_1)=0$ versus $H_1: E(\hat{\beta}_1)\neq 0$. \\
 
 \begin{tcolorbox}
  I wonder if the theoretical statements of when forecast risk is minimized may be adapted to assess when transitory shocks die out such that the unadjusted forecast is preferable again?
 \end{tcolorbox}
 
-To our best knowledge, our theoretical results are not related to when the transitory shocks die out. In our proposition, the risk reduction does not depend on the autoregressive parameter $\phi_1$, which controls the rate how the impact of the shock dies out. Our proposition is related to the adjustment at time point $T_1^*+1$ but not in a dynamic fashion.
-} \\
+To our best knowledge, we haven't established the rigor of the above idea and do not know whether the theoretical statements can adapt to when transitory shocks die  out.} \\
 
 {\bf Comment 5:} While the simulations were useful, I found the discussion in section 4 quite impenetrable. There are so many decisions that a researcher would need to make, including which weighting method and all the bootstrapping and leave-one-out decisions. It would be very helpful to the reader if you could give a summary of all your results stating your preferred user decisions for generic specifications. \\
 
@@ -421,7 +430,9 @@ At the end of Section 4.3, we noted that when $p < n$, there are infinitely many
 
 In summary, $\mathcal{B}_u$ is preferred when  the donor pool size is moderately small ($n< 10$) and the signal from the covariates is \emph{believed} to be large. If $p < n$ and non-uniqueness problem is of concern due to theoretical reasons,  $\mathcal{B}_f$ is preferred. In other cases, the choice between  $\mathcal{B}_u$  and  $\mathcal{B}_f$ would be up to personal preferences related to philosophical differences mentioned above.  \\
 
-Lastly,  greater number of bootstrap replication $B$ is preferred. Usually, $B = 200$ is sufficient. Ideally, $k=n$ is preferred. However, if the data size is large such that $k=n$ is computationally expensive, we found that $k = 5$ or $k = 10$ works well. In practice, $(k+1) B$ number of bootstrap replications are implemented to complete the evaluation, where $k B$ is from LOOCV to estimate the correctness parameter $p$ and $B$ is from ordinary bootstrap using the whole donor pool. } \\
+Lastly,  greater number of bootstrap replication $B$ is preferred. Usually, $B = 200$ is sufficient. Ideally, $k=n$ is preferred. However, if the data size is large such that $k=n$ is computationally expensive, we found that $k = 5$ or $k = 10$ works well. In practice, $(k+1) B$ number of bootstrap replications are implemented to complete the evaluation, where $k B$ is from LOOCV to estimate the correctness parameter $p$ and $B$ is from ordinary bootstrap using the whole donor pool. \\
+
+We include these comments at the end of Section 3 and Section 4 of the revised manuscript.} \\
 
 {\bf Comment 6:} Section 2 is hard to read without defining the terms that come in the second para- graph of section 2.1 (lines 19-23 of p.6). I'd suggest moving this to the beginning of section 2. \\
 
