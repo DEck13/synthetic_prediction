@@ -175,7 +175,10 @@ These are the literatures on "ad hoc" model adjustments for breaks, see e.g.,  \
 
 {\bf Comment 2:} Secondly, a single empirical example is presented. I would like to see the results for a range of series - this would generate confidence in the proposed approach. \\
 
-\response{The simulation presents the results  for a range of series. To generate confidence of our proposed approach, we will include another data example of forecasting the stock price of Apple Inc. during MacBook release to illustrate our methods.}
+\response{We include another example of forecasting the stock price of Apple Inc. during MacBook release in 2020 in Section 5.2 of the revised manuscript. Our method nearly perfectly recovers its stock price of the day after the release date. The donor pool constructed includes three time series of  Apple inc.'s stock price during MacBook release in the past three years. In this example, the shock is with precedent and our method works well because Apple Inc. is a well-established company that is not expected to reform its products a lot. As a result, knowledge from past shocks can bring insights into the future shocks. This example is representative for applying our methods to the time series that are to experience a shock that is with precedent in the past. In contrast, the example of Conoco Phillips is without precedent. In the past, Conoco Phillips  did not experience oil supply shock and financial crisis shock caused by  pandemic. In this example, our method is better than the original forecast though it cannot fully recover the stock price. \\
+
+In summary, the Apple example and Conoco Phillips example are representative of time series that are to experience precedented and unprecedented shocks, respectively. We think they generate confidence in our proposed approach since they  represent a wide range of applications in the real life. To support, the simulation  in Section 4 also informs  users the situations when our methods will work well and will not.
+}
 
 \newpage
 \section*{Reviewer 1: \texttt{Cover letter for authors.pdf}}
@@ -358,52 +361,21 @@ In fact, the situation when  covariates are forecasted with errors is similar to
 
 {\bf Comment 4:} Given the dynamic structure, what happens after $T_1^*+1$? Couldn't you use the donor pool shocks to estimate the shock transition (e.g. apply the shock effect estimator to the m periods following the shock), and produce an intercept correction dummy for the next $m$ periods? It would be interesting empirically to see if the shock is anticipated to be permanent or transitory. I wonder if the theoretical statements of when forecast risk is minimized may be adapted to assess when transitory shocks die out such that the unadjusted forecast is preferable again? \\
 
-\response{The shock transition idea you raised is interesting. We will respond to your questions one by one as follows. \\
+\response{In our setup, we only model the time series under study up to $t = 1, \ldots, T_1^*+1$.  We do not know what happened  after $T_1^*+1$. It is possible that there are no shocks or additional shocks after $T_1^*+1$. \\
 
-\begin{tcolorbox}
-  Given the dynamic structure, what happens after $T_1^*+1$?
-\end{tcolorbox}
-
-In our setup, we only model the time series under study up to $t = 1, \ldots, T_1^*+1$.  We do not know what happened  after $T_1^*+1$. Under our setup, there are two possible situations.  First, there is no shock after $T_1^*+1$. If we assume an AR structure, the impact of the shock should decade along time. If we assume an additive structure without autoregressive component, the shock will be permanent.  Second, there are $k$ shocks after $T_1^*$, say, at $T_1^*+d_1, \ldots, T_1^* + d_k$. \\
-
-\begin{tcolorbox}
-  Couldn't you use the donor pool shocks to estimate the shock transition (e.g. apply the shock effect estimator to the m periods following the shock), and produce an intercept correction dummy for the next $m$ periods?
-\end{tcolorbox}
-
-It is theoretically possible but the theoretical justification is left for future research. We will illustrate the idea as follows. \\
-
-Suppose that we are interested in estimating shock transition of the time series of interest for $d$ periods for time points, say, $T_1^* +1, \ldots, T_1^*+d$. Assume also that $T_i^* + d \leq T_i$ for $i = 2, \ldots, n+1$.  We can use existing change-point detection methods to identify multiple change-points such that we can generate a change-point vector $\mathbf{D}_i = (D_{i, T_i^*+1}, \ldots, D_{i, T_i^*+d})^{T}$, where $D_{i, T_i^*+j}=1$ if there is a change-point (i.e., a shock) occurring at $t=T_i^*+j$.  Or, $\mathbf{D}_i$ can be given by the user simply. Next, we can  estimate the shock effect using OLS at which $D_{i, T_i^*+j}=1$ for $j = 1, \ldots, d$. Then, we can obtain $\hat{\mathbf{S}}_i$ that is a vector with $j$th entries being $0$ if there is no shock at $T_i ^ * + j$ but being the estimated shock effect  if there is. \\
-
-Suppose we have covariates of the time series of interest up to $T_1^* +d$. Then, we can construct similar synthetic control weights  $\mathbf{W}^*$ as illustrated in the manuscript. Or, a more careful construction of synthetic control weighting is needed since we usually do not have the covariates up to $T_1^*+d$ in practice for $d$ being large. We leave it for future research. Then, we compute
+It is possible to use the donor pool to estimate the shock transition,  and produce an intercept dummy for the next $m$ periods. Assume there are no additional shocks  after $T_1^*+1$, and $T_i^*+m \leq T_i$ for $i = 2, \ldots, n+1$. Consider the model
 \begin{align*}
-  \hat{\mathbf{S}}_1 = \sum_{i=2}^{n+1} w_i^* \hat{\mathbf{S}}_i 
+  y_{i,t} = \eta_i + \theta_i'\mathbf{x}_{i,t} + \phi_i y_{i,t-1 }+\beta_{i, T_i^* + d}I(t = T_i^*+d) +\varepsilon_{i,t}
 \end{align*}
-as the estimated shock transition. However, it cannot be a simple intercept correction dummy because shock effects in $\hat{\mathbf{S}}_1$ should be considered in the $m$-ahead forecasts if we are interested in time series forecasts. For example, in computing $\hat{y}_{1, T_1^*+2}$ when there is no shock effect at $T_1^*+2$, we need to consider the adjusted forecast  $\hat{y}^2_{1, T_1^*+1}=\hat{y}^1_{1, T_1^*+1} + \hat{\alpha}_1$.
-\\
+for $i = 2, \ldots, n+1$ and $d = 1, \ldots, m$. Suppose we have information of the covariates up to $T_1^*+d$ either by given information or by forecasting. We can use our proposed synthetic control method to compute weights $\mathbf{W}^*$ and OLS to estimate $\beta_{i, T_i^*+d}$ to compute $\hat{\beta}_{1, T_1^*+d}$.  As a result, we obtain $\hat{\boldsymbol{\beta}}_1^{(m)} = (\hat{\beta}_{1, T_1^*+d})_{d = 1}^m$. However, it cannot be a simple intercept dummy but instead an iterative adjustment in computing $m$-ahead forecasts. For example, $\hat{y}_{1, T_1^*+2}^{(1)}=\hat{y}_{1, T_1^*+2}^{(0)}+ \hat{\beta}_{1, T_1^*+2}$, where $\hat{y}_{1, T_1^*+2}^{(0)}$ is the standard 2-ahead forecasts considering $\hat{y}_{1, T_1^*+1}^{(1)}$ in computation.  The approach of \cite{agarwal2020two} is an alternative  to this problem though its adjustment is without theoretical guarantees. \\
 
-\begin{tcolorbox}
-  It would be interesting empirically to see if the shock is anticipated to be permanent or transitory.
-\end{tcolorbox}
-
-If all the time series in the donor pool experience more than one shock, it would be hard to judge whether the shock is anticipated to be permanent or transitory. It is because more than two sources of shocks exist.\\
-
-If all the time series in the donor pool experience  only experience one shock, it is possible to do such anticipation. We will illustrate the idea as below. \\
-
-Consider the model
+To judge if the shock is permanent, we may go for another approach. Consider the model
 \begin{align*}
-  y_{i,t} = \eta_i + \theta_i'\mathbf{x}_{i, t} + \beta_i I( t\leq T_i^*)+ \varepsilon_{i,t}.
+  y_{i,t} = \eta_i + \theta_i'\mathbf{x}_{i,t} + \phi_i y_{i,t-1 }+\beta_{i}I(T_i^*< t \leq  T_i^*+d) +\varepsilon_{i,t}.
 \end{align*}
-Note that we consider a general model  but not AR($p$) because the shock in AR($p$)  must be transitory due to weakly stationarity assumption. If we assume $\varepsilon_{i,t} \sim N(0,1)$ i.i.d., we can estimate $\beta_i$ using OLS.  Using the weights $\mathbf{W}^*$ from previous procedure, we can  compute
-\begin{align*}
-  \hat{\beta}_1 = \sum_{i=2}^{n+1} w_i^* \hat{\beta}_i
-\end{align*}
-If $\hat{\beta}_1$ is close to 0, the shock is anticipated to be transitory. Otherwise, it is anticipated to be permanent. However, a threshold is needed. One can use bootstrap to estimate the distribution of   $\hat{\beta}_1$ and conduct hypothesis testing to test $H_0: E(\hat{\beta}_1)=0$ versus $H_1: E(\hat{\beta}_1)\neq 0$. \\
+We can compute $\hat{\beta}_i$ from OLS and $\mathbf{W}^*$ from synthetic approach with covariates $d \times p$ (see for example of $p = 2$ in our added Apple example in Section 5.2 of revised transcript) to compute $\hat{\beta}_1$. Note that $\hat{\beta}_1$ is unbiased. We can use parametric double bootstrap to test the hypothesis that $H_0 \colon \beta_1=0$ versus $H_1 \colon \beta_1\neq 0$. \\
 
-\begin{tcolorbox}
- I wonder if the theoretical statements of when forecast risk is minimized may be adapted to assess when transitory shocks die out such that the unadjusted forecast is preferable again?
-\end{tcolorbox}
-
-To our best knowledge, we haven't established the rigor of the above idea and do not know whether the theoretical statements can adapt to when transitory shocks die  out.} \\
+To our best knowledge, we don't know whether the theoretical statements of our proposed methods in the manuscript can be adapted to assess when transitory shocks die out.} \\
 
 {\bf Comment 5:} While the simulations were useful, I found the discussion in section 4 quite impenetrable. There are so many decisions that a researcher would need to make, including which weighting method and all the bootstrapping and leave-one-out decisions. It would be very helpful to the reader if you could give a summary of all your results stating your preferred user decisions for generic specifications. \\
 
