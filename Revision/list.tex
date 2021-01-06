@@ -383,9 +383,9 @@ To our best knowledge, we don't know whether the theoretical statements of our p
   \begin{itemize}
     \item among  $\hat{\alpha}_{\rm adj}$, $\hat{\alpha}_{\rm IVW}$, and $\hat{\alpha}_{\rm wadj}$ 
     \item between $\mathcal{B}_f$ and $\mathcal{B}_u$ (see detailed definition in Section 3.2)
-    \item bootstrap replication $B$ and $k$ in $k$ random draws in LOOCV
+    \item The $k$ in the $k$ random draws in LOOCV
   \end{itemize}
-  First, $\hat{\alpha}_{\rm adj}$ is usually recommended when we believe the shock is i.i.d from a distribution. Second, $\hat{\alpha}_{\rm IVW}$ is recommended when the time length $T_i$ in the donor pool varies vastly across the donor pool. Third, $\hat{\alpha}_{\rm wadj}$  is recommended when we assume the shocks are from the same family of distribution, and the mean of the shock depends on some covariates. \\
+  First, $\hat{\alpha}_{\rm adj}$ is usually recommended when we believe the shock is i.i.d from a distribution. Second, $\hat{\alpha}_{\rm IVW}$ is recommended when the time length $T_i$ in the donor pool varies vastly across the donor pool. Third, $\hat{\alpha}_{\rm wadj}$  is recommended when we assume the shocks are from the same family of distribution, and the mean of the shock depends on some covariates. These recommendations are included in Remark 3 at the end of Section 2. \\
   
   The selection between $\mathcal{B}_f$ and $\mathcal{B}_u$ is more of a philosophical question. In Section 3.2,  we noted
   
@@ -400,11 +400,12 @@ At the end of Section 4.3, we noted that when $p < n$, there are infinitely many
 
 
 
-In summary, $\mathcal{B}_u$ is preferred when  the donor pool size is moderately small ($n< 10$) and the signal from the covariates is \emph{believed} to be large. If $p < n$ and non-uniqueness problem is of concern due to theoretical reasons,  $\mathcal{B}_f$ is preferred. In other cases, the choice between  $\mathcal{B}_u$  and  $\mathcal{B}_f$ would be up to personal preferences related to philosophical differences mentioned above.  \\
+In summary, $\mathcal{B}_u$ is preferred when  the donor pool size is moderately small ($n< 10$) and the signal from the covariates is \emph{believed} to be large. If $p < n$ and non-uniqueness problem is of concern due to theoretical reasons,  $\mathcal{B}_f$ is preferred. In other cases, the choice between  $\mathcal{B}_u$  and  $\mathcal{B}_f$ would be up to personal preferences related to philosophical differences mentioned above. This explanation is added to the end of Section 4.  \\
 
-Lastly,  greater number of bootstrap replication $B$ is preferred. Usually, $B = 200$ is sufficient. Ideally, $k=n$ is preferred. However, if the data size is large such that $k=n$ is computationally expensive, we found that $k = 5$ or $k = 10$ works well. In practice, $(k+1) B$ number of bootstrap replications are implemented to complete the evaluation, where $k B$ is from LOOCV to estimate the correctness parameter $p$ and $B$ is from ordinary bootstrap using the whole donor pool. \\
+%Lastly,  greater number of bootstrap replication $B$ is preferred. Usually, $B = 200$ is sufficient. 
+Ideally, $k=n$ is preferred. However, if the data size is large such that $k=n$ is computationally expensive, we found that $k = 5$ or $k = 10$ works well. In practice, $(k+1) B$ number of bootstrap replications are implemented to complete the evaluation, where $k B$ is from LOOCV to estimate the correctness parameter $p$ and $B$ is from ordinary bootstrap using the whole donor pool. \\
 
-We include these comments at the end of Section 3 and Section 4 of the revised manuscript.} \\
+} \\
 
 {\bf Comment 6:} Section 2 is hard to read without defining the terms that come in the second para- graph of section 2.1 (lines 19-23 of p.6). I'd suggest moving this to the beginning of section 2. \\
 
