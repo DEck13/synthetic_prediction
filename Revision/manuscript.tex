@@ -267,7 +267,7 @@ in practical settings where the $T_i$'s and $T_i^*$'s vary greatly across $i=2, 
 The inverse-variance weighted estimator is defined as 
 \begin{align*}
   \hat{\alpha}_{\rm IVW} = \frac{\sum_{i=2}^{n+1} \hat{\alpha}_i / \hat{\sigma}_{i\alpha}^2}{\sum_{i=2}^{n+1} 1/\hat{\sigma}_{i\alpha}^2},
-  \quad \text{ where } \quad  \hat{\sigma}_{i\alpha}^2 = \hat{\sigma}^2_i( \mathbf{U}_i'\mbf{M}_i)_{22}^{-1},
+  \quad \text{ where } \quad  \hat{\sigma}_{i\alpha}^2 = \hat{\sigma}^2_i( \mathbf{M}_i'\mbf{M}_i)_{22}^{-1},
 \end{align*}
 where  $\hat{\alpha}_i$ is the OLS estimator of $\alpha_i$, 
 $\hat{\sigma}_i$ is the residual standard error from OLS estimation, 
@@ -409,11 +409,9 @@ These conditions and bootstrap will be discussed in Section \ref{conditions} and
 \item Under $\mc{M}_{22}$, 
 \begin{align*}
 \var{\hat{\alpha}_{\rm adj}} 
-  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}\\
-  &  \quad +\frac{1}{n^2}(\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha})\\
+  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\} +\frac{1}{n^2}(\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha})\\
   \var{\hat{\alpha}_{\rm wadj}} 
-  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}\\
-  &\quad + \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}).
+  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\} + \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}).
 \end{align*}
 \end{enumerate}
 Formal justification for these results can be found in Appendix \ref{proofs}. Note that the variances are not comparable in closed-form 
@@ -457,8 +455,7 @@ Condition (\ref{riskconditionadj}) implies two facts: (1) adjustment (Forecast 2
 If  $\mathbf{W}^*$ does not satisfy (\ref{SCM}), its unbiased properties for $\E{\alpha_1}$ should hold approximately when the fit in (\ref{W}) is appropriate as commented in Section \ref{constructionofestimators}. From Proposition \ref{proprisk} and the variance expression for $\hat{\alpha}_{\rm wadj}$, the risk-reduction condition for $\hat{\alpha}_{\rm wadj}$ is
 \begin{align} \label{varwadj}
 \var{\hat{\alpha}_{\rm wadj}}
- &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2 \nonumber \\
- &< \mu_{\alpha}^2.
+ &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2 < \mu_{\alpha}^2.
 \end{align}
 In this case, adjustment is preferable to no adjustment when $\mu_{\alpha}$ is large relative to the weighted sum of variances for shock effects for other time series and overall regression variability.  However, the above criteria are generally difficult to evaluate in practice.  Sections \ref{varbootstrap} and \ref{loocv}  provide detailed treatments on how to estimate the sign of $\Delta(\hat\alpha)$ in practice.
 
@@ -469,9 +466,7 @@ In this case, adjustment is preferable to no adjustment when $\mu_{\alpha}$ is l
 \subsubsection{Conditions under $\mc{M}_{21}$ and $\mc{M}_{22}$}
 \label{conditionsm2122}
 
-The shock effects $\alpha_i$s have different means under $\mc{M}_{21}$ and $\mc{M}_{22}$ unlike under $\mc{M}_1$. 
-However, Proposition \ref{unbiased} implies that $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator of $\E{\alpha_1}$. 
-We now state conditions for risk-reduction.
+The shock effects $\alpha_i$s have different means under $\mc{M}_{21}$ and $\mc{M}_{22}$ unlike under $\mc{M}_1$. However, Proposition \ref{unbiased} implies that $\hat{\alpha}_{\rm wadj}$ is an unbiased estimator of $\E{\alpha_1}$. We now state conditions for risk-reduction.
 
 \begin{prop}
 \label{propriskwadj2} If $\mbf{W}^*$ satisfies (\ref{SCM}), then $\Delta(\hat\alpha_{\rm wadj}) > 0$ when $\var{\hat{\alpha}_{\rm wadj}}<(\E{\alpha_1})^2$  under $\mc{M}_{21}$ and $\mc{M}_{22}$. 
@@ -479,9 +474,7 @@ We now state conditions for risk-reduction.
 Under Proposition \ref{propriskwadj2}, we can obtain a risk-reduction inequality that is similar to \eqref{varwadj},
 \begin{align*}
 \var{\hat{\alpha}_{\rm wadj}}
-& = \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\} \\
- &+ \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha})  \\
- &< (\E{\alpha_1})^2,
+& = \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\} + \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}) < (\E{\alpha_1})^2,
 \end{align*}
 where $\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}$ may be replaced with $\sigma^2_{\alpha}$ in $\mc{M}_{21}$. The conclusions and intuitions will be identically the same as what we have in Section \ref{conditionsmodel1}. Proposition \ref{unbiased} shows that $\hat{\alpha}_{\rm adj}$ is a biased estimator of $\E{\alpha_1}$ under $\mc{M}_{21}$ and $\mc{M}_{22}$ generally. Hence, Proposition \ref{proprisk} no longer holds for $\hat{\alpha}_{\rm adj}$ under $\mc{M}_{21}$ and $\mc{M}_{22}$.
 
