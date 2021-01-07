@@ -53,7 +53,7 @@ AAPL_close <- data.frame(AAPL_close[-nrow(AAPL_close), ], Y)
 start <- which(AAPL_close$Date %in% c("2017-06-06", "2017-06-07"))
 start_day_201706 <- as.numeric(1:nrow(AAPL_close) %in% start)
 AAPL_close <- AAPL_close %>% mutate(start_day_201706 = start_day_201706)
-TS2 <- AAPL_close[(start[1] - 10):(start[1] + 10), ]
+TS2 <- AAPL_close[(start[1] - 5):(start[1] + 10), ]
 # inflation adjustment
 TS2[, 2:5] <- TS2[, 2:5] * inflation_adj$dollars_2020[inflation_adj$year == 2017] 
 m_AAPL_201706 <- lm(Y ~ AAPL_Close + start_day_201706 + GSPC_Close + TB_Close, 
@@ -67,7 +67,7 @@ alpha_201706
 start <- which(AAPL_close$Date %in% c("2018-10-29", "2018-10-30"))
 start_day_201810 <- as.numeric(1:nrow(AAPL_close) %in% start)
 AAPL_close <- AAPL_close %>% mutate(start_day_201810 = start_day_201810)
-TS3 <- AAPL_close[(start[1] - 10):(start[1] + 10), ]
+TS3 <- AAPL_close[(start[1] - 5):(start[1] + 10), ]
 # inflation adjustment
 TS3[, 2:5] <- TS3[, 2:5] * inflation_adj$dollars_2020[inflation_adj$year == 2018] 
 m_AAPL_201810 <- lm(Y ~ AAPL_Close + start_day_201810 + GSPC_Close + TB_Close, 
@@ -80,7 +80,7 @@ alpha_201810
 start <- which(AAPL_close$Date %in% c("2019-06-03", "2019-06-04"))
 start_day_201906 <- as.numeric(1:nrow(AAPL_close) %in% start)
 AAPL_close <- AAPL_close %>% mutate(start_day_201906 = start_day_201906)
-TS4 <- AAPL_close[(start[1] - 10):(start[1] + 10), ]
+TS4 <- AAPL_close[(start[1] - 5):(start[1] + 10), ]
 # inflation adjustment
 TS4[, 2:5] <- TS4[, 2:5] * inflation_adj$dollars_2020[inflation_adj$year == 2019] 
 m_AAPL_201906 <- lm(Y ~ AAPL_Close + start_day_201906 + GSPC_Close + TB_Close, 
@@ -103,16 +103,20 @@ alpha_IVW <- sum(weights * estimates[, 1])
 
 
 # TS1 
-start <- which(AAPL_close$Date == "2020-11-09")
-TS1 <- AAPL_close[(start - 20):start, ]
+start <- which(AAPL_close$Date == "2020-11-06")
+TS1 <- AAPL_close[(start - 15):start, ]
 
 # ar(TS1$GSPC_Close) chooses 3
 sp500.ar <- arima(x = TS1$GSPC_Close, order = c(3, 0, 0))
 # ar(TS1$TB_Close) chooses 1
 TB.ar <- arima(TS1$TB_Close,  order = c(1, 0, 0))
+
+
 # predicted covariates
-X1 <- cbind(predict(sp500.ar, n.ahead = 2)$pred,
-            predict(TB.ar, n.ahead = 2)$pred)
+X1 <- cbind(predict(sp500.ar, n.ahead = 1)$pred,
+            predict(TB.ar, n.ahead = 1)$pred)
+X1 <- as.matrix(X1)
+X1 <- rbind(as.matrix(TS1[nrow(TS1), c(3, 4)]), X1)
 X1p <- X1
 
 # weighted adjustment estimator
@@ -198,7 +202,7 @@ lmod <- list(m_AAPL_201706, m_AAPL_201810, m_AAPL_201906)
 # List of Data
 TS <- list(TS2, TS3, TS4)
 # List of T*
-Tstar.Date <- c('2020-11-09', "2017-06-05", "2018-10-26", "2019-05-31")
+Tstar.Date <- c('2020-11-06', "2017-06-05", "2018-10-26", "2019-05-31")
 # Empty List for storation
 alphas <- vector(mode = 'list', length = 3)
 # Loop begins
@@ -280,9 +284,9 @@ risk.reduction2(est = est, vars = vars)
 
 
 ## Post-shock forecasts
-m_AAPL_2020_11 <- lm(Y ~ AAPL_Close + GSPC_Close + TB_Close, data = TS1)
+m_AAPL_2020_11 <- lm(Y ~ AAPL_Close + GSPC_Close + TB_Close, data = TS1[-nrow(TS1)])
 # Yhat 1
-y1 <- coef(m_AAPL_2020_11) %*% t(as.matrix(cbind(1, AAPL_Close = TS1$Y[nrow(TS1)], 
+y1 <- coef(m_AAPL_2020_11) %*% t(as.matrix(cbind(1, AAPL_Close = TS1$AAPL_Close[nrow(TS1)], 
                                                     GSPC_Close = X1p[1, 1],
                                                     TB_Close = X1p[1, 2])))
 Yhat_nothing <- coef(m_AAPL_2020_11) %*% t(as.matrix(cbind(1, AAPL_Close = y1, 
@@ -291,9 +295,7 @@ Yhat_nothing <- coef(m_AAPL_2020_11) %*% t(as.matrix(cbind(1, AAPL_Close = y1,
 
 Yhat_wadj <- Yhat_nothing + alpha_wadj
 
-y <- AAPL_close[which(AAPL_close$Date == '2020-11-11'), 5]
-
-
+y <- AAPL_close[which(AAPL_close$Date == '2020-11-11'), 2]
 
 abs(Yhat_nothing - y)
 
@@ -305,7 +307,7 @@ abs(Yhat_adj - y)
 
 # plot data
 start <- which(AAPL_close$Date == "2020-11-09")
-TS1 <- AAPL_close[(start - 20):(start + 2), ]
+TS1 <- AAPL_close[(start - 15):(start + 2), ]
 TS1$id <- 1:nrow(TS1)
 mat <- cbind(TS1$id[nrow(TS1)], c(Yhat_adj))
 colnames(mat) <- c("id", "Yhat_adj")
@@ -316,8 +318,8 @@ setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
 # plot setting
 tikz('applepsp.tex', standAlone = TRUE, width = 7, height = 5)
 # plot
-ggplot(TS1, mapping = aes(x = id, y = Y)) + 
-  labs(title = "Apple Stock Forecasting (2020 October 12th to 2020 November 11th)", 
+ggplot(TS1, mapping = aes(x = id, y = AAPL_Close)) + 
+  labs(title = "Apple Stock Forecasting (2020 October 20th to 2020 November 11th)", 
        x = "Day", y = "Closing Stock price (in USD)") +
   geom_point() + 
   geom_point(data = dat, aes(x = id, y = Yhat_adj), 
