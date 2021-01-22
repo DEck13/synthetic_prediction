@@ -175,7 +175,7 @@ These are the literatures on "ad hoc" model adjustments for breaks, see e.g.,  \
 
 {\bf Comment 2:} Secondly, a single empirical example is presented. I would like to see the results for a range of series - this would generate confidence in the proposed approach. \\
 
-\response{We include another example of forecasting the stock price of Apple Inc. during MacBook release in 2020 in Section 5.2 of the revised manuscript. \textcolor{red}{Our forecast is very close to the stock price of the day after the release date.} The donor pool constructed includes three time series of  Apple inc.'s stock price during MacBook release in the past three years. In this example, the shock is with precedent and our method works well because Apple Inc. is a well-established company that is not expected to reform its products a lot. As a result, knowledge from past shocks can bring insights into the future shocks. This example is representative for applying our methods to the time series that are to experience a shock that is with precedent in the past. In contrast, the example of Conoco Phillips is without precedent. In the past, Conoco Phillips  did not experience oil supply shock and financial crisis shock caused by  pandemic. In this example, our method is better than the original forecast though it cannot fully recover the stock price. We hope that the addition of the Apple example helps to generate confidence in our approach.}
+\response{We include another example in which we forecast the stock price of Apple Inc. after the latest release of their MacBook product in 2020. This example is included in Section 5.2 of the revised manuscript. In this example, the donor pool constructed includes three past time series of  Apple inc.'s stock price surrounding previous releases of the MacBook which occurred over the past three years. In this example, the shock is with precedent and our method is expected to work well. This is because Apple Inc. is a well-established company that did not revolutionize the Macbook. Our adjusted forecast performs very well in this setting, as expected. This example is representative for applying our methods to the time series that are to experience a shock that is with some precedent in the past. In contrast, the example of Conoco Phillips is without precedent. In the past, Conoco Phillips  did not experience oil supply shock and financial crisis shock caused by a pandemic. In this example, our method is better than the original forecast though it cannot fully recover the stock price. We hope that the addition of the Apple example helps to generate confidence in our approach.}
 
 \newpage
 \section*{Reviewer 1: \texttt{Cover letter for authors.pdf}}
@@ -192,17 +192,17 @@ First, suppose that there is no additional shock after $T_1^* + 1$. From equatio
 \begin{align*}
  \hat{y}_{i, T_i^* + 2} = \hat{\eta}_1 + \hat{\phi}_i \hat{y}_{1, T_1^*+1}^{2} + \hat{\theta}_i'\mathbf{x}_{1, T_1^*+2}, \tag{*}
 \end{align*}
-where $\hat{y}_{1, T_1^*+1}^{2}=\hat{y}_{1, T_1^*+1}^{1} + \hat{\alpha}_{T_1^* + 1}$, where $\hat{y}_{1, T_1^*+1}^{1}$ is the forecast without adjustment, and  $\hat{\alpha}_{T_1^* + 1}$ is the shock-effect estimator for the shock at $T_1^*+1$. The forecast for $d>2$ more periods is
+where $\hat{y}_{1, T_1^*+1}^{2}=\hat{y}_{1, T_1^*+1}^{1} + \hat{\alpha}_{T_1^* + 1}$, $\hat{y}_{1, T_1^*+1}^{1}$ is the forecast without adjustment, $\mathbf{x}_{1, T_1^*+2}$ is either known or forecasted, and  $\hat{\alpha}_{T_1^* + 1}$ is the shock-effect estimator for the shock at $T_1^*+1$. The forecast for $d>2$ more periods is similarly stated as
 \begin{align*}
  \hat{y}_{i, T_i^* + d} = \hat{\eta}_1 + \hat{\phi}_i \hat{y}_{1, T_1^*+d-1}+ \hat{\theta}_i'\mathbf{x}_{1, T_1^*+d},
 \end{align*}
-where $\hat{y}_{1, T_1^*+d-1}$ can be also computed recursively using the above formula and we  emphasize  $ \hat{y}_{i, T_i^* + 1}=\hat{y}_{1, T_1^*+1}^{2}$. Since we use AR(1) model, $|\phi_1 |< 1$ is assumed.  As one can expect, the impact of the shock  $\alpha_1$ will diminish as $d$ increases. Similar logic can apply for AR($p$). \\
+where $\mathbf{x}_{1, T_1^*+d}$ is either known or forecasted. \\
 
 Second, suppose that  there is one more shock effect after $T_1^*+1$, say, $\alpha_{T_1^* + d^*}$ for some $d^* > 1$. Without loss of generality, assume $d^* = 2$. Under our framework, users may want to construct another set of donor pool with time series that experienced shock effects similar to $\alpha_{T_1^* + 2}$. Next,  apply our proposed method to compute $\hat{\alpha}_{T_1^* + 2}$, the estimator for the shock effect at $T_1^* +2$. The forecast at the point $T_1^* + 2$ will be,  
 \begin{align*}
  \hat{y}_{i, T_i^* + 2} = \hat{\eta}_1 + \hat{\phi}_i \hat{y}_{1, T_1^*+1}^{2} + \hat{\theta}_1'\mathbf{x}_{1, T_1^*+2} + \hat{\alpha}_{T_1^* + 2}.
 \end{align*}
-These two cases can be further combined to generalize forecasting for two or more periods. It is added to Section 6.\\
+These two cases can be further combined to generalize forecasting for two or more periods. We added aspects of this response to the Discussion.\\
 }
 
 {\bf Comment 2:} Page 3, line 30: \citet{blundell1998initial} model is a fixed effect dynamic panel and estimate the parameters using the panel analysis. It would be nice if you clarify in what sense your work is similar to them. \\
@@ -231,22 +231,22 @@ where $|\phi_i| < 1$. Our model is similar to the one of \citet{blundell1998init
 
 
 \begin{tcolorbox}
-``Although our work is developed for time-series or AR($p$) models, in fact, it can be generalized to any similar setting with a model of the response, whose parameters can be estimated \emph{\textcolor{red}{unbiasedly}}, an additive shock-effect structure, and the structure that the time series in the donor pool are independent of the one of interest.''
+`` Our methodology is developed for autoregressive models, but it can be generalized to any setting  where model parameters can be estimated unbiasedly, there is an additive shock-effect structure, and the time series in the donor pool are independent from the one of interest.''
 \end{tcolorbox}
 
 
-\vspace{0.4cm}In other words, if the estimator used in panel data is unbiased, our method can adapt to this scenario by weighting the shock effects estimated by panel data estimation procedure. In this case, the propositions in Section 3 still hold though the exact variance expressions will change since we are not using OLS estimators.}\\
+%\vspace{0.4cm}In other words, if the estimator used in panel data is unbiased, our method can adapt to this scenario by weighting the shock effects estimated by panel data estimation procedure. In this case, the propositions in Section 3 still hold though the exact variance expressions will change since we are not using OLS estimators.}\\
 
 
 {\bf Comment 6:} Page 8, line 46: It is not clear to met how you estimate $\alpha_i$'s by OLS. Could you give the expressions for $\hat{\alpha}_i$? Also, how can you identify $\alpha_i$ from $\eta_i$? Isn't $\hat{\alpha}_{\rm adj}$ an estimator of $E(\alpha_1)$? \\
 
-\response{Sorry for not making it clear. The estimation procedures can be explained in detail as follows. Note that for $i = 2, \ldots, n+1$, the design matrix for $i$th time series is $(\mathbf{1}_{T_i}, \mathbf{D}_{i}, \mathbf{X}_{i})$, where $\mathbf{X}_i$ is the covariates  of $i$th time series and $\mathbf{D}_{i}=(D_{i,t})_{t=1}^{T_i}$ with $D_{i,t}=I(t=T_i^*+1)$. We define $\mathbf{M}_i = (\mathbf{1}_{T_i}, \mathbf{D}_{i}, \mathbf{X}_{i})$. Then the expression for $\hat{\alpha}_i$ is
+\response{Sorry for not making it clear. The estimation procedures can be explained in detail as follows. Note that for $i = 2, \ldots, n+1$, the design matrix for $i$th time series is $(\mathbf{1}_{T_i}, \mathbf{D}_{i}, \mathbf{X}_{i})$, where $\mathbf{X}_i$ is the covariates  of $i$th time series and $\mathbf{D}_{i}\in\R^{T_i}$ with $D_{i,t}=I(t=T_i^*+1)$. We define $\mathbf{M}_i = (\mathbf{1}_{T_i}, \mathbf{D}_{i}, \mathbf{X}_{i})$. Then the expression for $\hat{\alpha}_i$ is
 \begin{align*}
   \hat{\alpha}_i = [(\mathbf{M}'_i\mathbf{M}_i)^{-1}\mathbf{M}_i'\mathbf{Y}_{i}]_{2}, \quad 
-  \text{ where }\quad \mathbf{Y}_{i}=(y_{i,t})_{t=1}^{T_i} 
- \quad  \text{ for } i = 2, \ldots, n+1.
+  \text{ where }\quad \mathbf{Y}_{i}=(y_{i,1},\ldots,y_{i,T_i})' 
+ \quad  \text{ for } i = 2, \ldots, n+1,
 \end{align*}
-Note that $[\cdot]_{2}$ denotes the second element of a vector. That is, $\hat{\alpha}_i$ is the second element of the OLS estimate vector. Our model is
+where $[\cdot]_{2}$ denotes the second element of a vector. That is, $\hat{\alpha}_i$ is the second element of the OLS estimate vector. Our model is
 \begin{align*}
   y_{i,t} = \eta_i + \alpha_i D_{i,t} + \phi_i y_{i,t-1} + \theta_i'\mathbf{x}_{i,t} + \varepsilon_{i,t}, 
   \quad i = 1, \ldots, n+1.
@@ -257,24 +257,26 @@ $\eta_i$ represents the effect of the intercept. Thus, we cannot identify $\alph
 {\bf Comment 7:} Page 9, line 10: It is not clear to me what $\mathbf{U}_i$'s are. An example could help understanding that better. \\
 
 
-\response{Thanks for pointing it out. We  clarify it in the revised version, and change the notation to be $\mathbf{M}_i$, which represents the design matrix of the model used in OLS estimation at the $i$th time series. For example, suppose the sample size for $i$th time series in the donor pool (i.e., $i\geq 2$) is 4; we have one covariate consisting of $x_1, \ldots, x_4$; and the shock occurs at $t = 4$. In this case, $\mathbf{U}_i$ is 
-\begin{align*}
-  \mathbf{M}_i = \begin{pmatrix}
-    1 & 0 & x_1 \\
-    1 & 0 & x_2 \\
-    1 & 0 & x_3 \\
-    1 & 1 & x_4
-  \end{pmatrix}.
-\end{align*}
-Suppose the sample size for the time series of interest is also 4, and we have a covariate $k_1, \ldots, k_4$. Note that the design matrix of the time series of interest will not contain $D_{1,t}$ since $D_{1,t}= I(t=T_1^*+1)=0$ due to we do not observe the shock. In this case, 
-\begin{align*}
-  \mathbf{M}_1 = \begin{pmatrix}
-    1 &  k_1 \\
-    1 &  k_2 \\
-    1 &  k_3 \\
-    1 &  k_4
-  \end{pmatrix}.
-\end{align*}} \\
+\response{Thanks for pointing it out. We  clarify it in the revised version, and change the notation to be $\mathbf{M}_i$, which represents the design matrix of the model used in OLS estimation at the $i$th time series.} \\ 
+
+%For example, suppose the sample size for $i$th time series in the donor pool (i.e., $i\geq 2$) is 4; we have one covariate consisting of $x_1, \ldots, x_4$; and the shock occurs at $t = 4$. In this case, $\mathbf{U}_i$ is 
+%\begin{align*}
+%  \mathbf{M}_i = \begin{pmatrix}
+%    1 & 0 & x_1 \\
+%    1 & 0 & x_2 \\
+%    1 & 0 & x_3 \\
+%    1 & 1 & x_4
+%  \end{pmatrix}.
+%\end{align*}
+%Suppose the sample size for the time series of interest is also 4, and we have a covariate $k_1, \ldots, k_4$. Note that the design matrix of the time series of interest will not contain $D_{1,t}$ since $D_{1,t}= I(t=T_1^*+1)=0$ due to we do not observe the shock. In this case, 
+%\begin{align*}
+%  \mathbf{M}_1 = \begin{pmatrix}
+%    1 &  k_1 \\
+%    1 &  k_2 \\
+%    1 &  k_3 \\
+%    1 &  k_4
+%  \end{pmatrix}.
+%\end{align*}} \\
 
 {\bf Comment 8:} Page 9, line 15: Why the closed form expressions for $E(\hat{\alpha}_{\rm IVW})$ and $Var(\hat{\alpha}_{\rm IVW})$ are not provided? \\
 
@@ -315,13 +317,13 @@ In other words,  $\mathcal{M}_{21}$  or $\mathcal{M}_{22}$ is an extended versio
 
 {\bf Comment 12:} Page 23, construction of donor pool: Your model assumes that the shocks have the same distribution. Given that these shocks are from different sources and happened because of various reasons, how could one justify them? Practically, there are many previous shocks. How can someone choose from them?\\
 
-\response{It is a good question. To clarify, $\mathcal{M}_1$ assumes that the shocks have the same distribution. However, $\mathcal{M}_{21}$ assumes the shocks have the same variance but have different conditional means with allowing covariates to play a role. Moreover, $\mathcal{M}_{22}$ assumes they have different conditional means and conditional variances by allowing $\delta_i$ to be random. But the shock effects are assumed to follow a general family of  unknown distribution with possible different means and variances.\\
+%It is a good question. To clarify, $\mathcal{M}_1$ assumes that the shocks have the same distribution. However, $\mathcal{M}_{21}$ assumes the shocks have the same variance but have different conditional means with allowing covariates to play a role. Moreover, $\mathcal{M}_{22}$ assumes they have different conditional means and conditional variances by allowing $\delta_i$ to be random. But the shock effects are assumed to follow a general family of  unknown distribution with possible different means and variances.\\
 
-$\mathcal{M}_{21}$ and $\mathcal{M}_{22}$ are constructed for generalization. In practice, it is hard to verify those assumptions. It leaves the discretion for users to construct donor pool by gathering time series experiencing similar events to the one the time series of interest experienced. \\
+%$\mathcal{M}_{21}$ and $\mathcal{M}_{22}$ are constructed for generalization. In practice, it is hard to verify those assumptions. It leaves the discretion for users to construct donor pool by gathering time series experiencing similar events to the one the time series of interest experienced. \\
 
-Theoretically, it is possible to verify the assumptions of $\mathcal{M}_{1}$ using empirical Bayes methods to some degree. First, we need a  pool of shock effects that users believe they are realizations from a common distribution, say, $\mathcal{F}_{\alpha}$. Using empirical Bayes methods, we can estimate $\mathcal{F}_{\alpha}$ to have $\hat{\mathcal{F}}_{\alpha}$. To verify whether the remaining shock effects are from $\mathcal{F}_{\alpha}$, we can check the quantile of $\hat{\mathcal{F}}_{\alpha}$ to judge whether they are extreme in $\hat{\mathcal{F}}_{\alpha}$. However, the theoretical justification for this approach is left for future research. \\
+%Theoretically, it is possible to verify the assumptions of $\mathcal{M}_{1}$ using empirical Bayes methods to some degree. First, we need a  pool of shock effects that users believe they are realizations from a common distribution, say, $\mathcal{F}_{\alpha}$. Using empirical Bayes methods, we can estimate $\mathcal{F}_{\alpha}$ to have $\hat{\mathcal{F}}_{\alpha}$. To verify whether the remaining shock effects are from $\mathcal{F}_{\alpha}$, we can check the quantile of $\hat{\mathcal{F}}_{\alpha}$ to judge whether they are extreme in $\hat{\mathcal{F}}_{\alpha}$. However, the theoretical justification for this approach is left for future research. \\
 
-In practice, someone can select the shocks that are similar to the one of interest. For example, they can be similar in causes, scale, and characteristics. Using our data analysis example, on March 9th 2020, Conoco Phillips experienced a shock during COVID-19 pandemic and oil supply shock. During COVID-19 pandemic, the US economy is in a situation that resembles the one in financial crisis. As a result, we select the shocks in the past that are related to financial crisis and oil supply shock.} \\
+\response{Our methodology requires that a practitioner can choose a suitable donor pool of candidate shock-effects. If this cannot be done, then the methodology may not work well. Practitioners can use qualitative and quantitative information to inform their decisions about which time series inform the donor pool. Consider our Conoco Phillips example. On March 9th 2020, Conoco Phillips was expected to experience a negative shock in the midst of the  COVID-19 pandemic and an oil supply shock. While the COVID-19 pandemic is unprecedented, several economic measurements surrounding March 9th 2020 resembled those in the days of the 2008 financial crises. On the other hand, the oil supply shock had precedent. As a result, we selected the shocks in the past corresponding to the 2008 financial crisis and a past 2014 oil supply shock.} \\
 
 
 {\bf Comment 13:} Figure 2 on Page 24: Are the black dots the real data? What does the line represent?\\
@@ -340,13 +342,11 @@ Thank you for your appreciation of the potential of our methods, and for your va
 
 {\bf Comment 2:} It would be helpful to the reader to be very explicit about the timing of when information is realized. Is it correct that the researcher knows at $T_1^*$ that there will be a shock at $T_1^* + 1$, and they know the type of shock that it will be in order to identify the relevant donor pool shocks, but they do not know the magnitude? This is quite an informational advantage over unanticipated shocks. In many situations one could imagine that the shock was unanticipated. Therefore, at $T_1^* + 1$  there is a large forecast error (your model 1) but now information is available about the type of shock, so the proposed methodology of the shock effect estimator is applied at $T_1^* + 2$, yielding gains over the unadjusted forecast. The timing of information is crucial, but the methodology proposed in the paper seems to be applicable in many different timing scenarios. \\
 
-\response{It is correct that the researcher knows at $T_1^*$ that there will be a shock at $T_1^* + 1$. In practice, it usually happens to the case that when we realize that the shock is about to occur, we  know the \emph{general type}  or \emph{general cause} of the shock. The magnitude is not known. \\
+\response{It is correct that the researcher knows at $T_1^*$ that there will be a shock at $T_1^* + 1$. In practice, it usually happens to the case that when we realize that the shock is about to occur, we  know the \emph{general type}  or \emph{general cause} of the shock. The magnitude is not known. 
+%For example, in the Conoco Phillips stock example, when we knew the outbreak of COVID-19 was about to come, past shocks related to financial crisis may be helpful. Or, near the outbreak of COVID-19, suppose that a department in a university realized that it would be faced with declining applications. It could make use of the information about the decline of its admitted students in the past or that of other departments when similar situations (i.e., the number of applications suddenly decreases) happened.\\
+We admit that it is quite an informational advantage over unanticipated shocks. However, in practice, if a shock is unanticipated, we may not even be able to construct such a post-shock analysis since we do not know it is about to happen.\\
 
-For example, in the Conoco Phillips stock example, when we knew the outbreak of COVID-19 was about to come, past shocks related to financial crisis may be helpful. Or, near the outbreak of COVID-19, suppose that a department in a university realized that it would be faced with declining applications. It could make use of the information about the decline of its admitted students in the past or that of other departments when similar situations (i.e., the number of applications suddenly decreases) happened.\\
-
-We admit it is quite an informational advantage over unanticipated shocks. However, in practice, if a shock is unanticipated, we may not even be able to construct such a post-shock analysis since we do not know it is about to happen.\\
-
-You are right about the timing. It can be applicable in many different timing scenarios. Generally, suppose that we know at $T_1^*$ that a shock is about to occur at $T_1^* + d$ for $d\geq 1$ and $d\in \mathbb{N}$ and that we have information about the future covariates for $t = T_1^* +1 , \ldots, T_1^* + d$. It is possible to generalize our method to this situation. \textcolor{red}{Our new Apple example in Section 5.2 of the revised manuscript provides an example for the case $d=2$ with predicted covariates.}\\
+You are right about the timing. It can be applicable in many different timing scenarios. Generally, suppose that we know at $T_1^*$ that a shock is about to occur at $T_1^* + d$ for $d\geq 1$ and $d\in \mathbb{N}$ and that we have information about the future covariates for $t = T_1^* +1 , \ldots, T_1^* + d$. It is possible to generalize our method to this situation. Our new Apple example in Section 5.2 of the revised manuscript provides an example for the case $d=2$ with predicted covariates. \\
 
 Thank you for your remark on the timing scenarios. It is very helpful for improving our manuscript.} \\
 
@@ -364,19 +364,20 @@ It is possible to use the donor pool to estimate the shock transition,  and prod
 \begin{align*}
   y_{i,t} = \eta_i + \theta_i'\mathbf{x}_{i,t} + \phi_i y_{i,t-1 }+\beta_{i, T_i^* + d}I(t = T_i^*+d) +\varepsilon_{i,t}
 \end{align*}
-for $i = 2, \ldots, n+1$ and $d = 1, \ldots, m$. Suppose we have information of the covariates up to $T_1^*+d$ either by given information or by forecasting. We can use our proposed synthetic control method to compute weights $\mathbf{W}^*$ and OLS to estimate $\beta_{i, T_i^*+d}$ to compute $\hat{\beta}_{1, T_1^*+d}$.  As a result, we obtain $\hat{\boldsymbol{\beta}}_1^{(m)} = (\hat{\beta}_{1, T_1^*+d})_{d = 1}^m$. However, it cannot be a simple intercept dummy but instead an iterative adjustment in computing $m$-ahead forecasts. For example, $\hat{y}_{1, T_1^*+2}^{(1)}=\hat{y}_{1, T_1^*+2}^{(0)}+ \hat{\beta}_{1, T_1^*+2}$, where $\hat{y}_{1, T_1^*+2}^{(0)}$ is the standard 2-ahead forecasts considering $\hat{y}_{1, T_1^*+1}^{(1)}$ in computation.  The approach of \cite{agarwal2020two} is an alternative  to this problem though its adjustment is without theoretical guarantees. \\
+for $i = 2, \ldots, n+1$ and $d = 1, \ldots, m$. Suppose we have information of the covariates up to $T_1^*+d$ either by given information or by forecasting. We can use our proposed synthetic control method to compute weights $\mathbf{W}^*$ and OLS to estimate $\beta_{i, T_i^*+d}$ to compute $\hat{\beta}_{1, T_1^*+d}$.  As a result, we obtain $\hat{\boldsymbol{\beta}}_1^{(m)} = (\hat{\beta}_{1, T_1^*+d})_{d = 1}^m$. However, it cannot be a simple intercept dummy but instead an iterative adjustment in computing $m$-ahead forecasts. For example, $\hat{y}_{1, T_1^*+2}^{(1)}=\hat{y}_{1, T_1^*+2}^{(0)}+ \hat{\beta}_{1, T_1^*+2}$, where $\hat{y}_{1, T_1^*+2}^{(0)}$ is the standard 2-ahead forecasts. %considering $\hat{y}_{1, T_1^*+1}^{(1)}$ in computation.  
+The approach of \cite{agarwal2020two} is an alternative  to this problem though its adjustment is without theoretical guarantees. \\
 
-To judge if the shock is permanent, we may go for another approach. Consider the model
-\begin{align*}
-  y_{i,t} = \eta_i + \theta_i'\mathbf{x}_{i,t} + \phi_i y_{i,t-1 }+\beta_{i}I(T_i^*< t \leq  T_i^*+d) +\varepsilon_{i,t}.
-\end{align*}
-We can compute $\hat{\beta}_i$ from OLS and $\mathbf{W}^*$ from synthetic approach with covariates $d \times p$ (see for example of $p = 2$ in our added Apple example in Section 5.2 of revised transcript) to compute $\hat{\beta}_1$. Note that $\hat{\beta}_1$ is unbiased. We can use parametric double bootstrap to test the hypothesis that $H_0 \colon \beta_1=0$ versus $H_1 \colon \beta_1\neq 0$. \\
+%To judge if the shock is permanent, we may consider another approach. Consider the model
+%\begin{align*}
+%  y_{i,t} = \eta_i + \theta_i'\mathbf{x}_{i,t} + \phi_i y_{i,t-1 }+\beta_{i}I(T_i^*< t \leq  T_i^*+d) +\varepsilon_{i,t}.
+%\end{align*}
+%We can compute $\hat{\beta}_i$ from OLS and $\mathbf{W}^*$ from synthetic approach with covariates $d \times p$ (see for example of $p = 2$ in our added Apple example in Section 5.2 of revised transcript) to compute $\hat{\beta}_1$. Note that $\hat{\beta}_1$ is unbiased. We can use parametric double bootstrap to test the hypothesis that $H_0 \colon \beta_1=0$ versus $H_1 \colon \beta_1\neq 0$ at time point $T^*_i+d$. \\
 
-To our best knowledge, we don't know whether the theoretical statements of our proposed methods in the manuscript can be adapted to assess when transitory shocks die out.} \\
+To the best of our knowledge, we don't know whether the theoretical statements of our proposed methods in the manuscript can be adapted to assess when transitory shocks die out.} \\
 
 {\bf Comment 5:} While the simulations were useful, I found the discussion in section 4 quite impenetrable. There are so many decisions that a researcher would need to make, including which weighting method and all the bootstrapping and leave-one-out decisions. It would be very helpful to the reader if you could give a summary of all your results stating your preferred user decisions for generic specifications. \\
 
-\response{\textcolor{red}{Thank you for pointing it out. We repolished Section 4 for better readability in the revised manuscript.} \textcolor{red}{We  summarize  our results including preferred user decisions as below. }There are mainly three decisions to make for an user: to choose 
+\response{Thank you for pointing it out. We polished Section 4 for better readability in the revised manuscript. We  summarize  our results including preferred user decisions as below. There are mainly three decisions to make for an user: to choose 
   \begin{itemize}
     \item among  $\hat{\alpha}_{\rm adj}$, $\hat{\alpha}_{\rm IVW}$, and $\hat{\alpha}_{\rm wadj}$ 
     \item between $\mathcal{B}_f$ and $\mathcal{B}_u$ (see detailed definition in Section 3.2)
