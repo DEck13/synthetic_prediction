@@ -4,6 +4,7 @@ library('dplyr')
 library('Rsolnp')
 library('ggplot2')
 library('tikzDevice')
+library('ggpubr')
 # set working directory
 setwd("/Users/mac/Desktop/Research/Post-Shock Prediction/")
 
@@ -50,24 +51,24 @@ AAPL_close <- data.frame(AAPL_close[-nrow(AAPL_close), ], Y)
 
 
 # shock effect date
-start <- which(AAPL_close$Date %in% c("2017-06-06", "2017-06-07"))
+start <- which(AAPL_close$Date == "2017-06-06")
 start_day_201706 <- as.numeric(1:nrow(AAPL_close) %in% start)
 AAPL_close <- AAPL_close %>% mutate(start_day_201706 = start_day_201706)
-TS2 <- AAPL_close[(start[1] - 5):(start[1] + 10), ]
+TS2 <- AAPL_close[(start[1] - 12):(start[1] + 12), ]
 # inflation adjustment
 TS2[, 2:5] <- TS2[, 2:5] * inflation_adj$dollars_2020[inflation_adj$year == 2017] 
 m_AAPL_201706 <- lm(Y ~ AAPL_Close + start_day_201706 + GSPC_Close + TB_Close, 
-                 data = TS2)
+                    data = TS2)
 alpha_201706 <- summary(m_AAPL_201706)$coef[3,1:2] 
 # shock-effects
 alpha_201706
 
 
 # shock effect date
-start <- which(AAPL_close$Date %in% c("2018-10-29", "2018-10-30"))
-start_day_201810 <- as.numeric(1:nrow(AAPL_close) %in% start)
+start <- which(AAPL_close$Date == "2018-10-30")
+start_day_201810 <- as.numeric(1:nrow(AAPL_close) == start)
 AAPL_close <- AAPL_close %>% mutate(start_day_201810 = start_day_201810)
-TS3 <- AAPL_close[(start[1] - 5):(start[1] + 10), ]
+TS3 <- AAPL_close[(start[1] - 12):(start[1] + 12), ]
 # inflation adjustment
 TS3[, 2:5] <- TS3[, 2:5] * inflation_adj$dollars_2020[inflation_adj$year == 2018] 
 m_AAPL_201810 <- lm(Y ~ AAPL_Close + start_day_201810 + GSPC_Close + TB_Close, 
@@ -77,10 +78,10 @@ alpha_201810 <- summary(m_AAPL_201810)$coef[3,1:2]
 alpha_201810
 
 # shock effect date
-start <- which(AAPL_close$Date %in% c("2019-06-03", "2019-06-04"))
-start_day_201906 <- as.numeric(1:nrow(AAPL_close) %in% start)
+start <- which(AAPL_close$Date == "2019-06-03")
+start_day_201906 <- as.numeric(1:nrow(AAPL_close) == start)
 AAPL_close <- AAPL_close %>% mutate(start_day_201906 = start_day_201906)
-TS4 <- AAPL_close[(start[1] - 5):(start[1] + 10), ]
+TS4 <- AAPL_close[(start[1] - 12):(start[1] + 12), ]
 # inflation adjustment
 TS4[, 2:5] <- TS4[, 2:5] * inflation_adj$dollars_2020[inflation_adj$year == 2019] 
 m_AAPL_201906 <- lm(Y ~ AAPL_Close + start_day_201906 + GSPC_Close + TB_Close, 
@@ -104,7 +105,7 @@ alpha_IVW <- sum(weights * estimates[, 1])
 
 # TS1 
 start <- which(AAPL_close$Date == "2020-11-06")
-TS1 <- AAPL_close[(start - 15):start, ]
+TS1 <- AAPL_close[(start - 24):(start + 1), ]
 
 # ar(TS1$GSPC_Close) chooses 3
 sp500.ar <- arima(x = TS1$GSPC_Close, order = c(3, 0, 0))
@@ -118,23 +119,24 @@ X1 <- cbind(predict(sp500.ar, n.ahead = 1)$pred,
 X1 <- as.matrix(X1)
 X1 <- rbind(as.matrix(TS1[nrow(TS1), c(3, 4)]), X1)
 X1p <- X1
+X1 <- X1p[2,]
 
 # weighted adjustment estimator
-Tstar.Date <- c("2017-06-05", "2018-10-26", "2019-05-31")
+Tstar.Date <- c("2017-06-02", "2018-10-26", "2019-05-30")
 Tstar <- sapply(Tstar.Date, function(x) which(AAPL_close$Date == x))
 # X1 <- as.matrix(COP_close[c(Tstar[1], Tstar[1] + 1), c(3, 4)])
 # X0
 X0 <- c()
 for (i in 1:3) {
-  X0[[i]] <- as.matrix(AAPL_close[c(Tstar[i] + 1, Tstar[i] + 2), 3:4])
+  X0[[i]] <- as.matrix(AAPL_close[Tstar[i] + 2, 3:4])
 }
 
 # SCM
 dat <- scale(rbind(X1, do.call('rbind', X0)), center = T, scale = T)
-X1 <- dat[1:2, ]
+X1 <- dat[1, ]
 X0 <- c()
 for (i in 1:3) {
-  X0[[i]] <- dat[c(2 * i + 1, 2 * i + 2), , drop = FALSE]
+  X0[[i]] <- dat[i + 1, , drop = FALSE]
 }
 
 
@@ -142,8 +144,8 @@ scmm <- function(X1, X0) {
   weightedX0 <- function(W) {
     # W is a vector of weight of the same length of X0
     n <- length(W)
-    p <- ncol(X1)
-    XW <- matrix(0, nrow = 2, ncol = p)
+    p <- length(X1)
+    XW <- matrix(0, nrow = 1, ncol = p)
     for (i in 1:n) {
       XW <- XW + W[i] * X0[[i]]
     }
@@ -168,8 +170,8 @@ Wstar <- scmm(X1 = X1, X0 = X0)
 weightedX0 <- function(W) {
   # W is a vector of weight of the same length of X0
   n <- length(W)
-  p <- ncol(X1)
-  XW <- matrix(0, nrow = 2, ncol = p)
+  p <- length(X1)
+  XW <- matrix(0, nrow = 1, ncol = p)
   for (i in 1:n) {
     XW <- XW + W[i] * X0[[i]]
   }
@@ -202,7 +204,7 @@ lmod <- list(m_AAPL_201706, m_AAPL_201810, m_AAPL_201906)
 # List of Data
 TS <- list(TS2, TS3, TS4)
 # List of T*
-Tstar.Date <- c('2020-11-06', "2017-06-05", "2018-10-26", "2019-05-31")
+Tstar.Date <- c('2020-11-06', "2017-06-02", "2018-10-26", "2019-05-30")
 # Empty List for storation
 alphas <- vector(mode = 'list', length = 3)
 # Loop begins
@@ -227,31 +229,31 @@ for (b in 1:B) {
     yi0 <- dat$AAPL_Close[1]
     yib <- yi0
     Tstari <- which(dat$Date == Tstar.Date[i + 1])
-      
-      for (t in 1:Ti) {
-        datt <- matrix(c(1, yib[t], ifelse(t %in% c(Tstari + 1, Tstari + 2), 
-                                           yes = 1, no = 0), 
-                         as.numeric(dat[t, c('GSPC_Close', 'TB_Close')])))
-        yib <- c(yib, resb[t] + coef %*% datt)
-      }
-      
-      # Prepare for new data
-      yb <- yib[-1]; yblag <- yib[-(Ti + 1)]
-      datbi <- data.frame(yblag, ifelse(1:Ti %in% c(Tstari + 1, Tstari + 2), yes = 1, no = 0),
-                          dat[, c('GSPC_Close', 'TB_Close')])
-      
-      # New colnames
-      colnames(datbi) <- c('yblag', 'shock', c('GSPC_Close', 'TB_Close'))
-      
-      # New Linear Model
-      lmodbi <- lm(yb ~ 1 + yblag + shock + GSPC_Close + TB_Close, dat = datbi)
-      
-      # Shock Effects
-      alphahatsb <- c(alphahatsb, coef(lmodbi)[3])
-      
-      # Weights
-      weights <- c(weights, 1 / summary(lmodbi)$coef[3, 2] ^ 2)
+    
+    for (t in 1:Ti) {
+      datt <- matrix(c(1, yib[t], ifelse(t == Tstari + 2, 
+                                         yes = 1, no = 0), 
+                       as.numeric(dat[t, c('GSPC_Close', 'TB_Close')])))
+      yib <- c(yib, resb[t] + coef %*% datt)
     }
+    
+    # Prepare for new data
+    yb <- yib[-1]; yblag <- yib[-(Ti + 1)]
+    datbi <- data.frame(yblag, ifelse(1:Ti == Tstari + 2, yes = 1, no = 0),
+                        dat[, c('GSPC_Close', 'TB_Close')])
+    
+    # New colnames
+    colnames(datbi) <- c('yblag', 'shock', c('GSPC_Close', 'TB_Close'))
+    
+    # New Linear Model
+    lmodbi <- lm(yb ~ 1 + yblag + shock + GSPC_Close + TB_Close, dat = datbi)
+    
+    # Shock Effects
+    alphahatsb <- c(alphahatsb, coef(lmodbi)[3])
+    
+    # Weights
+    weights <- c(weights, 1 / summary(lmodbi)$coef[3, 2] ^ 2)
+  }
   
   
   # Store Computed Shock-Effects Estimators
@@ -284,14 +286,17 @@ risk.reduction2(est = est, vars = vars)
 
 
 ## Post-shock forecasts
-m_AAPL_2020_11 <- lm(Y ~ AAPL_Close + GSPC_Close + TB_Close, data = TS1[-nrow(TS1)])
+TS1$obs.shock <- ifelse(TS1$Date == '2020-10-09', yes = 1, no = 0)
+m_AAPL_2020_11 <- lm(Y ~ AAPL_Close + GSPC_Close + TB_Close + obs.shock, data = TS1[-nrow(TS1), ])
 # Yhat 1
 y1 <- coef(m_AAPL_2020_11) %*% t(as.matrix(cbind(1, AAPL_Close = TS1$AAPL_Close[nrow(TS1)], 
-                                                    GSPC_Close = X1p[1, 1],
-                                                    TB_Close = X1p[1, 2])))
+                                                 GSPC_Close = X1p[1, 1],
+                                                 TB_Close = X1p[1, 2],
+                                                 obs.shock = 0)))
 Yhat_nothing <- coef(m_AAPL_2020_11) %*% t(as.matrix(cbind(1, AAPL_Close = y1, 
-                                                 GSPC_Close = X1p[2, 1],
-                                                 TB_Close = X1p[2, 2])))
+                                                           GSPC_Close = X1p[2, 1],
+                                                           TB_Close = X1p[2, 2],
+                                                           obs.shock = 0)))
 
 Yhat_wadj <- Yhat_nothing + alpha_wadj
 
@@ -307,7 +312,7 @@ abs(Yhat_adj - y)
 
 # plot data
 start <- which(AAPL_close$Date == "2020-11-09")
-TS1 <- AAPL_close[(start - 15):(start + 2), ]
+TS1 <- AAPL_close[(start - 24):(start + 2), ]
 TS1$id <- 1:nrow(TS1)
 mat <- cbind(TS1$id[nrow(TS1)], c(Yhat_adj))
 colnames(mat) <- c("id", "Yhat_adj")
@@ -316,17 +321,17 @@ colnames(Yhat_nothing) <- "y"
 # set working directory
 setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
 # plot setting
-tikz('applepsp.tex', standAlone = TRUE, width = 7, height = 5)
+tikz('applepsp.tex', standAlone = TRUE, width = 12, height = 5)
 # plot
-ggplot(TS1, mapping = aes(x = id, y = AAPL_Close)) + 
-  labs(title = "Apple Stock Forecasting (2020 October 20th to 2020 November 11th)", 
+p1 <- ggplot(TS1, mapping = aes(x = id, y = AAPL_Close)) + 
+  labs(title = "Apple Stock Forecasting (2020 October 6th to 2020 November 11th)", 
        x = "Day", y = "Closing Stock price (in USD)") +
   geom_point() + 
-  geom_point(data = dat, aes(x = id, y = Yhat_adj), 
+  geom_jitter(data = dat, aes(x = id, y = Yhat_adj), 
              col = c("magenta", "deepskyblue", "indianred2"), 
-             pch = 2:4, cex = 1.5) + 
+             pch = 2:4, cex = 2, width = 0.65) + 
   geom_point(data = data.frame(x = unique(dat$id), y = Yhat_nothing), 
-             aes(x = x, y = y), col = "violet", cex = 1.5) + 
+             aes(x = x, y = y), col = "violet", cex = 2) + 
   geom_line(aes(x = id, y = c(m_AAPL_2020_11$fitted.values, y1, Yhat_nothing)), 
             col = "violet") + 
   annotate("text", x = 1, y = seq(from = 110, to = 104, length.out = 4), 
@@ -349,7 +354,33 @@ ggplot(TS1, mapping = aes(x = id, y = AAPL_Close)) +
   # center title
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5))
-# output
+
+p2 <- ggplot(tail(TS1, 4), mapping = aes(x = id, y = AAPL_Close)) + 
+  labs(title = "Zoomed-in Post-Shock Forecast", 
+       x = "Day", y = "Closing Stock price (in USD)") +
+  scale_x_continuous(limits = c(24, 27.3)) + 
+  scale_y_continuous(limits = c(115.5, 120.5)) + 
+  geom_point(cex = 1.5) + 
+  geom_jitter(data = dat, aes(x = id, y = Yhat_adj), 
+              col = c("magenta", "deepskyblue", "indianred2"), 
+              pch = 2:4, cex = 3, width = 0.15, height = 0.15) + 
+  geom_point(data = data.frame(x = unique(dat$id), y = Yhat_nothing), 
+             aes(x = x, y = y), col = "violet", cex = 2) + 
+  geom_line(aes(x = id, y = c(tail(m_AAPL_2020_11$fitted.values, 2), y1, Yhat_nothing)), 
+            col = "violet") + 
+  # add margin
+  theme(plot.margin = unit(c(.5, .3, .3, .5), "cm")) + 
+  # no grid
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) + 
+  # minimal
+  theme_minimal() +
+  # center title
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+ggarrange(p1, NULL, p2, ncol = 3, nrow = 1, widths = c(1.45, 0.05, 1))
 dev.off()
+
 
 

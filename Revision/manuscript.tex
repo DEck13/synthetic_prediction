@@ -154,7 +154,7 @@ Our post-shock forecasting methodology will consist of selecting covariates $\x_
 
 
 
-Figure \ref{figure1} provides a simple intuition of the practical usefulness of our proposed methodology. This figure depicts a time series that experienced a shock at time point $T_1^*+1 = 126$. It is supposed that the researcher does not have any information after $T_1^*$, but does have observations from a donor pool of forty time series that have previously undergone a similar shock for which post-shock responses are recorded. Similarity in this context means that the shock effects are random variables that from a common distribution. In this example, the mean of the estimated shock effects is taken as a shock effect estimator for the time series under study. Forecasts are then made by adding this shock effect estimator to the estimated response values obtained from the estimation procedure that ignores the shock. It is apparent from Figure \ref{figure1} that adjusting forecasts in this manner 1) leads to a reduction in forecasting risk; 2) does not fully recover the true shock effect. We evaluate the performance of this post-shock forecasting methodology throughout this article; we outline situations for when it is expected to work and when it is not.
+Figure \ref{figure1} provides a simple intuition of the practical usefulness of our proposed methodology. This figure depicts a time series that experienced a shock at time point $T_1^*+1 = 126$. It is supposed that the researcher does not have any information after $T_1^*$, but does have observations from a donor pool of forty time series that have previously undergone similar shocks for which post-shock responses are recorded. Similarity in this context means that the shock effects are random variables that from a common distribution. In this example, the mean of the estimated shock effects is taken as a shock effect estimator for the time series under study. Forecasts are then made by adding this shock effect estimator to the estimated response values obtained from the estimation procedure that ignores the shock. It is apparent from Figure \ref{figure1} that adjusting forecasts in this manner 1) leads to a reduction in forecasting risk; 2) does not fully recover the true shock effect. We evaluate the performance of this post-shock forecasting methodology throughout this article; we outline situations for when it is expected to work and when it is not.
 
 
 
@@ -177,10 +177,10 @@ $\mbf{x}_{i,t}$s are fixed. Let $|x|$ denote the absolute value of $x$ for $x\in
   \phi_i &\simiid \mc{F}_{\phi} \text{ where } |\mc{F}_{\phi}| < 1, \\
    \theta_i &\simiid \mc{F}_{\theta} \text{ with }  \; \mrm{E}_{\mc{F}_{\theta}}(\theta_i) = \mu_{\theta}, \mrm{Var}_{\mc{F}_{\theta}}(\theta_i)  = \Sigma^2_{\theta} \\
 \alpha_i &\simiid \mc{F}_{\alpha} \text{ with }  \; \mrm{E}_{\mc{F}_{\alpha}}(\alpha_i) = \mu_{\alpha}, \mrm{Var}_{\mc{F}_{\alpha}}(\alpha_i)  = \sigma^2_{\alpha}  \\
-\varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon}}(\varepsilon_{i,t})  = \sigma^2  ,  \\
+\varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i  ,  \\
 \eta_i &\indep  \alpha_i \indep \phi_i \indep \theta_i \indep \varepsilon_{i,t},
 \end{align*}
-where $\sigma > 0$. Notice that $\mc{M}_1$ assumes that $\alpha_i$ are iid with $\E{\alpha_i}=\mu_{\alpha}$ 
+where $\sigma > 0$  \red{ and $\indep $ stands for independence operator}. Notice that $\mc{M}_1$ assumes that $\alpha_i$ are iid with $\E{\alpha_i}=\mu_{\alpha}$ 
 for $i = 1, \ldots, n+1$. We also consider a model where the shock effects are linear functions of covariates with an additional additive mean-zero error. For $i = 1, \ldots, n+1$, the random effects structure for this model (model $\mc{M}_2$) is:
 \begin{align}
 \mc{M}_2 \colon \begin{array}{l}
@@ -363,21 +363,21 @@ Formal justification for these results can be found in the Appendix. Note that $
 \end{prop}
 
 
-Unbiasedness properties for $\E{\alpha_1}$ of $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ allow for simple conditions for risk-reduction to hold, and more importantly motivates a bootstrap estimation procedure for evaluation of these conditions, discussed in Section \ref{conditions} and \ref{varbootstrap} respectively. Next, we present the variance expressions for $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ as below: 
+Unbiasedness properties for $\E{\alpha_1}$ of $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ allow for simple conditions for risk-reduction to hold, and more importantly motivates a bootstrap estimation procedure for evaluation of these conditions, discussed in Section \ref{conditions} and \ref{varbootstrap} respectively. \red{Throughout this section, we will assume that the time series within the donor pool are independent for exact variance expressions. However, the theory developed later allows for dependence within the donor pool.} Next, we present the variance expressions for $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ as below: 
 
 \begin{enumerate}[label = (\roman*)]
   \item Under $\mc{M}_1$ and $\mc{M}_{21}$,  
 \begin{align*}
   \var{\hat{\alpha}_{\rm adj}} 
-  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2}, \\
-\var{\hat{\alpha}_{\rm wadj}}  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2.
+  &=\frac{1}{n^2}\sum_{i=2}^{n+1}\sigma^2_i\, \mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2}, \\
+\var{\hat{\alpha}_{\rm wadj}}  &= \sum_{i=2}^{n+1}(\sigma_iw_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2.
 \end{align*}
 \item Under $\mc{M}_{22}$, 
 \begin{align*}
 \var{\hat{\alpha}_{\rm adj}} 
-  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\} +\frac{1}{n^2}(\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}),\\
+  &=\frac{1}{n^2}\sum_{i=2}^{n+1}\sigma_i^2\, \mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\} +\frac{1}{n^2}(\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}),\\
   \var{\hat{\alpha}_{\rm wadj}} 
-  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\} + \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}).
+  &=\sum_{i=2}^{n+1}(\sigma_iw_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\} + \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}).
 \end{align*}
 \end{enumerate}
 Formal justification for these results can be found in Section \ref{proofs} of the Appendix. Note that the variances are not comparable in closed-form because of the term $\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}$, where  $\mbf{M}_i$ is the design matrix for OLS with respect to time series for $i = 2, \ldots, n+1$ from Section \ref{constructionofestimators}.  This term exists because of the inclusion of the random lagged response in our autoregressive model formulation.   
@@ -411,7 +411,7 @@ Proposition \ref{proprisk} says that under $\mc{M}_1$ if the variance of the est
 From Proposition \ref{proprisk}, we obtain a risk-reduction condition
 \begin{align}
   \var{\hat{\alpha}_{\rm adj}} 
-  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2} < \mu_{\alpha}^2. \label{riskconditionadj}
+  &=\frac{1}{n^2}\sum_{i=2}^{n+1}\sigma_i^2\, \mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2} < \mu_{\alpha}^2. \label{riskconditionadj}
 \end{align}
 
 Condition (\ref{riskconditionadj}) implies two facts: (1) adjustment (Forecast 2) is preferable to no adjustment (Forecast 1) asymptotically in $n$ whenever $\mu_{\alpha} \neq 0$; (2) In the finite donor pool settings, adjustment is preferable to no adjustment when $\mu_{\alpha}$ is large relative to its variability and overall regression variability.   
@@ -419,7 +419,7 @@ Condition (\ref{riskconditionadj}) implies two facts: (1) adjustment (Forecast 2
 If  $\mathbf{W}^*$ does not satisfy (\ref{SCM}), its unbiased properties for $\E{\alpha_1}$ should hold approximately when the fit in (\ref{W}) is appropriate as commented in Section \ref{constructionofestimators}. From Proposition \ref{proprisk} and the variance expression for $\hat{\alpha}_{\rm wadj}$, the risk-reduction condition for $\hat{\alpha}_{\rm wadj}$ is
 \begin{align} \label{varwadj}
 \var{\hat{\alpha}_{\rm wadj}}
- &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2 < \mu_{\alpha}^2.
+ &= \sum_{i=2}^{n+1}(\sigma_i w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2 < \mu_{\alpha}^2.
 \end{align}
 In this case, adjustment is preferable to no adjustment when $\mu_{\alpha}$ is large relative to the weighted sum of variances for shock effects for other time series and overall regression variability.  However, the above criteria are generally difficult to evaluate in practice.  Sections \ref{varbootstrap} and \ref{loocv}  provide detailed treatments on how to estimate the sign of $\Delta(\hat\alpha)$ in practice.
 
@@ -438,7 +438,7 @@ The shock effects $\alpha_i$s have different means under $\mc{M}_{21}$ and $\mc{
 Under Proposition \ref{propriskwadj2}, we can obtain a risk-reduction inequality that is similar to \eqref{varwadj},
 \begin{align*}
 \var{\hat{\alpha}_{\rm wadj}}
-& = \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\} + \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}) < (\E{\alpha_1})^2,
+& =\sum_{i=2}^{n+1}(\sigma_i w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\} + \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}) < (\E{\alpha_1})^2,
 \end{align*}
 where $\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}$ may be replaced with $\sigma^2_{\alpha}$ in $\mc{M}_{21}$. The conclusions and intuitions will be identically the same as what we have in Section \ref{conditionsmodel1}. Proposition \ref{unbiased} shows that $\hat{\alpha}_{\rm adj}$ is a biased estimator of $\E{\alpha_1}$ under $\mc{M}_{21}$ and $\mc{M}_{22}$ in general. Hence, Proposition \ref{proprisk} no longer holds for $\hat{\alpha}_{\rm adj}$ under $\mc{M}_{21}$ and $\mc{M}_{22}$.
 
@@ -559,7 +559,7 @@ We will consider parameter setup by varying $\sigma$ in the model of $y_{i,t}$, 
 
 \subsection{Performance metrics}
 
-Our adjustment estimators will be evaluated by multiple criteria. We interpret $\delta_{\hat{\alpha}}= I(\hat{\Delta}(\hat{\alpha})>0)$ for $\hat{\alpha}\in \mc{A}$ as the guess, with 1 indicating that $\hat{\alpha}$ provides risk-reduction over the simple no-adjustment forecast, and 0 indicates the converse. We will consider the LOOCV estimators \eqref{loocvm} and \eqref{loocvk} to assess correct decision making. We will also consider the Euclidean distance between the post-shock forecasts $\hat{y}_{1,T_1^*+1}$, $\hat{y}_{1,T_1^*+1}+ \hat{\alpha}_{\rm adj}$, $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm wadj}$, and $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm IVW}$ and the realized post-shock response $y_{1,T_1^*+1}$. The first two metrics can combine to assess our forecasting methodology prospectively while the latter requires the realization of the post-shock response $y_{1,T_1^*+1}$. 
+Our adjustment estimators will be evaluated by multiple criteria. We interpret $\delta_{\hat{\alpha}}= I(\hat{\Delta}(\hat{\alpha})>0)$ for $\hat{\alpha}\in \mc{A}$ as the guess, with 1 indicating that $\hat{\alpha}$ provides risk-reduction over the simple no-adjustment forecast, and 0 indicates the converse. \red{We will consider the LOOCV estimators with $k$ random draws \eqref{loocvk} to assess correct decision making.} We will also consider the Euclidean distance between the post-shock forecasts $\hat{y}_{1,T_1^*+1}$, $\hat{y}_{1,T_1^*+1}+ \hat{\alpha}_{\rm adj}$, $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm wadj}$, and $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm IVW}$ and the realized post-shock response $y_{1,T_1^*+1}$. The first two metrics can combine to assess our forecasting methodology prospectively while the latter requires the realization of the post-shock response $y_{1,T_1^*+1}$. 
 
 
 
@@ -678,7 +678,7 @@ The covariates and response of time series in the donor pool are adjusted for in
 
 \begin{figure*}[t!]
   \begin{center}
-    \includegraphics[height = 9cm]{FIG3.pdf}
+    \includegraphics[height = 7cm, width = 16.8cm]{FIG3.pdf}
     \caption{November 11th, 2020 post-shock forecasts for stock price of Apple Inc. Black dots and violet line represent real data and fitted line, respectively.}
     \label{Fig3}
   \end{center}  
@@ -763,24 +763,24 @@ Notice that under the setting of OLS, the design matrix for $\mc{M}_2$ is the sa
 Under $\mc{M}_{21}$ where $\delta_i=\delta$ are fixed unknown parameters,  we will have
   \begin{align}
   \var{\hat{\alpha}_{\rm wadj}} 
-  &= \mrm{E} \left\{\sum_{i=2}^{n+1}(w_i^*)^2(\sigma^2(\mbf{M}'_i\mbf{M}_i)^{-1}_{22})\right\} +\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2  \nonumber\\
-  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2.\label{equation6}
+  &= \mrm{E} \left\{\sum_{i=2}^{n+1}(w_i^*)^2(\sigma_i^2(\mbf{M}'_i\mbf{M}_i)^{-1}_{22})\right\} +\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2  \nonumber\\
+  &= \sum_{i=2}^{n+1}(\sigma_i w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\sigma^2_{\alpha}\sum_{i=2}^{n+1}(w_i^*)^2.\label{equation6}
 \end{align}
 Similarly, under $\mc{M}_{22}$ where we assume $\delta_i \indep \varepsilon_{i,t}$, we have
  \begin{align*}
   \var{\hat{\alpha}_{\rm wadj}} 
-  &= \sigma^2\sum_{i=2}^{n+1}(w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}\\
+  &= \sum_{i=2}^{n+1}(\sigma_i w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}\\
  & \quad  + \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha})
 \end{align*}
 For the adjustment estimator, we simply replace $\mbf{W}^*$ with $1/n\mbf{1}_n$. Thus, under $\mc{M}_{21}$ we have 
  \begin{align*}
   \var{\hat{\alpha}_{\rm adj}} 
-  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2}
+  &=\frac{1}{n^2}\sum_{i=2}^{n+1} \sigma_i^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}+\frac{\sigma^2_{\alpha}}{n^2}
 \end{align*}
 Under $\mc{M}_{22}$, we shall have
  \begin{align*}
   \var{\hat{\alpha}_{\rm adj}} 
-  &=\frac{\sigma^2}{n^2}\sum_{i=2}^{n+1}\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}\\
+  &=\frac{1}{n^2}\sum_{i=2}^{n+1}\sigma_i^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\}\\
   & \quad  +\frac{1}{n^2}(\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}).
 \end{align*}
 Notice that $\mc{M}_{1}$ differs from $\mc{M}_{21}$ only by its mean parameterization of $\alpha$ (see Section \ref{modelsetup}). In other words, the variances of $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ under $\mc{M}_1$ are the same for those under $\mc{M}_{21}$.
