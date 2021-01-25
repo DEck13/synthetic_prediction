@@ -180,7 +180,7 @@ $\mbf{x}_{i,t}$s are fixed. Let $|x|$ denote the absolute value of $x$ for $x\in
 \varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i  ,  \\
 \eta_i &\indep  \alpha_i \indep \phi_i \indep \theta_i \indep \varepsilon_{i,t},
 \end{align*}
-where $\sigma > 0$  \red{ and $\indep $ stands for independence operator}. Notice that $\mc{M}_1$ assumes that $\alpha_i$ are iid with $\E{\alpha_i}=\mu_{\alpha}$ 
+where $\indep $ denotes the independence operator. Notice that $\mc{M}_1$ assumes that $\alpha_i$ are iid with $\E{\alpha_i}=\mu_{\alpha}$ 
 for $i = 1, \ldots, n+1$. We also consider a model where the shock effects are linear functions of covariates with an additional additive mean-zero error. For $i = 1, \ldots, n+1$, the random effects structure for this model (model $\mc{M}_2$) is:
 \begin{align}
 \mc{M}_2 \colon \begin{array}{l}
@@ -193,7 +193,7 @@ for $i = 1, \ldots, n+1$. We also consider a model where the shock effects are l
 \t{\varepsilon}_{i} &\simiid  \mc{F}_{\t{\varepsilon}} \text{ with }\mrm{E}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=0, \mrm{Var}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=\sigma^2_{\alpha}\\
 \eta_i &\indep  \alpha_i \indep \phi_i \indep \theta_i \indep \varepsilon_{i,t} \indep \t{\varepsilon}_{i}.
 \end{align*} 
-where $\sigma_a > 0$. We further define 
+We further define 
 $\tilde{\alpha}_i=\mu_{\alpha}+\delta_i'\mbf{x}_{i, T_i^*+1}$. 
 We will investigate the post-shock aggregated estimators in $\mc{M}_2$ 
 in settings where $\delta_i$ is either fixed or random. 
@@ -363,7 +363,7 @@ Formal justification for these results can be found in the Appendix. Note that $
 \end{prop}
 
 
-Unbiasedness properties for $\E{\alpha_1}$ of $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ allow for simple conditions for risk-reduction to hold, and more importantly motivates a bootstrap estimation procedure for evaluation of these conditions, discussed in Section \ref{conditions} and \ref{varbootstrap} respectively. \red{Throughout this section, we will assume that the time series within the donor pool are independent for exact variance expressions. However, the theory developed later allows for dependence within the donor pool.} Next, we present the variance expressions for $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ as below: 
+Unbiasedness properties for $\E{\alpha_1}$ of $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ allow for simple conditions for risk-reduction to hold, and more importantly motivates a bootstrap estimation procedure for evaluation of these conditions, discussed in Section \ref{conditions} and \ref{varbootstrap} respectively. Throughout this section, we will assume that the time series within the donor pool are independent. This is needed for exact variance expressions. However, the theory developed later allows for dependence within the donor pool \red{be specific of when independence is required and when it is not}. Next, we present the variance expressions for $\hat{\alpha}_{\rm adj}$ and $\hat{\alpha}_{\rm wadj}$ as below: 
 
 \begin{enumerate}[label = (\roman*)]
   \item Under $\mc{M}_1$ and $\mc{M}_{21}$,  
@@ -559,7 +559,7 @@ We will consider parameter setup by varying $\sigma$ in the model of $y_{i,t}$, 
 
 \subsection{Performance metrics}
 
-Our adjustment estimators will be evaluated by multiple criteria. We interpret $\delta_{\hat{\alpha}}= I(\hat{\Delta}(\hat{\alpha})>0)$ for $\hat{\alpha}\in \mc{A}$ as the guess, with 1 indicating that $\hat{\alpha}$ provides risk-reduction over the simple no-adjustment forecast, and 0 indicates the converse. \red{We will consider the LOOCV estimators with $k$ random draws \eqref{loocvk} to assess correct decision making.} We will also consider the Euclidean distance between the post-shock forecasts $\hat{y}_{1,T_1^*+1}$, $\hat{y}_{1,T_1^*+1}+ \hat{\alpha}_{\rm adj}$, $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm wadj}$, and $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm IVW}$ and the realized post-shock response $y_{1,T_1^*+1}$. The first two metrics can combine to assess our forecasting methodology prospectively while the latter requires the realization of the post-shock response $y_{1,T_1^*+1}$. 
+Our adjustment estimators will be evaluated by multiple criteria. We interpret $\delta_{\hat{\alpha}}= I(\hat{\Delta}(\hat{\alpha})>0)$ for $\hat{\alpha}\in \mc{A}$ as the guess, with 1 indicating that $\hat{\alpha}$ provides risk-reduction over the simple no-adjustment forecast, and 0 indicates the converse. We will consider the LOOCV estimators with $k$ random draws \eqref{loocvk} to assess correct decision making. We will also consider the Euclidean distance between the post-shock forecasts $\hat{y}_{1,T_1^*+1}$, $\hat{y}_{1,T_1^*+1}+ \hat{\alpha}_{\rm adj}$, $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm wadj}$, and $\hat{y}_{1,T_1^*+1}+\hat{\alpha}_{\rm IVW}$ and the realized post-shock response $y_{1,T_1^*+1}$. The first two metrics can combine to assess our forecasting methodology prospectively while the latter requires the realization of the post-shock response $y_{1,T_1^*+1}$. 
 
 
 
