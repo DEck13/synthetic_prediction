@@ -1,0 +1,167 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{natbib}
+\usepackage{graphicx,times}
+\usepackage{mathtools}
+\usepackage{url}
+%\usepackage{setspacing}
+\usepackage{fullpage}
+\usepackage{palatino}
+\usepackage{mathpazo}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{xifthen} % Allows us to put in optional arguments to questions
+\usepackage{color}
+\usepackage{manfnt}
+\usepackage{ifthen}
+\usepackage{listings}
+\usepackage{nicefrac,mathtools}
+\usepackage[top=2.2cm,bottom=2.2cm,right=2.1cm,left=2.1cm]{geometry}
+\usepackage{color}   %May be necessary if you want to color links
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{showexpl}
+\usepackage{xcolor}
+\usepackage{mathtools}
+\usepackage{caption}
+\usepackage{chngcntr}
+\usepackage{xparse}
+\usepackage{etoolbox}
+\usepackage{blkarray}
+\usepackage{cprotect}
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\mustar}{\mu^{\textstyle{*}}}
+\newcommand{\betastar}{\hat{\beta}^{\textstyle{*}}}
+\newcommand{\betahat}{\hat{\beta}}
+\newcommand{\betaw}{\hat{\beta}_w}
+\newcommand{\betastarT}{\hat{\beta}^{\textstyle{*}^T}}
+\newcommand{\betabar}{\bar{\beta}^{\textstyle{*}}}
+\newcommand{\bstar}{b^{\textstyle{*}}}
+\newcommand{\vstar}{v^{\textstyle{*}}}
+\newcommand{\Bstar}{B^{\textstyle{*}}}
+\newcommand{\wstar}{w^{\textstyle{*}}}
+\newcommand{\BICstar}{\textsc{bic}^{\textstyle{*}}}
+\newcommand{\minBICstar}{\min_{s=1,...,r}\left\{\BIC^{\textstyle{*}}(s)\right\}}
+\newcommand{\sstar}{s_m^{\textstyle{*}}}
+\newcommand{\epstar}{\varepsilon^{\textstyle{*}}}
+\newcommand{\epstarT}{\varepsilon^{{\textstyle{*}^T}}}
+\newcommand{\epresstar}{\widehat{\varepsilon}^{\textstyle{*}}}
+\newcommand{\epresstarT}{\widehat{\varepsilon}^{\textstyle{*}^T}}
+\newcommand{\residstar}{\widehat{\varepsilon}^{\textstyle{*}}}
+\newcommand{\Ystar}{Y^{\textstyle{*}}}
+\newcommand{\Xstar}{X^{\textstyle{*}}}
+\newcommand{\Wstar}{W^{\textstyle{*}}}
+\newcommand{\Wstarinv}{W^{{\textstyle{*}^{-1}}}}
+\newcommand{\Zstar}{Z^{\textstyle{*}}}
+\newcommand{\YstarT}{Y^{{\textstyle{*}^T}}}
+\newcommand{\XstarT}{X^{\textstyle{*}^T}}
+\newcommand{\Sigstar}{\widehat{\Sigma}^{\textstyle{*}}}
+\newcommand{\Sigstarhalf}{\widehat{\Sigma}^{\textstyle{*}^{1/2}}}
+\newcommand{\Sigstarhalfinv}{\widehat{\Sigma}^{\textstyle{*}^{-1/2}}}
+\newcommand{\lstar}{l^{\textstyle{*}}}
+
+\newcommand{\Astar}{A^{\textstyle{*}}}
+\newcommand{\Gostar}{\widehat{G}_o^{\textstyle{*}}}
+\newcommand{\GostarT}{\widehat{G}_o^{\textstyle{*}^T}}
+\newcommand{\Gohat}{\widehat{G}_o}
+\newcommand{\GohatT}{\widehat{G}_o^T}
+\newcommand{\Sigresstar}{\widehat{\Sigma}^{\textstyle{*}}}
+
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\Lnorm}{\mathcal{L}}
+\newcommand{\Sub}{\mathcal{S}}
+\newcommand{\Q}{\mathcal{Q}}
+\newcommand{\Proj}{\mathcal{P}}
+\newcommand{\Env}{\mathcal{E}}
+\newcommand{\Envspace}{\Env_{\Sigma}(\B)}
+\newcommand{\utrue}{u_{\text{true}}}
+\newcommand{\BIC}{\textsc{bic}}
+\newcommand{\dimEnv}{\text{dim}\{\Envspace\}}
+\newcommand{\minBIC}{\min_{s=1,...,r}\left(\BIC(s)\right)}
+\newcommand{\nboot}{n_{\text{boot}}}
+
+\newcommand{\X}{\mathbb{X}}
+\newcommand{\Y}{\mathbb{Y}}
+\newcommand{\Ymatstar}{\Y^{\textstyle{*}}}
+\newcommand{\YmatstarT}{\Y^{\textstyle{*}^T}}
+\newcommand{\Xmatstar}{\X^{\textstyle{*}}}
+\newcommand{\XmatstarT}{\X^{\textstyle{*}^T}}
+
+\newcommand{\Sigres}{\widehat{\Sigma}}
+\newcommand{\SigY}{\widehat{\Sigma}_{Y}}
+\newcommand{\SigX}{\widehat{\Sigma}_{X}}
+\newcommand{\Pu}{\widehat{\Proj}_{\Env_u}}
+\newcommand{\Pj}{\widehat{\Proj}_{\Env_j}}
+\newcommand{\Qu}{\widehat{\Q}_{\Env_u}}
+\newcommand{\Qj}{\widehat{\Q}_{\Env_j}}
+\newcommand{\PD}{\widehat{\Proj}_{D}}
+\newcommand{\betau}{\hat{\beta}_u}
+\newcommand{\betaj}{\hat{\beta}_j}
+\newcommand{\res}{\widehat{\varepsilon}}
+
+\newcommand{\sestar}{\text{se}^{\textstyle{*}}\{\text{vec}(\hat{\beta})\}}
+\newcommand{\setrue}{\text{se}_{\text{true}}\{\text{vec}(\hat{\beta})\}}
+
+\newcommand{\vecop}[1]{\text{vec}\left( #1 \right)}
+\newcommand{\vechop}[1]{\text{vech}\left( #1 \right)}
+\newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\Var}{var}
+
+\newtheorem{lem}{Lemma} 
+\newtheorem{thm}{Theorem} 
+\allowdisplaybreaks
+
+\setlength{\parindent}{0cm}
+
+
+\newcommand{\response}[1]{\noindent \textcolor{blue}{\emph{Response:} #1}}
+\cMakeRobust\response
+
+\hypersetup{
+  linkcolor  = blue,
+  citecolor  = blue,
+  urlcolor   = blue,
+  colorlinks = true,
+} % color setup
+
+
+\title{Response to Associate Editor's Comments}
+\author{Jilei Lin and Daniel J. Eck}
+\date{}
+
+\bibliographystyle{plainnat}
+
+\begin{document}
+
+\maketitle
+
+\textcolor{red}{Thank you for your helpful comments for our literature review and data analysis. We think they will help improve the quality of our manuscript a lot.}\\
+
+
+{\bf Comment 1:} Firstly, this contribution seems to me to be related to two exisiting strands of literature, neither of which is cited. Describing the contribution relative to these literatures might help some readers better appreciate the achievements.
+These are the literatures on "ad hoc" model adjustments for breaks, see e.g.,  \cite{clements1996intercept} for an early contribution, and \cite{castle2015robust} for a more recent example. The second is to do with outliers (innovation, additive and level shifts) in ARMA models, see e.g., \cite{tsay1986time}. Comparing/contrasting the approach in the paper with these literatures may be illuminating. \\
+
+\response{Thanks for pointing it out. The discussion of those papers is included in the introduction section of the revised manuscript.}\\
+
+{\bf Comment 2:} Secondly, a single empirical example is presented. I would like to see the results for a range of series - this would generate confidence in the proposed approach. \\
+
+\response{We include another example in which we forecast the stock price of Apple Inc. after the latest release of their MacBook product in 2020. This example is included in Section 5.2 of the revised manuscript. In this example, the donor pool includes three past time series of  Apple inc.'s stock price surrounding previous releases of the MacBook. In this example, the shock is with precedent and our method is expected to work well. This is because Apple Inc. is a well-established company that did not revolutionize the MacBook product in their last three releases. Apple Inc. mostly focused on upgrading the hardware in the MacBook, this same is true for the latest release. Our adjusted forecast performs very well in this setting, as expected. This example is representative for a class of problems involving shocks that are very similar to those in the past. In contrast, the example of Conoco Phillips is without precedent. In the past, Conoco Phillips  did not experience a financial crisis shock caused by a pandemic supplemented with an oil price shock. In the Conoco Phillips example, our method is better than the original forecast, although we do not fully recover the yet to be observed stock price. We hope that the addition of the Apple example helps to generate confidence in our approach.}
+
+
+\bibliography{synthetic-prediction-notes}
+
+\end{document}

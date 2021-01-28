@@ -1,0 +1,400 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{natbib}
+\usepackage{graphicx,times}
+\usepackage{mathtools}
+\usepackage{url}
+%\usepackage{setspacing}
+\usepackage{fullpage}
+
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\mustar}{\mu^{\textstyle{*}}}
+\newcommand{\betastar}{\hat{\beta}^{\textstyle{*}}}
+\newcommand{\betahat}{\hat{\beta}}
+\newcommand{\betaw}{\hat{\beta}_w}
+\newcommand{\betastarT}{\hat{\beta}^{\textstyle{*}^T}}
+\newcommand{\betabar}{\bar{\beta}^{\textstyle{*}}}
+\newcommand{\bstar}{b^{\textstyle{*}}}
+\newcommand{\vstar}{v^{\textstyle{*}}}
+\newcommand{\Bstar}{B^{\textstyle{*}}}
+\newcommand{\wstar}{w^{\textstyle{*}}}
+\newcommand{\BICstar}{\textsc{bic}^{\textstyle{*}}}
+\newcommand{\minBICstar}{\min_{s=1,...,r}\left\{\BIC^{\textstyle{*}}(s)\right\}}
+\newcommand{\sstar}{s_m^{\textstyle{*}}}
+\newcommand{\epstar}{\varepsilon^{\textstyle{*}}}
+\newcommand{\epstarT}{\varepsilon^{{\textstyle{*}^T}}}
+\newcommand{\epresstar}{\widehat{\varepsilon}^{\textstyle{*}}}
+\newcommand{\epresstarT}{\widehat{\varepsilon}^{\textstyle{*}^T}}
+\newcommand{\residstar}{\widehat{\varepsilon}^{\textstyle{*}}}
+\newcommand{\Ystar}{Y^{\textstyle{*}}}
+\newcommand{\Xstar}{X^{\textstyle{*}}}
+\newcommand{\Wstar}{W^{\textstyle{*}}}
+\newcommand{\Wstarinv}{W^{{\textstyle{*}^{-1}}}}
+\newcommand{\Zstar}{Z^{\textstyle{*}}}
+\newcommand{\YstarT}{Y^{{\textstyle{*}^T}}}
+\newcommand{\XstarT}{X^{\textstyle{*}^T}}
+\newcommand{\Sigstar}{\widehat{\Sigma}^{\textstyle{*}}}
+\newcommand{\Sigstarhalf}{\widehat{\Sigma}^{\textstyle{*}^{1/2}}}
+\newcommand{\Sigstarhalfinv}{\widehat{\Sigma}^{\textstyle{*}^{-1/2}}}
+\newcommand{\lstar}{l^{\textstyle{*}}}
+
+\newcommand{\Astar}{A^{\textstyle{*}}}
+\newcommand{\Gostar}{\widehat{G}_o^{\textstyle{*}}}
+\newcommand{\GostarT}{\widehat{G}_o^{\textstyle{*}^T}}
+\newcommand{\Gohat}{\widehat{G}_o}
+\newcommand{\GohatT}{\widehat{G}_o^T}
+\newcommand{\Sigresstar}{\widehat{\Sigma}^{\textstyle{*}}}
+
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\Lnorm}{\mathcal{L}}
+\newcommand{\Sub}{\mathcal{S}}
+\newcommand{\Q}{\mathcal{Q}}
+\newcommand{\Proj}{\mathcal{P}}
+\newcommand{\Env}{\mathcal{E}}
+\newcommand{\Envspace}{\Env_{\Sigma}(\B)}
+\newcommand{\utrue}{u_{\text{true}}}
+\newcommand{\BIC}{\textsc{bic}}
+\newcommand{\dimEnv}{\text{dim}\{\Envspace\}}
+\newcommand{\minBIC}{\min_{s=1,...,r}\left(\BIC(s)\right)}
+\newcommand{\nboot}{n_{\text{boot}}}
+
+\newcommand{\X}{\mathbb{X}}
+\newcommand{\Y}{\mathbb{Y}}
+\newcommand{\Ymatstar}{\Y^{\textstyle{*}}}
+\newcommand{\YmatstarT}{\Y^{\textstyle{*}^T}}
+\newcommand{\Xmatstar}{\X^{\textstyle{*}}}
+\newcommand{\XmatstarT}{\X^{\textstyle{*}^T}}
+
+\newcommand{\Sigres}{\widehat{\Sigma}}
+\newcommand{\SigY}{\widehat{\Sigma}_{Y}}
+\newcommand{\SigX}{\widehat{\Sigma}_{X}}
+\newcommand{\Pu}{\widehat{\Proj}_{\Env_u}}
+\newcommand{\Pj}{\widehat{\Proj}_{\Env_j}}
+\newcommand{\Qu}{\widehat{\Q}_{\Env_u}}
+\newcommand{\Qj}{\widehat{\Q}_{\Env_j}}
+\newcommand{\PD}{\widehat{\Proj}_{D}}
+\newcommand{\betau}{\hat{\beta}_u}
+\newcommand{\betaj}{\hat{\beta}_j}
+\newcommand{\res}{\widehat{\varepsilon}}
+
+\newcommand{\sestar}{\text{se}^{\textstyle{*}}\{\text{vec}(\hat{\beta})\}}
+\newcommand{\setrue}{\text{se}_{\text{true}}\{\text{vec}(\hat{\beta})\}}
+
+\newcommand{\vecop}[1]{\text{vec}\left( #1 \right)}
+\newcommand{\vechop}[1]{\text{vech}\left( #1 \right)}
+\newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\Var}{var}
+
+\newtheorem{lem}{Lemma} 
+\newtheorem{thm}{Theorem} 
+\allowdisplaybreaks
+
+\setlength{\parindent}{0cm}
+
+\title{Referee report checklist}
+\author{Daniel J. Eck}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+
+
+
+Thank you for the opportunity to resubmit at Electronic Journal of Statistics. Thank you to the reviewers for comments that led to an improved version of this manuscript. We address all of the reviewers' comments below. An outlines of each change made or a rebuttal is provided for all of the reviewer's comments.
+
+
+\section*{Editors}
+
+------------------------------------------------------------------------------------------------------------------------
+Both referees like aspects of the paper, but make several suggestions that would improve the paper. The exposition needs to improve --- and both referees have provided several pointers in that regard. I have also gotten some comments from another expert on this topic, who is less enthusiastic about the paper. I mention his relevant comments below: \\
+
+"The authors claim they are providing CIs for certain scalar parameters (e.g., cell means or cell probabilities). It is not clear to me what kind of coverage guarantees these CIs have, because they appear to be defined in terms of a data-dependent distribution (dependent on the MLE in the completion of the family). Explicitly: what is the reference distribution for computing the coverage? Is the coverage marginal, or is it conditional? And if it is conditional, what exactly is the conditioning event (I assume that the sufficient statistic is on the boundary of the support, but this is not spelled out)? Not only should the authors clarify this point but they should also verify coverage, both theoretically and in simulations." \\
+
+I like many aspects of the paper --- and even though the theoretical underpinnings of the results presented in this paper was developed in the PhD thesis of the second author almost 30 years ago --- it is both elegant and of good technical quality, and is worth publishing now. \\
+
+Hence I recommend a major revision where the authors address all the concerns of the reviewers and prepare a point-by-point response to their comments.\\
+----------------------------------------------------------------------------------------------------------------------
+
+I concur with the position of the AE, and I have a further minor point myself: EJS is electronic, so supplementary files do not make much sense. On the other hand, we do not want to publish a paper which is 70 pages long - so I suggest to enclose proofs and discussion in the paper as an appendix, and to leave the codes in a file on your website or on the arXiv. \\
+
+{\bf Response to the editors:} Thank you for the opportunity to submit a revision. We include a point by point response for the comments and concerns raised by the reviewers. We also relegate the code and thorough analysis to arXiv. \\
+
+{\bf Response to third reviewer's comments in the AE's report:} %The conditioning event is indeed that the sufficient statistic is on the boundary. As the first referee pointed out, this point was laid out in a free-flowing manner. We have since added a definition for the limiting conditional model as suggested by that referee with the hope that this clarifies the point. 
+We do admit that our intervals are not a complete confidence interval recipe, because they only say what to do when the MLE does not exist in the conventional sense (only exists in the Barndorff-Nielsen completion).  And, of course, it is only a complete confidence interval recipe (that says what to do for all possible data) that can have a coverage probability.  So our proposal has to be considered only as a fix-up of some other confidence interval recipe.  For example: do Wald intervals when the MLE exists in the conventional sense (MLE mean values not on the boundary) and do our intervals when the MLE does not exist in the conventional sense (MLE mean values on the boundary). Or the same with score or likelihood or variance stabilizing or something else substituted for Wald. The web page \url{http://www.stat.umn.edu/geyer/5102/examp/coverage.html} shows how these modified intervals work combining, our proposal with various other confidence interval recipes.  They clearly fix up all bad behavior near the boundaries.  In light of this we do not think adding simulations will help.  We could add this web page to the supplementary material if the editors think that would be helpful. And, of course, we could make similar plots for other distributions.
+
+
+
+
+\newpage
+\section*{Reviewer 1}
+
+Thank you very much for taking the time to provide a thoughtful review of our manuscript. We think that these comments will go a long way to improve the exposition of our manuscript. \\
+
+
+%% addressed
+{\bf Major Comment 1:} I feel part of the introduction requires some rewriting. In particular, it would be appreciated if the contributions of this paper is elaborated further. Currently, the paragraph starting with ‘In this paper, ·’ is meant to serve this purpose. However, if the authors can structure this a bit more (through bullet points, maybe?) and elaborate more on the contributions of this manuscript, distinguishing them from Geyer (2009) in particular (and other relevant literature), that would significantly improve this part of the exposition. \\
+
+{\bf Response:} We now better outline the contributions made in this paper using bullet points.  \\
+
+
+
+%% addressed
+{\bf Major Comment 2:} Defining the completion before Section 2 would make things easier to follow. \\
+
+{\bf Response:} We agree that the completion needs to be defined, thank you for pointing this out. We now provide an informal definition in the Introduction and a formal definition in Section 4. \\
+
+
+
+%% addressed
+{\bf Major Comment 3:} What do the authors mean by ‘apparent MLE’ in Pg. 3? The sentence containing this is unclear to me. \\
+
+{\bf Response:} The word `apparent' should not be there and has been removed. Thank you for catching this. \\
+
+
+
+%% addressed
+{\bf Major Comment 4:} Having sentences like ‘To find the MLE ... has been identified’ in Pg. 4 can be confusing to some readers at this stage. If LCM were defined already that would be once again, easier to follow.\\
+
+{\bf Response:} Thank you for reading this closely. We want to first present the utility of methodology to the reader before explaining the LCM. So we removed mentions to the LCM and the buildup to the LCM from this Section. We provide a formal definition of the LCM in Section 4. \\
+
+
+
+%% addressed
+{\bf Major Comment 5:} Generally there is a lot of references to quantities and concepts in [3]. This may make things hard to follow for readers without a thorough understanding of [3]. In my opinion, it would be better to include a short summary of preliminaries from [3]. I would further recommend altering the exposition throughout, with appropriate references to this summary. \\
+
+{\bf Response:} Thank you for alerting us that this may be confusing.  We better separate the developments in this manuscript from the concepts in [3] without including a summary of preliminaries. We better elaborate the contributions in this paper as suggested. We provide definitions of key quantities as suggested, for example the LCM is now defined within our framework. We also remove references to technical terms in the motivating example which we hope gives the reader a conceptual basis for understanding both the problem of interest and how we plan on providing a solution with the methodology in this paper. \\
+
+
+
+%% addressed
+{\bf Major Comment 6:} Several things are deferred to the supplement, without appropriate pointers. I would recommend including proper references to section numbers, etc. in the supplement. \\
+
+{\bf Response:} Thank you for pointing this out, we now provide much more pointed references to quantities in the Appendix. The R code is now relegated to ArXiv. \\
+
+
+
+%% addressed
+{\bf Major Comment 7:} In Section 4, I would recommend including a summary of the authors’ method in an algorithm format. \\
+
+{\bf Response:} We now include a summary of our method in a simple algorithmic format. \\
+
+
+
+%% addressed
+{\bf Major Comment 8:} Quite some material is presented in Section 4 in a free-flowing manner. However, providing key concepts and conclusions within definition and result (theorem, lemma, etc) environments respectively, would be very useful. E.g definition of LCM; having Eqn 6 as a separate result, so it is easy to find, etc. \\
+
+{\bf Response:} Thanks for your commentary on our exposition. We add a definition of LCM and the closure of the exponential family.  \\
+
+
+
+%% addressed
+{\bf Major Comment 9:} Kindly elaborate on the point ‘However, ...it has’ before Equation (8). \\
+
+{\bf Response:} We expanded on the point about computational stability by mentioning issues overflow and underflow.  We also defer to the Appendix for more details on careful coding. \\
+
+
+
+%% addressed
+{\bf Major Comment 10:} In Section 5.3, the running time is mentioned without specific details regarding the computational resources. Therefore, it is hard to calibrate the real computational speed of the proposed method. \\
+
+{\bf Response:} Thank you for pointing this out, we added information on the computational resources. \\
+
+
+
+%% addressed
+{\bf Major Comment 11:} Generally, many definitions are presented in a free-flowing manner, and I feel, collecting them in one place would be very useful. \\
+
+{\bf Response:} We added definitions within Section 4 to the free-flowing presentation of ideas. \\
+
+
+
+%% addressed
+{\bf Major Comment 12:} The counterexample in the supplementary is very interesting. I would recommend describing the counterexample in the main manuscript, with some intuitions, deferring details to the supplementary. \\
+
+{\bf Response:} Thank you for pointing this out, we reference the purpose of this counterexample with more emphasis in the remarks to Theorem 6. \\
+
+
+
+%% addressed
+{\bf Major Comment 13:} Remark 1 after Theorem 6 is extremely dense, and hard to follow. I would suggest de-densifying it. \\
+
+{\bf Response:} Remark 1 has been de-densified. We also add a remark that serves as a roadmap. \\
+
+
+
+%% addressed
+{\bf Major Comment 14:} Are there are any geometric interpretation of assumption 16? If this is purely a proof artefact, I would recommend providing some intuition regarding why and how this this shows up. \\
+
+{\bf Response:} We now provide some intuition for assumption (16) and why it arises as a proof artefact.  \\
+
+
+
+%% addressed
+{\bf Major Comment 15:} I would recommend providing a short summary of key technical contributions of the proofs in the main manuscript.
+ \\
+
+{\bf Response:} Some technical contributions of the proof are now provided in the Introduction. \\
+
+
+
+%% addressed
+{\bf Major Comment 16:} There are some citations at the beginning, however, this problem has been extremely well-studied. The authors make an important contribution, and therefore, situating the problem better in the context of relevant literature would be recommended. In particular, the current citation misses several important works, (e.g. [1, 5, 6]). I would recommend citing related works more broadly with appropriate categorizations of the works, in the way the authors have currently presented. \\
+
+{\bf Response:} We add these references as suggested. \\
+
+
+
+%% addressed
+{\bf Major Comment 17:} Along similar lines as above, the discussion and connections to [2] seems more appropriate for the introduction, rather than deferring to the discussion. \\
+
+{\bf Response:} We moved the discussion and connections to [2] to the Introduction as suggested. \\
+
+
+
+%% addressed
+{\bf Major Comment 18:} The sentence ‘Moreover, ...solutions’ seems a bit misplaced. It is technically true if one still wishes to provide MLE-based inference. But it misses the crucial fact that there are currently other available options. For instance, one could provide valid inference based on the debiased lasso [7, 8, 4], under appropriate sparsity conditions. In my opinion, the authors could still make arguments in their favor. For instance, practitioners may be more comfortable using traditional estimation/inference schemes—the ones they have been more familiar with for ages, rather than switching to a whole different estimator—and therefore, it is still crucial to make MLE- based inference pipelines more suited for contemporary datasets. This is setting aside the additional fact that debiased lasso requires sparsity assumptions that may be quite hard to check in practice. \\
+
+{\bf Response:} There are, of course, a huge variety of methods that have been placed in
+the literature for analyzing regression data.  Debiased LASSO seems only
+one of many of these.  Moreover, the debiased LASSO was originally developed
+for linear models which are already Barndorff-Nielsen complete and exhibit
+none of the phenomena this paper is about, and \citet{xia-nan-li} say that 
+when extended to generalized linear models (GLM) the debiased LASSO does
+not work, so it seems irrelevant to the concerns of this paper. \\
+
+\begin{sloppypar}
+No regularization or shrinkage method, including Bayesian methods,
+take seriously the possibility that
+the true unknown model is near or on the boundary of the parameter space.
+Only methods for inference in the Barndorff-Nielsen completion can do that.
+So, as the discussion of \citet{geyer-gdor} says,
+our methods are competitors of the conventional methods for high-dimensional
+data, even though that is not a concern of this paper, and we have not
+developed this theme.
+\end{sloppypar}
+
+
+
+%We do not add references to the debiased lasso as suggested here for similar reasons to those given in the Discussion of Geyer (2009). Specifically, Geyer (2009) says:
+%\begin{quote}
+%	Bayesian inference does not avoid the issues treated in this article unless one is a subjective Bayesian and the prior truly represents someone’s prior opinion. In complicated examples like our contingency table example (Section 2.3), such subjective priors seem difficult if not impossible. For exponential families satisfying the conditions of Brown [3], flat improper priors on natural parameters lead to proper posteriors if and only if the MLE exists in the conventional sense, that is, if and only if the conditions of Theorem 4 hold. When the MLE does not exist in the conventional sense, priors that are ``diffuse,'' ``vague,'' or ``objective'' make no sense.
+
+%Nonparametric inference, both older (smoothing) and newer (machine learn- ing) behave weirdly when the MLE does not exist in the conventional sense. Consider our logistic regression example (Section 2.2) from the nonparametric point of view. Let us take a simple nonparametric approach of fitting a polynomial of arbitrary degree. Traditionally, we need some sort of model selection criterion such as cross-validation to choose the degree. Here the quadratic model fits the data perfectly so no model of higher degree can fit better. All the non-parametricness collapses when solutions ``at infinity'' are considered. Wavelets do not work well here; neither does smoothing of any form; neither does regularization such as LASSO or SVM [14, Section 4.4.4 and Chapters 5, 6, and 12]. All make a simple situation needlessly complicated. This paragraph and the preceding one raise issues but provide no answers, which must await another paper and perhaps another author.
+%\end{quote}
+
+\vspace*{0.5cm} If requested we will add references to the debiased lasso into the Discussion of the present paper. \\
+
+
+
+%% addressed
+{\bf Minor Comments:} ‘a likelihood maximizing sequences’ in abstract;
+There are some repeats, such as ‘when when’ in first line. Similar repeats are seen in multiple places; ‘is origins’ on Pg. 2. \\
+
+{\bf Response:} Thank you for pointing out these typos, they are now fixed. We scanned for and fixed other typos. 
+
+
+
+\newpage
+\section*{Reviewer 2}
+
+Thank you for your positive feedback of our current paper.  We will shed some light on the comments raised in \texttt{EJS2001-007R1R2.pdf} about the methodology in  Likelihood Inference in Exponential Families and Directions of Recession which we will refer to as Geyer (2009). 
+\begin{itemize}
+\item Nonuniqueness is not the issue.  The geometry of Theorem~6
+    in \citet{geyer-gdor} makes every generic direction of recession 
+    (GDOR) of the original model (OM) a direction of constancy of the LCM.
+    It follows that the constancy space of the LCM contains the normal
+    cone (the set of all directions of recession,
+    \citealp[Theorem~3]{geyer-gdor}).  It follows that the confidence
+    region defined by (23) in \citet{geyer-gdor} is uniquely defined
+    as the discussion following that equation indicates.
+    So these confidence intervals are well defined.
+\item Conditional is not the issue.  What \citet{geyer-gdor} calls the
+    limiting conditional model (LCM) is both a family of limit distributions
+    and a family of conditional distributions.  Think of it as a family
+    of limit distributions, and it is clear that conditioning is irrelevant.
+    The hypothesis tests are not conditional, and neither are the
+    confidence intervals that come from inverting them.
+\item We do admit that our intervals are not a complete confidence interval recipe, because they only say what to do when the MLE does not exist in the conventional sense (only exists in the Barndorff-Nielsen completion).  And, of course, it is only a complete confidence interval recipe (that says what to do for all possible data) that can have a coverage probability.  So our proposal has to be considered only as a fix-up of some other confidence interval recipe.  For example: do Wald intervals when the MLE exists in the conventional sense (MLE mean values not on the boundary) and do our intervals when the MLE does not exist in the conventional sense (MLE mean values on the boundary). %Or the same with score or likelihood or variance stabilizing or something else substituted for Wald. The web page \url{http://www.stat.umn.edu/geyer/5102/examp/coverage.html} shows how these modified intervals work combining, our proposal with various other confidence interval recipes.  They clearly fix up all bad behavior near the boundaries.  In light of this we do not think adding simulations will help.  We could add this web page to the supplementary material if the editors think that would be helpful. And, of course, we could make similar plots for other distributions.
+\end{itemize}
+
+
+
+
+%{\bf Comment:} $s$ is not an estimate, how to understand the confidence interval of $s$. \\
+
+%{\bf Response:} $s$ is understood to be on the canonical parameter parameterization, the one-sided confidence intervals on the mean-value parameterization appearing in the figures of Geyer (2009) are obtained from mapping $\hat\theta + \gamma + s\delta$,$s \in [\hat s, \infty)$, to the mean-value parameterization. Nonuniqueness of $\gamma$ is covered in Section 3.16.2 of Geyer (2009). Nonuniqueness of $\delta$ is also not an issus.  The geometry of Theorem~6 in \citet{geyer-gdor} makes every generic direction of recession (GDOR) of the original model (OM) a direction of constancy of the LCM. It follows that the constancy space of the LCM contains the normal cone (the set of all directions of recession,\citealp[Theorem~3]{geyer-gdor}).  It follows that the confidence region defined by (23) in \citet{geyer-gdor} is uniquely defined as the discussion following that equation indicates. So these confidence intervals are well defined. \\
+
+%{\bf Comment:} The probability of the event of sufficient statistic $Y$ belongs to the boundary of convex set of the exponential family distributions is not the p-value of the null hypothesis. Actually, what is the null hypothesis in this situation is not well defined ... My conclusion of this story is that the interval of parameters gives us a set of distributions $p_{\hat\theta + \gamma + s\delta}$, $s \in [\hat s, \infty)$ such that the probability of sufficient statistic lies on the boundary is no less than $\alpha$ but I cannot think it as the confidence interval of the parameters. \\
+
+
+%{\bf Response:} We hope to clarify the meaning of the hypothesis test and confidence intervals issues raised in this comment.
+%\begin{itemize}
+%\item Conditional is not the issue.  What \citet{geyer-gdor} calls the limiting conditional model (LCM) is both a family of limit distributions and a family of conditional distributions.  Think of it as a family of limit distributions, and it is clear that conditioning is irrelevant.  The hypothesis tests are not conditional, and neither are the confidence intervals that come from inverting them.
+%\item Nonuniqueness is not the issue.  The geometry of Theorem~6 in \citet{geyer-gdor} makes every generic direction of recession (GDOR) of the original model (OM) a direction of constancy of the LCM. It follows that the constancy space of the LCM contains the normal cone (the set of all directions of recession, \citealp[Theorem~3]{geyer-gdor}).  It follows that the confidence region defined by (23) in \citet{geyer-gdor} is uniquely defined as the discussion following that equation indicates.  So these confidence intervals are well defined.
+%\end{itemize}
+
+
+\begin{thebibliography}{0}
+
+\bibitem[Barndorff-Nielsen(1970)]{barndorff-nielsen-notes}
+Barndorff-Nielsen, O. (1970).
+\newblock \emph{Exponential Families: Exact Theory}.
+\newblock Various Publications Series, Number 19, Matematisk Institut,
+    Aarhus Universitet.
+
+\bibitem[Barndorff-Nielsen(1978)]{barndorff-nielsen}
+Barndorff-Nielsen, O. (1978).
+\newblock \emph{Information and Exponential Families}.
+\newblock Wiley, Chichester.
+
+\bibitem[Brown(1986)]{brown}
+Brown, L.~D. (1986).
+\newblock \emph{Fundamentals of Statistical Exponential Families: with
+    Applications in Statistical Decision Theory}.
+\newblock Institute of Mathematical Statistics, Hayward, CA.
+
+\bibitem[Csisz\'{a}r and Mat\'{u}\v{s}(2005)]{csiszar-matus}
+Csisz\'{a}r, I. and Mat\'{u}\v{s}, F. (2005).
+\newblock Closure of exponential families.
+\newblock \emph{Annals of Probability}, \textbf{33}, 582--600.
+
+\bibitem[Geyer(1990)]{geyer-thesis}
+Geyer, C.~J. (1990).
+\newblock \emph{Likelihood and Exponential Families}.
+\newblock PhD thesis, University of Washington.
+\newblock \url{http://purl.umn.edu/56330}.
+
+\bibitem[Geyer(2009)]{geyer-gdor}
+Geyer, C.~J. (2009).
+\newblock Likelihood inference in exponential families and directions
+    of recession.
+\newblock \emph{Electronic Journal of Statistics}, \textbf{3}, 259--289.
+
+\bibitem[Xia, et al.(2020)Xia, Nan and Li]{xia-nan-li}
+Xia, L., Nan, B., and Li, Yi (2020).
+\newblock A Revisit to De-biased Lasso for Generalized Linear Models.
+\newblock \url{https://arxiv.org/abs/2006.12778}.
+
+\end{thebibliography}
+
+
+\end{document}
+
+
+
+
+
