@@ -164,11 +164,11 @@ In sum, I have decided to give you the opportunity to revise and resubmit your m
 
 ---------------------------------------------------------------------------------------------------------------------------
 
-\response{Thank you for the opportunity to submit a revision. We include a point by point response for the comments and concerns raised by the reviwers.}
+\response{Thank you for the opportunity to submit a revision. We include a point by point response for the comments and concerns raised by the reviewers.}
 
 \section*{Associate Editor}
 
-\textcolor{red}{Thank you for your helpful comments for our literature review and data analysis. We think they will help improve the quality of our manuscript a lot.} \\
+Thank you for your helpful comments for our literature review and data analysis. We think they will help improve the quality of our manuscript. \\
 
 {\bf Comment 1:} Firstly, this contribution seems to me to be related to two exisiting strands of literature, neither of which is cited. Describing the contribution relative to these literatures might help some readers better appreciate the achievements.
 These are the literatures on "ad hoc" model adjustments for breaks, see e.g.,  \cite{clements1996intercept} for an early contribution, and \cite{castle2015robust} for a more recent example. The second is to do with outliers (innovation, additive and level shifts) in ARMA models, see e.g., \cite{tsay1986time}. Comparing/contrasting the approach in the paper with these literatures may be illuminating. \\
@@ -307,7 +307,7 @@ To be more specific, $\hat{\sigma}_{i\alpha}$ depends on $\hat{\alpha}_i$. As a 
 \begin{align*}
   &\alpha_i \sim \mathcal{F}_{\alpha} 
  \quad  \text{ with }\quad  E_{\mathcal{F}_{\alpha}}(\alpha_i) =\mu_{\alpha}, Var_{\mathcal{F}_{\alpha}}(\alpha_i)=\sigma^2_{\alpha},\quad   \text{iid under } \mathcal{M}_1\\
- & \alpha_i = \mu_{\alpha} +\delta_i'\mathbf{x}_{i, T_i^*+1} + \tilde{\varepsilon}_i\quad  \text{\textcolor{red}{independent} under } \mathcal{M}_{21} \text{ or } \mathcal{M}_{22}.
+ & \alpha_i = \mu_{\alpha} +\delta_i'\mathbf{x}_{i, T_i^*+1} + \tilde{\varepsilon}_i\quad  \text{independent under } \mathcal{M}_{21} \text{ or } \mathcal{M}_{22}.
 \end{align*}
 In other words,  $\mathcal{M}_{21}$  or $\mathcal{M}_{22}$ is an extended version of $\mathcal{M}_{1}$ by allowing it to depend on some covariates. However, in general, $E(\alpha_1)\neq \mu_{\alpha}$ under   $\mathcal{M}_{21}$  or $\mathcal{M}_{22}$ due to the presence of $\delta_i'\mathbf{x}_{i, T_i^*+1}$.}\\
 
@@ -324,7 +324,7 @@ In other words,  $\mathcal{M}_{21}$  or $\mathcal{M}_{22}$ is an extended versio
 
 %Theoretically, it is possible to verify the assumptions of $\mathcal{M}_{1}$ using empirical Bayes methods to some degree. First, we need a  pool of shock effects that users believe they are realizations from a common distribution, say, $\mathcal{F}_{\alpha}$. Using empirical Bayes methods, we can estimate $\mathcal{F}_{\alpha}$ to have $\hat{\mathcal{F}}_{\alpha}$. To verify whether the remaining shock effects are from $\mathcal{F}_{\alpha}$, we can check the quantile of $\hat{\mathcal{F}}_{\alpha}$ to judge whether they are extreme in $\hat{\mathcal{F}}_{\alpha}$. However, the theoretical justification for this approach is left for future research. \\
 
- \response{Our methodology requires that a practitioner can choose a suitable donor pool of candidate shock-effects. If this cannot be done, then the methodology may fail. In real-life applications, practitioners can use qualitative and quantitative information to inform their decisions about which time series are included in the donor pool. Consider our Conoco Phillips example. On March 9th 2020, Conoco Phillips was expected to experience a negative shock in the midst of the  COVID-19 pandemic and an oil supply shock. While the COVID-19 pandemic is unprecedented, several, although not all, economic measurements surrounding March 9th 2020 resembled those in the days of the 2008 financial crises. On the other hand, the oil supply shock had precedent. As a result, we selected the shocks in the past corresponding to the 2008 financial crisis and a past 2014 oil supply shock. }\\
+ \response{Our methodology requires that a practitioner can choose a suitable donor pool of candidate shock-effects. If this cannot be done, then the methodology may fail. In real-life applications, practitioners can use qualitative and quantitative information to inform their decisions about which time series are included in the donor pool. Consider our Conoco Phillips example. On March 9th 2020, Conoco Phillips was expected to experience a negative shock in the midst of the  COVID-19 pandemic and an oil supply shock. While the COVID-19 pandemic is unprecedented, several, although not all, economic measurements surrounding March 9th 2020 resembled those in the days of the 2008 financial crises. On the other hand, the oil supply shock had precedent. As a result, we selected the shocks in the past corresponding to the 2008 financial crisis and a past 2014 oil supply shock to form our donor pool. Adjustment with respect to this donor pool led to much better forecasts than doing nothing.}\\
 
 
 {\bf Comment 13:} Figure 2 on Page 24: Are the black dots the real data? What does the line represent?\\
@@ -353,7 +353,7 @@ Thank you for your remark on timing scenarios, it led to an improved manuscript.
 
 {\bf Comment 3:} Related to the point above, the model applied is an AR(1) with contemporaneous regressors. This structure requires the covariates to be known in the future for \emph{ex ante} forecasts, or for them to be forecast. The set-up assumes $\theta_1$ to be well behaved and the covariates are not subject to shocks if they need to be forecast. Empirically, we could also think of cases where the mean shift $D_{i,t}$ interacted with the covariates which would give an additional forecast error via $\mathbf{x}_{1, T_1^* + 1}$. The theoretical results seem to hinge on known $\mathbf{x}_{1,t}$ entering contemporaneously to derive unbiasedness. What are the implications of the covariates needing to be forecast? \\
 
-\response{Good point, thank you. Indeed, our method assumes $\mathbf{x}_{1, T_1^* + 1}$ to be given. If it is to be forecasted with errors, it will possibly result in a biased estimation of $E(\alpha_1)$ with $\hat{\alpha}_{\rm wadj}$ such that the evaluation of the proposition may not be reliable. \textcolor{red}{Moreover, the forecast error from covariates contributes to more error in the unadjusted forecast, and thus in the post-shock one.}\\
+\response{Good point, thank you. Indeed, our method assumes $\mathbf{x}_{1, T_1^* + 1}$ to be given. If it is to be forecasted with errors, it will possibly result in a biased estimation of $E(\alpha_1)$ with $\hat{\alpha}_{\rm wadj}$ such that the evaluation of the proposition may not be reliable. Moreover, the forecast error from covariates contributes to more error in the unadjusted forecast, and the post-shock forecast. \\
 
 The situation when covariates are forecasted with errors is similar to the one when the variance of the shock effect is large. In both situations, the signal from covariates is weak. Our simulation discusses this situation by increasing $\sigma_{\alpha}$. It shows that a slightly weak signal will not strongly compromise the correctness of our prospective methods. However, if the forecast for the covariates is seriously bad (i.e., the signal from covariates is really weak), our result shows that the risk-reduction evaluation may be only as good as a random guess. \\
 
@@ -410,7 +410,7 @@ Ideally, $k=n$ is preferred. However, if the data size is large such that $k=n$ 
 
 {\bf Comment 6:} Section 2 is hard to read without defining the terms that come in the second para- graph of section 2.1 (lines 19-23 of p.6). I'd suggest moving this to the beginning of section 2. \\
 
-\response{Sorry for not making it clear. The terms not defined in the caption of Figure 1 are now defined in the revised manuscript. For other parts, we find there are no terms that are not defined. The beginning parts of Section 2 are intended to give a general picture to the reader that our method is in fact general whereas the setup we investigate in Section 2.1 is a special case. }
+\response{Sorry for not making it clear. The terms were not defined in the caption of Figure 1 are now defined in the revised manuscript. For other parts, we find there are no terms that are not defined. The beginning parts of Section 2 are intended to give the reader a depiction of the logic of our method before we proceed into the technicals of our method. }
 
 \bibliography{synthetic-prediction-notes}
 
