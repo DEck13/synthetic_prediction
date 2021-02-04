@@ -318,6 +318,8 @@ mat <- cbind(TS1$id[nrow(TS1)], c(Yhat_adj))
 colnames(mat) <- c("id", "Yhat_adj")
 dat <- as.data.frame(mat)
 colnames(Yhat_nothing) <- "y"
+dat2 <- data.frame(id = c(25, 27), pred = c(m_AAPL_2020_11$fitted.values[25], 
+                                            Yhat_nothing))
 # set working directory
 setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
 # plot setting
@@ -332,8 +334,9 @@ p1 <- ggplot(TS1, mapping = aes(x = id, y = AAPL_Close)) +
              pch = 2:4, cex = 2, width = 0.65) + 
   geom_point(data = data.frame(x = unique(dat$id), y = Yhat_nothing), 
              aes(x = x, y = y), col = "violet", cex = 2) + 
-  geom_line(aes(x = id, y = c(m_AAPL_2020_11$fitted.values, y1, Yhat_nothing)), 
-            col = "violet") + 
+  geom_line(aes(x = id, y = c(m_AAPL_2020_11$fitted.values)), 
+            col = "violet", TS1[1:25,]) + 
+  geom_line(aes(x = id, y = pred), dat2, col = 'violet', linetype = "dotted", size = 2) + 
   annotate("text", x = 1, y = seq(from = 110, to = 104, length.out = 4), 
            label = c("$\\hat{y}_{1, T_1^* + 2}^{1}$",
                      "$\\hat{y}_{1, T_1^* + 2}^{1} + \\hat{\\alpha}_{\\rm adj}$",
@@ -366,8 +369,8 @@ p2 <- ggplot(tail(TS1, 4), mapping = aes(x = id, y = AAPL_Close)) +
               pch = 2:4, cex = 3, width = 0.15, height = 0.15) + 
   geom_point(data = data.frame(x = unique(dat$id), y = Yhat_nothing), 
              aes(x = x, y = y), col = "violet", cex = 2) + 
-  geom_line(aes(x = id, y = c(tail(m_AAPL_2020_11$fitted.values, 2), y1, Yhat_nothing)), 
-            col = "violet") + 
+  geom_line(aes(x = id, y = c(m_AAPL_2020_11$fitted.values[24:25])), col = "violet", TS1[24:25,]) +
+  geom_line(aes(x = id, y = pred), dat2, col = "violet", linetype = 'dotted', size = 2) + 
   # add margin
   theme(plot.margin = unit(c(.5, .3, .3, .5), "cm")) + 
   # no grid
