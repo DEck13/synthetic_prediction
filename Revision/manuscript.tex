@@ -665,7 +665,7 @@ The covariates and response of time series in the donor pool are adjusted for in
 \begin{figure*}[t!]
   \begin{center}
     \includegraphics[height = 7cm, width = 16.8cm]{FIG3.pdf}
-    \caption{November 11th, 2020 post-shock forecasts for stock price of Apple Inc. Black dots and violet line represent real data and fitted line, respectively. \textcolor{red}{We did not include forecast at $t=T_1^*+1$ for better visualization of post-shock forecast at $t=T_1^*+2$. The dotted line connects the unadjusted forecast at $t=T_1^*$ with the one at $t=T_1^*+2$.}}
+    \caption{November 11th, 2020 post-shock forecasts for stock price of Apple Inc. Black dots and violet line represent real data and fitted line, respectively. We did not include forecast at $t=T_1^*+1$ for better visualization of post-shock forecast at $t=T_1^*+2$. The dotted line connects the unadjusted forecast at $t=T_1^*$ with the forecast at $t=T_1^*+2$. Our donor pool suggested that the shock effect take place at $t=T_1^*+2$ in this example.}
     \label{Fig3}
   \end{center}  
   \vspace{-.6cm}
@@ -687,9 +687,9 @@ Although it is reflected in $\mc{M}_2$, we stress that our proposed methods allo
 In our setup, we assume that at $t=T_1^*$, the user knows there will be a shock at $t=T_1^*+1$. The methodology can be amended to accommodate different timing scenarios. Suppose that we know at $T_1^*$ that a shock is about to occur at $T_1^* + d$ for $d\geq 1$ and $d\in \mathbb{N}$, and that we have information about the future covariates for $t = T_1^* +1 , \ldots, T_1^* + d$. We can make a scalar adjustment for original forecast at $T_1^*+d$ using shock-effect estimator constructed from donor pool. The Apple example illustrates the case when $d = 2$ with predicted covariates, where the prediction error for covariates and response can contribute to the post-shock forecast risk.
 
 
-We can extend the proposed methodology to forecast the response $m\geq 2$ time points ahead. In this setting, there are two cases. In the first case, we suppose that there is no additional shock after $T_1^*+1$. Then, the forecast boils down to standard $m$-ahead forecast in time series. In the second case, we assume that the time series under study will experience an additional additive shock at $T_1^* + m$, say $\alpha_1^{(m)}$. Users now construct the donor pool to consist of time series that experience shocks similar to  $\alpha_1^{(m)}$. Let the resulting estimator using one of  three weighting scheme be $\hat{\alpha}_1^{(m)}$.  The adjusted forecast at $t = T_1^* + m$ is
+We can extend the proposed methodology to forecast the response $m\geq 2$ time points ahead. In this setting, there are two cases. In the first case, we suppose that there is no additional shock after $T_1^*+1$. Then, the forecast boils down to standard $m$-ahead forecast in time series. In the second case, we assume that the time series under study will experience an additional additive shock at $T_1^* + m$, say $\alpha_1^{(m)}$. Users now construct the donor pool to include time series that experienced shocks similar to  $\alpha_1^{(m)}$. Let the resulting estimator using one of  three weighting scheme be $\hat{\alpha}_1^{(m)}$.  The adjusted forecast at $t = T_1^* + m$ is
 $
- \textcolor{red}{ \hat{y}^2_{1, T_1^*+m}=\hat{\eta}_1 + \hat{\phi}_1 \hat{y}_{1, T_1^* + m - 1}^1 + \hat{\theta}_1' \mathbf{x}_{1, T_1^* +m} + \hat{\alpha}_1^{(m)}}
+ \hat{y}^2_{1, T_1^*+m}=\hat{\eta}_1 + \hat{\phi}_1 \hat{y}_{1, T_1^* + m - 1}^1 + \hat{\theta}_1' \mathbf{x}_{1, T_1^* +m} + \hat{\alpha}_1^{(m)}
 $
 where the future covariates are themselves forecasted. The additional forecasting variability may  render such an adjustment approach useless.
 
