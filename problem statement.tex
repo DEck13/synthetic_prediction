@@ -81,13 +81,13 @@ where $D_{i,t}= I(t= T_i^* +t)$, $I(\cdot)$ is an indicator function, and $\mbf{
 The candidate forecasts are
 \begin{align*}
   &\text{Forecast 1}: \hat{y}_{1,T_1^*+k + j}^{(1)} = \hat\eta_1 
-    + \hat\phi_1 y_{1,T_1^*+k+j-1} + \hat\theta_1'\mbf{x}_{1,T_1^*+k+j-1} 
+    + \hat\phi_1 \hat{y}^{(1)}_{1,T_1^*+k+j-1} + \mbf{x}_{1,T_1^*+k+j-1} \hat{\bs{\theta}}_1
     , \\
   &\text{Forecast 2}: \hat{y}_{1,T_1^*+k+j}^{(2)} = \hat\eta_1 
-    + \hat\phi_1 y_{1,T_1^*+k+j-1} + \hat{\theta}_1'\mbf{x}_{1,T_1^*+k+j-1} 
+    + \hat\phi_1 \hat{y}^{(2)}_{1,T_1^*+k+j-1} + \mbf{x}_{1,T_1^*+k+j-1} \hat{\bs{\theta}}_1
     + \hat{\alpha}^{(j)},
 \end{align*}
-where $\hat{\alpha}^{(j)}$ is an estimate of the shock effect occurring in the model of $y_{1,T_1^*+k+j}$, and other parameters are estimated in an unbiased fashion, e.g., OLS. Define
+where $\hat{y}_{1, T_1^*}^{(1)}=\hat{y}_{1, T_1^*}^{(2)}=y_{1,T_1^*}$, $\hat{\alpha}^{(j)}$ is an estimate of the shock effect occurring in the model of $y_{1,T_1^*+k+j}$, and other parameters are estimated in an unbiased fashion, e.g., OLS. Define
 \begin{align}
   \begin{array}{lll}
      \Theta &= &\{(\eta_i, \phi_i, \bs{\theta}_i, \alpha_{i,t}, \mbf{x}_{i,t}, y_{i,t-1}, \bs{\delta}_i)\colon t= 1, \ldots, T_i, i = 2, \ldots, n +1\},\\
@@ -99,14 +99,49 @@ where $\hat{\alpha}^{(j)}$ is an estimate of the shock effect occurring in the m
 For simplicity, assume $k=0$. Given the post-shock estimated transition, $\{\hat{y}_{1, t}^2\colon t= T_1 +1, \ldots, T_1+d\}$, to gauge the forecast performance, we consider the forecast risk in the form of MSE as below
 \begin{align*}
   R_k 
-  &= \frac{1}{d} \sum_{j=1}^d \E [(\hat{y}_{1,T_1+j}^{(k)}-y_{1, T_1+j})^2] ,
+  &= \frac{1}{d} \sum_{j=1}^d \E [(\hat{y}_{1,T_1^*+j}^{(k)}-y_{1, T_1+j})^2] ,
   \quad k = 1, 2.
 \end{align*}
-By generalizing Lemma 1 from \citet{lin2020minimizing}, we get the risk-reduction quantities as
- \begin{align*}
-     R_1-R_2 =\frac{1}{d} \sum_{j=1}^d  \Big\{ \E (\alpha_{1, T_1^*+j}^2) - \E [(\hat{\alpha}^{(j)}-\alpha_{1, T_1^*+j})^2]\Big\},
-  \end{align*}
-for all  $\hat{\bs{\alpha}}$ independent of $\Theta_1$.
+
+\begin{proposition}
+  Suppose that $\hat{\alpha}^{(j)}$ estimates $\alpha_{1, T_1^*+j}$ unbiasedly and that  $\hat{\alpha}^{(j)}$ is independent of $\Theta_1$. Then, $R_1 > R_2$ when
+\end{proposition}
+\begin{proof}
+  Define
+\begin{align*}
+  C(\Theta_1, j) = \hat{\eta}_1 + \hat{\phi}_1 \hat{y}_{1, T_1^*+j-1}^{(2)} + \mbf{x}_{1, T_1^*+j}\hat{\bs{\theta}}_1 - (\eta_1 + \phi_1 y_{1, T_1^* + j-1} + \mbf{x}_{1, T_1^*+j} \bs{\theta}_1 +\varepsilon_{1, T_1^*+j}) .
+\end{align*}
+We first consider a simple case when $d=2$. By Lemma 1 in \cite{lin2020minimizing},
+\begin{align*}
+  & \E [(\hat{y}_{1,T_1+1}^{(1)}-y_{1, T_1+1})^2] -  \E [(\hat{y}_{1,T_1+1}^{(2)}-y_{1, T_1+1})^2]\\
+= \quad   & \E(\alpha_{1, T_1^*+1}^2) - \E[(\hat{\alpha}^{(1)}-\alpha_{1, T_1^*+1})^2] \\
+= \quad & - \E[ (\hat{\alpha}^{(1)})^2]+2 \E(\hat{\alpha}^{(1)} \alpha_{1, T_1^*+1}) \\
+= \quad &  - \E[ (\hat{\alpha}^{(1)})^2]+2 \E[\alpha_{1, T_1^*+1} \cdot \E(\hat{\alpha}^{(1)} \mid  \alpha_{1, T_1^*+1})] \\
+= \quad & 2 \E[ \alpha_{1, T_1^*+2}^2]- \E[(\hat{\alpha}^{(1)})^2] \\
+= \quad & \E[ \alpha_{1, T_1^*+2}^2]- \Var(\hat{\alpha}^{(1)}).
+\end{align*}
+Next,
+\begin{align*}
+ & \E [(\hat{y}_{1,T_1+2}^{(1)}-y_{1, T_1+2})^2] -  \E [(\hat{y}_{1,T_1+2}^{(2)}-y_{1, T_1+2})^2]  \\
+= \quad  & \E \Big\{ (C(\Theta_1, 2) - \hat{\phi}_1\hat{\alpha}^{(2)}-\alpha_{1, T_1^*+2})^2\Big\}- \E \Big\{ (C(\Theta_1, 2) -\alpha_{1, T_1^*+2})^2\Big\} \\
+= \quad & -\E (\alpha_{1, T_1^*+2}^2)  + 2 \E (C(\Theta_1, 2)\alpha_{1, T_1^*+2}) - 2 \E [C(\Theta_1, 2) (\hat{\phi}_1\hat{\alpha}^{(2)}+\alpha_{1, T_1^*+2})] + \E[(\hat{\phi}_1\hat{\alpha}^{(2)}+\alpha_{1, T_1^*+2})^2] \\
+= \quad & \E[(\hat{\phi}_1\hat{\alpha}^{(2)})^2] + 2 \E [\hat{\phi}_1 \hat{\alpha}^{(2)} \alpha_{1, T_1^*+2}] -2 \E[C(\Theta_1, 2) \hat{\phi}_{1}\hat{\alpha}^{(2)}]
+\end{align*}
+By assumption, $\hat{\alpha}^{(2)}$ is independent  of $\Theta_1$.  Moreover, $\alpha_{1, T_1^*+2}$ is also independent  of $\Theta_1$ by construction. Since OLS estimators are unbiased and $\hat{\alpha}^{(2)}$ estimates $\alpha_{1, T_1^*+2}$ unbiasedly, 
+\begin{align*}
+  \E [\hat{\phi}_1 \hat{\alpha}^{(2)} \alpha_{1, T_1^*+2}] &= \phi_1 [\E (\hat{\alpha}^{(2)})]^2\\
+  \E [C(\Theta_1, 2)\hat{\phi}_1 \hat{\alpha}^{(2)}] &=  \E[C(\Theta_1, 2) \hat{\phi}_1 ] \cdot \E(\hat{\alpha}^{(2)})
+\end{align*}
+Thus,
+\begin{align*}
+ & \E [(\hat{y}_{1,T_1+2}^{(1)}-y_{1, T_1+2})^2] -  \E [(\hat{y}_{1,T_1+2}^{(2)}-y_{1, T_1+2})^2] \\
+= \quad & \E[(\hat{\phi}_1\hat{\alpha}^{(2)})^2] + 2 \phi_1 \cdot [\E (\hat{\alpha}^{(2)})]^2 -2 \E[C(\Theta_1, 2) \hat{\phi}_1 ] \cdot \E(\hat{\alpha}^{(2)}) \\
+= \quad & \E[(\hat{\phi}_1\hat{\alpha}^{(2)})^2]  + 2\cdot \E(\hat{\alpha}^{(2)}) \cdot  \Big\{\phi_1 \E (\hat{\alpha}^{(2)}) - \E[C(\Theta_1, 2) \hat{\phi}_1] \Big\}
+\end{align*}
+\textcolor{red}{Challenges: How to evaluate $\E[C(\Theta_1, 2) \hat{\phi}_1]$.}
+\end{proof}
+
+
 
 
 \subsection{Challenges}
