@@ -1,0 +1,133 @@
+% document class
+\documentclass[12pt]{article}
+
+% use package
+\usepackage{scribe}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{natbib}
+\usepackage{graphicx,times}
+\usepackage{mathtools}
+\usepackage{url}
+%\usepackage{setspacing}
+\usepackage{fullpage}
+\usepackage{palatino}
+\usepackage{mathpazo}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{xifthen} % Allows us to put in optional arguments to questions
+\usepackage{color}
+\usepackage{manfnt}
+\usepackage{ifthen}
+\usepackage{listings}
+\usepackage{nicefrac,mathtools}
+\usepackage{float}
+\usepackage{showexpl}
+\usepackage{xcolor}
+\usepackage{mathtools}
+\usepackage{caption}
+\usepackage{chngcntr}
+\usepackage{xparse}
+\usepackage{etoolbox}
+\usepackage{blkarray}
+\usepackage{cprotect}
+\usepackage{authblk}
+
+\bibliographystyle{plainnat}
+
+
+\title{Post-Shock Transition Estimation}
+\author{Jilei Lin\thanks{jileil2@ilinois.edu} }
+\author{Daniel J. Eck\thanks{dje13@illinois.edu}}
+\affil{Department of Statistics, University of Illinois at Urbana-Champaign}
+
+
+% start document
+\begin{document}
+
+
+\maketitle
+
+\section{Introduction}
+
+Suppose that an individual, given time series $\{(\mathbf{x}_{1, t},y_{1,t})\colon t=1, \ldots, T_1\}$, is interested in predicting $y_{1, T_1+k}$ for some $k \in \naturals$. However,  he knows that the time series is about experience a shock at $T_1+k$, whose signal is not embedded in the data. In this case,   statistical methodologies that rely on capturing signal from training data to predict are not expected to perform well. 
+
+Based on the synthetic control theory \cite{abadie2010synthetic}, \citet{lin2020minimizing} proposes a post-shock prediction method that borrows information from other similar  time series experiencing analogous shocks by constructing a donor pool $\{(\mathbf{x}_{i, t},y_{i,t})\colon i = 2, \ldots, n +1, t = 1, \ldots, T_i\}$, and uses synthetic control method to weight the shock effects $\hat{\alpha}_i$ estimated from the donor pool for $i = 2, \ldots, n+1$ to provide a scalar adjustment to the naive time series forecast $\hat{y}_{1, T_1+k}$. \citet{lin2020minimizing} provides conditions when  optimality of minimizing mean squared forecast error is attained.
+
+However, the work of \citet{lin2020minimizing} is limited to the nowcasting problem. Moreover, it provides no information about how the shock will affect the time series afterwards, let alone whether it will die out.  In practice, it is natural to think of applications where we are interested in the dynamics of the shock, whether and how the shock will die out. For example, when a company knows it is going to experience a disastrous shock, managers will be interested in  whether the shock will be persistent, how it affects future sales for a number of months, and thus how to adjust cost and production to combat such crisis. 
+
+In this paper, we are interested in extending the work of \citet{lin2020minimizing} to estimate the shock transition after the time series of interest experience a shock, i.e., $\{\hat{y}_{1, T_1+k+j}\colon j = 1, \ldots, d\}$, extend its optimality propositions of nowcasting to prediction for a period, and develop a hypothesis testing procedure to judge whether the shock is permanent or transitory.
+
+\section{Methods}
+
+Suppose at $t=T_i^*$, one knows the shock is about to occur at $t=T_i^*+1$. Consider the following model
+\begin{align*}
+  \mc{M} \colon 
+  \begin{array}{l}
+    y_{i,t} = \eta_i +  \alpha_{i,t}I(t > T_i^*)+ \phi_i y_{i,t-1} + \mathbf{x}_{i,t}\bs{\theta}_i + \varepsilon_{i,t}\\[.3cm]
+    \alpha_{i,t} = \mu_{\alpha} + \mbf{x}_{i, t}\boldsymbol{\delta}_i + \tilde{\varepsilon}_i
+  \end{array},
+\end{align*}
+where $D_{i,t}= I(t= T_i^* +t)$, $I(\cdot)$ is an indicator function, and $\mbf{x}_{i,t}, \boldsymbol{\theta}_{i}\in \reals^p$ with $p\geq 1$. The random effects structure is oragnized as below.
+\begin{align*}
+  \tilde{\varepsilon}_i &\simiid \mc{F}_{\tilde{\varepsilon}} \text{ with } \E_{\mc{F}_{\tilde{\varepsilon}}}, \Var_{\mc{F}_{\tilde{\varepsilon}}}(\tilde{\varepsilon}_i)= \sigma^2_{\alpha}  >0 \\
+  \eta_i & \indep \alpha_{i,t} \indep \phi_i \indep \boldsymbol{\theta}_i \indep \varepsilon_{i,t} \indep \tilde{\varepsilon}_i.
+\end{align*}
+The candidate forecasts are
+\begin{align*}
+  &\text{Forecast 1}: \hat{y}_{1,T_1^*+k + j}^{(1)} = \hat\eta_1 
+    + \hat\phi_1 y_{1,T_1^*+k+j-1} + \hat\theta_1'\mbf{x}_{1,T_1^*+k+j-1} 
+    , \\
+  &\text{Forecast 2}: \hat{y}_{1,T_1^*+k+j}^{(2)} = \hat\eta_1 
+    + \hat\phi_1 y_{1,T_1^*+k+j-1} + \hat{\theta}_1'\mbf{x}_{1,T_1^*+k+j-1} 
+    + \hat{\alpha}^{(j)},
+\end{align*}
+where $\hat{\alpha}^{(j)}$ is an estimate of the shock effect occurring in the model of $y_{1,T_1^*+k+j}$, and other parameters are estimated in an unbiased fashion, e.g., OLS. Define
+\begin{align}
+  \begin{array}{lll}
+     \Theta &= &\{(\eta_i, \phi_i, \bs{\theta}_i, \alpha_{i,t}, \mbf{x}_{i,t}, y_{i,t-1}, \bs{\delta}_i)\colon t= 1, \ldots, T_i, i = 2, \ldots, n +1\},\\
+    \Theta_1 &= &\{(\eta_i, \phi_i, \bs{\theta}_i, \alpha_{i,t}, \mbf{x}_{i,t}, y_{i,t-1}, \bs{\delta}_i)\colon t= 1, \ldots, T_i, i = 1\},\label{parameter}
+  \end{array}
+\end{align}
+
+
+For simplicity, assume $k=0$. Given the post-shock estimated transition, $\{\hat{y}_{1, t}^2\colon t= T_1 +1, \ldots, T_1+d\}$, to gauge the forecast performance, we consider the forecast risk in the form of MSE as below
+\begin{align*}
+  R_k 
+  &= \frac{1}{d} \sum_{j=1}^d \E [(\hat{y}_{1,T_1+j}^{(k)}-y_{1, T_1+j})^2] ,
+  \quad k = 1, 2.
+\end{align*}
+By generalizing Lemma 1 from \citet{lin2020minimizing}, we get the risk-reduction quantities as
+ \begin{align*}
+     R_1-R_2 =\frac{1}{d} \sum_{j=1}^d  \Big\{ \E (\alpha_{1, T_1^*+j}^2) - \E [(\hat{\alpha}^{(j)}-\alpha_{1, T_1^*+j})^2]\Big\},
+  \end{align*}
+for all  $\hat{\bs{\alpha}}$ independent of $\Theta_1$.
+
+
+\subsection{Challenges}
+
+\begin{challenges}
+  How to define a proper null hypothesis that captures whether the shock transition is  transitory or permanent?   Define $ \hat{\boldsymbol{\alpha}} = (\hat{\alpha}^{(j)})_{j=1}^d$ and $\bs{\alpha}_1= (\alpha_{T_1^*+j})_{j=1}^d$. One possible hypothesis is
+  \begin{align*}
+    H_0 \colon \bs{\alpha}_1=\bs{0} 
+    \quad \text{ versus } \quad 
+    H_1 \colon \bs{\alpha}_1 \neq \bs{0} 
+  \end{align*}
+  In any cases, it is important to find an unbiased estimator of $\bs{\alpha}_1$. $\hat{\alpha}_{\rm wadj}$ in \citep{lin2020minimizing} might be possible. 
+\end{challenges}
+
+\begin{challenges}
+  How to generalize to $\hat{\alpha}_{\rm wadj}$? In \citep{lin2020minimizing}, the weighting is with respect to  $\mbf{x}_{i, T_i^*+1}$ for $i = 1, \ldots, n+1$. However, in this case, we have $\mbf{x}_{i, T_i^*+j}$ for $i = 1, \ldots, n+1$ and $j = 1, \ldots, d$. Perhaps, we may want to do $d$ times of weighting such that the unbiased  property still holds. However, a lot of forecast error for $\mbf{x}_{T_i^*+j}$ when $d$ is large may be of concern in constructing such estimator.
+\end{challenges}
+
+
+
+\bibliography{synthetic-prediction-notes}
+
+\end{document}
+
