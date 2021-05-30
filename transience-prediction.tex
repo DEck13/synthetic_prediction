@@ -1,0 +1,247 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+%\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage{bm}
+\usepackage[usenames]{color}
+\usepackage{caption}
+\usepackage{float}
+\usepackage[caption = false]{subfig}
+\usepackage{tikz}
+\usepackage{multirow}
+\usepackage[linesnumbered, ruled,vlined]{algorithm2e}
+\usepackage{pdflscape}
+\PassOptionsToPackage{hyphens}{url}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{palatino}
+\usepackage{mathpazo}
+\usepackage[top=2.4cm,bottom=2.4cm,right=2.4cm,left=2.4cm]{geometry}
+
+% function definition
+\def\naturals{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\w}{\textbf{w}}
+\newcommand{\x}{\textbf{x}}
+\newcommand{\X}{\textbf{X}}
+\newcommand{\Y}{\textbf{Y}}
+\newcommand{\Hist}{\mathcal{H}}
+\def\mbf#1{\mathbf{#1}} % bold but not italic
+\def\ind#1{\mathrm{1}(#1)} % indicator function
+\newcommand{\simiid}{\stackrel{iid}{\sim}} %[] IID 
+\def\where{\text{ where }} % where
+\newcommand{\indep}{\perp \!\!\! \perp } % independent symbols
+\def\cov#1#2{\mathrm{Cov}(#1, #2)} % covariance 
+\def\mrm#1{\mathrm{#1}} % remove math
+\newcommand{\reals}{\mathbb{R}} % Real number symbol
+\def\t#1{\tilde{#1}} % tilde
+\def\normal#1#2{\mathcal{N}(#1,#2)} % normal
+\def\mbi#1{\boldsymbol{#1}} % Bold and italic (math bold italic)
+\def\v#1{\mbi{#1}} % Vector notation
+\def\mc#1{\mathcal{#1}} % mathical
+\DeclareMathOperator*{\argmax}{arg\,max} % arg max
+\DeclareMathOperator*{\argmin}{arg\,min} % arg min
+\def\E{\mathbb{E}} % Expectation symbol
+\def\mc#1{\mathcal{#1}}
+\def\var#1{\mathrm{Var}(#1)} % Variance symbol
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} % checkmark
+\newcommand\red[1]{{\color{red}#1}}
+\def\bs#1{\boldsymbol{#1}}
+\def\P{\mathbb{P}}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert} % A norm with 1 argument
+\DeclareMathOperator{\Var}{Var} % Variance symbol
+
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+\hypersetup{
+  linkcolor  = blue,
+  citecolor  = blue,
+  urlcolor   = blue,
+  colorlinks = true,
+} % color setup
+
+% proof to proposition 
+\newenvironment{proof-of-proposition}[1][{}]{\noindent{\bf
+    Proof of Proposition {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+% general proof of corollary
+  \newenvironment{proof-of-corollary}[1][{}]{\noindent{\bf
+    Proof of Corollary {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+% general proof of lemma
+  \newenvironment{proof-of-lemma}[1][{}]{\noindent{\bf
+    Proof of Lemma {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+\theoremstyle{definition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{definition}{Definition}
+
+\title{Transience prediction}
+
+\begin{document}
+
+
+
+
+\maketitle
+
+  
+\section{Ideas}
+
+In time series literature, under a squared loss $L(\cdot)$, the conditional forecast, which turns out to be the frequently used standard  multiple horizon forecast, is the best point forecast that minimizes the loss if the model is specified correctly. In other words, if the time series does experience a shock but the shock is transient, as $D_i\equiv T_i-T_i^*+1\to \infty$, the mean squared loss of the conditional forecast for $D_i$ horizons should converge to the minimum of mean squared loss that  any $D_i$-horizon forecast can achieve.  On the other hand, if the time series do experience a shock but the shock is permanent and large, $D_i$-horizon conditional forecast adjusted by additive shock should enjoy a better loss than the unadjusted conditional forecast obtained from the training data that do not experience a shock. Essentially, the problem of judging whether a shock is permanent or transient boils down into comparing  the losses of adjusted $D_i$-horizon conditional forecast and the unadjusted one.
+
+\cite{quaedvlieg2021multi} proposes  a test to jointly compare $1$ to $H$-ahead forecasts 
+ for a  sequence of models such that users can get a sense of the overall quality of the model. \textcolor{red}{Note that $D_i$ and $H$ need not be equal. $D_i$ is the horizon while $H$ proxies the maximum requirements of the model predictive ability.} In our case, this method can be applied to a paired comparison of adjusted $D_i$-horizon conditional forecast and unadjusted one. The methodology of \cite{quaedvlieg2021multi} involves a specification of a loss function $L(\cdot)$ that is used to compare the losses between two models. Moreover, the proposed test statistic is a function of those losses. In other words, it requires information of the responses that are to be forecasted. Therefore, a naive application of this method to compare adjusted $D_i$-horizon conditional forecast and the unadjusted one would fail. It is because from the perspective of practitioners, a retrospective comparison is not as useful as a prospective comparison that can predict whether the shock is transient or permanent without observing the shock and future series.
+
+To deal with this problem, motivated by \cite{abadie2010synthetic} and \cite{lin2020minimizing}, it is possible to approximate the probability that the shock is transient using the donor pool  under suitable assumptions. Then, we illustrate the idea as below. Let the donor pool size be $n$. For $i = 1, \ldots, n +1$ and $t = 1, \ldots, T_i$, we assume
+\begin{align*}
+  y_{i,t} &= K(\mc{F}_{i, t-1}) + \mathbf{x}_{i,t}\boldsymbol{\beta}  + \alpha_{i,t} I(t > T_i^*)+\varepsilon_{i,t},\\
+         \alpha_{i,t} &= \mu_{t}^{\alpha} + \mbf{z}_{i,t}\bs{\gamma}_{i} + \tilde{\varepsilon}_{i,t}
+\end{align*}
+where $\mc{F}_{i, t-1}$  denotes the information  before $t-1$ of time series $i$, $K(\cdot)$ is a general real-valued function, $\mathbf{x}_{i,t},\bs{\beta}\in \reals^{p}$, $\bs{z}_{i,t}, \bs{\gamma}_{i}\in \reals^q$, $\tilde{\varepsilon}_{i,t}$ and $\varepsilon_{i,t}$ follow some well-defined distribution with existing first and second moments, and $T_i^*$ is the time point that the user knows a shock is about to come at $t = T_{i}^*+1$. We further assume, $\tilde{\varepsilon}_{i,t}$ and $\varepsilon_{i,t}$ are  independent. This implies that $\alpha_{i,t}$ and $\varepsilon_{i,t}$ are independent.
+
+Note that $\|{(\alpha_{i,t})_{t=T_i^*+1}^{t=T_i}}\|_2$ should be close to zero if the shock is transient. Also, more general than \cite{lin2020minimizing}, $\mbf{z}_{i,t}$ is a vector of known covariates for the shock effects. \textcolor{red}{Note that the model for $\alpha_{i,t}$ may need revision since specification of covariates for $H$ time points in practice may be difficult, and involve large uncertainty and estimation error.}
+
+Let $\bs{d}_i^h=(d_{i,t}^h)_{t=1}^{T_i}$ be the loss differences of adjusted and unadjusted forecast for $i = 2, \ldots, n+1$ at the $h$-ahead forecast. Define $\E(d_{i,t}^h)=\mu_{i,t}^h$ and
+\begin{align*}
+  \mu_{i}^h = \lim_{T_i \to \infty} \frac{1}{T_i} \sum_{t=1}^{T_i} \mu_{i,t}^h.
+\end{align*}
+Note that in the case of post-shock prediction, before the shock time point, the adjusted forecast and unadjusted forecast are essentially the same. It implies
+\begin{align*}
+  \mu_{i}^h = \lim_{T_i \to \infty} \frac{1}{T_i} \sum_{t=T_i^*+1}^{T_i} \mu_{i,t}^h.
+\end{align*}
+In other words, \textcolor{red}{in order not make the test trivial, we have to make sure $T_i=O(T_i-T_i^*+1)$, i.e., $T_i-T_i^*+1$is not negligible compared to $T_i$.} Otherwise, $\mu_i^h$ will be always zero and there is no need for testing. Also, 
+
+\cite{quaedvlieg2021multi}  proposes two tests for testing the following two hypotheses respectively,
+\begin{align*}
+  H_{0,1}\colon \mu^{(\rm Avg)}_i \equiv  \sum_{h=1}^H a_h \mu^h\leq 0 
+  \quad &\text{ versus }
+  \quad H_{1,1}\colon \mu^{(\rm Avg)}_i > 0\\
+  H_{0,2}\colon \mu^{(\rm Unif)}_i \equiv  \min_{h=1, \ldots, H} \mu^h_i  > 0 
+  \quad &\text{ versus }
+  \quad H_{1,2}\colon \mu^{(\rm Unif)}_i  \leq  0,
+\end{align*}
+where $\sum_{h=1}^H a_h =1$ and $a_h$ is typically selected to be $1/H$. The first hypothesis is for testing average predictive superiority whereas the second is for uniform superiority. From the definition, apparently, the second test is more stringent and more powerful but it is less likely to reject. It rejects only when the adjusted forecast is significantly better than the unadjusted one. Also, \textcolor{red}{\cite{quaedvlieg2021multi} note that if $H$ is large, the power of the test may decrease.}
+
+
+Consider a hypothesis test $\mc{T}_i$ that considers testing one of the two hypotheses.  \cite{quaedvlieg2021multi} shows that his test is powerful as $T_i \to \infty$. So, we may define the permanence of the shock as
+\begin{align*}
+  S_i = I(\mc{T}_i \text{ rejects }H_0)= I(\bs{\alpha}_i \text{ is permanent}).
+\end{align*}
+We further assume that for $i = 1, \ldots, n+1$,
+\begin{align*}
+  \E (S_i) = \P(\bs{\alpha}_i \text{ is permanent})=s
+\text{ for some } s\in [0,1].
+\end{align*}
+Suppose we can obtain a weighting $\mathbf{W} = (w_2, \ldots, w_{n+1})$. As a result, we can find an unbiased estimate for $ \P(\bs{\alpha}_1 \text{ is permanent})$ with
+\begin{align*}
+\hat{ \P}(\bs{\alpha}_1 \text{ is permanent})
+  &= \sum_{i=2}^{n+1} w_i \cdot S_i \\
+ \E ( \hat{ \P}(\bs{\alpha}_1 \text{ is permanent}))
+ &= 
+ \sum_{i=2}^{n+1} w_i\cdot  \E (S_i)= \sum_{i=2}^{n+1} w_i \cdot  s = s.
+\end{align*}
+We may construct the weighting using synthetic control method as below. 
+For $i=1, \ldots, n+2$, define  
+\begin{align*}
+  \mathbf{Z}_{i} 
+  = \begin{pmatrix}
+    \mbf{z}_{i, T_i^*+1} \\ 
+    \vdots \\
+    \mbf{z}_{i, T_i^*+H}
+  \end{pmatrix}
+  \quad 
+  \text{ and } \quad 
+  \mc{W}=\{\mathbf{W}\in [0,1]^n \colon \mathbf{1}_n'\mathbf{W}=1\}
+\end{align*}
+Suppose there exists $\mathbf{W}^*\in \mc{W}$ with $\mathbf{W}^* = (w_{2}^*, \ldots, w_{n+1}^*)$ such that
+\begin{align*}
+  \mathbf{Z}_1 = \sum_{i=2}^{n+1} w_i^* \mathbf{Z}_{i}.
+\end{align*}
+We may estimate $\mathbf{W}^*$ as
+\begin{align*}
+  \mathbf{W}^* 
+  = \argmin_{\mathbf{W}\in \mc{W}}
+  \|  \mathbf{Z}_1-\sum_{i=2}^{n+1} w_i^* \mathbf{Z}_{i} \|_2.
+\end{align*}
+
+
+\section{Definitions}
+
+
+\subsection{stochastic process and dynamic system}
+
+\begin{definition}[stochastic process]
+  A stochastic process $\{Y_t\}_{t\in T}$ is a collection of random variables $Y_t$, taking values in a common measurable space $(\Xi, \mc{X})$, indexed by a set $T$
+\end{definition}
+
+\begin{definition}[one-parameter process]
+  A  process whose index set $T$ has one dimension is a one-parameter process.
+\end{definition}
+
+\begin{definition}[dynamical system]
+  A dynamical system  consists of a measurable space $\Xi$, a $\sigma$-algebra $\mc{X}$ on $\Xi$, a probability measure $\mu$ defined on $\mc{X}$, and a mapping $T\colon \Xi \mapsto \Xi$ which is $(\mc{X},\mc{X})$-measurable
+\end{definition}
+
+\subsection{mixing}
+
+\begin{definition}[mixing]
+  A dynamical system $(\Xi, \mc{X}, \mu, T)$ is mixing when, for any $A,B \in \mc{X}$,
+  \begin{align*}
+    \lim_{t\to \infty} |\mu(A\cap T^{-t}(B))-\mu(A)\mu(T^{-t}(B))|=0,
+  \end{align*}
+  where $T^{-t}(A)=T^{-1}(T^{-t+1}(A))$.
+  For stochastic process, ``mixing'' means ``asymptotically independent'', which means the statistical dependence between $Y(t_1)$ and $Y(t_2)$ goes to zero as $|t_1-t_2|$ increases.
+\end{definition}
+
+
+
+\begin{definition}[near epoch dependence]
+\label{ned}  $\{Y_t\}$ is a near epoch dependent (NED) on a mixing process $\{V_t\}$ if $\E (Y_t^2) < \infty$ and $v_k= \sup_t \norm{Y_t-\E_{t-k}^{t+k}(Y_t)}_2 \to 0$ as $k \to \infty$, where $\norm{\cdot}_p$ is the $L_p$ norm and $\E_{t-k}^{t+k}(\cdot) \equiv \E (\cdot | \mc{F}_{t-k}^{t+k})$, where $\mc{F}_{t-k}^{t+k}\equiv \sigma(V_{t-k}, \ldots, V_{t+k})$ is the $\sigma$-algebra generated by $V_{t-k}, \ldots, V_{t+k}$.
+\end{definition}
+
+\begin{definition}
+  If $v_k= O(k^{-a-\delta})$ in Definition \ref{ned} for some $\delta > 0$, we say $\{Y_t\}$ is NED of size $-a$.
+\end{definition}
+
+
+\begin{definition}[conditional stationarity]
+  A one-parameter process $\{Y_t\}$ is conditionally stationary if for all $n\in \naturals$ and every set of $n+1$ indices $t_1, \ldots, t_{n+1}\in T$, $t_i < t_{i+1}$, and every shift $\tau$,
+  \begin{align*}
+    \mc{L}(Y_{t_{n+1}}|Y_{t_1}, Y_{t_2}, \ldots, Y_{t_n})
+    = \mc{L}(Y_{t_{n+1}+\tau}|Y_{t_1+\tau }, Y_{t_2+\tau }, \ldots, Y_{t_n+\tau })
+    \quad a.s.,
+  \end{align*}
+  where $\mc{L}(Y|X)$ is the distribution function of a $Y$ conditional on $X$.
+\end{definition}
+
+
+
+\begin{definition}[$\alpha$-mixing]
+  For a stochastic process $Y_t$, the $\alpha$-mixing coefficient is 
+  \begin{align*}
+    \alpha(t_1, t_2) = \sup \{
+    |\P(A\cap B)-\P(A)\P(B)|\colon A\in \sigma(Y_{t_1}^{-}), B\in \sigma(Y_{t_2}^{+})\},
+  \end{align*}
+  where $Y^{+}=\max\{Y, 0\}$ and $Y^{-}=\max\{-Y, 0\}$. 
+  If the system is conditionally stationary, $\alpha(t_1, t_2)=\alpha(t_2, t_1)=\alpha(|t_1-t_2|)\equiv \alpha(\tau)$. If $\alpha(\tau)\to 0$ as $\tau \to \infty$, the process is $\alpha$-mixing.
+\end{definition}
+
+
+\bibliographystyle{plainnat}
+\bibliography{synthetic-prediction-notes}
+  
+\end{document}
