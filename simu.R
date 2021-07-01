@@ -231,19 +231,20 @@ sim.normal.gammaX <- function(mu.gamma.delta = 1, mu.alpha, sigma,
   }
   
   # estimates
-  ps <- ps.indic.W(Tstar = Tstar, Y = Y, X = X, K = K, H = H, Ts = Ts, ell = ell, B = B, bw = bw)$ps
-  W <- ps.indic.W(Tstar = Tstar, Y = Y, X = X, K = K, H = H, Ts = Ts, ell = ell, B = B, bw = bw)$W
-  Is <- ps.indic.W(Tstar = Tstar, Y = Y, X = X, K = K, H = H, Ts = Ts, ell = ell, B = B, bw = bw)$Is
+  est <- ps.indic.W(Tstar = Tstar, Y = Y, X = X, K = K, H = H, Ts = Ts, ell = ell, B = B, bw = bw)
+  ps <- est$ps
+  W <- est$W
+  Is <- est$Is
   # compute forecasts
-  phat <- sum(ps[-1] * W)
-  Ihat <- sum(ps[-1] * Is)
+  phat <- sum(W * ps[-1])
+  Ihat <- sum(W * Is[-1])
   p.diff <- abs(phat - ps[1])
   I.diff <- abs(Ihat - Is[1])
   return(c(p.diff = p.diff, I.diff = I.diff))
 }
 
-result <- sim.normal.gammaX(mu.alpha = 0, mu.gamma.delta = 0, sigma = 1, sigma.alpha = 1, p = 4,
-                            B = 500, n = 5, H = 12, scale = 5, ell = 3)
+system.time(result <- sim.normal.gammaX(mu.alpha = 0, mu.gamma.delta = 0, sigma = 1, sigma.alpha = 1, p = 4,
+                            B = 20, n = 5, H = 12, scale = 5, ell = 3))
 
 
 # MC
