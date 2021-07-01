@@ -244,7 +244,7 @@ sim.normal.gammaX <- function(mu.gamma.delta = 1, mu.alpha, sigma,
 }
 
 system.time(result <- sim.normal.gammaX(mu.alpha = 0, mu.gamma.delta = 0, sigma = 1, sigma.alpha = 1, p = 4,
-                            B = 20, n = 5, H = 12, scale = 5, ell = 3))
+                            B = 200, n = 5, H = 12, scale = 5, ell = 3))
 
 
 # MC
@@ -264,6 +264,8 @@ nsim <- 50
 ns <- c(5, 10, 15, 25)
 sigma.alphas <- c(1, 5, 10, 25, 100)
 sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, ns = ns))
+
+
 
 # simulation time
 system.time(
@@ -304,7 +306,7 @@ for (i in 1:nrow(sim_params)) {
   result.i <- c()
   for (j in 1:16) {
     result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
-                                       ' (', round(sds[j] / sqrt(50), 
+                                       ' (', round(sds[j] / sqrt(nsim), 
                                                    digits = 3), ')'))
   }
   result <- rbind(result, result.i)
