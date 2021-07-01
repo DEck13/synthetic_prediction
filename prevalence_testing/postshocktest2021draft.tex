@@ -1,0 +1,218 @@
+\documentclass[11pt]{article}
+
+% use packages
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+%\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{authblk}
+\usepackage{bm}
+\usepackage[usenames]{color}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{float}
+\usepackage[caption = false]{subfig}
+\usepackage{tikz}
+\usepackage{multirow}
+\usepackage[linesnumbered, ruled,vlined]{algorithm2e}
+\usepackage{pdflscape}
+% margin setup
+\geometry{margin=0.8in}
+
+
+% function definition
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\w}{\textbf{w}}
+\newcommand{\x}{\textbf{x}}
+\newcommand{\X}{\textbf{X}}
+\newcommand{\Y}{\textbf{Y}}
+\newcommand{\Hist}{\mathcal{H}}
+\def\mbf#1{\mathbf{#1}} % bold but not italic
+\def\ind#1{\mathrm{1}(#1)} % indicator function
+\newcommand{\simiid}{\stackrel{iid}{\sim}} %[] IID 
+\def\where{\text{ where }} % where
+\newcommand{\indep}{\perp \!\!\! \perp } % independent symbols
+\def\cov#1#2{\mathrm{Cov}(#1, #2)} % covariance 
+\def\mrm#1{\mathrm{#1}} % remove math
+\newcommand{\reals}{\mathbb{R}} % Real number symbol
+\def\t#1{\tilde{#1}} % tilde
+\def\normal#1#2{\mathcal{N}(#1,#2)} % normal
+\def\mbi#1{\boldsymbol{#1}} % Bold and italic (math bold italic)
+\def\v#1{\mbi{#1}} % Vector notation
+\def\mc#1{\mathcal{#1}} % mathical
+\DeclareMathOperator*{\argmax}{arg\,max} % arg max
+\DeclareMathOperator*{\argmin}{arg\,min} % arg min
+\def\E#1{\mathrm{E}(#1)} % Expectation symbol
+\def\var#1{\mathrm{Var}(#1)} % Variance symbol
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} % checkmark
+\newcommand\red[1]{{\color{red}#1}}
+
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert} % A norm with 1 argument
+\DeclareMathOperator{\Var}{Var} % Variance symbol
+
+\newtheorem{cor}{Corollary}
+\newtheorem{lem}{Lemma}
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+\hypersetup{
+  linkcolor  = blue,
+  citecolor  = blue,
+  urlcolor   = blue,
+  colorlinks = true,
+} % color setup
+
+% proof to proposition 
+\newenvironment{proof-of-proposition}[1][{}]{\noindent{\bf
+    Proof of Proposition {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+% general proof of corollary
+  \newenvironment{proof-of-corollary}[1][{}]{\noindent{\bf
+    Proof of Corollary {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+% general proof of lemma
+  \newenvironment{proof-of-lemma}[1][{}]{\noindent{\bf
+    Proof of Lemma {#1}}
+  \hspace*{.5em}}{\qed\bigskip\\}
+
+\allowdisplaybreaks
+
+\title{Testing for the prevalence or transience of a shock effect in the post-shock setting}
+\author{}
+\date{}
+
+\begin{document}
+
+
+
+\maketitle
+\begin{abstract}
+ We provide a hypothesis test for the existence or transience of a shock in the post-shock setting of \cite{lin2021minimizing}.
+\end{abstract}
+
+
+
+\section{Setting}
+
+
+
+\subsection{Model setup}
+
+\label{modelsetup}
+
+
+The assumed autoregressive models considered are that in \cite{lin2021minimizing}, we describe details here. Let $I(\cdot)$ be an indicator function, $T_i$ be the time length of the time series $i$ for $i = 1, \ldots, n+1$, and $T_i^*$ be the time point just before the one when the shock is known to occur, with $T_i^* < T_i$.  For $t= 1, \ldots, T_i$ and $i = 1, \ldots, n+1$, the model $\mc{M}_1$ is defined as
+\begin{align}
+\mc{M}_1 \colon y_{i,t} =\eta_i +\alpha_i D_{i,t} + \phi_i y_{i, t-1} + \theta_i'\mbf{x}_{i,t} + \varepsilon_{i,t}\label{equation1}
+\end{align}
+ where $D_{i,t} = I(t = T_i^* + 1)$ 
+and $\x_{i,t} \in \R^{p}$ with $p \geq 1$.  We assume that the 
+$\mbf{x}_{i,t}$s are fixed. Let $|x|$ denote the absolute value of $x$ for $x\in \reals$. For $i = 1, \ldots, n+1$ and $t=1, \ldots, T_i$, the random effects structure for $\mc{M}_1$ is:
+\begin{align*}
+  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = 0, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}\\
+  \phi_i &\simiid \mc{F}_{\phi} \text{ where } |\mc{F}_{\phi}| < 1, \\
+   \theta_i &\simiid \mc{F}_{\theta} \text{ with }  \; \mrm{E}_{\mc{F}_{\theta}}(\theta_i) = \mu_{\theta}, \mrm{Var}_{\mc{F}_{\theta}}(\theta_i)  = \Sigma^2_{\theta} \\
+\alpha_i &\simiid \mc{F}_{\alpha} \text{ with }  \; \mrm{E}_{\mc{F}_{\alpha}}(\alpha_i) = \mu_{\alpha}, \mrm{Var}_{\mc{F}_{\alpha}}(\alpha_i)  = \sigma^2_{\alpha}  \\
+\varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i  ,  \\
+\eta_i &\indep  \alpha_i \indep \phi_i \indep \theta_i \indep \varepsilon_{i,t},
+\end{align*}
+where $\indep $ denotes the independence operator. We also consider a modeling framework where the shock effects are linear functions of covariates with an additional additive mean-zero error. For $i = 1, \ldots, n+1$, the random effects structure for this model (model $\mc{M}_2$) is:
+\begin{align}
+\mc{M}_2 \colon \begin{array}{l}
+  y_{i,t} =\eta_i +\alpha_i D_{i,t} + \phi_i y_{i, t-1} + \theta_i'\mbf{x}_{i,t} + \varepsilon_{i,t}\\[.2cm]
+  \; \alpha_i = \mu_{\alpha}+\delta_{i}'\mbf{x}_{i, T_i^*+1}+ \t{\varepsilon}_{i},
+\end{array}\label{model2}
+\end{align}
+ where the added random effects are
+\begin{align*}
+\t{\varepsilon}_{i} &\simiid  \mc{F}_{\t{\varepsilon}} \text{ with }\mrm{E}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=0, \mrm{Var}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=\sigma^2_{\alpha}\\
+\eta_i &\indep  \alpha_i \indep \phi_i \indep \theta_i \indep \varepsilon_{i,t} \indep \t{\varepsilon}_{i}.
+\end{align*} 
+We further define 
+$\tilde{\alpha}_i=\mu_{\alpha}+\delta_i'\mbf{x}_{i, T_i^*+1}$. 
+We will investigate the post-shock aggregated estimators in $\mc{M}_2$ 
+in settings where $\delta_i$ is either fixed or random. 
+We let $\mc{M}_{21}$ denote model $\mc{M}_{2}$ with $\delta_i = \delta$ for $i= 1, \ldots, n+1$, 
+where $\delta$ is a  fixed unknown parameter.
+We let $\mc{M}_{22}$ denote model $\mc{M}_{2}$ with the following random effects :
+\begin{align*}
+&\delta_i\simiid  \mc{F}_{\delta} \text{ with }\mrm{E}_{\mc{F}_{\delta}}(\delta_i)=\mu_{\delta}, \mrm{Var}_{\mc{F}_{\delta}}(\delta_i)=\Sigma_\delta \\
+   & \delta_i  \indep \t{\varepsilon}_{i}.
+\end{align*}
+We further define the parameter sets
+\begin{align}
+\begin{array}{l}
+ \;\, \Theta = \{(\eta_i, \phi_i, \theta_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1}, \delta_i)\colon    t= 1, \ldots, T_i, i = 2, \ldots, n +1\} \\
+   \Theta_1 = \{(\eta_i, \phi_i, \theta_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1}, \delta_i)\colon  t= 1, \ldots, T_i, i = 1\}
+\end{array}\label{parameter} 
+\end{align}
+where $\Theta$ and $\Theta_1$ can adapt to $\mc{M}_1$ by dropping $\delta_i$. We assume this for notational simplicity.
+
+
+
+\subsection{Forecast}
+\label{forecast}
+
+In our post-shock setting we consider the following candidate forecasts: 
+\begin{align*}
+  &\text{Forecast 1}: \hat y_{1,T_1^*+1}^1 = \hat\eta_1 
+    + \hat\phi_1 y_{1,T_1^*} + \hat\theta_1'\x_{1,T_1^*+1} 
+    , \\
+  &\text{Forecast 2}: \hat y_{1,T_1^*+1}^2 = \hat\eta_1 
+    + \hat\phi_1 y_{1,T_1^*} + \hat\theta_1'\x_{1,T_1^*+1} 
+    + \hat{\alpha},
+\end{align*}
+where $\hat\eta_1$, $\hat\phi_1$, and $\hat\theta_1$ are all OLS estimators of $\eta_1$, $\phi_1$, and $\theta_1$, respectively, and $\hat{\alpha}$ is some form of estimator for the shock effect of time series of interest, i.e., $\alpha_1$. 
+%The first forecast ignores the presence of $\alpha_1$ while the second forecast incorporates an estimate of $\alpha_1$ that is obtained from the other independent forecasts under study. 
+
+Throughout the rest of this article we highlight when the information from the time series donor pool, indexed by $\{y_{i,t} \colon t = 1,\ldots,T_i, i = 2,\ldots,n+1\}$, can be used to construct a shock effect estimator $\hat\alpha$ in which Forecast 2 beats Forecast 1 and vice-versa. We will consider the different dynamic panel models $\mc{M}_1$, $\mc{M}_{21}$, and $\mc{M}_{22}$.
+%Improvement will be measured by assessing the reduction in risk that Forecast 2 offers over Forecast 1. We outline the theoretical details of risk-reduction in Section \ref{properties}. We specifically focus on predictions for $y_{1,T_1^*+1}$, the first post-shock response. It is important to note that, in general, $\hat{\alpha}$ does not converge to $\alpha_1$ in any sense.  Despite this shortcoming, adjustment of the forecast for $y_{1,T_1^*+1}$ through the addition of $\hat{\alpha}$ has the potential to lower forecast risk under several conditions, and for several estimation techniques.
+We want to determine which forecast is appropriate over a horizon while the methods in \cite{lin2021minimizing} were only appropriate in the nowcasting setting in which prediction was only focused on the response immediately following the shock.
+
+
+
+
+
+\subsection{Multi-horizon forecast evaluation}
+
+We now consider an approach for comparing the forecasts over a specified time horizon after a shock has occurred by borrowing information across similar forecasts. 
+
+\cite{quaedvlieg2021multi} provided a methodology for comparing forecasts jointly across all horizons of a forecast path, $h = 1,\ldots, H$. In our post-shock setting, we want to compare the forecasts 
+$$
+  \hat y^{1,h}_{1,t} \; \text{and} \; \hat y^{2,h}_{1,t}
+$$
+where $y^{1,h}_{1,t}$ is the forecast for $y_t$ that accounts for the yet-to-be observed structural shock and is based on the information set $\mathcal{F}_{t-h}$, and $\hat y^{2,h}_{1,t}$ is defined similarly for the forecast that does not include any shock effect information. We will compare these forecasts in terms of their loss differential
+$$
+  d_t = L_{1,t} - L_{2,t},
+$$
+where $L_{j,t} = L(y_t,\hat y_{j,t})$, $j = 1,2$, and $L$ is a loss function. Hypothesis tests in \cite{quaedvlieg2021multi} are with respect to $E(d_t) = \mu_t$. Conditions for these tests require conditions of \cite{giacomini2006tests}.
+
+\textbf{Note}: We need more formality for constructing $\hat y^{1,h}_{1,t}$. We could use the forecasts in \cite{lin2021minimizing} and then consider $h$-ahead methods after adjusting for the shock. Or we could consider aggregation approaches which average all post-shock responses of the series in the donor pool. 
+
+
+We will consider the average superior predictive ability (aSPA) to assess whether or not a shock is permanent or transitory. The aSPA investigates forecast comparisons based on their weighted average loss difference
+$$
+  \mu^{(AVG)} = \textbf{w}^T\mathbf{\mu} = \sum_{h=1}^H w_h \mu^h
+$$
+with weights $\textbf{w}$ that sum to one. Note that aSPA requires the user to take a stand on the relative importance of under-performance at one horizon against out-performance at another, and note that it is likely that $\mu^h > 0$ for $h$ closer to 1 since the user expects that a structural shock will occur and the structural shock is taken into account by forecast 1. 
+
+
+
+\bibliographystyle{plainnat}
+\bibliography{../synthetic-prediction-notes}
+
+	
+\end{document}
+
+
