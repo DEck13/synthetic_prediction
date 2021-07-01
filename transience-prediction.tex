@@ -56,6 +56,8 @@
 \def\bs#1{\boldsymbol{#1}}
 \def\P{\mathbb{P}}
 
+\newcommand{\ceil}[1]{\lceil #1 \rceil}
+
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert} % A norm with 1 argument
 \DeclareMathOperator{\Var}{Var} % Variance symbol
 
@@ -108,8 +110,8 @@ In time series literature, under a squared loss $L(\cdot)$, the conditional fore
 
 To deal with this problem, motivated by \cite{abadie2010synthetic} and \cite{lin2020minimizing}, it is possible to approximate the probability that the shock is transient using the donor pool  under suitable assumptions. Then, we illustrate the idea as below. Let the donor pool size be $n$. For $i = 1, \ldots, n +1$ and $t = 1, \ldots, T_i$, we assume
 \begin{align*}
-  y_{i,t} &= K(\mc{F}_{i, t-1}) + \mathbf{x}_{i,t}\boldsymbol{\beta}  + \alpha_{i,t} I(t > T_i^*)+\varepsilon_{i,t},\\
-         \alpha_{i,t} &= \mu_{t}^{\alpha} + \mbf{z}_{i,t}\bs{\gamma}_{i} + \tilde{\varepsilon}_{i,t}
+  y_{i,t} &= K(\mc{F}_{i, t-1}) + \mathbf{x}_{i,t}\boldsymbol{\beta}  +  \textcolor{red}{\alpha_{i} I(t > T_i^*)}+\varepsilon_{i,t},\\
+         \alpha_{i} &= \mu_{\alpha} + \mbf{x}_{i,T_i^*+1}\bs{\gamma}_{i} + \tilde{\varepsilon}_{i}
 \end{align*}
 where $\mc{F}_{i, t-1}$  denotes the information  before $t-1$ of time series $i$, $K(\cdot)$ is a general real-valued function, $\mathbf{x}_{i,t},\bs{\beta}\in \reals^{p}$, $\bs{z}_{i,t}, \bs{\gamma}_{i}\in \reals^q$, $\tilde{\varepsilon}_{i,t}$ and $\varepsilon_{i,t}$ follow some well-defined distribution with existing first and second moments, and $T_i^*$ is the time point that the user knows a shock is about to come at $t = T_{i}^*+1$. We further assume, $\tilde{\varepsilon}_{i,t}$ and $\varepsilon_{i,t}$ are  independent. This implies that $\alpha_{i,t}$ and $\varepsilon_{i,t}$ are independent.
 
@@ -239,6 +241,31 @@ We may estimate $\mathbf{W}^*$ as
   where $Y^{+}=\max\{Y, 0\}$ and $Y^{-}=\max\{-Y, 0\}$. 
   If the system is conditionally stationary, $\alpha(t_1, t_2)=\alpha(t_2, t_1)=\alpha(|t_1-t_2|)\equiv \alpha(\tau)$. If $\alpha(\tau)\to 0$ as $\tau \to \infty$, the process is $\alpha$-mixing.
 \end{definition}
+
+
+\newpage
+
+\section{Simulation Setup}
+
+Let $n$ denote the donor pool size, $p$ denote the number of covariates used, $H$ denote the number of horizon used, $T_i$ denote the length of time series to be evaluated for time series $i$, $K_i$ denote the training sample size used for each  forecasting  time series $i$, $T_i^*$ denote the time point just before the realization of the shock for time series $i$ for $i = 1, \ldots, n+1$.
+
+
+$n$, $p$, and $H$ are pre-determined. $T_i, K_i \sim \mrm{Gamma}(15, 10)$.  The total sample size for $i$th time series is $T_i + K_i + H$. $T_i^*$ is randomly sampled from $\ceil{\frac{1}{4}T_i}+1$ to $\ceil{\frac{3}{4} T_i} + K_i+ H$. If $T_i, K_i < 90$, we force them to be 90. The adopted model for the data is as below:
+\begin{align*}
+  y_{i,t} &= \eta_i + \phi_i y_{i,t-1} + \mbf{x}_{i,t} \bs{\beta}_i + \alpha_i I(t > T_i^*) + \varepsilon_{i,t},\\
+  \alpha_i &= \mu_{\alpha} + \mbf{x}_{i,T_i^*+1}\bs{\gamma}_i + \tilde{\varepsilon}_{i},
+\end{align*}
+where
+\begin{align*}
+  \phi_i & \sim \text{ indep. }  U(0,1) \\
+  \eta_i & \sim \text{ indep. }  \mc{N}(0,1) \\
+  \varepsilon_{i,t} & \sim \text{ indep. } \mc{N}(0, \sigma^2)\\
+  \tilde{\varepsilon}_i & \sim \text{ indep. } \mc{N}(0, \sigma_{\alpha}^2)
+  \\
+  \bs{\gamma}_i & \sim \text{ indep. } \mc{N}(\mu_{\gamma}\bs{1}_p, \sigma_{\gamma}^2 \mbf{I}_p) \\
+  \bs{\beta}_i & \sim \text{ indep. }  \mc{N}(\bs{0}_p, \mbf{I}_p).
+\end{align*}
+Moreover, the elements of $\mathbf{x}_{i,t}$ are independently distributed as $\mrm{Gamma}(1,\delta)$.
 
 
 \bibliographystyle{plainnat}
