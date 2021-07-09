@@ -21,7 +21,7 @@ sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, ns = ns))
 
 # simulation time
 system.time(
-	output_ns5 <- lapply(1:nrow(sim_params), FUN = function(j) {
+	output_ns10 <- lapply(1:nrow(sim_params), FUN = function(j) {
 		# parameters
 		sigma.alpha <- sim_params[j, 1]
 		n <- sim_params[j, 2]
