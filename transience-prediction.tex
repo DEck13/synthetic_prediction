@@ -274,8 +274,11 @@ Note that $K_i$ is training sample size for time series $i$. Consider
 \begin{align*}
   K_i & \sim \ceil{\mrm{Gamma}(a_{K}, b_K)}\\
    T_i & \sim \ceil{\mrm{Gamma}(a_{T}, b_T)} \\
-  T_i^* &\equiv \ceil{1.5 \cdot T_i},
+  T_i^* &\equiv \max\{T_i+1, \ceil{0.5 \cdot(T_i+K_i+H)}\},
 \end{align*}
+
+$K_i+H+T_i^* > T_i+K_i+H$
+
  Then, we consider the following simulation setup
 \begin{verbatim}
   ns <- c(5, 10, 20, 40)
