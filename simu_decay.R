@@ -182,7 +182,7 @@ sim.normal.gammaX.decay <- function(mu.gamma.delta = 1, mu.alpha, sigma,
                               Kshape, Tshape) {
   K <- ceiling(rgamma(n + 1, scale = Kscale, shape = Kshape)) # training sample size
   Ts <- ceiling(rgamma(n + 1, scale = Tscale, shape = Tshape)) # Time Length
-  Tstar <- ceiling(0.5 * Ts)
+  Tstar <- ceiling(1.5 * Ts)
   phi <- round(runif(n + 1, 0, 1), 3) # autoregressive parameters
   
   X <- c()
