@@ -176,16 +176,13 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
 
 # simulation study normal for decaying shock effects
 sim.normal.gammaX.decay <- function(mu.gamma.delta = 1, mu.alpha, sigma, 
-                              sigma.alpha, sigma.delta.gamma = 0.5, 
-                              p, B, n, H, scale, ell = ell, bw = 4) {
-  K <- round(rgamma(n = n + 1, shape = 15, scale = 10)) # training sample size
-  Ts <- round(rgamma(n = n + 1, shape = 15, scale = 10)) # Time Length
-  Ts[which(Ts < 90)] <- 90
-  K[which(K < 90)] <- 90
-  Tstar <- c() # Shock Time Points
-  for (i in 1:(n + 1)) {
-    Tstar <- c(Tstar, sample((ceiling(1 / 4 * Ts[i]) + 1):(ceiling(3 / 4 * Ts[i]) + K[i] + H), size = 1))
-  }
+                              sigma.alpha, sigma.delta.gamma = 0.1, 
+                              p, B, n, H, scale, ell = ell, bw = 4,
+                              Kscale = 1 / 2, Tscale = 1 / 2, 
+                              Kshape, Tshape) {
+  K <- ceiling(rgamma(n + 1, scale = Kscale, shape = Kshape)) # training sample size
+  Ts <- ceiling(rgamma(n + 1, scale = Tscale, shape = Tshape)) # Time Length
+  Tstar <- ceiling(0.5 * Ts)
   phi <- round(runif(n + 1, 0, 1), 3) # autoregressive parameters
   
   X <- c()
@@ -240,14 +237,19 @@ sim.normal.gammaX.decay <- function(mu.gamma.delta = 1, mu.alpha, sigma,
   Is <- est$Is
   # compute forecasts
   phat <- sum(W * ps[-1])
-  Ihat <- sum(W * Is[-1])
   p.diff <- abs(phat - ps[1])
-  I.diff <- abs(Ihat - Is[1])
-  return(c(p.diff = p.diff, I.diff = I.diff))
+  p.mean <- mean(ps[-1])
+  p.mean.diff <- abs(p.mean - ps[1])
+  return(c(p.diff = p.diff, p.mean = p.mean, p.mean.diff = p.mean.diff))
 }
 
-system.time(result <- sim.normal.gammaX.decay(mu.alpha = 0, mu.gamma.delta = 0, sigma = 1, sigma.alpha = 1, p = 4,
-                                        B = 200, n = 5, H = 12, scale = 5, ell = 3))
+system.time(result <- sim.normal.gammaX.decay(mu.gamma.delta = 2, 
+                                              mu.alpha = 10, sigma = 0.1, 
+                                              sigma.alpha = 0.05, 
+                                              sigma.delta.gamma = 0.1, 
+                                              p = 13, B = 200, scale = 2, 
+                                              n = 10, H = 8, ell = 4,
+                                              Kshape = 200, Tshape = 200))
 
 # MC
 library("parallel")
@@ -262,27 +264,28 @@ nsim <- 100
 
 
 # parameter setup
-mu.alphas <- c(0, 5, 50, 100)
-Hs <- c(2, 4, 8, 16)
-sim_params <- expand.grid(list(mu.alphas = mu.alphas, Hs = Hs))
+shape.K.Ts <- c(200, 400, 800, 1600)
+ns <- c(5, 10, 20, 40)
+sim_params <- expand.grid(list(shape.K.Ts = shape.K.Ts, ns = ns))
 
 # simulation time
 system.time(
   output <- lapply(1:nrow(sim_params), FUN = function(j) {
     # parameters
-    mu.alpha <- sim_params[j, 1]
-    H <- sim_params[j, 2]
+    shape.K.T <- sim_params[j, 1]
+    n <- sim_params[j, 2]
     # %do% evaluates sequentially
     # %dopar% evaluates in parallel
     # .combine results
     out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
       # result
-      study <- sim.normal.gammaX.decay(mu.gamma.delta = 0, 
-                                 mu.alpha = mu.alpha, sigma = 1, 
-                                 sigma.alpha = 1, 
-                                 sigma.delta.gamma = 1, 
-                                 p = 13, B = 200, scale = 10, 
-                                 n = 10, H = H, ell = 3)
+      study <- sim.normal.gammaX.decay(mu.gamma.delta = 2, 
+                                       mu.alpha = 10, sigma = 0.1, 
+                                       sigma.alpha = 0.05, 
+                                       sigma.delta.gamma = 0.1, 
+                                       p = 13, B = 200, scale = 2, 
+                                       n = 10, H = 8, ell = 4,
+                                       Kshape = shape.K.T, Tshape = shape.K.T)
       return(study)
     }
     # return results
@@ -297,39 +300,21 @@ require('writexl')
 setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
 write_xlsx(lapply(output, as.data.frame), 'trial3.xlsx')
 
+result <- c()
+for (i in 1:nrow(sim_params)) {
+  table <- output[[i]]
+  # means and sds
+  means <- apply(table, 2, function(x) mean(x))
+  sds <- apply(table, 2, function(x) sd(x))
+  result.i <- c()
+  for (j in 1:3) {
+    result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
+                                       ' (', round(sds[j] / sqrt(100), 
+                                                   digits = 3), ')'))
+  }
+  result <- rbind(result, result.i)
+}
+result <- cbind(sim_params[, c(1,2)], result)
+require('xtable')
+xtable(result)
 
-# parameter setup
-ells <- c(2, 4, 8, 16)
-Hs <- c(2, 4, 8, 16)
-sim_params <- expand.grid(list(ells = ells, Hs = Hs))
-
-# simulation time
-system.time(
-  output <- lapply(1:nrow(sim_params), FUN = function(j) {
-    # parameters
-    ell <- sim_params[j, 1]
-    H <- sim_params[j, 2]
-    # %do% evaluates sequentially
-    # %dopar% evaluates in parallel
-    # .combine results
-    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
-      # result
-      study <- sim.normal.gammaX.decay(mu.gamma.delta = 0, 
-                                 mu.alpha = 5, sigma = 1, 
-                                 sigma.alpha = 1, 
-                                 sigma.delta.gamma = 1, 
-                                 p = 13, B = 200, scale = 10, 
-                                 n = 10, H = H, ell = ell)
-      return(study)
-    }
-    # return results
-    out
-  })
-)
-
-# store results
-# load packages
-require('readxl')
-require('writexl')
-setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
-write_xlsx(lapply(output, as.data.frame), 'trial4.xlsx')
