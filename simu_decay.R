@@ -284,7 +284,7 @@ system.time(
                                        sigma.alpha = 0.05, 
                                        sigma.delta.gamma = 0.1, 
                                        p = 13, B = 200, scale = 2, 
-                                       n = 10, H = 8, ell = 4,
+                                       n = n, H = 8, ell = 4,
                                        Kshape = shape.K.T, Tshape = shape.K.T)
       return(study)
     }
