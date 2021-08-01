@@ -243,7 +243,27 @@ sim.normal.gammaX.decay <- function(mu.gamma.delta = 1, mu.alpha, sigma,
   p.diff <- abs(phat - ps[1])
   p.mean <- mean(ps[-1])
   p.mean.diff <- abs(p.mean - ps[1])
-  return(c(p.diff = p.diff, p.mean = p.mean, p.mean.diff = p.mean.diff))
+  
+  # Fisher
+  p.fisher <- 1 - pchisq( -2 * sum(log(ps[-1] + 0.0001)) , df = 2 * length(ps[-1]))
+  p.fisher.diff <- abs(p.fisher - ps[1])
+  
+  # Pearson
+  p.pearson <- 1 - pchisq( -2 * sum(log(1 - ps[-1]  + 0.0001)) , df = 2 * length(ps[-1]))
+  p.pearson.diff <- abs(p.pearson - ps[1])
+  
+  # weighted fisher
+  weighted_p.fisher <- 1 - pchisq( -2 * sum(W * log(ps[-1] + 0.0001)) , df = 2 * length(ps[-1]))
+  weighted_p.fisher.diff <- abs(weighted_p.fisher - ps[1])
+  
+  # weighted pearson
+  weighted_p.pearson <- 1 - pchisq( -2 * sum(W * log(1 - ps[-1] + 0.0001)) , df = 2 * length(ps[-1]))
+  weighted_p.pearson.diff <- abs(weighted_p.pearson - ps[1])
+  
+  return(c(p.diff = p.diff, p.mean = p.mean, p.mean.diff = p.mean.diff,
+           p.fisher.diff = p.fisher.diff, p.pearson.diff = p.pearson.diff,
+           weighted_p.fisher.diff = weighted_p.fisher.diff, 
+           weighted_p.pearson.diff = weighted_p.pearson.diff))
 }
 
 system.time(result <- sim.normal.gammaX.decay(mu.gamma.delta = 2, 
@@ -263,7 +283,7 @@ ncores <- detectCores() - 2
 registerDoParallel(cores = ncores)
 set.seed(2020)
 RNGkind("L'Ecuyer-CMRG")
-nsim <- 100
+nsim <- 50
 
 
 # parameter setup
@@ -301,7 +321,7 @@ system.time(
 require('readxl')
 require('writexl')
 setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
-write_xlsx(lapply(output, as.data.frame), 'trial3.xlsx')
+write_xlsx(lapply(output, as.data.frame), 'ntrial.xlsx')
 
 result <- c()
 for (i in 1:nrow(sim_params)) {
@@ -310,7 +330,7 @@ for (i in 1:nrow(sim_params)) {
   means <- apply(table, 2, function(x) mean(x))
   sds <- apply(table, 2, function(x) sd(x))
   result.i <- c()
-  for (j in 1:3) {
+  for (j in 1:7) {
     result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
                                        ' (', round(sds[j] / sqrt(100), 
                                                    digits = 3), ')'))
