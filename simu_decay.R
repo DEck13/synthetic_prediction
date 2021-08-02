@@ -226,7 +226,8 @@ sim.normal.gammaX.decay <- function(mu.gamma.delta = 1, mu.alpha, sigma,
     
     for (t in 2:(K[i] + Ts[i] + H + 1)) {
       epsilonit <- rnorm(n = 1, sd = sigma)
-      yi <- c(yi, etai + alphai * exp(- (t - Tstari - 2)) * ifelse(t >= Tstari + 2, yes = 1, no = 0) +
+      fac <- ifelse(exp(- (t - Tstari - 2)) > exp(1), yes = 0, no = exp(- (t - Tstari - 2)))
+      yi <- c(yi, etai + alphai * fac * ifelse(t >= Tstari + 2, yes = 1, no = 0) +
                 phii * yi[t - 1] + thetai %*% xi[t, ] + epsilonit)
     }
     
@@ -271,8 +272,9 @@ system.time(result <- sim.normal.gammaX.decay(mu.gamma.delta = 2,
                                               sigma.alpha = 0.05, 
                                               sigma.delta.gamma = 0.1, 
                                               p = 13, B = 200, scale = 2, 
-                                              n = 10, H = 8, ell = 4,
-                                              Kshape = 200, Tshape = 200))
+                                              n = 20, H = 8, ell = 4,
+                                              Kshape = 800, Tshape = 800))
+
 
 # MC
 library("parallel")
@@ -287,8 +289,8 @@ nsim <- 50
 
 
 # parameter setup
-shape.K.Ts <- c(200, 400, 800, 1600)
-ns <- c(5, 10, 20, 40)
+shape.K.Ts <- c(200, 400, 600, 800)
+ns <- c(5, 10, 20, 30)
 sim_params <- expand.grid(list(shape.K.Ts = shape.K.Ts, ns = ns))
 
 # simulation time
