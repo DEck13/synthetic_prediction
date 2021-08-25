@@ -32,8 +32,11 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\w}{\textbf{w}}
 \newcommand{\x}{\textbf{x}}
+\newcommand{\dbf}{\textbf{d}}
+\newcommand{\y}{\textbf{y}}
 \newcommand{\X}{\textbf{X}}
 \newcommand{\Y}{\textbf{Y}}
+\newcommand{\L}{\textbf{L}}
 \newcommand{\Hist}{\mathcal{H}}
 \def\mbf#1{\mathbf{#1}} % bold but not italic
 \def\ind#1{\mathrm{1}(#1)} % indicator function
@@ -50,12 +53,15 @@
 \def\mc#1{\mathcal{#1}} % mathical
 \DeclareMathOperator*{\argmax}{arg\,max} % arg max
 \DeclareMathOperator*{\argmin}{arg\,min} % arg min
-\def\E#1{\mathrm{E}(#1)} % Expectation symbol
+\def\E{\mathbb{E}} % Expectation symbol
+\def\mc#1{\mathcal{#1}}
 \def\var#1{\mathrm{Var}(#1)} % Variance symbol
 \def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} % checkmark
 \newcommand\red[1]{{\color{red}#1}}
+\def\bs#1{\boldsymbol{#1}}
+\def\P{\mathbb{P}}
 
-
+\newcommand{\ceil}[1]{\lceil #1 \rceil}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert} % A norm with 1 argument
 \DeclareMathOperator{\Var}{Var} % Variance symbol
 
@@ -88,29 +94,84 @@
 
 \allowdisplaybreaks
 
-\title{Testing for the prevalence or transience of a shock effect in the post-shock setting}
+\title{Prospective testing for the prevalence or transience of a shock effect before it occurs}
 \author{}
 \date{}
 
 \begin{document}
 
-
-
 \maketitle
+
+%We develop a forecasting methodology for providing credible forecasts for time series that have recently undergone a shock. We achieve this by borrowing knowledge from other time series that have undergone similar shocks for which post-shock outcomes are observed. Three shock effect estimators are motivated with the aim of minimizing average forecast risk. We propose risk-reduction propositions that provide conditions that establish when our methodology works. Bootstrap and leave-one-out cross validation procedures are provided to prospectively assess the performance of our methodology. Several simulated data examples, and two real data examples of forecasting Conoco Phillips and Apple stock price are provided for verification and illustration
+
 \begin{abstract}
- We provide a hypothesis test for the existence or transience of a shock in the post-shock setting of \cite{lin2021minimizing}.
+We develop a hypothesis testing procedure to prospectively test whether an anticipated shock is likely to be transient or permanent over a time horizon. We achieve this by borrowing knowledge from other time series that have undergone similar shocks for which post-shock outcomes are observed. These additional time series form a donor pool. 
+For each of the time series in the donor pool we calculate a p-value corresponding to a hypothesis test on the relevance of the inclusion of shock-effect information in predicting the response over the time horizon.
+These p-values are then combined to form an aggregated p-value which guides one decision in determining whether the shock effect for the time series under study is expected to be prevalent or transient. This p-value can be computed before the shock-effect is observed in the time series under study provided one can form a suitable donor pool. Several simulated data examples, and two real data examples of forecasting Conoco Phillips stock price and .... are provided for verification and illustration.
 \end{abstract}
+
+
+\section{Introduction}
+
+%We provide forecasting adjustment techniques with the goal of lowering overall forecast error when the time series under study has undergone a structural shock.
+We provide forecasting methodology for assessing the lingering effect of an anticipated structural shock to a time series under study. We focus on the setting in which a structural shock has occurred and one desires a prediction for the post-shock response over a set time horizon $H$. Specific interest is in determining whether the shock is expected to be permanent or transient over $H$. Standard forecasting methods may not yield any guidance on the post-shock trajectories \citep{baumeister2014real}. 
+This is a general problem that has many real life applications. For example, one may acquire terrible or great news about a company and desire to determine whether that news is bound to impact the stock price of that company over a relevant time period.  Companies may be interested in forecasting the demand of their products after they were involved in a brand crisis, but they only have recent sales data from pre-crises times. %Policy makers, economists, and citizens alike may be interested in determining whether inflation will dissipate or persist for the foreseeable future
+All is not lost in this forecasting setting, one may be able to supplement the present forecast with past data borrowed from other time series which contain post-shock trajectories arising from materially similar structural shocks.
+
+The core idea of our methodology is to sensibly aggregate similar past realized shock effects which arose from other time series, and then incorporate the aggregated shock effect estimator into the present forecast.
+
+Our testing method embraces ideas from 
+forecast aggregation in the post-shock setting \citep{lin2021minimizing}, 
+forecast comparison \citep{diebold1995comparing, quaedvlieg2021multi}, 
+p-value combination, 
+conditional forecasting \citep{baumeister2014real, kilian2017structural}, 
+time series pooling using cross-sectional panel data \citep{ramaswamy1993empirical, pesaran1999pooled, hoogstrate2000pooling, baltagi2008forecasting, koop2012forecasting, liu2020forecasting},
+forecasting with judgement and models \citep{svensson2005monetary, monti2008forecast}, 
+synthetic control methodology \citep{abadie2010synthetic, agarwal2020two},  
+expectation shocks \citep{croushore2006data, baumeister2014general, clements2019measuring}.
+
 
 
 
 \section{Setting}
 
+We will suppose that a researcher has multivariate time series data $\y_{i,t}$, $t = 1, \ldots,  T_i$ and $i = 1, \ldots, n+1$. We let $\y_{i,t} = (y_{i,t}$, $\x_{i,t}$) where $y_{i,t}$ is a scalar response and $\x_{i,t}$ is a vector of covariates that are revealed to the analyst prior to the observation of $y_{1,t}$.  Suppose that the analyst is interested in forecasting $y_{1,t}$, the first time series in the collection. 
+We will suppose that each time series $\y_{i,t}$ undergoes a shock at time $T^*_i \leq T_i + 1$. To define an interesting setting, we will suppose that $T^*_1 = T_1 + 1$, and $1 < T^*_i < T_i + 1$ for $i \geq 2$. 
+We will suppose that $\x_{i,t=T^*_i}$ is observed before the shock takes effect on $y_{i,t=T^*_i}$.
+
+We are interested in point forecasts $y_{i,t}^h$ at multiple horizons, $h = 1, \ldots, H$ with the aim of determining whether the shock has an effect on $y_{i,t}^h$.
+\cite{quaedvlieg2021multi} provided a methodology for comparing forecasts jointly across all horizons of a forecast path, $h = 1,\ldots, H$. In our post-shock setting, we want to compare the forecasts 
+$$
+  \hat y^{i,h}_{1,t} \; \text{and} \; \hat y^{2,h}_{i,t}
+$$
+where $y^{1,h}_{i,t}$ is the forecast for $y_{i,t}$ that accounts for the yet-to-be observed structural shock and is based on the information set $\mathcal{F}_{t-h}$, and $\hat y^{2,h}_{i,t}$ is defined similarly for the forecast that does not include any shock effect information. We will compare these forecasts in terms of their loss differential
+$$
+  \dbf_{i,t} = \L_{i,t,1} - \L_{i,t,2},
+$$
+where $L_{i,t,j} \in \R^H$ has elements $L^h(y_{i,t}$, $\hat y_{i,t}^{h,j})$, $j = 1,2$, and $L$ is a loss function. Hypothesis tests in \cite{quaedvlieg2021multi} are with respect to $E(\dbf_{i,t}) = \mbf\mu_{i,t}$. Conditions for these tests require conditions of \cite{giacomini2006tests}. 
+
+We will be interested in $\mathbf{\mu}_i = \lim_{T\to\infty}\frac{1}{T}\sum_{i=1}^T \mathbf{\mu}_{i,t}$.
+
+
+
+\vspace*{0.5cm}\noindent\textbf{Note}: We need more formality for constructing $\hat y^{1,h}_{1,t}$. We could use the forecasts in \cite{lin2021minimizing} and then consider $h$-ahead methods after adjusting for the shock. Or we could consider aggregation approaches which average all post-shock responses of the series in the donor pool. 
+\vspace*{0.5cm}
+
+We will consider the average superior predictive ability (aSPA) to assess whether or not a shock is permanent or transitory. The aSPA investigates forecast comparisons based on their weighted average loss difference
+$$
+  \mu^{(AVG)} = \textbf{w}^T\mathbf{\mu} = \sum_{h=1}^H w_h \mu^h
+$$
+with weights $\textbf{w}$ that sum to one. Note that aSPA requires the user to take a stand on the relative importance of under-performance at one horizon against out-performance at another, and note that it is likely that $\mu^h > 0$ for $h$ closer to 1 since the user expects that a structural shock will occur and the structural shock is taken into account by forecast 1. 
+
+
+
 
 
 \subsection{Model setup}
-
 \label{modelsetup}
 
+\noindent\textbf{Note}: We need to update the modeling setup. We should present a general modeling class which includes both the decay model and the permanent shift model.
+\vspace*{0.5cm}
 
 The assumed autoregressive models considered are that in \cite{lin2021minimizing}, we describe details here. Let $I(\cdot)$ be an indicator function, $T_i$ be the time length of the time series $i$ for $i = 1, \ldots, n+1$, and $T_i^*$ be the time point just before the one when the shock is known to occur, with $T_i^* < T_i$.  For $t= 1, \ldots, T_i$ and $i = 1, \ldots, n+1$, the model $\mc{M}_1$ is defined as
 \begin{align}
@@ -164,6 +225,9 @@ where $\Theta$ and $\Theta_1$ can adapt to $\mc{M}_1$ by dropping $\delta_i$. We
 \subsection{Forecast}
 \label{forecast}
 
+\noindent\textbf{Note}: Our forecast needs to be written with respect to our general model. Specifics can be given when we conduct our numerical examples.
+\vspace*{0.5cm}
+
 In our post-shock setting we consider the following candidate forecasts: 
 \begin{align*}
   &\text{Forecast 1}: \hat y_{1,T_1^*+1}^1 = \hat\eta_1 
@@ -182,30 +246,63 @@ We want to determine which forecast is appropriate over a horizon while the meth
 
 
 
+\section{Simulation Setup}
+\label{simulation}
+
+Let $n$ denote the donor pool size, $p$ denote the number of covariates used, $H$ denote the number of horizon used, $T_i$ denote the length of time series to be evaluated for time series $i$, $K_i$ denote the training sample size used for each  forecasting  time series $i$, $T_i^*$ denote the time point just before the realization of the shock for time series $i$ for $i = 1, \ldots, n+1$.
 
 
-\subsection{Multi-horizon forecast evaluation}
+In this setting $n$, $p$, and $H$ are pre-determined. $T_i, K_i \sim \mrm{Gamma}(15, 10)$.  The total sample size for $i$th time series is $T_i + K_i + H$. $T_i^*$ is randomly sampled from $\ceil{\frac{1}{4}T_i}+1$ to $\ceil{\frac{3}{4} T_i} + K_i+ H$. If $T_i, K_i < 90$, we force them to be 90. The adopted model for the data is as below:
+\begin{align*}
+  y_{i,t} &= \eta_i + \phi_i y_{i,t-1} + \mbf{x}_{i,t} \bs{\beta}_i + \alpha_i I(t > T_i^*) + \varepsilon_{i,t},\\
+  \alpha_i &= \mu_{\alpha} + \mbf{x}_{i,T_i^*+1}\bs{\gamma}_i + \tilde{\varepsilon}_{i},
+\end{align*}
+where
+\begin{align*}
+  \phi_i & \sim \text{ indep. }  U(0,1) \\
+  \eta_i & \sim \text{ indep. }  \mc{N}(0,1) \\
+  \varepsilon_{i,t} & \sim \text{ indep. } \mc{N}(0, \sigma^2)\\
+  \tilde{\varepsilon}_i & \sim \text{ indep. } \mc{N}(0, \sigma_{\alpha}^2)
+  \\
+  \bs{\gamma}_i & \sim \text{ indep. } \mc{N}(\mu_{\gamma}\bs{1}_p, \sigma_{\gamma}^2 \mbf{I}_p) \\
+  \bs{\beta}_i & \sim \text{ indep. }  \mc{N}(\bs{0}_p, \mbf{I}_p).
+\end{align*}
+Moreover, the elements of $\mathbf{x}_{i,t}$ are independently distributed as $\mrm{Gamma}(1,\delta)$.
 
-We now consider an approach for comparing the forecasts over a specified time horizon after a shock has occurred by borrowing information across similar forecasts. 
+Note that $K_i$ is training sample size for time series $i$. Consider
+\begin{align*}
+  K_i & \sim \ceil{\mrm{Gamma}(a_{K}, b_K)}\\
+   T_i & \sim \ceil{\mrm{Gamma}(a_{T}, b_T)} \\
+  T_i^* &\equiv \max\{T_i+1, \ceil{0.5 \cdot(T_i+K_i+H)}\},
+\end{align*}
 
-\cite{quaedvlieg2021multi} provided a methodology for comparing forecasts jointly across all horizons of a forecast path, $h = 1,\ldots, H$. In our post-shock setting, we want to compare the forecasts 
-$$
-  \hat y^{1,h}_{1,t} \; \text{and} \; \hat y^{2,h}_{1,t}
-$$
-where $y^{1,h}_{1,t}$ is the forecast for $y_t$ that accounts for the yet-to-be observed structural shock and is based on the information set $\mathcal{F}_{t-h}$, and $\hat y^{2,h}_{1,t}$ is defined similarly for the forecast that does not include any shock effect information. We will compare these forecasts in terms of their loss differential
-$$
-  d_t = L_{1,t} - L_{2,t},
-$$
-where $L_{j,t} = L(y_t,\hat y_{j,t})$, $j = 1,2$, and $L$ is a loss function. Hypothesis tests in \cite{quaedvlieg2021multi} are with respect to $E(d_t) = \mu_t$. Conditions for these tests require conditions of \cite{giacomini2006tests}.
+$K_i+H+T_i^* > T_i+K_i+H$
 
-\textbf{Note}: We need more formality for constructing $\hat y^{1,h}_{1,t}$. We could use the forecasts in \cite{lin2021minimizing} and then consider $h$-ahead methods after adjusting for the shock. Or we could consider aggregation approaches which average all post-shock responses of the series in the donor pool. 
+ Then, we consider the following simulation setup
+\begin{verbatim}
+  ns <- c(5, 10, 20, 40)
+  Tscale <- Kscale <- 1 / 2 # b_T, b_K 
+  K.T.shape <- c(200, 400, 800, 1600) # for K_i and T_i
+  mu.gamma.delta <- 2 # mean for parameter vector of shock
+  sigma.delta.gamma <- 0.1 # sd for parameter vector of shock
+  sigma.alpha <- 0.05 # sd for shock noise  
+  sigma <- 0.1 # sd for response noise
+  mu.alpha <- 50 # intercept for shock (relatively large)
+  H <- 8 
+  ell <- 4
+  scale <- 2 # scale for covariates that follow Gamma distribution
+\end{verbatim}
+
+\begin{align*}
+  y_{i,t} &= \eta_i + \phi_i y_{i,t-1} + \mbf{x}_{i,t} \bs{\beta}_i + \xi_i\cdot  I(t > T_i^*) + \varepsilon_{i,t},\\
+  \xi_i &= \alpha_i \cdot e^{-(t-T_i^*-1)} \\
+  \alpha_i &= \mu_{\alpha} + \mbf{x}_{i,T_i^*+1}\bs{\gamma}_i + \tilde{\varepsilon}_{i},
+\end{align*}
 
 
-We will consider the average superior predictive ability (aSPA) to assess whether or not a shock is permanent or transitory. The aSPA investigates forecast comparisons based on their weighted average loss difference
-$$
-  \mu^{(AVG)} = \textbf{w}^T\mathbf{\mu} = \sum_{h=1}^H w_h \mu^h
-$$
-with weights $\textbf{w}$ that sum to one. Note that aSPA requires the user to take a stand on the relative importance of under-performance at one horizon against out-performance at another, and note that it is likely that $\mu^h > 0$ for $h$ closer to 1 since the user expects that a structural shock will occur and the structural shock is taken into account by forecast 1. 
+
+
+
 
 
 

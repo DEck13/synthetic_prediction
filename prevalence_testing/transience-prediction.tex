@@ -181,6 +181,9 @@ We may estimate $\mathbf{W}^*$ as
 \end{align*}
 
 
+
+
+
 \section{Definitions}
 
 
@@ -266,6 +269,103 @@ where
   \bs{\beta}_i & \sim \text{ indep. }  \mc{N}(\bs{0}_p, \mbf{I}_p).
 \end{align*}
 Moreover, the elements of $\mathbf{x}_{i,t}$ are independently distributed as $\mrm{Gamma}(1,\delta)$.
+
+Note that $K_i$ is training sample size for time series $i$. Consider
+\begin{align*}
+  K_i & \sim \ceil{\mrm{Gamma}(a_{K}, b_K)}\\
+   T_i & \sim \ceil{\mrm{Gamma}(a_{T}, b_T)} \\
+  T_i^* &\equiv \max\{T_i+1, \ceil{0.5 \cdot(T_i+K_i+H)}\},
+\end{align*}
+
+$K_i+H+T_i^* > T_i+K_i+H$
+
+ Then, we consider the following simulation setup
+\begin{verbatim}
+  ns <- c(5, 10, 20, 40)
+  Tscale <- Kscale <- 1 / 2 # b_T, b_K 
+  K.T.shape <- c(200, 400, 800, 1600) # for K_i and T_i
+  mu.gamma.delta <- 2 # mean for parameter vector of shock
+  sigma.delta.gamma <- 0.1 # sd for parameter vector of shock
+  sigma.alpha <- 0.05 # sd for shock noise  
+  sigma <- 0.1 # sd for response noise
+  mu.alpha <- 50 # intercept for shock (relatively large)
+  H <- 8 
+  ell <- 4
+  scale <- 2 # scale for covariates that follow Gamma distribution
+\end{verbatim}
+
+\begin{align*}
+  y_{i,t} &= \eta_i + \phi_i y_{i,t-1} + \mbf{x}_{i,t} \bs{\beta}_i + \xi_i\cdot  I(t > T_i^*) + \varepsilon_{i,t},\\
+  \xi_i &= \alpha_i \cdot e^{-(t-T_i^*-1)} \\
+  \alpha_i &= \mu_{\alpha} + \mbf{x}_{i,T_i^*+1}\bs{\gamma}_i + \tilde{\varepsilon}_{i},
+\end{align*}
+
+\begin{table}[H]
+\caption{50 MC simulations  with varying $n$ and $\sigma_{\alpha}$ ($B = 200$, $H = 12$, $\ell = 3$, $\mu_{\alpha}=10$) \\ MC mean and standard errors for absolute differences between $p_1$ and estimated $p_1$.} \vspace{-.5cm} 
+\begin{center}
+  \begin{tabular}{cccc}
+  $n$ & $\sigma_{\alpha}$ & $|\hat{p}-p_1|$ & $|\hat{I}- I_1|$ \\   \hline\multirow{5}{*}{5} & 1  & 0.083 (0.028) & 0.084 (0.028) \\     & 5  & 0.083 (0.028) & 0.084 (0.028) \\     & 10  & 0.083 (0.028) & 0.084 (0.028) \\     & 25  & 0.074 (0.027) & 0.074 (0.027) \\     & 100  & 0.053 (0.019) & 0.053 (0.019) \\[.15cm] 
+    \hline    \multirow{5}{*}{10} & 1  & 0.063 (0.03) & 0.063 (0.03) \\    & 5  & 0.063 (0.03) & 0.063 (0.03) \\    & 10  & 0.063 (0.03) & 0.063 (0.03) \\    & 25  & 0.063 (0.03) & 0.063 (0.03) \\     & 100  & 0.052 (0.025) & 0.052 (0.025) \\[.15cm] 
+     \hline   \multirow{5}{*}{15} & 1  & 0.065 (0.026) & 0.066 (0.026) \\    & 5  & 0.065 (0.026) & 0.066 (0.026) \\     & 10  & 0.065 (0.026) & 0.066 (0.026) \\    & 25  & 0.065 (0.026) & 0.066 (0.026) \\     & 100  & 0.087 (0.029) & 0.087 (0.029) \\[.15cm]  
+     \hline    \multirow{5}{*}{25}& 1  & 0.044 (0.021) & 0.044 (0.021) \\     & 5  & 0.043 (0.021) & 0.044 (0.021) \\     & 10  & 0.05 (0.022) & 0.05 (0.022) \\     & 25  & 0.05 (0.022) & 0.05 (0.022) \\     & 100  & 0.048 (0.022) & 0.049 (0.022) \\   
+  \end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}
+\caption{100 MC simulations  with varying $\sigma$ and $\sigma_{\alpha}$ ($B = 200$, $H = 12$, $\ell = 3$, $n=10$) \\ MC mean and standard errors for absolute differences between $p_1$ and estimated $p_1$.} 
+  \begin{center}
+    \begin{tabular}{ccccc}
+     $\sigma$ & $\sigma_{\alpha}$ &  $|\hat{p}-p_1|$ & $|\hat{I}- I_1|$ \\[.15cm]  
+     \hline 
+   \multirow{5}{*}{5}  & 5  & 0.039 (0.016) & 0.04 (0.016) \\      & 10  & 0.039 (0.016) & 0.04 (0.016) \\      & 25  & 0.054 (0.019) & 0.054 (0.019) \\      & 50  & 0.059 (0.019) & 0.059 (0.019) \\      & 100  & 0.098 (0.026) & 0.098 (0.026) \\[.15cm]  
+      \hline     \multirow{5}{*}{10}  & 5  & 0.044 (0.016) & 0.044 (0.016) \\      & 10  & 0.044 (0.016) & 0.044 (0.016) \\      & 25  & 0.042 (0.016) & 0.042 (0.016) \\      & 50  & 0.065 (0.019) & 0.065 (0.019) \\      & 100  & 0.101 (0.026) & 0.101 (0.026) \\[.15cm]  
+      \hline     \multirow{5}{*}{25}  & 5  & 0.045 (0.018) & 0.046 (0.018) \\      & 10  & 0.058 (0.02) & 0.059 (0.02) \\      & 25  & 0.06 (0.02) & 0.061 (0.02) \\      & 50  & 0.105 (0.026) & 0.106 (0.026) \\      & 100  & 0.122 (0.027) & 0.122 (0.027) \\[.15cm]  
+      \hline     \multirow{5}{*}{50}  & 5  & 0.075 (0.023) & 0.076 (0.023) \\      & 10  & 0.085 (0.025) & 0.086 (0.025) \\      & 25  & 0.08 (0.023) & 0.08 (0.023) \\      & 50  & 0.14 (0.029) & 0.14 (0.029) \\      & 100  & 0.148 (0.027) & 0.148 (0.027) \\[.15cm]  
+      \hline     \multirow{5}{*}{100}  & 5  & 0.148 (0.029) & 0.149 (0.029) \\     & 10  & 0.151 (0.029) & 0.151 (0.029) \\      & 25  & 0.162 (0.029) & 0.162 (0.029) \\      & 50  & 0.229 (0.034) & 0.229 (0.034) \\      & 100  & 0.272 (0.034) & 0.272 (0.034) \\
+    \end{tabular}
+  \end{center}  
+\end{table}
+
+\begin{table}[H]
+\caption{100 MC simulations for decaying shock effects with varying $\mu_{\alpha}$ and $H$  ($B = 200$, $\mu_{\gamma}=2$, $\ell = 3$, $n=10$)} 
+\begin{center}
+\begin{tabular}{rrrccc}  \hline $\mu_{\alpha}$ & $H$ & $|\hat{p}-p_1|$ & $|\hat{I}- I_1|$ & Mean of $p$-values in the donor pool \\   \hline 0 & 2 & 0.11 (0.023) & 0.114 (0.023) & 0.08 (0.009) \\  5 & 2 & 0.1 (0.021) & 0.1 (0.021) & 0.079 (0.009) \\  50 & 2 & 0.075 (0.018) & 0.075 (0.018) & 0.062 (0.008) \\    100 & 2 & 0.064 (0.017) & 0.064 (0.017) & 0.048 (0.007)  \\[.15cm]  
+    \hline    0 & 4 & 0.12 (0.025) & 0.124 (0.025) & 0.069 (0.007) \\    5 & 4 & 0.12 (0.025) & 0.12 (0.025) & 0.064 (0.007) \\    50 & 4 & 0.087 (0.022) & 0.094 (0.023) & 0.046 (0.007) \\    100 & 4 & 0.049 (0.016) & 0.049 (0.017) & 0.033 (0.006)  \\[.15cm]  
+    \hline    0 & 8 & 0.184 (0.031) & 0.192 (0.032) & 0.07 (0.008) \\    5 & 8 & 0.181 (0.032) & 0.191 (0.033) & 0.067 (0.008) \\    50 & 8 & 0.139 (0.029) & 0.139 (0.029) & 0.05 (0.007) \\    100 & 8 & 0.102 (0.024) & 0.103 (0.024) & 0.04 (0.007)  \\[.15cm]   
+    \hline    0  & 16  & 0.202 (0.031) & 0.202 (0.031) & 0.097 (0.008) \\    5 & 16 & 0.202 (0.031) & 0.202 (0.031) & 0.095 (0.008) \\    50 & 16 & 0.168 (0.031) & 0.168 (0.031) & 0.064 (0.008) \\    100 & 16 & 0.125 (0.029) & 0.125 (0.029) & 0.044 (0.006) \\    \hline\end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[H]
+\caption{100 MC simulations for decaying shock effects with varying $\ell$ and $H$  ($B = 200$, $\mu_{\gamma}=2$, $\mu_{\alpha}=5$, $n=10$)} 
+\begin{center}
+\begin{tabular}{rrrccc}  \hline  $\ell$ & $H$ &  $|\hat{p}-p_1|$ & $|\hat{I}- I_1|$ & Mean of $p$-values in the donor pool  \\   \hline 2  &  \multirow{4}{*}{2}  & 0.107 (0.026) & 0.12 (0.028) & 0.064 (0.008) \\    4  &  & 0.108 (0.022) & 0.118 (0.023) & 0.077 (0.008) \\    8  &   & 0.105 (0.024) & 0.107 (0.024) & 0.067 (0.009) \\    16  &   & 0.12 (0.025) & 0.124 (0.026) & 0.07 (0.009) \\[.15cm] 
+    \hline     2  & \multirow{4}{*}{4}  & 0.162 (0.032) & 0.172 (0.033) & 0.061 (0.008) \\    4  &  & 0.089 (0.017) & 0.097 (0.019) & 0.08 (0.008) \\    8  &   & 0.135 (0.027) & 0.135 (0.027) & 0.08 (0.009) \\   16  &   & 0.156 (0.031) & 0.158 (0.031) & 0.063 (0.007) \\[.15cm]  
+   \hline     2  & \multirow{4}{*}{8}  & 0.108 (0.025) & 0.112 (0.025) & 0.079 (0.009) \\    4  &   & 0.134 (0.029) & 0.136 (0.029) & 0.071 (0.008) \\    8  &   & 0.186 (0.033) & 0.186 (0.032) & 0.075 (0.008) \\    16  &   & 0.125 (0.026) & 0.125 (0.026) & 0.071 (0.008) \\[.15cm] 
+    \hline     2  & \multirow{4}{*}{16}  & 0.222 (0.033) & 0.225 (0.033) & 0.094 (0.01) \\    4  &   & 0.124 (0.024) & 0.126 (0.024) & 0.081 (0.008) \\    8  &   & 0.14 (0.028) & 0.14 (0.028) & 0.075 (0.008) \\    16  &   & 0.162 (0.032) & 0.162 (0.032) & 0.068 (0.009) \\    \hline\end{tabular}
+\end{center}
+\end{table}
+
+\newpage
+
+
+\section{Conditions}
+
+\begin{enumerate}
+  \item Donor pool sample size $n \to \infty$
+  \item $\|\alpha_1 - \hat{\alpha}_{w} \|_2 \to 0$ as $n\to \infty$ (this can be realized by setting $\sigma_{\alpha}$ small enough and $\Var(\bs{\gamma} )$ small enough)
+  \item The set of weights that are positive is fixed and finite asymptotically 
+  \item Conditions of Quaedvlieg and $B \to \infty$
+  \item $T_i \to \infty$ for $i = 2,\ldots, n+1$ and $T_i^* =o(T_i)$.
+\end{enumerate}
+
+
+
+
+
+If all those conditions hold, $\| p_1-\hat{p}\| \to 0$.
+
 
 
 \bibliographystyle{plainnat}
