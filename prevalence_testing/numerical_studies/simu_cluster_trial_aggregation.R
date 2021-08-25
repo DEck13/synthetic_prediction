@@ -3,17 +3,17 @@
 rm(list = ls())
 
 ## load in output
-load("output_ns5.RData")
-load("output_ns10.RData")
-load("output_ns15.RData")
-load("output_ns25.RData")
+load("output_trial_ns5.RData")
+load("output_trial_ns10.RData")
+load("output_trial_ns15.RData")
+load("output_trial_ns25.RData")
 
 output <- c(output_ns5, output_ns10, output_ns15, 
 						output_ns25)
 
 ## create simulation parameters
 ns <- c(5, 10, 15, 25)
-sigma.alphas <- c(1, 5, 10, 25, 100)
+sigma.alphas <- c(1, 2, 3, 4, 5) / 10
 sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, ns = ns))
 nsim <- 150
 

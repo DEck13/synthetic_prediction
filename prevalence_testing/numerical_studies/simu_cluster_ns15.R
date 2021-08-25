@@ -10,7 +10,7 @@ source("simu_source.R")
 registerDoParallel(cores = ncores)
 set.seed(15)
 RNGkind("L'Ecuyer-CMRG")
-nsim <- 100
+nsim <- 150
 
 # parameter setup
 ns <- 15
@@ -34,7 +34,7 @@ system.time(
 																 mu.alpha = 10, sigma = 1, 
 																 sigma.alpha = sigma.alpha, 
 																 sigma.delta.gamma = 1, 
-																 p = 13, B = 200, scale = 10, 
+																 p = 13, B = 2000, scale = 10, 
 																 n = n, H = 12, ell = 3)
 			return(study)
 		}

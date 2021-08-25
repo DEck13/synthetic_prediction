@@ -98,8 +98,29 @@ taSPA.mhfc <- function(ell, d, B, bw = 4) {
   return(p)
 }
 
-# functions that return alpha.hat and synthetic weights
-ps.indic.W <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
+vote <- function(ps, sig = 0.05) {
+  indic.p <- ifelse(ps < 0.05, yes = 1, no = 0)
+  mean <- mean(indic.p)
+  if (mean > 0.5) output <- 1
+  else if (mean == 0.5) output <- sample(c(1, 0), size = 1)
+  else output <- 0
+  return(output)
+}
+
+Wp <- function(ps, W, type = c('Fisher', 'Pearson')) {
+  if (type == 'Fisher') {
+    Mis <- -log(ps + 1e-10)
+  } else if (type == 'Pearson') {
+    Mis <- -log(1 - ps + 1e-10)
+  }
+  M <- Mis * W
+  p <- 1 - pgamma(2 * M, shape = 1 / (sum(W ^ 2)), scale = 2)
+  return(p)
+}
+
+
+# functions that return alpha.hat and synthetic weights for decaying shock effects
+ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
   
   n <- length(Y) - 1
   
@@ -126,9 +147,11 @@ ps.indic.W <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
         # lag
         yilag <- Y[[i]][-(Ti + 1)][(t + H - h + 1):(t + Ki + H - h)]
         
+        # decay
+        decay <- exp(- ((t + H - h + 1):(t + Ki + H - h) - Tstari - 1)) * ifelse((t + H - h + 1):(t + Ki + H - h) >= Tstari + 1, yes = 1, no = 0)
+        
         # OLS
-        lmodi.adj <- lm(yi ~ 1 + ifelse((t + H - h + 1):(t + Ki + H - h) >= Tstari + 1, yes = 1, no = 0) + 
-                          yilag + xi)
+        lmodi.adj <- lm(yi ~ 1 + decay + yilag + xi)
         lmodi.unadj <- lm(yi ~ 1 + yilag + xi)
         
         # beta.hat
@@ -139,7 +162,8 @@ ps.indic.W <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
         yhat.adj <- tail(yi, 1)
         yhat.unadj <- tail(yi, 1)
         for (j in 1:h) {
-          yhat.adj <- c(yhat.adj, beta.hat.adj %*% matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
+          yhat.adj <- c(yhat.adj, beta.hat.adj %*% matrix(c(1, exp(-(t + Ki + H - h + j - Tstari - 1)) * 
+                                                              ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
                                                             yhat.adj[j], X[[i]][-1, ][t + Ki + H - h + j, ])))
           yhat.unadj <- c(yhat.unadj, beta.hat.unadj %*% matrix(c(1, yhat.unadj[j], X[[i]][-1, ][t + Ki + H - h + j, ])))
         }
@@ -171,17 +195,17 @@ ps.indic.W <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
 }
 
 
-# simulation study normal
-sim.normal.gammaX <- function(mu.gamma.delta = 1, mu.alpha, sigma, 
-                                    sigma.alpha, sigma.delta.gamma = 0.5, 
-                                    p, B, n, H, scale, ell = ell, bw = 4) {
-  K <- round(rgamma(n = n + 1, shape = 15, scale = 10)) # training sample size
-  Ts <- round(rgamma(n = n + 1, shape = 15, scale = 10)) # Time Length
-  Ts[which(Ts < 90)] <- 90
-  K[which(K < 90)] <- 90
-  Tstar <- c() # Shock Time Points
+# simulation study normal for decaying shock effects
+sim.normal.gammaX.decay <- function(mu.gamma.delta = 1, mu.alpha, sigma, 
+                              sigma.alpha, sigma.delta.gamma = 0.1, 
+                              p, B, n, H, scale, ell = ell, bw = 4,
+                              Kscale = 1 / 2, Tscale = 1 / 2, 
+                              Kshape, Tshape) {
+  K <- ceiling(rgamma(n + 1, scale = Kscale, shape = Kshape)) # training sample size
+  Ts <- ceiling(rgamma(n + 1, scale = Tscale, shape = Tshape)) # Time Length
+  Tstar <- c()
   for (i in 1:(n + 1)) {
-    Tstar <- c(Tstar, sample((ceiling(1 / 4 * Ts[i]) + 1):(ceiling(3 / 4 * Ts[i]) + K[i] + H), size = 1))
+    Tstar <- c(Tstar,  max(Ts[i] + 1, ceiling(0.5 * (Ts[i] + K[i] + H))))
   }
   phi <- round(runif(n + 1, 0, 1), 3) # autoregressive parameters
   
@@ -202,49 +226,69 @@ sim.normal.gammaX <- function(mu.gamma.delta = 1, mu.alpha, sigma,
     alpha <- c(alpha, mu.alpha + gamma[[i]] %*% X[[i]][Tstari + 1, ] + epsilontildei)
   }
   
-    
+  
   # generation of yit
   Y <- c()
   for (i in 1:(n + 1)) {
-      
+    
     # initial value
-      yi0 <- rnorm(1)
-      
+    yi0 <- rnorm(1)
+    
     # setup
     Tstari <- Tstar[i]
     alphai <- alpha[i]
     phii <- phi[i]
     xi <- X[[i]]
     yi <- yi0
-      
+    
     # parameter setup
     thetai <- matrix(rnorm(p), nrow = 1)
     etai <- rnorm(1)
-      
+    
     for (t in 2:(K[i] + Ts[i] + H + 1)) {
       epsilonit <- rnorm(n = 1, sd = sigma)
-      yi <- c(yi, etai + alphai * ifelse(t >= Tstari + 2, yes = 1, no = 0) +
-                  phii * yi[t - 1] + thetai %*% xi[t, ] + epsilonit)
+      fac <- ifelse(exp(- (t - Tstari - 2)) > exp(1), yes = 0, no = exp(- (t - Tstari - 2)))
+      yi <- c(yi, etai + alphai * fac * ifelse(t >= Tstari + 2, yes = 1, no = 0) +
+                phii * yi[t - 1] + thetai %*% xi[t, ] + epsilonit)
     }
     
     Y[[i]] <- yi
   }
   
   # estimates
-  est <- ps.indic.W(Tstar = Tstar, Y = Y, X = X, K = K, H = H, Ts = Ts, ell = ell, B = B, bw = bw)
+  est <- ps.indic.W.decay(Tstar = Tstar, Y = Y, X = X, K = K, H = H, Ts = Ts, ell = ell, B = B, bw = bw)
   ps <- est$ps
   W <- est$W
   Is <- est$Is
   # compute forecasts
+  votes <- vote(ps = ps[-1], sig = 0.05)
   phat <- sum(W * ps[-1])
-  Ihat <- sum(W * Is[-1])
+  p.mean <- mean(ps[-1])
+  # difference
   p.diff <- abs(phat - ps[1])
-  I.diff <- abs(Ihat - Is[1])
-  return(c(p.diff = p.diff, I.diff = I.diff, ps = ps))
+  p.mean.diff <- abs(p.mean - ps[1])
+  indic.diff <- abs(votes - Is[1])
+  
+  # Fisher
+  p.fisher <- 1 - pchisq( -2 * sum(log(ps[-1] + 1e-10)) , df = 2 * length(ps[-1]))
+  p.fisher.diff <- abs(p.fisher - ps[1])
+  
+  # Pearson
+  p.pearson <- 1 - pchisq( -2 * sum(log(1 - ps[-1]  + 1e-10)) , df = 2 * length(ps[-1]))
+  p.pearson.diff <- abs(p.pearson - ps[1])
+  
+  return(c(p.diff = p.diff, p.mean.diff = p.mean.diff,
+           p.fisher.diff = p.fisher.diff, p.pearson.diff = p.pearson.diff,
+           indic.diff = indic.diff))
 }
 
-system.time(result <- sim.normal.gammaX(mu.alpha = 0, mu.gamma.delta = 0, sigma = 1, sigma.alpha = 1, p = 4,
-                            B = 200, n = 5, H = 12, scale = 5, ell = 3))
+system.time(result <- sim.normal.gammaX.decay(mu.gamma.delta = 2, 
+                                              mu.alpha = 10, sigma = 0.1, 
+                                              sigma.alpha = 0.05, 
+                                              sigma.delta.gamma = 0.1, 
+                                              p = 13, B = 200, scale = 2, 
+                                              n = 20, H = 8, ell = 4,
+                                              Kshape = 800, Tshape = 800))
 
 
 # MC
@@ -252,38 +296,36 @@ library("parallel")
 library("doParallel")
 library("foreach")
 # 8 cores -- use 7
-ncores <- detectCores() - 1
+ncores <- detectCores() - 2
 registerDoParallel(cores = ncores)
 set.seed(2020)
 RNGkind("L'Ecuyer-CMRG")
-nsim <- 100
 nsim <- 50
 
 
 # parameter setup
-ns <- c(5, 10, 15, 25)
-sigma.alphas <- c(1, 5, 10, 25, 100)
-sim_params <- expand.grid(list(sigma.alphas = sigma.alphas, ns = ns))
-
-
+shape.K.Ts <- c(200, 400, 600, 800)
+ns <- c(5, 10, 20, 30)
+sim_params <- expand.grid(list(shape.K.Ts = shape.K.Ts, ns = ns))
 
 # simulation time
 system.time(
   output <- lapply(1:nrow(sim_params), FUN = function(j) {
     # parameters
-    sigma.alpha <- sim_params[j, 1]
+    shape.K.T <- sim_params[j, 1]
     n <- sim_params[j, 2]
     # %do% evaluates sequentially
     # %dopar% evaluates in parallel
     # .combine results
     out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
       # result
-      study <- sim.normal.gammaX(mu.gamma.delta = 2, 
-                                 mu.alpha = 10, sigma = 1, 
-                                 sigma.alpha = sigma.alpha, 
-                                 sigma.delta.gamma = 1, 
-                                 p = 13, B = 200, scale = 10, 
-                                 n = n, H = 12, ell = 3)
+      study <- sim.normal.gammaX.decay(mu.gamma.delta = 2, 
+                                       mu.alpha = 10, sigma = 0.1, 
+                                       sigma.alpha = 0.05, 
+                                       sigma.delta.gamma = 0.1, 
+                                       p = 13, B = 200, scale = 2, 
+                                       n = n, H = 8, ell = 4,
+                                       Kshape = shape.K.T, Tshape = shape.K.T)
       return(study)
     }
     # return results
@@ -295,7 +337,8 @@ system.time(
 # load packages
 require('readxl')
 require('writexl')
-write_xlsx(lapply(output, as.data.frame), 'trial.xlsx')
+setwd('/Users/mac/Desktop/Research/Post-Shock Prediction/')
+write_xlsx(lapply(output, as.data.frame), 'ntrial2.xlsx')
 
 result <- c()
 for (i in 1:nrow(sim_params)) {
@@ -304,13 +347,14 @@ for (i in 1:nrow(sim_params)) {
   means <- apply(table, 2, function(x) mean(x))
   sds <- apply(table, 2, function(x) sd(x))
   result.i <- c()
-  for (j in 1:16) {
+  for (j in 1:5) {
     result.i <- cbind(result.i, paste0(round(means[j], digits = 3), 
-                                       ' (', round(sds[j] / sqrt(nsim), 
+                                       ' (', round(sds[j] / sqrt(100), 
                                                    digits = 3), ')'))
   }
   result <- rbind(result, result.i)
 }
-result <- cbind(sim_params[, c(2,1)], result)
+result <- cbind(sim_params[, c(1,2)], result)
 require('xtable')
 xtable(result)
+

@@ -124,7 +124,7 @@ T <- 150
 n <- 50
 H <- 20
 lag <- 5
-shock <- 1
+shock <- 2
 ar <- 0.10
 
 dat <- data_setup(T = T, n = n, H = H, lag = lag, shock = shock, ar = ar)
