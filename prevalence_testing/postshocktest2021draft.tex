@@ -5,18 +5,19 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amsfonts}
-%\usepackage{amscd}
+\usepackage{amscd}
 \usepackage{amssymb}
-\usepackage{graphicx}
-\usepackage{mathtools}
 \usepackage{natbib}
-\usepackage{enumitem}
 \usepackage{url}
+
+\usepackage{graphicx}
+%\usepackage{mathtools}
+\usepackage{enumitem}
 \usepackage{authblk}
 \usepackage{bm}
 \usepackage[usenames]{color}
 \usepackage{hyperref}
-\usepackage{geometry}
+
 \usepackage{caption}
 \usepackage{float}
 \usepackage[caption = false]{subfig}
@@ -24,7 +25,9 @@
 \usepackage{multirow}
 \usepackage[linesnumbered, ruled,vlined]{algorithm2e}
 \usepackage{pdflscape}
+
 % margin setup
+\usepackage{geometry}
 \geometry{margin=0.8in}
 
 
@@ -171,58 +174,53 @@ with weights $\textbf{w}$ that sum to one. Note that aSPA requires the user to t
 \label{modelsetup}
 
 \noindent\textbf{Note}: We need to update the modeling setup. We should present a general modeling class which includes both the decay model and the permanent shift model.
-\vspace*{0.5cm}
 
-The assumed autoregressive models considered are that in \cite{lin2021minimizing}, we describe details here. Let $I(\cdot)$ be an indicator function, $T_i$ be the time length of the time series $i$ for $i = 1, \ldots, n+1$, and $T_i^*$ be the time point just before the one when the shock is known to occur, with $T_i^* < T_i$.  For $t= 1, \ldots, T_i$ and $i = 1, \ldots, n+1$, the model $\mc{M}_1$ is defined as
+\vspace{0.5cm}\noindent\textbf{Possible modeling approach}
+
+\vspace{0.5cm} We now describe the assumed autoregressive models with random effects for which post-shock aggregated estimators are provided. The model $\mc{M}$ is defined as
 \begin{align}
-\mc{M}_1 \colon y_{i,t} =\eta_i +\alpha_i D_{i,t} + \phi_i y_{i, t-1} + \theta_i'\mbf{x}_{i,t} + \varepsilon_{i,t}\label{equation1}
+\mc{M} \colon \begin{array}{l}
+  y_{i,t} =\eta_i + \sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j} + f(\mc{F}_{i,t-1},\x_{i,t-1},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
+  \; f(\mc{F}_{i,t-1},\x_{i,t-1},\alpha_i) = \alpha_i g(t) + \sum_{j=1}^{q_3}\t\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_4-1}\t\theta_{i,j+1}'\mbf{x}_{i,t-j}, \\[.2cm]
+  \; \alpha_i = \mu_{\alpha}+ \sum_{j=1}^{q_5}\delta_{i,j}'\mbf{x}_{i, T_i^*+j}+ \t{\varepsilon}_{i}, 
+\end{array}\label{model}
 \end{align}
- where $D_{i,t} = I(t = T_i^* + 1)$ 
-and $\x_{i,t} \in \R^{p}$ with $p \geq 1$.  We assume that the 
-$\mbf{x}_{i,t}$s are fixed. Let $|x|$ denote the absolute value of $x$ for $x\in \reals$. For $i = 1, \ldots, n+1$ and $t=1, \ldots, T_i$, the random effects structure for $\mc{M}_1$ is:
+where $D_{i,t} = I(t \geq T_i^* + 1)$, $I(\cdot)$ is the indicator function, $\x_{i,t} \in \R^{p}$ are fixed with $p \geq 1$, $g(t)$ is a bounded continuous function which does not cross zero and $\lim_{t\to\infty}g(t) = a \in \R$. Let 
+$\mathbf{\phi}_i = (\phi_{i,1},\ldots,\phi_{i,q_1})'$, 
+$\mathbf{\theta}_i = (\theta_{i,1},\ldots,\theta_{i,q_2})'$, 
+$\tilde{\mathbf{\phi}}_i = (\t\phi_{i,1},\ldots,\t\phi_{i,q_3})'$, 
+$\tilde{\mathbf{\theta}}_i = (\t\theta_{i,1},\ldots,\t\theta_{i,q_4})'$, 
+$\mathbf{\delta}_i = (\delta_{i,1},\ldots,\delta_{i,q_5})'$, 
+and suppose that the regression coefficients in \eqref{model} have the following random effects structure:
 \begin{align*}
-  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = 0, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}\\
-  \phi_i &\simiid \mc{F}_{\phi} \text{ where } |\mc{F}_{\phi}| < 1, \\
-   \theta_i &\simiid \mc{F}_{\theta} \text{ with }  \; \mrm{E}_{\mc{F}_{\theta}}(\theta_i) = \mu_{\theta}, \mrm{Var}_{\mc{F}_{\theta}}(\theta_i)  = \Sigma^2_{\theta} \\
-\alpha_i &\simiid \mc{F}_{\alpha} \text{ with }  \; \mrm{E}_{\mc{F}_{\alpha}}(\alpha_i) = \mu_{\alpha}, \mrm{Var}_{\mc{F}_{\alpha}}(\alpha_i)  = \sigma^2_{\alpha}  \\
-\varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i  ,  \\
-\eta_i &\indep  \alpha_i \indep \phi_i \indep \theta_i \indep \varepsilon_{i,t},
+  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = 0, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}, \\
+  \mathbf{\phi}_i &\simiid \mc{F}_{\mathbf{\phi}} \text{ where } |\phi_{i,j}| < 1, \\
+  \mathbf{\theta}_i &\simiid \mc{F}_{\mathbf{\theta}} \text{ with }  \; \mrm{E}_{\mc{F}_{\mathbf{\theta}}}(\theta_i) = \mu_{\mathbf{\theta}}, \mrm{Var}_{\mc{F}_{\mathbf{\theta}}}(\mathbf{\theta}_i)  = \Sigma^2_{\mathbf{\theta}}, \\
+  \tilde{\mathbf{\phi}}_i &\simiid \mc{F}_{\tilde{\mathbf{\phi}}} \text{ where } |\t\phi_{i,j}| < 1, \\
+  \tilde{\mathbf{\theta}}_i &\simiid \mc{F}_{\tilde{\mathbf{\theta}}} \text{ with }  \; \mrm{E}_{\mc{F}_{\tilde{\mathbf{\theta}}}}(\theta_i) = \mu_{\tilde{\mathbf{\theta}}}, \mrm{Var}_{\mc{F}_{\tilde{\mathbf{\theta}}}}(\tilde{\mathbf{\theta}}_i)  = \Sigma^2_{\tilde{\mathbf{\theta}}}, \\  
+  \mathbf{\delta}_i &\simiid  \mc{F}_{\mathbf{\delta}} \text{ with } \mrm{E}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\mu_{\mathbf{\delta}}, \mrm{Var}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\Sigma_{\mathbf{\delta}}, \\
+\varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i,  \\
+\t{\varepsilon}_{i} &\simiid  \mc{F}_{\t{\varepsilon}} \text{ with }\mrm{E}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=0, \mrm{Var}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=\sigma^2_{\alpha}, \\
+&\eta_i \indep \mathbf{\phi}_i \indep \mathbf{\theta}_i \indep 
+\tilde{\mathbf{\phi}}_i \indep \tilde{\mathbf{\theta}}_i \indep \mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i,t}.
 \end{align*}
-where $\indep $ denotes the independence operator. We also consider a modeling framework where the shock effects are linear functions of covariates with an additional additive mean-zero error. For $i = 1, \ldots, n+1$, the random effects structure for this model (model $\mc{M}_2$) is:
-\begin{align}
-\mc{M}_2 \colon \begin{array}{l}
-  y_{i,t} =\eta_i +\alpha_i D_{i,t} + \phi_i y_{i, t-1} + \theta_i'\mbf{x}_{i,t} + \varepsilon_{i,t}\\[.2cm]
-  \; \alpha_i = \mu_{\alpha}+\delta_{i}'\mbf{x}_{i, T_i^*+1}+ \t{\varepsilon}_{i},
-\end{array}\label{model2}
-\end{align}
- where the added random effects are
-\begin{align*}
-\t{\varepsilon}_{i} &\simiid  \mc{F}_{\t{\varepsilon}} \text{ with }\mrm{E}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=0, \mrm{Var}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=\sigma^2_{\alpha}\\
-\eta_i &\indep  \alpha_i \indep \phi_i \indep \theta_i \indep \varepsilon_{i,t} \indep \t{\varepsilon}_{i}.
-\end{align*} 
-We further define 
-$\tilde{\alpha}_i=\mu_{\alpha}+\delta_i'\mbf{x}_{i, T_i^*+1}$. 
-We will investigate the post-shock aggregated estimators in $\mc{M}_2$ 
-in settings where $\delta_i$ is either fixed or random. 
-We let $\mc{M}_{21}$ denote model $\mc{M}_{2}$ with $\delta_i = \delta$ for $i= 1, \ldots, n+1$, 
-where $\delta$ is a  fixed unknown parameter.
-We let $\mc{M}_{22}$ denote model $\mc{M}_{2}$ with the following random effects :
-\begin{align*}
-&\delta_i\simiid  \mc{F}_{\delta} \text{ with }\mrm{E}_{\mc{F}_{\delta}}(\delta_i)=\mu_{\delta}, \mrm{Var}_{\mc{F}_{\delta}}(\delta_i)=\Sigma_\delta \\
-   & \delta_i  \indep \t{\varepsilon}_{i}.
-\end{align*}
+The model \eqref{model} with the above random effects structure is a generalization of both model formulations in \cite{lin2021minimizing}. \textbf{Need to carefully show}.
+
 We further define the parameter sets
 \begin{align}
 \begin{array}{l}
- \;\, \Theta = \{(\eta_i, \phi_i, \theta_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1}, \delta_i)\colon    t= 1, \ldots, T_i, i = 2, \ldots, n +1\} \\
-   \Theta_1 = \{(\eta_i, \phi_i, \theta_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1}, \delta_i)\colon  t= 1, \ldots, T_i, i = 1\}
+ \;\, \Theta = \{(\eta_i, \mathbf{\phi}_i, \mathbf{\theta}_i, \tilde{\mathbf{\phi}}_i, \tilde{\mathbf{\theta}}_i, \mathbf{\delta}_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1})\colon    t= 1, \ldots, T_i, i = 2, \ldots, n +1\} \\
+   \Theta_1 = \{(\eta_i, \mathbf{\phi}_i, \mathbf{\theta}_i, \tilde{\mathbf{\phi}}_i, \tilde{\mathbf{\theta}}_i, \mathbf{\delta}_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1})\colon  t= 1, \ldots, T_i, i = 1\}
 \end{array}\label{parameter} 
 \end{align}
-where $\Theta$ and $\Theta_1$ can adapt to $\mc{M}_1$ by dropping $\delta_i$. We assume this for notational simplicity.
 
 
 
-\subsection{Forecast}
+
+
+
+
+\subsection{Forecasting and testing for shock persistence}
 \label{forecast}
 
 \noindent\textbf{Note}: Our forecast needs to be written with respect to our general model. Specifics can be given when we conduct our numerical examples.
@@ -230,18 +228,9 @@ where $\Theta$ and $\Theta_1$ can adapt to $\mc{M}_1$ by dropping $\delta_i$. We
 
 In our post-shock setting we consider the following candidate forecasts: 
 \begin{align*}
-  &\text{Forecast 1}: \hat y_{1,T_1^*+1}^1 = \hat\eta_1 
-    + \hat\phi_1 y_{1,T_1^*} + \hat\theta_1'\x_{1,T_1^*+1} 
-    , \\
-  &\text{Forecast 2}: \hat y_{1,T_1^*+1}^2 = \hat\eta_1 
-    + \hat\phi_1 y_{1,T_1^*} + \hat\theta_1'\x_{1,T_1^*+1} 
-    + \hat{\alpha},
+  &\text{Forecast 1}: \\
+  &\text{Forecast 2}: 
 \end{align*}
-where $\hat\eta_1$, $\hat\phi_1$, and $\hat\theta_1$ are all OLS estimators of $\eta_1$, $\phi_1$, and $\theta_1$, respectively, and $\hat{\alpha}$ is some form of estimator for the shock effect of time series of interest, i.e., $\alpha_1$. 
-%The first forecast ignores the presence of $\alpha_1$ while the second forecast incorporates an estimate of $\alpha_1$ that is obtained from the other independent forecasts under study. 
-
-Throughout the rest of this article we highlight when the information from the time series donor pool, indexed by $\{y_{i,t} \colon t = 1,\ldots,T_i, i = 2,\ldots,n+1\}$, can be used to construct a shock effect estimator $\hat\alpha$ in which Forecast 2 beats Forecast 1 and vice-versa. We will consider the different dynamic panel models $\mc{M}_1$, $\mc{M}_{21}$, and $\mc{M}_{22}$.
-%Improvement will be measured by assessing the reduction in risk that Forecast 2 offers over Forecast 1. We outline the theoretical details of risk-reduction in Section \ref{properties}. We specifically focus on predictions for $y_{1,T_1^*+1}$, the first post-shock response. It is important to note that, in general, $\hat{\alpha}$ does not converge to $\alpha_1$ in any sense.  Despite this shortcoming, adjustment of the forecast for $y_{1,T_1^*+1}$ through the addition of $\hat{\alpha}$ has the potential to lower forecast risk under several conditions, and for several estimation techniques.
 We want to determine which forecast is appropriate over a horizon while the methods in \cite{lin2021minimizing} were only appropriate in the nowcasting setting in which prediction was only focused on the response immediately following the shock.
 
 
@@ -298,6 +287,7 @@ $K_i+H+T_i^* > T_i+K_i+H$
   \xi_i &= \alpha_i \cdot e^{-(t-T_i^*-1)} \\
   \alpha_i &= \mu_{\alpha} + \mbf{x}_{i,T_i^*+1}\bs{\gamma}_i + \tilde{\varepsilon}_{i},
 \end{align*}
+
 
 
 
