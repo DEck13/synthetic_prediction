@@ -180,40 +180,76 @@ with weights $\textbf{w}$ that sum to one. Note that aSPA requires the user to t
 \vspace{0.5cm} We now describe the assumed autoregressive models with random effects for which post-shock aggregated estimators are provided. The model $\mc{M}$ is defined as
 \begin{align}
 \mc{M} \colon \begin{array}{l}
-  y_{i,t} =\eta_i + \sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j} + f(\mc{F}_{i,t-1},\x_{i,t-1},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
-  \; f(\mc{F}_{i,t-1},\x_{i,t-1},\alpha_i) = \alpha_i g(t) + \sum_{j=1}^{q_3}\t\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_4-1}\t\theta_{i,j+1}'\mbf{x}_{i,t-j}, \\[.2cm]
-  \; \alpha_i = \mu_{\alpha}+ \sum_{j=1}^{q_5}\delta_{i,j}'\mbf{x}_{i, T_i^*+j}+ \t{\varepsilon}_{i}, 
+  y_{i,t} =\eta_i + \sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j} + \alpha_i D_{i,t}f(t) + \varepsilon_{i,t},\\[.2cm]
+  %\; f(\mc{F}_{i,t-1},\x_{i,t-1},\alpha_i) =  \\[.2cm] %+ \sum_{j=1}^{q_3}\t\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_4-1}\t\theta_{i,j+1}'\mbf{x}_{i,t-j}, \\[.2cm]
+  \; \alpha_i = \mu_{\alpha} + \delta_i'\mbf{x}_{i, T_i^*+1} + \t{\varepsilon}_{i},
+  %\sum_{j=1}^{q_3}\delta_{i,j}'\mbf{x}_{i, T_i^*-j+1}+ \t{\varepsilon}_{i}, 
 \end{array}\label{model}
 \end{align}
-where $D_{i,t} = I(t \geq T_i^* + 1)$, $I(\cdot)$ is the indicator function, $\x_{i,t} \in \R^{p}$ are fixed with $p \geq 1$, $g(t)$ is a bounded continuous function which does not cross zero and $\lim_{t\to\infty}g(t) = a \in \R$. Let 
+where $D_{i,t} = I(t \geq T_i^* + 1)$, $I(\cdot)$ is the indicator function, $\x_{i,t} \in \R^{p}$ are fixed with $p \geq 1$, $f(t)$ is a bounded continuous function which does not cross zero and $\lim_{t\to\infty}g(t) = a \in \R$. Let 
 $\mathbf{\phi}_i = (\phi_{i,1},\ldots,\phi_{i,q_1})'$, 
 $\mathbf{\theta}_i = (\theta_{i,1},\ldots,\theta_{i,q_2})'$, 
-$\tilde{\mathbf{\phi}}_i = (\t\phi_{i,1},\ldots,\t\phi_{i,q_3})'$, 
-$\tilde{\mathbf{\theta}}_i = (\t\theta_{i,1},\ldots,\t\theta_{i,q_4})'$, 
-$\mathbf{\delta}_i = (\delta_{i,1},\ldots,\delta_{i,q_5})'$, 
+%$\tilde{\mathbf{\phi}}_i = (\t\phi_{i,1},\ldots,\t\phi_{i,q_3})'$, 
+%$\tilde{\mathbf{\theta}}_i = (\t\theta_{i,1},\ldots,\t\theta_{i,q_4})'$, 
+$\mathbf{\delta}_i = (\delta_{i,1},\ldots,\delta_{i,q_3})'$, 
 and suppose that the regression coefficients in \eqref{model} have the following random effects structure:
 \begin{align*}
   \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = 0, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}, \\
   \mathbf{\phi}_i &\simiid \mc{F}_{\mathbf{\phi}} \text{ where } |\phi_{i,j}| < 1, \\
   \mathbf{\theta}_i &\simiid \mc{F}_{\mathbf{\theta}} \text{ with }  \; \mrm{E}_{\mc{F}_{\mathbf{\theta}}}(\theta_i) = \mu_{\mathbf{\theta}}, \mrm{Var}_{\mc{F}_{\mathbf{\theta}}}(\mathbf{\theta}_i)  = \Sigma^2_{\mathbf{\theta}}, \\
-  \tilde{\mathbf{\phi}}_i &\simiid \mc{F}_{\tilde{\mathbf{\phi}}} \text{ where } |\t\phi_{i,j}| < 1, \\
-  \tilde{\mathbf{\theta}}_i &\simiid \mc{F}_{\tilde{\mathbf{\theta}}} \text{ with }  \; \mrm{E}_{\mc{F}_{\tilde{\mathbf{\theta}}}}(\theta_i) = \mu_{\tilde{\mathbf{\theta}}}, \mrm{Var}_{\mc{F}_{\tilde{\mathbf{\theta}}}}(\tilde{\mathbf{\theta}}_i)  = \Sigma^2_{\tilde{\mathbf{\theta}}}, \\  
+  %\tilde{\mathbf{\phi}}_i &\simiid \mc{F}_{\tilde{\mathbf{\phi}}} \text{ where } |\t\phi_{i,j}| < 1, \\
+  %\tilde{\mathbf{\theta}}_i &\simiid \mc{F}_{\tilde{\mathbf{\theta}}} \text{ with }  \; \mrm{E}_{\mc{F}_{\tilde{\mathbf{\theta}}}}(\theta_i) = \mu_{\tilde{\mathbf{\theta}}}, \mrm{Var}_{\mc{F}_{\tilde{\mathbf{\theta}}}}(\tilde{\mathbf{\theta}}_i)  = \Sigma^2_{\tilde{\mathbf{\theta}}}, \\  
   \mathbf{\delta}_i &\simiid  \mc{F}_{\mathbf{\delta}} \text{ with } \mrm{E}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\mu_{\mathbf{\delta}}, \mrm{Var}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\Sigma_{\mathbf{\delta}}, \\
 \varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i,  \\
 \t{\varepsilon}_{i} &\simiid  \mc{F}_{\t{\varepsilon}} \text{ with }\mrm{E}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=0, \mrm{Var}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=\sigma^2_{\alpha}, \\
 &\eta_i \indep \mathbf{\phi}_i \indep \mathbf{\theta}_i \indep 
-\tilde{\mathbf{\phi}}_i \indep \tilde{\mathbf{\theta}}_i \indep \mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i,t}.
+%\tilde{\mathbf{\phi}}_i \indep \tilde{\mathbf{\theta}}_i \indep 
+\mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i,t}.
 \end{align*}
 The model \eqref{model} with the above random effects structure is a generalization of both model formulations in \cite{lin2021minimizing}. \textbf{Need to carefully show}.
 
 We further define the parameter sets
 \begin{align}
 \begin{array}{l}
- \;\, \Theta = \{(\eta_i, \mathbf{\phi}_i, \mathbf{\theta}_i, \tilde{\mathbf{\phi}}_i, \tilde{\mathbf{\theta}}_i, \mathbf{\delta}_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1})\colon    t= 1, \ldots, T_i, i = 2, \ldots, n +1\} \\
-   \Theta_1 = \{(\eta_i, \mathbf{\phi}_i, \mathbf{\theta}_i, \tilde{\mathbf{\phi}}_i, \tilde{\mathbf{\theta}}_i, \mathbf{\delta}_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1})\colon  t= 1, \ldots, T_i, i = 1\}
+ \;\, \Theta = \{(\eta_i, \mathbf{\phi}_i, \mathbf{\theta}_i, \mathbf{\delta}_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1})\colon    t= 1, \ldots, T_i, i = 2, \ldots, n +1\} \\
+   \Theta_1 = \{(\eta_i, \mathbf{\phi}_i, \mathbf{\theta}_i, \mathbf{\delta}_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1})\colon  t= 1, \ldots, T_i, i = 1\}
 \end{array}\label{parameter} 
 \end{align}
 
+
+\vspace*{0.5cm}\noindent\textbf{Alternative model formulation} 
+
+\vspace*{0.5cm} We now describe the assumed autoregressive models with random effects for which post-shock aggregated estimators are provided. The model $\mc{M}$ is defined as
+\begin{align}
+\mc{M} \colon \begin{array}{l}
+  y_{i,t} =\eta_i + \sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j} + f(\mathcal{F}_{i,t},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
+  \; f(\mc{F}_{i,t},\alpha_i) = \alpha_i g(t) +  \sum_{j=1}^{\tilde q_{1}}\t\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{\tilde q_2-1}\t\theta_{i,j+1}'\mbf{x}_{i,t-j}, \\[.2cm]
+  \; \alpha_i = \mu_{\alpha} + \delta_i'\mbf{x}_{i, T_i^*+1} + \t{\varepsilon}_{i},
+  %\sum_{j=1}^{q_3}\delta_{i,j}'\mbf{x}_{i, T_i^*-j+1}+ \t{\varepsilon}_{i}, 
+\end{array}\label{model-gen}
+\end{align}
+where $g(t)$ is a known or estimable bounded continuous function which does not cross zero and $\lim_{t\to\infty}g(t) = a \in \R$. Let 
+$\mathbf{\phi}_i = (\phi_{i,1},\ldots,\phi_{i,q_1})'$, 
+$\mathbf{\theta}_i = (\theta_{i,1},\ldots,\theta_{i,q_2})'$, 
+$\tilde{\mathbf{\phi}}_i = (\t\phi_{i,1},\ldots,\t\phi_{i,\t q_{i,1}})'$, 
+$\tilde{\mathbf{\theta}}_i = (\t\theta_{i,1},\ldots,\t\theta_{i,\t q_{i,2}})'$, 
+$\mathbf{\delta}_i = (\delta_{i,1},\ldots,\delta_{i,q_3})'$, 
+and suppose that the regression coefficients in \eqref{model-gen} have the following hierarchical random effects structure: 
+\begin{align*}
+  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = 0, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}, \\
+  \mathbf{\phi}_i &\simiid \mc{F}_{\mathbf{\phi}} \text{ where } |\phi_{i,j}| < 1, \\
+  \mathbf{\theta}_i &\simiid \mc{F}_{\mathbf{\theta}} \text{ with }  \; \mrm{E}_{\mc{F}_{\mathbf{\theta}}}(\theta_i) = \mu_{\mathbf{\theta}}, \mrm{Var}_{\mc{F}_{\mathbf{\theta}}}(\mathbf{\theta}_i)  = \Sigma^2_{\mathbf{\theta}}, \\
+  \mathbf{\delta}_i &\simiid  \mc{F}_{\mathbf{\delta}} \text{ with } \mrm{E}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\mu_{\mathbf{\delta}}, \mrm{Var}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\Sigma_{\mathbf{\delta}}, \\
+\varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i,  \\
+\t{\varepsilon}_{i} &\simiid  \mc{F}_{\t{\varepsilon}} \text{ with }\mrm{E}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=0, \mrm{Var}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=\sigma^2_{\alpha}, \\
+  \tilde{\mathbf{\phi}}_{i,j} &= \mu_{\tilde{\mathbf{\phi}}_j} + \lambda_{i,j}, j = 1,\ldots, \t q_{i,1}, \; \text{where} \; \lambda_{i,j} \overset{ind}{\sim} \mathcal{F}_{\lambda}(\x_{i,T_i^*}) \; \text{with} \; |\mu_{\tilde{\mathbf{\phi}}_j}| < 1 \; \text{and} \; |\mu_{\tilde{\mathbf{\phi}}_j} + \lambda_{i,j}| < 1,  \\
+  \tilde{\mathbf{\theta}}_{i,j} &= \theta_{i,j} + \gamma_{i,j}, j = 1,\ldots,\t q_{i,2}, \; \text{where} \; \gamma_{i,j} \simiid \mathcal{F}_{\gamma} \; \text{with} \; \mrm{E}_{\mathcal{F}_{\gamma}}(\gamma_i) = \beta_o + \beta\mbf{x}_{i,T_i^*+1}, \mrm{Var}_{\mathcal{F}_{\gamma}}(\gamma_i) = \Sigma^2_\gamma,  \\  
+  \t q_{i,k} &\overset{ind}{\sim} \mathcal{F}_k(\x_{i,T_i^*}), \; k = 1,2, \\
+&\eta_i \indep \mathbf{\phi}_i \indep \mathbf{\theta}_i \indep 
+\tilde{\mathbf{\phi}}_i \indep \lambda_{i,j} \indep \gamma_i \indep \mathbf{\delta}_i \indep \t q_{i,k} \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i,t},
+\end{align*}
+where the distribution $\mathcal{F}_k(\x_{i,T_i^*})$ is a discrete distribution conditional on $\x_{i,T_i^*}$, $\theta_{i,j} = 0$ for any $q_1 < j \leq \t q_{i,1}$, and $\phi_{i,j} = 0$ for any $q_2 < j \leq \t q_{i,2}$. The model \eqref{model-gen} with the above random effects structure is a generalization of both model formulations in \cite{lin2021minimizing}. \textbf{Need to carefully show}. Note that for model \eqref{model-gen} to be of use for post-shock forecasting, the variation in 
+$\mathcal{F}_k(\x_{i,T_i^*})$ and $\mathcal{F}_{\lambda}(\x_{i,T_i^*})$ needs to be small relative to the signal captured in $\x_{i,T_i^*}$, and $\sigma^2_\alpha$ and $\Sigma^2_\gamma$ needs to be small relative to $\x_{i,T_i^*}$.
 
 
 
