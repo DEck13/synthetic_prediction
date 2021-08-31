@@ -206,7 +206,7 @@ and suppose that the regression coefficients in \eqref{model} have the following
 %\tilde{\mathbf{\phi}}_i \indep \tilde{\mathbf{\theta}}_i \indep 
 \mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i,t}.
 \end{align*}
-The model \eqref{model} with the above random effects structure is a generalization of both model formulations in \cite{lin2021minimizing}. \textbf{Need to carefully show}.
+The model \eqref{model} with the above random effects structure is a generalization of both model formulations in \cite{lin2021minimizing}. \textbf{Need to carefully show}. In this formulation $f(t)$ represents either a permanent or transient structural change to the time series that results from the shock.
 
 We further define the parameter sets
 \begin{align}
@@ -249,7 +249,11 @@ and suppose that the regression coefficients in \eqref{model-gen} have the follo
 \tilde{\mathbf{\phi}}_i \indep \lambda_{i,j} \indep \gamma_i \indep \mathbf{\delta}_i \indep \t q_{i,k} \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i,t},
 \end{align*}
 where the distribution $\mathcal{F}_k(\x_{i,T_i^*})$ is a discrete distribution conditional on $\x_{i,T_i^*}$, $\theta_{i,j} = 0$ for any $q_1 < j \leq \t q_{i,1}$, and $\phi_{i,j} = 0$ for any $q_2 < j \leq \t q_{i,2}$. The model \eqref{model-gen} with the above random effects structure is a generalization of both model formulations in \cite{lin2021minimizing}. \textbf{Need to carefully show}. Note that for model \eqref{model-gen} to be of use for post-shock forecasting, the variation in 
-$\mathcal{F}_k(\x_{i,T_i^*})$ and $\mathcal{F}_{\lambda}(\x_{i,T_i^*})$ needs to be small relative to the signal captured in $\x_{i,T_i^*}$, and $\sigma^2_\alpha$ and $\Sigma^2_\gamma$ needs to be small relative to $\x_{i,T_i^*}$.
+$\mathcal{F}_k(\x_{i,T_i^*})$ and $\mathcal{F}_{\lambda}(\x_{i,T_i^*})$ needs to be small relative to the signal captured in $\x_{i,T_i^*}$, and $\sigma^2_\alpha$ and $\Sigma^2_\gamma$ needs to be small relative to $\mu_\alpha +\delta_i'\x_{i,T_i^*}$ and $\beta_o + \beta\mbf{x}_{i,T_i^*+1}$ respectively. 
+
+We see that model \eqref{model-gen} with its accompanying random effects structure is flexible enough to capture changing structural dynamics as well as a mean-shift. These dynamic changes depend heavily on the value of $\mbf{x}_{i,T_i^*+1}$. Two series $i,j$ with small $\|\mbf{x}_{i,T_i^*+1} - \mbf{x}_{j,T_i^*+1}\|_2$ are expected to experience similar structural changes. This makes distance based weighting an attractive avenue.
+
+
 
 
 
@@ -269,6 +273,8 @@ In our post-shock setting we consider the following candidate forecasts:
 \end{align*}
 We want to determine which forecast is appropriate over a horizon while the methods in \cite{lin2021minimizing} were only appropriate in the nowcasting setting in which prediction was only focused on the response immediately following the shock.
 
+
+\vspace*{0.5cm}\noindent\textbf{Note}: We need to explain what the voting method is, possibly in algorithmic format. Also note that the p-values that we obtain are computed using a bootstrap procedure. Perhaps an additional proposition that states the performance of these bootstrap p-values would further guarantee reliability. 
 
 \begin{prop}
   Let $p_i \sim \mc{D}$ be independent sequence of p-values for $i = 1, \ldots, n+1$ and some distribution $\mc{D}$, where $p_1$ is the p-value of the time series of interest. Let  $\alpha$ denote the significance level. If $\P(p_1 \leq \alpha) \neq 0.5$, with probability one, the expected misclassification rate for voting in prevalence testing is
