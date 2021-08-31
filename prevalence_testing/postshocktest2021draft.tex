@@ -270,6 +270,63 @@ In our post-shock setting we consider the following candidate forecasts:
 We want to determine which forecast is appropriate over a horizon while the methods in \cite{lin2021minimizing} were only appropriate in the nowcasting setting in which prediction was only focused on the response immediately following the shock.
 
 
+\begin{prop}
+  Let $p_i \sim \mc{D}$ be independent sequence of p-values for $i = 1, \ldots, n+1$ and some distribution $\mc{D}$, where $p_1$ is the p-value of the time series of interest. Let  $\alpha$ denote the significance level. If $\P(p_1 \leq \alpha) \neq 0.5$, with probability one, the expected misclassification rate for voting in prevalence testing is
+  \begin{align*}
+    \begin{cases}
+    1- \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) > 0.5 \\
+    \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) < 0.5 
+  \end{cases} .
+  \end{align*}
+\end{prop}
+
+\begin{proof}
+ Since $\P(p_1 \leq \alpha)\in \reals$, by Strong Law of Large Numbers,
+\begin{align*}
+  \frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha)  
+   \stackrel{a.s.}{\rightarrow}  \P(p_i \leq \alpha) = \P(p_1 \leq \alpha),
+\end{align*}
+which follows from the fact that $p_i$ are i.i.d. Define
+\begin{align*}
+  f \colon [0,1] \mapsto \{0,1\} 
+  \text{ with }
+  f(x) = I(x \geq 0.5).
+\end{align*}
+Let $C(f)$ denote the continuity set of $f$. Suppose that $\P(p_1 \leq  \alpha) \neq 0.5$. In this case, notice that 
+\begin{align*}
+  \P(\P(p_1 \leq  \alpha) \in C(f)) =1.
+\end{align*}
+By Slutsky's Theorem, we have
+\begin{align*}
+  I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}
+  \stackrel{a.s.}{\rightarrow} 
+  I\{ \P(p_1 \leq  \alpha) \geq 0.5\}.
+\end{align*}
+Moreover, note that
+\begin{align*}
+\E \left\{ |I\{ \P(p_1 \leq  \alpha) \geq 0.5\}
+  - I( p_1 \leq  \alpha) |\right\}
+  & = \begin{cases}
+    1- \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) > 0.5 \\
+    \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) < 0.5 
+  \end{cases} \\
+  & \leq  0.5.
+\end{align*}
+That implies that with probability one, 
+\begin{align*}
+  \E \left\{ \left|I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}
+  - I( p_1 \leq  \alpha) \right|\right\}
+  = \begin{cases}
+    1- \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) > 0.5 \\
+    \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) < 0.5 
+  \end{cases}.
+\end{align*}
+That is, with probability one, the expected misclassification rate is as above.
+\end{proof}
+
+\begin{remark}
+  Since indicator functions are bounded in $\mc{L}^2$, by Chebyshev-Rachman Strong Law of Large Numbers, the independence assumption can be relaxed to be that those p-values are uncorrelated.
+\end{remark}
 
 \section{Simulation Setup}
 \label{simulation}
