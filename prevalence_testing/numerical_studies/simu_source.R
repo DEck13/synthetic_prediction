@@ -1,7 +1,7 @@
 # load packages
 require('forecast')
+require('aggregation')
 ncores <- 20
-
 
 # this function returns the W^* estimated by synthetic control method (SCM)
 scm <- function(X, Tstar) {
@@ -399,27 +399,82 @@ sim.normal.gammaX.decay <- function(mu.gamma.delta = 1, mu.alpha, sigma,
 	p.diff <- abs(phat - ps[1])
 	p.mean <- mean(ps[-1])
 	p.mean.diff <- abs(p.mean - ps[1])
+
+	#We alter the vector ps[-1] so that all values lie in open interval (0,1)
+	donor_p_vector <- ifelse(ps[-1]  < 10e-5, ps[-1] + 10e-5, ps[-1])
+	donor_p_vector <- ifelse(donor_p_vector > (1 - 10e-5), donor_p_vector - 10e-5, donor_p_vector)
 	
 	# Fisher
-	p.fisher <- 1 - pchisq( -2 * sum(log(ps[-1] + 0.0001)) , df = 2 * length(ps[-1]))
+	p.fisher <- 1 - pchisq( -2 * sum(log(donor_p_vector)) , df = 2 * length(donor_p_vector)) #upper-tailed test
 	p.fisher.diff <- abs(p.fisher - ps[1])
 	
 	# Pearson
-	p.pearson <- 1 - pchisq( -2 * sum(log(1 - ps[-1]  + 0.0001)) , df = 2 * length(ps[-1]))
+	p.pearson_test_stat <- -2 * sum(log(1 - donor_p_vector))
+	p.pearson <- pchisq( p.pearson_test_stat , df = 2 * length(donor_p_vector)) #lower-tailed test
 	p.pearson.diff <- abs(p.pearson - ps[1])
-	
-	# weighted fisher
-	weighted_p.fisher <- 1 - pchisq( -2 * sum(W * log(ps[-1] + 0.0001)) , df = 2 * length(ps[-1]))
+
+	# Stouffer
+	p.stouffer_test_stat <- sum(qnorm(1 - donor_p_vector)) / sqrt(n) #Caution: p-value of exactly 1 will cause trouble
+	p.stouffer <- 1 - pnorm(p.stouffer_test_stat) #upper-tailed test
+	p.stouffer.diff <- abs(p.stouffer - ps[1])
+
+	# weighted Fisher
+	weighted_p.fisher_test_stat <- (-(sum(W * log(donor_p_vector)) - n) /  sqrt(n * sum(W**2))) 
+	weighted_p.fisher <- 1 - pnorm(weighted_p.fisher_test_stat) #upper-tailed test
 	weighted_p.fisher.diff <- abs(weighted_p.fisher - ps[1])
-	
-	# weighted pearson
-	weighted_p.pearson <- 1 - pchisq( -2 * sum(W * log(1 - ps[-1] + 0.0001)) , df = 2 * length(ps[-1]))
+
+	# weighted Pearson
+	weighted_p.pearson_test_stat <- (-(sum(W * log(1 - donor_p_vector)) - n) /  sqrt(n * sum(W**2))) 
+	weighted_p.pearson <- pnorm( weighted_p.pearson_test_stat ) #lower-tailed test
 	weighted_p.pearson.diff <- abs(weighted_p.pearson - ps[1])
 	
-	return(c(p.diff = p.diff, p.mean = p.mean, p.mean.diff = p.mean.diff,
-					 p.fisher.diff = p.fisher.diff, p.pearson.diff = p.pearson.diff,
-					 weighted_p.fisher.diff = weighted_p.fisher.diff, 
-					 weighted_p.pearson.diff = weighted_p.pearson.diff))
+	# weighted Stouffer
+	weighted_p.stouffer_test_stat <- sum(W * qnorm(1 - donor_p_vector)) / sqrt(sum(W**2)) #Caution: p-value of exactly 1 will cause trouble
+	weighted_p.stouffer <- 1 - pnorm(weighted_p.stouffer_test_stat) #upper-tailed test
+	weighted_p.stouffer.diff <- abs(weighted_p.stouffer - ps[1])
+	
+	# Lancaster
+	p.lancaster <- lancaster(donor_p_vector, W)
+	p.lancaster.diff <- abs(p.lancaster - ps[1])
+
+	# Weighted edgington
+	weighted_p.edgington_test_stat <- (sum(W * donor_p_vector) - .5) / sqrt( (1/12) * sum(W**2))
+	weighted_p.edgington <- pnorm(weighted_p.edgington_test_stat) #lower-tailed test
+	weighted_p.edgington.diff <- abs(weighted_p.edgington - ps[1])
+
+	# Shapiro-Wilks test
+	p.shapiro <- shapiro.test(W)$p.value
+	p.shapiro <- ifelse(p.shapiro <= .05, 1, 0)
+
+	# Kolmogorov-Smirnov test
+	p.KS <- ks.test(ps[-1], runif)$p.value
+	p.KS <- ifelse(p.KS <= .05, 1, 0)
+
+	# Fraction of W_i that are essentially zero
+	frac_W_zero <- mean(ifelse(W < 10e-5, 1, 0))
+
+	# Fraction of p_i that are essentially zero
+	frac_p_zero <- mean(ifelse(ps[-1] < 10e-5, 1, 0))
+	
+	return(c(p.diff = p.diff, 
+			p.mean = p.mean, 
+			p.mean.diff = p.mean.diff,
+			p.fisher.diff = p.fisher.diff, 
+			p.pearson.diff = p.pearson.diff,
+			p.stouffer.diff = p.stouffer.diff,
+			weighted_p.fisher.diff = weighted_p.fisher.diff, 
+			weighted_p.pearson.diff = weighted_p.pearson.diff,
+			weighted_p.fisher.diff = weighted_p.fisher.diff,
+			p.lancaster.diff = p.lancaster.diff,
+			weighted_p.edgington.diff = weighted_p.edgington.diff,
+			max_weight = max(W),
+			min_weight = min(W),
+			median_weight = median(W),
+			p.shapiro = p.shapiro,
+			p.KS = p.KS,
+			frac_W_zero = frac_W_zero,
+			frac_p_zero = frac_p_zero
+			))
 }
 
 
