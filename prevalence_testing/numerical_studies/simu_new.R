@@ -154,7 +154,7 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
         
         # x and x lags
         x.xlags <- xi
-        for (j in 1:q2) {
+        for (j in 1:(q2 - 1)) {
           x.xlags <- cbind(xi, X[[i]][(t + H - h + 2 - j):(t + Ki + H - h - j + 1),])
         }
         
@@ -238,7 +238,7 @@ sim.normal.gammaX <- function(mu.delta = 1, mu.alpha, sigma,
   for (i in 1:(n + 1)) {
     Tstar <- c(Tstar,  max(Ts[i] + 1, ceiling(0.5 * (Ts[i] + K[i] + H))))
   }
-  phi <- round(matrix(runif((n + 1) * q1, 0, 1), nrow = n + 1), 3) # autoregressive parameters
+  phi <- round(matrix(runif((n + 1) * q1, 0, 0.1), nrow = n + 1), 3) # autoregressive parameters
   
   X <- c()
   alpha <- c()
@@ -360,13 +360,13 @@ sim.normal.gammaX <- function(mu.delta = 1, mu.alpha, sigma,
            indic.diff = indic.diff))
 }
 
-system.time(result <- sim.normal.gammaX(mu.delta = 2, 
-                                        mu.alpha = 10, sigma = 0.1, 
+system.time(result <- sim.normal.gammaX(mu.delta = 0.5, 
+                                        mu.alpha = 0.5, sigma = 0.1, 
                                         sigma.alpha = 0.05, 
                                         sigma.delta = 0.1, 
                                         p = 2, B = 200, scale = 2, 
                                         n = 20, H = 8, ell = 4,
-                                        Kshape = 200, Tshape = 200,
+                                        Kshape = 100, Tshape = 100,
                                         q1 = 2, q2 = 2))
 
 
