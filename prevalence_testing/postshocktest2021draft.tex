@@ -41,6 +41,7 @@
 \newcommand{\Y}{\textbf{Y}}
 \newcommand{\L}{\textbf{L}}
 \newcommand{\Hist}{\mathcal{H}}
+\newcommand{\Prob}{\mathbb{P}}
 \def\mbf#1{\mathbf{#1}} % bold but not italic
 \def\ind#1{\mathrm{1}(#1)} % indicator function
 \newcommand{\simiid}{\stackrel{iid}{\sim}} %[] IID 
@@ -145,26 +146,34 @@ We will suppose that $\x_{i,t=T^*_i}$ is observed before the shock takes effect 
 We are interested in point forecasts $y_{i,t}^h$ at multiple horizons, $h = 1, \ldots, H$ with the aim of determining whether the shock has an effect on $y_{i,t}^h$.
 \cite{quaedvlieg2021multi} provided a methodology for comparing forecasts jointly across all horizons of a forecast path, $h = 1,\ldots, H$. In our post-shock setting, we want to compare the forecasts 
 $$
-  \hat y^{i,h}_{1,t} \; \text{and} \; \hat y^{2,h}_{i,t}
+  \hat y^{1,h}_{i,t} \; \text{and} \; \hat y^{2,h}_{i,t}
 $$
 where $y^{1,h}_{i,t}$ is the forecast for $y_{i,t}$ that accounts for the yet-to-be observed structural shock and is based on the information set $\mathcal{F}_{t-h}$, and $\hat y^{2,h}_{i,t}$ is defined similarly for the forecast that does not include any shock effect information. We will compare these forecasts in terms of their loss differential
 $$
   \dbf_{i,t} = \L_{i,t,1} - \L_{i,t,2},
 $$
-where $L_{i,t,j} \in \R^H$ has elements $L^h(y_{i,t}$, $\hat y_{i,t}^{h,j})$, $j = 1,2$, and $L$ is a loss function. Hypothesis tests in \cite{quaedvlieg2021multi} are with respect to $E(\dbf_{i,t}) = \mbf\mu_{i,t}$. Conditions for these tests require conditions of \cite{giacomini2006tests}. 
+where $\L_{i,t,j} \in \R^H$ has elements $L^h(y_{i,t}$, $\hat y_{i,t}^{j,h})$, $j = 1,2$, and $L$ is a loss function. Hypothesis tests in \cite{quaedvlieg2021multi} are with respect to $E(\dbf_{i,t}) = \mbf\mu_{i,t}$. Conditions for these tests require conditions of \cite{giacomini2006tests}. 
 
 We will be interested in $\mathbf{\mu}_i = \lim_{T\to\infty}\frac{1}{T}\sum_{i=1}^T \mathbf{\mu}_{i,t}$.
-
-
 
 \vspace*{0.5cm}\noindent\textbf{Note}: We need more formality for constructing $\hat y^{1,h}_{1,t}$. We could use the forecasts in \cite{lin2021minimizing} and then consider $h$-ahead methods after adjusting for the shock. Or we could consider aggregation approaches which average all post-shock responses of the series in the donor pool. 
 \vspace*{0.5cm}
 
 We will consider the average superior predictive ability (aSPA) to assess whether or not a shock is permanent or transitory. The aSPA investigates forecast comparisons based on their weighted average loss difference
 $$
-  \mu^{(AVG)} = \textbf{w}^T\mathbf{\mu} = \sum_{h=1}^H w_h \mu^h
+  \mu^{(\text{Avg})}_i = \textbf{w}_i'\mathbf{\mu}_i = \sum_{h=1}^H w_{i,h} \mu_i^h,
 $$
-with weights $\textbf{w}$ that sum to one. Note that aSPA requires the user to take a stand on the relative importance of under-performance at one horizon against out-performance at another, and note that it is likely that $\mu^h > 0$ for $h$ closer to 1 since the user expects that a structural shock will occur and the structural shock is taken into account by forecast 1. 
+with weights $\textbf{w}_i$ that sum to one. Note that aSPA requires the user to take a stand on the relative importance of under-performance at one horizon against out-performance at another, and note that it is likely that $\mu_i^h > 0$ for $h$ closer to 1 since the user expects that a structural shock will occur and the structural shock is taken into account by forecast 1. 
+
+We consider a simple test for average SPA, based on the weighted-average loss differential. The associated null is
+\begin{equation} \label{test}
+	H_{i,\text{aSPA}}^0: \mu^{(\text{Avg})}_i \leq 0.
+\end{equation}
+A studentized test statistic corresponding to the null hypothesis \eqref{test} is of the form 
+\begin{equation} \label{tstat}
+	t_{i,\text{aSPA}} = \frac{\sqrt{T}_i\bar{d}_{i}}{\hat{\zeta}_{i}},
+\end{equation}
+where $\bar{d}_{i} = \textbf{w}_i'\textbf{d}_{i}$ and we choose to estimate $\zeta_{i} = \sqrt{\textbf{w}_i'\Omega_{i}\textbf{w}_i}$ directly based on $\textbf{w}_i'\textbf{d}_{i,t}$ using the HAC estimator \citep{giacomini2006tests} where $\Omega_{i} = \text{avar}\left(\sqrt{T}_i(\bar{d}_{i} - \mbf{\mu}_{i})\right)$.
 
 
 
@@ -194,7 +203,7 @@ $\mathbf{\theta}_i = (\theta_{i,1},\ldots,\theta_{i,q_2})'$,
 $\mathbf{\delta}_i = (\delta_{i,1},\ldots,\delta_{i,q_3})'$, 
 and suppose that the regression coefficients in \eqref{model} have the following random effects structure:
 \begin{align*}
-  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = 0, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}, \\
+  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = \mu_\eta, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}, \\
   \mathbf{\phi}_i &\simiid \mc{F}_{\mathbf{\phi}} \text{ where } |\phi_{i,j}| < 1, \\
   \mathbf{\theta}_i &\simiid \mc{F}_{\mathbf{\theta}} \text{ with }  \; \mrm{E}_{\mc{F}_{\mathbf{\theta}}}(\theta_i) = \mu_{\mathbf{\theta}}, \mrm{Var}_{\mc{F}_{\mathbf{\theta}}}(\mathbf{\theta}_i)  = \Sigma^2_{\mathbf{\theta}}, \\
   %\tilde{\mathbf{\phi}}_i &\simiid \mc{F}_{\tilde{\mathbf{\phi}}} \text{ where } |\t\phi_{i,j}| < 1, \\
@@ -222,9 +231,9 @@ We further define the parameter sets
 \vspace*{0.5cm} We now describe the assumed autoregressive models with random effects for which post-shock aggregated estimators are provided. The model $\mc{M}$ is defined as
 \begin{align}
 \mc{M} \colon \begin{array}{l}
-  y_{i,t} =\eta_i + \sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j} + f(\mathcal{F}_{i,t},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
+  y_{i,t} = \left(\eta_i + \sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j}\right)(1 - D_{i,t}) + f(\mathcal{F}_{i,t},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
   \; f(\mc{F}_{i,t},\alpha_i) = \alpha_i +  \sum_{j=1}^{q_{1}}\t\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\t\theta_{i,j+1}'\mbf{x}_{i,t-j}, \\[.2cm]
-  \; \alpha_i = \mu_{\alpha} + \delta_i'\mbf{x}_{i, T_i^*+1} + \t{\varepsilon}_{i},
+  \; \alpha_i = \mu_{\alpha} + \delta_i'\mbf{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
   %\sum_{j=1}^{q_3}\delta_{i,j}'\mbf{x}_{i, T_i^*-j+1}+ \t{\varepsilon}_{i}, 
 \end{array}\label{model-gen}
 \end{align}
@@ -235,20 +244,22 @@ $\tilde{\mathbf{\phi}}_i = (\t\phi_{i,1},\ldots,\t\phi_{i,q_{1}})'$,
 $\tilde{\mathbf{\theta}}_i = (\t\theta_{i,1},\ldots,\t\theta_{i, q_{2}})'$, 
 $\mathbf{\delta}_i = (\delta_{i,1},\ldots,\delta_{i,p})'$, 
 and suppose that the regression coefficients in \eqref{model-gen} have the following hierarchical random effects structure: 
-\begin{align*}
-  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = 0, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}, \\
-  \mathbf{\phi}_i &\simiid \mc{F}_{\mathbf{\phi}} \text{ where } |\phi_{i,j}| < 1, \\
-  \mathbf{\theta}_i &\simiid \mc{F}_{\mathbf{\theta}} \text{ with }  \; \mrm{E}_{\mc{F}_{\mathbf{\theta}}}(\theta_i) = \mu_{\mathbf{\theta}}, \mrm{Var}_{\mc{F}_{\mathbf{\theta}}}(\mathbf{\theta}_i)  = \Sigma^2_{\mathbf{\theta}}, \\
+\begin{equation} \label{random-effects}
+\begin{split}
+  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = \mu_\eta, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}, \\
+  \mathbf{\phi}_{i,j} &\simiid \mc{F}_{\mathbf{\phi}_j} \text{ where } |\phi_{i,j}| < 1, \\
+  \mathbf{\theta}_{i,j} &\simiid \mc{F}_{\mathbf{\theta}_j} \text{ with }  \; \mrm{E}_{\mc{F}_{\mathbf{\theta}_j}}(\theta_{i,j}) = \mu_{\mathbf{\theta}_j}, \mrm{Var}_{\mc{F}_{\mathbf{\theta}_j}}(\mathbf{\theta}_{i,j})  = \Sigma^2_{\mathbf{\theta}_j}, \\
   \mathbf{\delta}_i &\simiid  \mc{F}_{\mathbf{\delta}} \text{ with } \mrm{E}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\mu_{\mathbf{\delta}}, \mrm{Var}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\Sigma_{\mathbf{\delta}}, \\
 \varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i,  \\
-\t{\varepsilon}_{i} &\simiid  \mc{F}_{\t{\varepsilon}} \text{ with }\mrm{E}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=0, \mrm{Var}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=\sigma^2_{\alpha}, \\
-  \tilde{\mathbf{\phi}}_{i,j} &\overset{ind}{\sim} \mathcal{F}_{\tilde{\mathbf{\phi}}}(\x_{i,T_i^*+1}) \; \text{where} \; |\tilde{\mathbf{\phi}}_{i,j}| < 1,  \\
-  \tilde{\mathbf{\theta}}_{i,j} &= \theta_{i,j} + \gamma_{i,j}, j = 1,\ldots, q_{2}, \; \text{where} \; \gamma_{i,j} \simiid \mathcal{F}_{\gamma} \; \text{with} \; \mrm{E}_{\mathcal{F}_{\gamma}}(\gamma_i) = \beta_o + \beta\mbf{x}_{i,T_i^*+1}, \mrm{Var}_{\mathcal{F}_{\gamma}}(\gamma_i) = \Sigma^2_\gamma,  \\  
+\varepsilon_{\alpha, i} &\simiid  \mc{F}_{\varepsilon_\alpha} \text{ with }\mrm{E}_{\mc{F}_{\varepsilon_\alpha}}(\varepsilon_{\alpha, i})=0, \mrm{Var}_{\mc{F}_{\varepsilon_{\alpha}}}(\varepsilon_{\alpha, i})=\sigma^2_{\alpha}, \\
+  \tilde{\mathbf{\phi}}_{i,j} &\overset{ind}{\sim} \mathcal{F}_{\tilde{\mathbf{\phi}_j}}(\x_{i,T_i^*+1}) \; \text{where} \; |\tilde{\mathbf{\phi}}_{i,j}| < 1,  \\
+  \tilde{\mathbf{\theta}}_{i,j} &= \theta_{i,j} + \gamma_{i,j}, j = 1,\ldots, q_{2}, \; \text{where} \; \gamma_{i,j} \simiid \mathcal{F}_{\gamma} \; \text{with} \; \mrm{E}_{\mathcal{F}_{\gamma}}(\gamma_{i,j}) = \beta_o + \beta\mbf{x}_{i,T_i^*+1}, \mrm{Var}_{\mathcal{F}_{\gamma}}(\gamma_{i,j}) = \Sigma^2_\gamma,  \\  
  % \t q_{i,k} &\overset{ind}{\sim} \mathcal{F}_k(\x_{i,T_i^*}), \; k = 1,2, \\
-&\eta_i \indep \mathbf{\phi}_i \indep \mathbf{\theta}_i \indep 
-\tilde{\mathbf{\phi}}_i \indep \lambda_{i,j} \indep \gamma_i \indep \mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i,t},
-\end{align*}
-where the distribution $\mathcal{F}_{\tilde{\mathbf{\phi}}}(\x_{i,T_i^*+1})$ exists between -1 and 1 and $\mrm{E}(\mathcal{F}_{\tilde{\mathbf{\phi}}}(\x_{i,T_i^*+1})) - \mrm{E}(\mathcal{F}_{\tilde{\mathbf{\phi}}}(\x_{j,T_i^*+1})) \to 0$ as $\|\x_{i,T_i^*+1} - \x_{j,T_i^*+1}\| \to 0$.
+&\eta_i \indep \mathbf{\phi}_{i,j} \indep \mathbf{\theta}_{i,j} \indep 
+\tilde{\mathbf{\phi}}_{i,j} \indep \lambda_{i,j} \indep \gamma_i \indep \mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i}, 
+\end{split}
+\end{equation}
+where the distribution $\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1})$ exists between -1 and 1 and $\mrm{E}(\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1})) - \mrm{E}(\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{j,T_i^*+1})) \to 0$ as $\|\x_{i,T_i^*+1} - \x_{j,T_i^*+1}\| \to 0$.
 %the distribution $\mathcal{F}_k(\x_{i,T_i^*})$ is a discrete distribution conditional on $\x_{i,T_i^*}$, $\theta_{i,j} = 0$ for any $q_1 < j \leq \t q_{i,1}$, and $\phi_{i,j} = 0$ for any $q_2 < j \leq \t q_{i,2}$. 
 The model \eqref{model-gen} with the above random effects structure is a generalization of both model formulations in \cite{lin2021minimizing}. \textbf{Need to carefully show}. Note that for model \eqref{model-gen} to be of use for post-shock forecasting, the variation in $\mathcal{F}_{\tilde{\mathbf{\phi}}}$ needs to be small relative to the signal captured in $\x_{i,T_i^*}$, and $\sigma^2_\alpha$ and $\Sigma^2_\gamma$ needs to be small relative to $\mu_\alpha + \delta_i'\x_{i,T_i^*}$ and $\beta_o + \beta\mbf{x}_{i,T_i^*+1}$ respectively. 
 
@@ -335,6 +346,151 @@ That is, with probability one, the expected misclassification rate is as above.
   Since indicator functions are bounded in $\mc{L}^2$, by Chebyshev-Rachman Strong Law of Large Numbers, the independence assumption can be relaxed to be that those p-values are uncorrelated.
 \end{remark}
 
+
+
+
+
+
+\vspace*{0.5cm}\noindent\textbf{Possible theoretical approach}: \\
+
+
+Let $l$ be the block length of the moving block bootstrap (MBB) where we assume that $T_i = lK_i$. Let $I_1$,\ldots,$I_{K_i}$ be iid random variables uniformly distributed on $\{1,\ldots,T_i-l+1\}$, and define the array 
+$$
+  \tau_{T_i} = \{I_1+1, \ldots, I_1+l, \ldots, I_{K_i}+1, \ldots, I_{K_i}+l\}.
+$$
+The pseudo time-series is therefore $\textbf{d}^b_{i,t} = \textbf{d}^b_{i,\tau_{T_i}}$, with elements $d^{hb}_{i,t}$.
+
+\begin{equation} \label{whb}
+	\left(\hat{\omega}_{i}^{hb}\right)^2 = \frac{1}{K_i}\sum_{k=1}^{K_i}\left[\frac{1}{l}\left(\sum_{t=1}^l d^{hb}_{i,(k-1)l + t} - \bar{d}^{hb}_{i}\right)^2\right],
+\end{equation}
+where $\bar{d}^{hb}_{i} = \frac{1}{T_i}\sum_{t=1}^{T_i} d^{hb}_{i,t}$. From the conditions of Theorem 1 and Corollary 1 in \cite{quaedvlieg2021multi}  we have 
+\begin{equation} \label{boott}
+  \sup_{z\in\R}\Big\vert \Prob^b\left[\sqrt{T_i}\frac{\textbf{w}_i'\bar{\dbf}^b_{i} - \textbf{w}_i'\bar{\dbf}_{i} }{\hat{\zeta}^b_{i}}\right] 
+  - \Prob\left[\sqrt{T_i}\frac{\textbf{w}_i'\bar{\dbf}_{i} -  \textbf{w}_i'\mbf{\mu}_{i}}{\hat{\zeta}^b_{i}}\right]
+  \Big\vert \overset{P}{\longrightarrow} 0,
+\end{equation}
+as $T_i\to\infty$ where $l=l_{T_i}=o(\sqrt{T_i})$. We can compute a bootstrap $p$-value as 
+$$
+  \hat{p}_i^B = \frac{1}{B}\sum_{b=1}^B 1\{t_{i,\text{aSPA}} < t^b_{i,\text{aSPA}}\}. 
+$$
+The results \eqref{boott} implies that 
+\begin{equation} \label{bootp}
+  |\hat p_i^B - \hat p_i| \overset{P}{\to} 0, \quad \text{as} \quad T_i,B \to \infty, 
+\end{equation}
+    where $\hat p_i = \Prob(t_{i,\alpha} < t_{i,\text{aSPA}})$ and $t_{i,\alpha}$ is a critical value corresponding to the distribution of $t_{i,\text{aSPA}}$. Therefore bootstrap inference in the donor pool is a good approximation. %We now consider how bootstrap inference in the donor pool is used to test whether a shock is prevalent or transient for the time series under study.
+
+
+\vspace*{0.5cm}\noindent\textbf{This needs some work (ignore for now)} Now consider a case where there exists a $2 \leq i' < n + 1$ where $\x_{1,t} = \x_{i',t}$. Now suppose for simplicity that $T^*_{j'} = T^*_1$ and that $T_{i'} = T_1$ where $T_1 > T^*_1 + q_1 + q_2 + 2$. This assumes that we have data for the first time series beyond the shock point. We will show that when there is a covariate clone of the time series under study, then estimation in this series will approximate estimation in the time series under study provided that the underlying variability is very small relative to the signal. To see this, consider $t > T^*_1$, where 
+\begin{align*}
+y_{1,t} &= \eta_1 + \mu_\alpha + \delta_1'\x_{1,T^*_1+1} + \sum_{j=1}^{q_1} (\phi_{1,j} + \tilde{\phi}_{1,j})y_{1,t-j} + \sum_{j=0}^{q_2-1}(\theta_{1,j+1} + \tilde{\theta}_{1,j+1})'\x_{1,t-j} + \tilde{\varepsilon}_{1} + \varepsilon_{1,t}, \\
+y_{i',t} &= \eta_{i'} + \mu_\alpha + \delta_{i'}'\x_{1,T^*_1+1} + \sum_{j=1}^{q_1} (\phi_{i',j} + \tilde{\phi}_{i',j})y_{i',t-j} + \sum_{j=0}^{q_2-1}(\theta_{i',j+1} + \tilde{\theta}_{i',j+1})'\x_{1,t-j} + \tilde{\varepsilon}_{i'} + \varepsilon_{i',t}, \\
+\hat y_{1,t} &= \hat \eta_1 + \hat{\alpha}_1(\x_{1,T^*_1+1}) + \sum_{j=1}^{q_1} (\hat{\phi}_{1,j} + \hat{\tilde{\phi}}_{1,j})\hat y_{1,t-j} + \sum_{j=0}^{q_2-1}(\hat\theta_{1,j+1} + \hat{\tilde{\theta}}_{1,j+1})'\hat\x_{1,t-j}, \\
+\hat y_{i',t} &= \hat\eta_{i'} + \hat{\alpha}_{i'}(\x_{1,T^*_1+1}) + \sum_{j=1}^{q_1} (\hat{\phi}_{i',j} + \hat{\tilde{\phi}}_{i',j})\hat y_{i',t-j} + \sum_{j=0}^{q_2-1}(\hat\theta_{i',j+1} + \hat{\tilde{\theta}}_{i',j+1})'\hat\x_{1,t-j}, 
+\end{align*}
+where $\alpha_j(\x) = \mu_\alpha + \delta_j'\x$, and we have 
+\begin{align*}
+  |y_{1,t} - \hat y_{1,t}| &= \Bigg\vert (\eta_1 - \hat\eta_1) + (\alpha_1 - \hat{\alpha}_1(\x_{1,T^*_1+1})) + \sum_{j=1}^{q_1}\left[(\phi_{1,j} + \tilde{\phi}_{1,j})y_{1,t-j} - (\hat\phi_{1,j} + \hat{\tilde{\phi}}_{1,j})\hat{y}_{1,t-j}\left] \\ 
+  &\qquad+ \sum_{j=0}^{q_2-1}\left[(\theta_{1,j+1} + \tilde{\theta}_{1,j+1})'\x_{1,t-j} - (\hat\theta_{1,j+1} + \hat{\tilde{\theta}}_{1,j+1})'\hat\x_{1,t-j}\right] + \varepsilon_{1,t} \Bigg\vert \\
+  |y_{i',t} - \hat y_{i',t}| &= \Bigg\vert (\eta_{i'} - \hat\eta_{i'}) + (\alpha_{i'} - \hat{\alpha}_{i'}(\x_{1,T^*_1+1})) + \sum_{j=1}^{q_1}\left[(\phi_{i',j} + \tilde{\phi}_{i',j})y_{i',t-j} - (\hat\phi_{i',j} + \hat{\tilde{\phi}}_{i',j})\hat{y}_{i',t-j}\left] \\ 
+  &\qquad+ \sum_{j=0}^{q_2-1}\left[(\theta_{i',j+1} + \tilde{\theta}_{i',j+1})'\x_{1,t-j} - (\hat\theta_{i',j+1} + \hat{\tilde{\theta}}_{i',j+1})'\hat\x_{1,t-j}\right] + \varepsilon_{i',t} \Bigg\vert.
+\end{align*}
+\textbf{Needs finishing, but the argument is simple: estimation uncertainty declines as error variance decreases. And differences in the random effects decrease as variability decreases.} \vspace*{0.5cm}
+
+
+
+
+\vspace*{0.5cm} We now demonstrate an idealized setting in which the above logic holds. We first present some intermediary technical results and definitions. Let $\lambda_{\text{max},\theta_k}$, $\lambda_{\text{max},\theta_\delta}$, $\lambda_{\text{max},\gamma}$ respectively be the largest eigenvalues of $\Sigma_{\theta_k}$, $\Sigma_{\delta}$, and $\Sigma_{\gamma}$ for $k = 1,\ldots,q_2$. Define  
+\begin{align*}
+  \mu_{\min} &= \min\left(\mu_\eta,\mu_{\phi_j},\mu_{\tilde\phi_j},\min(\mu_\delta),\min(\mu_{\theta_k}),\min(\mu_{\tilde\theta_k}); j = 1,\ldots,q_1, k = 1,\ldots,q_2\right), \\
+  \mu_{\max} &= \max\left(\mu_\eta,\mu_{\phi_j},\mu_{\tilde\phi_j},\max(\mu_\delta),\max(\mu_{\theta_k}),\max(\mu_{\tilde\theta_k}); j = 1,\ldots,q_1, k = 1,\ldots,q_2\right), \\
+  \lambda_{\max} &= \max\left(\lambda_{\text{max},\theta_k}, \lambda_{\text{max},\theta_\delta}, \lambda_{\text{max},\gamma}; k = 1,\ldots,q_2\right), \\
+  \sigma^2_\max &= \max\left(\sigma^2_\eta,\sigma^2_{\phi_j},\sigma^2_i,\sigma^2_\alpha,\sigma^2_{\tilde\phi_j}; i = 1,\ldots,n+1, j = 1,\ldots,q_1\right).  
+\end{align*}
+
+
+
+\begin{prop}
+	Let $\bf{y}_{i,t}$, $i = 1,\ldots,n_i$, $t = 1,\ldots, T$ be a collection of independent time series. Let each time series $\bf{y}_{i,t}$ be generated by model \eqref{model-gen} with accompanying random effects structure \eqref{random-effects}, where $y_{i,t}$ is a scalar response $\x_{i,t} \in \R^p$ is a fixed vector of covariates. Suppose that there is a common shock time $p + 2 < T^* < T - (p+2)$ where $q_1 = q_2 = 1$, $\|\x_{i,t}\| = 1$ where each entry of $\x_{i,t}$ is non-negative, $\mu_{\min} > 0$, and $y_{i,0} = 0$. Then for every $1 \leq t \leq T$ and every $C > 0$ we have that 
+	\begin{equation} \label{signal-to-noise}
+	  \E(y_{i,t}) \geq C\Var(y_{i,t}),	
+	\end{equation}
+	provided that 
+	\begin{equation} \label{condition-1}
+	\begin{split}
+		\mu_\alpha + 3\mu_{\min} &\geq C\left(3\sigma^2_{\max} + 2\lambda_{\max}\right), \\
+		2\mu_{\min} &\geq C\left(2\sigma^2_{\max} + \lambda_{\max}\right).	
+	\end{split}
+	\end{equation}
+\end{prop}
+
+\begin{proof}
+For $t > T^* + 1$ we have 
+\begin{align*}
+  \E(y_{i,t}) &= \E\left[\E(y_{i,t}|y_{i,t-1})\right] \\ 
+    &= \E\left[\E(\eta_i + \alpha_i + \tilde\phi_i y_{i,t-1} 
+      + \tilde\theta_i'\x_{i,t}|y_{i,t-1})\right] \\
+    &= \E(\eta_i + \mu_\alpha + \delta_i'\x_{i,T^*+1} + \tilde\phi_i y_{i,t-1} + \tilde\theta_i'\x_{i,t}) \\
+    &= \mu_\eta + \mu_\alpha + \mu_\delta'\x_{i,T^*+1} + \mu_{\tilde\theta}'\x_{i,t} + \mu_{\tilde\phi}\E(y_{i,t-1}) \\
+    &\geq (\mu_\alpha + 3\mu_{\min}) + \mu_{\min}\E(y_{i,t-1}) \\
+    &\geq \sum_{j=1}^{t - (T^* + 1)} \mu_{\min}^j(\mu_{\alpha} + 3\mu_{\min}) + \mu_{\min}^{t-T^*}\E(y_{i,T^*}) \\
+    &= \sum_{j=0}^{t - (T^* + 1)} \mu_{\min}^j(\mu_{\alpha} + 3\mu_{\min}) + \mu_{\min}^{t-T^*}\left(\E\left[\E(y_{i,T^*}|y_{i,T^*-1})\right]\right) \\   
+    &= \sum_{j=0}^{t - (T^* + 1)} \mu_{\min}^j(\mu_{\alpha} + 3\mu_{\min}) + \mu_{\min}^{t-T^*}\left(\E(\eta_i + \theta_i'\x_{i,T^*} + \phi_i y_{i,T^*-1}) \right) \\
+    &\geq \sum_{j=0}^{t - (T^* + 1)} \mu_{\min}^j(\mu_{\alpha} + 3\mu_{\min}) + \mu_{\min}^{t-T^*}\left(2\mu_{\min} + \mu_{\min} \E(y_{i,T^*-1}) \right) \\
+    &\geq \sum_{j=0}^{t - (T^* + 1)} \mu_{\min}^j(\mu_{\alpha} + 3\mu_{\min}) + \mu_{\min}^{t-T^*}\left(\sum_{j=0}^{T^*-1}\mu_{\min}^j(2\mu_{\min}) \right), 
+\end{align*}
+and 
+\begin{align*}
+  \Var(y_{i,t})	&= \E\left[\Var(y_{i,t}|y_{i,t-1})\right] + \Var\left[\E(y_{i,t}|y_{i,t-1})\right] \\
+  &= \E\left[\Var(\eta_i + \mu_\alpha + \delta_i'\x_{i,T^*+1} + \tilde\theta_i'\x_{i,t} + \tilde\phi_i y_{i,t-1} + \varepsilon_{i,t} + \varepsilon_{\alpha,i}|y_{i,t-1})\right] \\
+  &+ \Var\left[\E(\eta_i + \mu_\alpha + \delta_i'\x_{i,T^*+1} + \tilde\theta_i'\x_{i,t} + \tilde\phi_i y_{i,t-1} + \varepsilon_{i,t} + \varepsilon_{\alpha,i}|y_{i,t-1})\right] \\
+  &\leq 3\sigma^2_{\max} + 2\lambda_{\max} + \Var\left[\E(\tilde\phi_i y_{i,t-1}|y_{i,t-1})\right] \\
+  &= 3\sigma^2_{\max} + 2\lambda_{\max} + \mu_{\tilde\phi}^2\Var(y_{i,t-1}) \\
+  &\leq \sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\Var(y_{i,T^*}) \\
+  &= \sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\left(\E\left[\Var(y_{i,T^*}|y_{i,T^*-1})\right] + \Var\left[\E(y_{i,T^*}|y_{i,T^*-1})\right]\right) \\
+  &= \sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\left(\E\left[\Var(\eta_i + \theta_i'\x_{i,T^*} + \phi_iy_{i,T^*-1} + \varepsilon_{i,T^*}|y_{i,T^*-1})\right] \right. \\ 
+  &\qquad+  \left.\Var\left[\E(\eta_i + \theta_i'\x_{i,T^*} + \phi_iy_{i,T^*-1} + \varepsilon_{i,T^*}|y_{i,T^*-1})\right]\right)  \\
+  &\leq \sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\left(2\sigma^2_{\max} + \lambda_{\max} + \mu_{\phi}^2\Var(y_{i,T^*-1}) \right) \\ 
+  &\leq \sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\left(\sum_{j=0}^{T^*-1}\left(\mu_{\phi}^2\right)^{j}(2\sigma^2_{\max} + \lambda_{\max})\right).  
+\end{align*}
+Combining the above with the condition \eqref{condition-1} yields 
+\begin{align*}
+  \frac{\E(y_{i,t})}{\Var(y_{i,t})} &\geq \frac{\sum_{j=0}^{t - (T^* + 1)} \mu_{\min}^j(\mu_{\alpha} + 3\mu_{\min}) + \mu_{\min}^{t-T^*}\left(\sum_{j=0}^{T^*-1}\mu_{\min}^j(2\mu_{\min}) \right)}{\sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\left(\sum_{j=0}^{T^*-1}\left(\mu_{\phi}^2\right)^{j}(2\sigma^2_{\max} + \lambda_{\max})\right)} \\
+  &\geq \frac{C\sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + C(\mu_{\tilde\phi}^2)^{t - T^*}\left(\sum_{j=0}^{T^*-1}\left(\mu_{\phi}^2\right)^{j}(2\sigma^2_{\max} + \lambda_{\max})\right)}{\sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\left(\sum_{j=0}^{T^*-1}\left(\mu_{\phi}^2\right)^{j}(2\sigma^2_{\max} + \lambda_{\max})\right)} \\
+  &= C.
+\end{align*}
+\end{proof}
+
+
+
+
+%Let 
+%$$
+%  \rho_\text{min} = \min\left\{
+%    \frac{\mu_\eta}{\sigma^2_\eta}, 
+%    \frac{\|\mu_{\delta}\|}{\|\Sigma_\delta\|},
+%    \frac{\|\mu_{\theta}\|}{\|\Sigma_\theta\|},
+%    \frac{\|\mu_{\phi}\|}{\|\Sigma_\phi\|},
+%    \frac{\|\mu_{\tilde\theta}\|}{\|\Sigma_{\tilde{\theta}}\|},
+%    \frac{\|\mu_{\tilde\phi}\|}{\|\Sigma_{\tilde{\phi}}\|}             
+%  \right\},
+%$$
+%and let
+%$$
+%  \rho_\text{max} = \max\left\{
+%    \frac{\mu_\eta}{\sigma^2_\eta}, 
+%    \frac{\|\mu_{\delta}\|}{\|\Sigma_\delta\|},
+%    \frac{\|\mu_{\theta}\|}{\|\Sigma_\theta\|},
+%    \frac{\|\mu_{\phi}\|}{\|\Sigma_\phi\|},
+%    \frac{\|\mu_{\tilde\theta}\|}{\|\Sigma_{\tilde{\theta}}\|},
+%    \frac{\|\mu_{\tilde\phi}\|}{\|\Sigma_{\tilde{\phi}}\|}             
+%  \right\}.
+%$$
+
+
+
+
+
+
 \section{Simulation Setup}
 \label{simulation}
 
@@ -397,7 +553,8 @@ $K_i+H+T_i^* > T_i+K_i+H$
 
 
 \bibliographystyle{plainnat}
-\bibliography{../synthetic-prediction-notes}
+\bibliography{synthetic-prediction-notes}
+%\bibliography{../synthetic-prediction-notes}
 
 	
 \end{document}
