@@ -417,6 +417,11 @@ sim.normal.gammaX.decay <- function(mu.gamma.delta = 1, mu.alpha, sigma,
 	p.stouffer_test_stat <- sum(qnorm(1 - donor_p_vector)) / sqrt(n) #Caution: p-value of exactly 1 will cause trouble
 	p.stouffer <- 1 - pnorm(p.stouffer_test_stat) #upper-tailed test
 	p.stouffer.diff <- abs(p.stouffer - ps[1])
+	
+	# Edgington
+	p.edgington_test_stat <- sqrt(n) * (sum(donor_p_vector) - .5) / sqrt(1/12)
+	p.edgington <- pnorm(p.stouffer_test_stat) #lower-tailed test
+	p.edgington.diff <- abs(p.edgington - ps[1])
 
 	# weighted Fisher
 	weighted_p.fisher_test_stat <- (-(sum(W * log(donor_p_vector)) - n) /  sqrt(n * sum(W**2))) 
@@ -458,20 +463,21 @@ sim.normal.gammaX.decay <- function(mu.gamma.delta = 1, mu.alpha, sigma,
 	
 	return(c(p.diff = p.diff, 
 			p.mean = p.mean, 
-			p.mean.diff = p.mean.diff,
+			p.mean.diff = p.mean.diff, 
+			p.weighted = sum(W * ps[-1]),
 			p.fisher.diff = p.fisher.diff, 
 			p.pearson.diff = p.pearson.diff,
 			p.stouffer.diff = p.stouffer.diff,
+			p.edgington.diff = p.edgington.diff,
 			weighted_p.fisher.diff = weighted_p.fisher.diff, 
 			weighted_p.pearson.diff = weighted_p.pearson.diff,
-			weighted_p.fisher.diff = weighted_p.fisher.diff,
-			p.lancaster.diff = p.lancaster.diff,
+			weighted_p.stouffer.diff = weighted_p.stouffer.diff,
 			weighted_p.edgington.diff = weighted_p.edgington.diff,
+			p.lancaster.diff = p.lancaster.diff,
 			max_weight = max(W),
-			min_weight = min(W),
-			median_weight = median(W),
-			p.shapiro = p.shapiro,
-			p.KS = p.KS,
+			max_p = max(ps[-1]),
+			#p.shapiro = p.shapiro,
+			#p.KS = p.KS,
 			frac_W_zero = frac_W_zero,
 			frac_p_zero = frac_p_zero
 			))
