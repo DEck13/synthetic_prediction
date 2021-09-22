@@ -154,8 +154,11 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
         
         # x and x lags
         x.xlags <- xi
-        for (j in 1:(q2 - 1)) {
-          x.xlags <- cbind(xi, X[[i]][(t + H - h + 2 - j):(t + Ki + H - h - j + 1),])
+        if (q2 > 1) {
+          
+          for (j in 1:(q2 - 1)) {
+            x.xlags <- cbind(x.xlags, X[[i]][(t + H - h + 2 - j):(t + Ki + H - h - j + 1),])
+          }
         }
         
         # functional
@@ -181,9 +184,12 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
         for (j in 1:h) {
           
           x.xlags.for.pred <- X[[i]][-(1:q1), ][t + Ki + H - h + j, ]
-          for (k in 1:(q2 - 1)) {
-            x.xlags.for.pred <- cbind(x.xlags.for.pred, 
-                                      X[[i]][-1, ][t + Ki + H - h + j - k, ])
+          if (q2 > 1) {
+            
+            for (k in 1:(q2 - 1)) {
+              x.xlags.for.pred <- cbind(x.xlags.for.pred, 
+                                        X[[i]][-1, ][t + Ki + H - h + j - k, ])
+            }
           }
           D.i.t <- ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0) 
           x.xlags.for.pred.D.i.t <- x.xlags.for.pred * D.i.t
@@ -238,7 +244,7 @@ sim.normal.gammaX <- function(mu.delta = 1, mu.alpha, sigma,
   for (i in 1:(n + 1)) {
     Tstar <- c(Tstar,  max(Ts[i] + 1, ceiling(0.5 * (Ts[i] + K[i] + H))))
   }
-  phi <- round(matrix(runif((n + 1) * q1, 0, 0.1), nrow = n + 1), 3) # autoregressive parameters
+  phi <- round(matrix(runif((n + 1) * q1, 0, 0.01), nrow = n + 1), 3) # autoregressive parameters
   
   X <- c()
   alpha <- c()
@@ -360,14 +366,14 @@ sim.normal.gammaX <- function(mu.delta = 1, mu.alpha, sigma,
            indic.diff = indic.diff))
 }
 
-system.time(result <- sim.normal.gammaX(mu.delta = 0.5, 
-                                        mu.alpha = 0.5, sigma = 0.1, 
+system.time(result <- sim.normal.gammaX(mu.delta = 0.2, 
+                                        mu.alpha = -0.2, sigma = 0.1, 
                                         sigma.alpha = 0.05, 
                                         sigma.delta = 0.1, 
                                         p = 2, B = 200, scale = 2, 
                                         n = 20, H = 8, ell = 4,
                                         Kshape = 100, Tshape = 100,
-                                        q1 = 2, q2 = 2))
+                                        q1 = 2, q2 = 3))
 
 
 # MC
