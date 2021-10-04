@@ -120,7 +120,7 @@ Wp <- function(ps, W, type = c('Fisher', 'Pearson')) {
 
 
 # functions that return alpha.hat and synthetic weights for decaying shock effects
-ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
+ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
                              q1, q2, 
                              ell, B, bw, sig.levl = .05) {
   
@@ -129,6 +129,7 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
   # empty
   ps <- c()
   
+  AICs <- c()
   for (i in 1:(n + 1)) {
     
     # set up
@@ -139,8 +140,10 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
     m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
     m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
     
+    AICs.i <- c()
     # compute losses
     for (h in 1:H) {
+      AICs.h.i <- c()
       for (t in 1:Ti) {
         TL <- length(Y[[i]])
         yi <- Y[[i]][-(1:q1)][(t + H - h + 1):(t + Ki + H - h)]
@@ -173,6 +176,7 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
         # OLS
         lmodi.adj <- lm(yi ~ 1 + yilags + x.xlags + yilags.D.i.t + x.xlags.D.i.t + D.i.t)
         lmodi.unadj <- lm(yi ~ 1 + yilags + x.xlags)
+        AICs.h.i <- c(AICs.h.i, AIC(lmodi.adj))
         
         # beta.hat
         beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
@@ -209,11 +213,14 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
         m1.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.adj[h + q1])
         m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + q1])
       }
+      AICs.i <- c(AICs.i, mean(AICs.h.i))
     }
     # loss differential
     d <- m2.L.i - m1.L.i
     ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
   }
+  
+  AIC <- mean(AICs.i)
   
   # weights
   if (is.matrix(X[[1]]) == FALSE) {
@@ -228,7 +235,7 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
   Is <- ifelse(ps <= .05, yes = 1, no = 0)
   
   # output
-  return(list(ps = ps, W = W, Is = Is))
+  return(list(ps = ps, W = W, Is = Is, AIC = AIC))
 }
 
 
@@ -237,14 +244,14 @@ sim.normal.gammaX <- function(mu.delta = 1, mu.alpha, sigma,
                               sigma.alpha, sigma.delta = 0.1, 
                               B, n, H, scale, ell = ell, bw = 4,
                               Kscale = 1 / 2, Tscale = 1 / 2, 
-                              Kshape, Tshape, p, q1, q2) {
+                              Kshape, Tshape, p, q1, q2, phi.bound = 1) {
   K <- ceiling(rgamma(n + 1, scale = Kscale, shape = Kshape)) # training sample size
   Ts <- ceiling(rgamma(n + 1, scale = Tscale, shape = Tshape)) # Time Length
   Tstar <- c()
   for (i in 1:(n + 1)) {
     Tstar <- c(Tstar,  max(Ts[i] + 1, ceiling(0.5 * (Ts[i] + K[i] + H))))
   }
-  phi <- round(matrix(runif((n + 1) * q1, 0, 0.01), nrow = n + 1), 3) # autoregressive parameters
+  phi <- round(matrix(runif((n + 1) * q1, -phi.bound, phi.bound), nrow = n + 1), 3) # autoregressive parameters
   
   X <- c()
   alpha <- c()
@@ -338,12 +345,13 @@ sim.normal.gammaX <- function(mu.delta = 1, mu.alpha, sigma,
   }
   
   # estimates
-  est <- ps.indic.W.decay(Tstar = Tstar, Y = Y, X = X, K = K, H = H, 
+  est <- ps.indic.W.complicate(Tstar = Tstar, Y = Y, X = X, K = K, H = H, 
                           q1 = q1, q2 = q2,
                           Ts = Ts, ell = ell, B = B, bw = bw)
   ps <- est$ps
   W <- est$W
   Is <- est$Is
+  AIC <- est$AIC
   # compute forecasts
   votes <- vote(ps = ps[-1], sig = 0.05)
   phat <- sum(W * ps[-1])
@@ -363,17 +371,17 @@ sim.normal.gammaX <- function(mu.delta = 1, mu.alpha, sigma,
   
   return(c(p.diff = p.diff, p.mean.diff = p.mean.diff,
            p.fisher.diff = p.fisher.diff, p.pearson.diff = p.pearson.diff,
-           indic.diff = indic.diff))
+           indic.diff = indic.diff, AIC = AIC))
 }
 
-system.time(result <- sim.normal.gammaX(mu.delta = 0.2, 
-                                        mu.alpha = -0.2, sigma = 0.1, 
+system.time(result <- sim.normal.gammaX(mu.delta = 2, 
+                                        mu.alpha = 2, sigma = 0.1, 
                                         sigma.alpha = 0.05, 
                                         sigma.delta = 0.1, 
                                         p = 2, B = 200, scale = 2, 
                                         n = 20, H = 8, ell = 4,
-                                        Kshape = 100, Tshape = 100,
-                                        q1 = 2, q2 = 3))
+                                        Kshape = 50, Tshape = 50,
+                                        q1 = 2, q2 = 2, phi.bound = 0.5))
 
 
 # MC

@@ -109,13 +109,15 @@ taSPA.mhfc <- function(ell, d, B, bw = 4) {
 }
 
 # functions that return alpha.hat and synthetic weights
-ps.indic.W <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
+ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
   
   n <- length(Y) - 1
   
   # empty
   ps <- c()
   
+  AICs <- c()
+  BICs <- c()
   for (i in 1:(n + 1)) {
     
     # set up
@@ -126,8 +128,12 @@ ps.indic.W <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
     m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
     m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
     
+    AICs.i <- c()
+    BICs.i <- c()
     # compute losses
     for (h in 1:H) {
+      AICs.h.i <- c()
+      BICs.h.i <- c()
       for (t in 1:Ti) {
         
         yi <- Y[[i]][-1][(t + H - h + 1):(t + Ki + H - h)]
@@ -140,6 +146,8 @@ ps.indic.W <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
         lmodi.adj <- lm(yi ~ 1 + ifelse((t + H - h + 1):(t + Ki + H - h) >= Tstari + 1, yes = 1, no = 0) + 
                           yilag + xi)
         lmodi.unadj <- lm(yi ~ 1 + yilag + xi)
+        AICs.h.i <- c(AICs.h.i, AIC(lmodi.adj))
+        BICs.h.i <- c(BICs.h.i, BIC(lmodi.adj))
         
         # beta.hat
         beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
@@ -159,11 +167,15 @@ ps.indic.W <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
         m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + 1])
       }
     }
+    AICs.i <- c(AICs.i, mean(AICs.h.i))
+    BICs.h.i <- c(BICs.h.i, BIC(lmodi.adj))
     # loss differential
     d <- m2.L.i - m1.L.i
     ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
   }
   
+  AIC <- mean(AICs.i)
+  BIC <- mean(BICs.i)
   # weights
   if (is.matrix(X[[1]]) == FALSE) {
     for (i in 1:(n + 1)) {
@@ -177,7 +189,7 @@ ps.indic.W <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
   Is <- ifelse(ps <= .05, yes = 1, no = 0)
   
   # output
-  return(list(ps = ps, W = W, Is = Is))
+  return(list(ps = ps, W = W, Is = Is, AIC = AIC, BIC = BIC))
 }
 
 ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
@@ -187,6 +199,8 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
   # empty
   ps <- c()
   
+  AICs <- c()
+  BICs <- c()
   for (i in 1:(n + 1)) {
     
     # set up
@@ -197,8 +211,12 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
     m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
     m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
     
+    AICs.i <- c()
+    BICs.i <- c()
     # compute losses
     for (h in 1:H) {
+      AICs.h.i <- c()
+      BICs.h.i <- c()
       for (t in 1:Ti) {
         
         yi <- Y[[i]][-1][(t + H - h + 1):(t + Ki + H - h)]
@@ -213,6 +231,8 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
         # OLS
         lmodi.adj <- lm(yi ~ 1 + decay + yilag + xi)
         lmodi.unadj <- lm(yi ~ 1 + yilag + xi)
+        AICs.h.i <- c(AICs.h.i, AIC(lmodi.adj))
+        BICs.h.i <- c(BICs.h.i, BIC(lmodi.adj))
         
         # beta.hat
         beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
@@ -232,11 +252,140 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
         m1.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.adj[h + 1])
         m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + 1])
       }
+      AICs.i <- c(AICs.i, mean(AICs.h.i))
+      BICs.i <- c(BICs.i, mean(BICs.h.i))
     }
     # loss differential
     d <- m2.L.i - m1.L.i
     ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
   }
+  
+  AIC <- mean(AICs.i)
+  BIC <- mean(BICs.i)
+  # weights
+  if (is.matrix(X[[1]]) == FALSE) {
+    for (i in 1:(n + 1)) {
+      X[[i]] <- as.matrix(X[[i]])
+    }
+  }
+  # Weights
+  W <- round(scm(X = X, Tstar = Tstar)$par, digits = 3)
+  
+  # test
+  Is <- ifelse(ps <= .05, yes = 1, no = 0)
+  
+  # output
+  return(list(ps = ps, W = W, Is = Is, AIC = AIC, BIC = BIC))
+}
+
+# functions that return alpha.hat and synthetic weights for decaying shock effects
+ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
+                                  q1, q2, 
+                                  ell, B, bw, sig.levl = .05) {
+  
+  n <- length(Y) - 1
+  
+  # empty
+  ps <- c()
+  
+  AICs <- c()
+  BICs <- c()
+  for (i in 1:(n + 1)) {
+    
+    # set up
+    Ti <- Ts[i]
+    Ki <- K[i]
+    Tstari <- Tstar[i]
+    
+    m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
+    m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
+    
+    AICs.i <- c()
+    BICs.i <- c()
+    # compute losses
+    for (h in 1:H) {
+      AICs.h.i <- c()
+      BICs.h.i <- c()
+      for (t in 1:Ti) {
+        TL <- length(Y[[i]])
+        yi <- Y[[i]][-(1:q1)][(t + H - h + 1):(t + Ki + H - h)]
+        xi <- X[[i]][-(1:q1), ][(t + H - h + 1):(t + Ki + H - h),]
+        
+        # yi lags
+        yilags <- c()
+        for (j in 1:q1) {
+          yilags <- cbind(yilags, Y[[i]][(t + H - h + 2 - j):(t + Ki + H - h - j + 1)])
+        }
+        
+        # x and x lags
+        x.xlags <- xi
+        if (q2 > 1) {
+          
+          for (j in 1:(q2 - 1)) {
+            x.xlags <- cbind(x.xlags, X[[i]][(t + H - h + 2 - j):(t + Ki + H - h - j + 1),])
+          }
+        }
+        
+        # functional
+        D.i.t <- ifelse((t + H - h + 1):(t + Ki + H - h) >= Tstari + 1, yes = 1, no = 0)
+        yilags.D.i.t <- yilags
+        x.xlags.D.i.t <- x.xlags
+        for (d in 1:nrow(yilags)) {
+          yilags.D.i.t[d, ] <- yilags[d, ] * D.i.t[d]
+          x.xlags.D.i.t[d, ] <- x.xlags[d, ] * D.i.t[d]
+        }
+        
+        # OLS
+        lmodi.adj <- lm(yi ~ 1 + yilags + x.xlags + yilags.D.i.t + x.xlags.D.i.t + D.i.t)
+        lmodi.unadj <- lm(yi ~ 1 + yilags + x.xlags)
+        AICs.h.i <- c(AICs.h.i, AIC(lmodi.adj))
+        BICs.h.i <- c(BICs.h.i, BIC(lmodi.adj))
+        
+        # beta.hat
+        beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
+        beta.hat.adj[which(is.na(beta.hat.adj) == TRUE)] <- 0
+        beta.hat.unadj <- matrix(coef(lmodi.unadj), nrow = 1)
+        
+        yhat.adj <- Y[[i]][(t + Ki + H - h + 1 - q1):(t + Ki + H - h)]
+        yhat.unadj <- Y[[i]][(t + Ki + H - h + 1 - q1):(t + Ki + H - h)]
+        for (j in 1:h) {
+          
+          x.xlags.for.pred <- X[[i]][-(1:q1), ][t + Ki + H - h + j, ]
+          if (q2 > 1) {
+            
+            for (k in 1:(q2 - 1)) {
+              x.xlags.for.pred <- cbind(x.xlags.for.pred, 
+                                        X[[i]][-1, ][t + Ki + H - h + j - k, ])
+            }
+          }
+          D.i.t <- ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0) 
+          x.xlags.for.pred.D.i.t <- x.xlags.for.pred * D.i.t
+          yilags.for.pred.D.i.t <- yhat.adj[j:(j + q1 - 1)] * D.i.t
+          
+          
+          yhat.adj <- c(yhat.adj, beta.hat.adj %*% matrix(c(1,   yhat.adj[j:(j + q1 - 1)], 
+                                                            x.xlags.for.pred, 
+                                                            yilags.for.pred.D.i.t,
+                                                            x.xlags.for.pred.D.i.t,
+                                                            D.i.t)))
+          yhat.unadj <- c(yhat.unadj, beta.hat.unadj %*% matrix(c(1, yhat.adj[j:(j + q1 - 1)], 
+                                                                  x.xlags.for.pred)))
+        }
+        
+        # losses
+        m1.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.adj[h + q1])
+        m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + q1])
+      }
+      AICs.i <- c(AICs.i, mean(AICs.h.i))
+      BICs.i <- c(BICs.i, mean(BICs.h.i))
+    }
+    # loss differential
+    d <- m2.L.i - m1.L.i
+    ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
+  }
+  
+  AIC <- mean(AICs.i)
+  BIC <- mean(BICs.i)
   
   # weights
   if (is.matrix(X[[1]]) == FALSE) {
@@ -251,9 +400,8 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
   Is <- ifelse(ps <= .05, yes = 1, no = 0)
   
   # output
-  return(list(ps = ps, W = W, Is = Is))
+  return(list(ps = ps, W = W, Is = Is, AIC = AIC, BIC = BIC))
 }
-
 
 # set working directory
 setwd("/Users/mac/Desktop/Research/Post-Shock Prediction/")
@@ -397,15 +545,21 @@ for (i in 1:4) {
   X[[i]] <- as.matrix(TS[[i]][, 3:7])
 }
 
-res1 <- ps.indic.W(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H, Ts = Ts, ell = 4, B = 200, bw = 4)
+res1 <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H, Ts = Ts, ell = 4, B = 200, bw = 4)
 res2 <- ps.indic.W.decay(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H, Ts = Ts, ell = 4, B = 200, bw = 4)
-
+res3 <- ps.indic.W.complicate(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), 
+                              q1 = 2, q2 = 2, 
+                              H = H, Ts = Ts, ell = 4, B = 200, bw = 4)
 ps1 <- res1$ps
 ps2 <- res2$ps
-abs(1 - pchisq( -2 * sum(log(ps1[-1])) , df = 2 * length(ps1[-1])) - ps1[1])
+ps3 <- res3$ps
 
-abs(1 - pchisq( -2 * sum(log(ps2[-1] + 1e-10)) , df = 2 * length(ps2[-1])) - ps2[1])
+fisher <- function(ps) {
+  abs(1 - pchisq( -2 * sum(log(ps[-1] + 1e-10)) , df = 2 * length(ps[-1])) - ps[1])
+}
+Pearson <- function(ps) {
+  abs(1 - pchisq( -2 * sum(log(1 - ps[-1] + 1e-10)) , df = 2 * length(ps[-1])) - ps[1])
+}
 
-abs(1 - pchisq( -2 * sum(log(1 - ps1[-1] + 1e-10)) , df = 2 * length(ps1[-1])) - ps2[1])
-
-abs(1 - pchisq( -2 * sum(log(1 - ps2[-1])) , df = 2 * length(ps2[-1])) - ps2[1])
+fisher(ps1)
+Pearson(ps1)
