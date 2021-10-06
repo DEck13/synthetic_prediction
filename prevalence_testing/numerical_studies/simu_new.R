@@ -361,17 +361,96 @@ sim.normal.gammaX <- function(mu.delta = 1, mu.alpha, sigma,
   p.mean.diff <- abs(p.mean - ps[1])
   indic.diff <- abs(votes - Is[1])
   
+  # VERY IMPORTANT:
+
+  #We create a modified version of the vector ps[-1] so that all values lie in open interval (0,1)
+  #We call it donor_p_vector
+  donor_p_vector <- ifelse(ps[-1]  < 10e-5, ps[-1] + 10e-5, ps[-1])
+  donor_p_vector <- ifelse(donor_p_vector > (1 - 10e-5), donor_p_vector - 10e-5, donor_p_vector)
+  
   # Fisher
-  p.fisher <- 1 - pchisq( -2 * sum(log(ps[-1] + 1e-10)) , df = 2 * length(ps[-1]))
+  p.fisher <- 1 - pchisq( -2 * sum(log(donor_p_vector)) , df = 2 * length(donor_p_vector)) #upper-tailed test
   p.fisher.diff <- abs(p.fisher - ps[1])
   
   # Pearson
-  p.pearson <- 1 - pchisq( -2 * sum(log(1 - ps[-1]  + 1e-10)) , df = 2 * length(ps[-1]))
+  p.pearson_test_stat <- -2 * sum(log(1 - donor_p_vector))
+  p.pearson <- pchisq( p.pearson_test_stat , df = 2 * length(donor_p_vector)) #lower-tailed test
   p.pearson.diff <- abs(p.pearson - ps[1])
+
+  # Stouffer
+  p.stouffer_test_stat <- sum(qnorm(1 - donor_p_vector)) / sqrt(n) #Caution: p-value of exactly 1 will cause trouble
+  p.stouffer <- 1 - pnorm(p.stouffer_test_stat) #upper-tailed test
+  p.stouffer.diff <- abs(p.stouffer - ps[1])
   
-  return(c(p.diff = p.diff, p.mean.diff = p.mean.diff,
-           p.fisher.diff = p.fisher.diff, p.pearson.diff = p.pearson.diff,
-           indic.diff = indic.diff, AIC = AIC))
+  # Edgington
+  p.edgington_test_stat <- sqrt(n) * (sum(donor_p_vector) - .5) / sqrt(1/12)
+  p.edgington <- pnorm(p.stouffer_test_stat) #lower-tailed test
+  p.edgington.diff <- abs(p.edgington - ps[1])
+
+  # weighted Fisher
+  weighted_p.fisher_test_stat <- (-(sum(W * log(donor_p_vector)) - n) /  sqrt(n * sum(W**2))) 
+  weighted_p.fisher <- 1 - pnorm(weighted_p.fisher_test_stat) #upper-tailed test
+  weighted_p.fisher.diff <- abs(weighted_p.fisher - ps[1])
+
+  # weighted Pearson
+  weighted_p.pearson_test_stat <- (-(sum(W * log(1 - donor_p_vector)) - n) /  sqrt(n * sum(W**2))) 
+  weighted_p.pearson <- pnorm( weighted_p.pearson_test_stat ) #lower-tailed test
+  weighted_p.pearson.diff <- abs(weighted_p.pearson - ps[1])
+  
+  # weighted Stouffer
+  weighted_p.stouffer_test_stat <- sum(W * qnorm(1 - donor_p_vector)) / sqrt(sum(W**2)) #Caution: p-value of exactly 1 will cause trouble
+  weighted_p.stouffer <- 1 - pnorm(weighted_p.stouffer_test_stat) #upper-tailed test
+  weighted_p.stouffer.diff <- abs(weighted_p.stouffer - ps[1])
+
+  # VERY IMPORTANT:
+
+  #The function lancaster() requires the R package 'aggregation', which we call now
+  require(aggregation)
+
+  # Lancaster
+  p.lancaster <- lancaster(donor_p_vector, W)
+  p.lancaster.diff <- abs(p.lancaster - ps[1])
+
+  # Weighted edgington
+  weighted_p.edgington_test_stat <- (sum(W * donor_p_vector) - .5) / sqrt( (1/12) * sum(W**2))
+  weighted_p.edgington <- pnorm(weighted_p.edgington_test_stat) #lower-tailed test
+  weighted_p.edgington.diff <- abs(weighted_p.edgington - ps[1])
+
+  # Shapiro-Wilks test
+  p.shapiro <- shapiro.test(W)$p.value
+  p.shapiro <- ifelse(p.shapiro <= .05, 1, 0)
+
+  # Kolmogorov-Smirnov test
+  p.KS <- ks.test(ps[-1], runif)$p.value
+  p.KS <- ifelse(p.KS <= .05, 1, 0)
+
+  # Fraction of W_i that are essentially zero
+  frac_W_zero <- mean(ifelse(W < 10e-5, 1, 0))
+
+  # Fraction of p_i that are essentially zero
+  frac_p_zero <- mean(ifelse(ps[-1] < 10e-5, 1, 0))
+  
+  return(c(p.diff = p.diff, 
+            p.mean = p.mean, 
+            p.mean.diff = p.mean.diff, 
+            p.weighted = sum(W * ps[-1]),
+            p.fisher.diff = p.fisher.diff, 
+            p.pearson.diff = p.pearson.diff,
+            p.stouffer.diff = p.stouffer.diff,
+            p.edgington.diff = p.edgington.diff,
+            weighted_p.fisher.diff = weighted_p.fisher.diff, 
+            weighted_p.pearson.diff = weighted_p.pearson.diff,
+            weighted_p.stouffer.diff = weighted_p.stouffer.diff,
+            weighted_p.edgington.diff = weighted_p.edgington.diff,
+            p.lancaster.diff = p.lancaster.diff,
+            max_weight = max(W),
+            max_p = max(ps[-1]),
+            p.shapiro = p.shapiro,
+            p.KS = p.KS,
+            frac_W_zero = frac_W_zero,
+            frac_p_zero = frac_p_zero,
+            indic.diff = indic.diff, 
+            AIC = AIC))
 }
 
 system.time(result <- sim.normal.gammaX(mu.delta = 2, 
