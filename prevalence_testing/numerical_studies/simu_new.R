@@ -120,7 +120,7 @@ Wp <- function(ps, W, type = c('Fisher', 'Pearson')) {
 
 
 # functions that return alpha.hat and synthetic weights for decaying shock effects
-ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
+ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
                              q1, q2, 
                              ell, B, bw, sig.levl = .05) {
   
@@ -129,6 +129,7 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
   # empty
   ps <- c()
   
+  AICs <- c()
   for (i in 1:(n + 1)) {
     
     # set up
@@ -139,8 +140,10 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
     m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
     m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
     
+    AICs.i <- c()
     # compute losses
     for (h in 1:H) {
+      AICs.h.i <- c()
       for (t in 1:Ti) {
         TL <- length(Y[[i]])
         yi <- Y[[i]][-(1:q1)][(t + H - h + 1):(t + Ki + H - h)]
@@ -173,6 +176,7 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
         # OLS
         lmodi.adj <- lm(yi ~ 1 + yilags + x.xlags + yilags.D.i.t + x.xlags.D.i.t + D.i.t)
         lmodi.unadj <- lm(yi ~ 1 + yilags + x.xlags)
+        AICs.h.i <- c(AICs.h.i, AIC(lmodi.adj))
         
         # beta.hat
         beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
@@ -209,11 +213,14 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
         m1.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.adj[h + q1])
         m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + q1])
       }
+      AICs.i <- c(AICs.i, mean(AICs.h.i))
     }
     # loss differential
     d <- m2.L.i - m1.L.i
     ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
   }
+  
+  AIC <- mean(AICs.i)
   
   # weights
   if (is.matrix(X[[1]]) == FALSE) {
@@ -228,7 +235,7 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts,
   Is <- ifelse(ps <= .05, yes = 1, no = 0)
   
   # output
-  return(list(ps = ps, W = W, Is = Is))
+  return(list(ps = ps, W = W, Is = Is, AIC = AIC))
 }
 
 
@@ -237,14 +244,14 @@ sim.normal.gammaX <- function(mu.delta = 1, mu.alpha, sigma,
                               sigma.alpha, sigma.delta = 0.1, 
                               B, n, H, scale, ell = ell, bw = 4,
                               Kscale = 1 / 2, Tscale = 1 / 2, 
-                              Kshape, Tshape, p, q1, q2) {
+                              Kshape, Tshape, p, q1, q2, phi.bound = 1) {
   K <- ceiling(rgamma(n + 1, scale = Kscale, shape = Kshape)) # training sample size
   Ts <- ceiling(rgamma(n + 1, scale = Tscale, shape = Tshape)) # Time Length
   Tstar <- c()
   for (i in 1:(n + 1)) {
     Tstar <- c(Tstar,  max(Ts[i] + 1, ceiling(0.5 * (Ts[i] + K[i] + H))))
   }
-  phi <- round(matrix(runif((n + 1) * q1, 0, 0.01), nrow = n + 1), 3) # autoregressive parameters
+  phi <- round(matrix(runif((n + 1) * q1, -phi.bound, phi.bound), nrow = n + 1), 3) # autoregressive parameters
   
   X <- c()
   alpha <- c()
@@ -338,12 +345,13 @@ sim.normal.gammaX <- function(mu.delta = 1, mu.alpha, sigma,
   }
   
   # estimates
-  est <- ps.indic.W.decay(Tstar = Tstar, Y = Y, X = X, K = K, H = H, 
+  est <- ps.indic.W.complicate(Tstar = Tstar, Y = Y, X = X, K = K, H = H, 
                           q1 = q1, q2 = q2,
                           Ts = Ts, ell = ell, B = B, bw = bw)
   ps <- est$ps
   W <- est$W
   Is <- est$Is
+  AIC <- est$AIC
   # compute forecasts
   votes <- vote(ps = ps[-1], sig = 0.05)
   phat <- sum(W * ps[-1])
@@ -353,27 +361,106 @@ sim.normal.gammaX <- function(mu.delta = 1, mu.alpha, sigma,
   p.mean.diff <- abs(p.mean - ps[1])
   indic.diff <- abs(votes - Is[1])
   
+  # VERY IMPORTANT:
+
+  #We create a modified version of the vector ps[-1] so that all values lie in open interval (0,1)
+  #We call it donor_p_vector
+  donor_p_vector <- ifelse(ps[-1]  < 10e-5, ps[-1] + 10e-5, ps[-1])
+  donor_p_vector <- ifelse(donor_p_vector > (1 - 10e-5), donor_p_vector - 10e-5, donor_p_vector)
+  
   # Fisher
-  p.fisher <- 1 - pchisq( -2 * sum(log(ps[-1] + 1e-10)) , df = 2 * length(ps[-1]))
+  p.fisher <- 1 - pchisq( -2 * sum(log(donor_p_vector)) , df = 2 * length(donor_p_vector)) #upper-tailed test
   p.fisher.diff <- abs(p.fisher - ps[1])
   
   # Pearson
-  p.pearson <- 1 - pchisq( -2 * sum(log(1 - ps[-1]  + 1e-10)) , df = 2 * length(ps[-1]))
+  p.pearson_test_stat <- -2 * sum(log(1 - donor_p_vector))
+  p.pearson <- pchisq( p.pearson_test_stat , df = 2 * length(donor_p_vector)) #lower-tailed test
   p.pearson.diff <- abs(p.pearson - ps[1])
+
+  # Stouffer
+  p.stouffer_test_stat <- sum(qnorm(1 - donor_p_vector)) / sqrt(n) #Caution: p-value of exactly 1 will cause trouble
+  p.stouffer <- 1 - pnorm(p.stouffer_test_stat) #upper-tailed test
+  p.stouffer.diff <- abs(p.stouffer - ps[1])
   
-  return(c(p.diff = p.diff, p.mean.diff = p.mean.diff,
-           p.fisher.diff = p.fisher.diff, p.pearson.diff = p.pearson.diff,
-           indic.diff = indic.diff))
+  # Edgington
+  p.edgington_test_stat <- sqrt(n) * (sum(donor_p_vector) - .5) / sqrt(1/12)
+  p.edgington <- pnorm(p.stouffer_test_stat) #lower-tailed test
+  p.edgington.diff <- abs(p.edgington - ps[1])
+
+  # weighted Fisher
+  weighted_p.fisher_test_stat <- (-(sum(W * log(donor_p_vector)) - n) /  sqrt(n * sum(W**2))) 
+  weighted_p.fisher <- 1 - pnorm(weighted_p.fisher_test_stat) #upper-tailed test
+  weighted_p.fisher.diff <- abs(weighted_p.fisher - ps[1])
+
+  # weighted Pearson
+  weighted_p.pearson_test_stat <- (-(sum(W * log(1 - donor_p_vector)) - n) /  sqrt(n * sum(W**2))) 
+  weighted_p.pearson <- pnorm( weighted_p.pearson_test_stat ) #lower-tailed test
+  weighted_p.pearson.diff <- abs(weighted_p.pearson - ps[1])
+  
+  # weighted Stouffer
+  weighted_p.stouffer_test_stat <- sum(W * qnorm(1 - donor_p_vector)) / sqrt(sum(W**2)) #Caution: p-value of exactly 1 will cause trouble
+  weighted_p.stouffer <- 1 - pnorm(weighted_p.stouffer_test_stat) #upper-tailed test
+  weighted_p.stouffer.diff <- abs(weighted_p.stouffer - ps[1])
+
+  # VERY IMPORTANT:
+
+  #The function lancaster() requires the R package 'aggregation', which we call now
+  require(aggregation)
+
+  # Lancaster
+  p.lancaster <- lancaster(donor_p_vector, W)
+  p.lancaster.diff <- abs(p.lancaster - ps[1])
+
+  # Weighted edgington
+  weighted_p.edgington_test_stat <- (sum(W * donor_p_vector) - .5) / sqrt( (1/12) * sum(W**2))
+  weighted_p.edgington <- pnorm(weighted_p.edgington_test_stat) #lower-tailed test
+  weighted_p.edgington.diff <- abs(weighted_p.edgington - ps[1])
+
+  # Shapiro-Wilks test
+  p.shapiro <- shapiro.test(W)$p.value
+  p.shapiro <- ifelse(p.shapiro <= .05, 1, 0)
+
+  # Kolmogorov-Smirnov test
+  p.KS <- ks.test(ps[-1], runif)$p.value
+  p.KS <- ifelse(p.KS <= .05, 1, 0)
+
+  # Fraction of W_i that are essentially zero
+  frac_W_zero <- mean(ifelse(W < 10e-5, 1, 0))
+
+  # Fraction of p_i that are essentially zero
+  frac_p_zero <- mean(ifelse(ps[-1] < 10e-5, 1, 0))
+  
+  return(c(p.diff = p.diff, 
+            p.mean = p.mean, 
+            p.mean.diff = p.mean.diff, 
+            p.weighted = sum(W * ps[-1]),
+            p.fisher.diff = p.fisher.diff, 
+            p.pearson.diff = p.pearson.diff,
+            p.stouffer.diff = p.stouffer.diff,
+            p.edgington.diff = p.edgington.diff,
+            weighted_p.fisher.diff = weighted_p.fisher.diff, 
+            weighted_p.pearson.diff = weighted_p.pearson.diff,
+            weighted_p.stouffer.diff = weighted_p.stouffer.diff,
+            weighted_p.edgington.diff = weighted_p.edgington.diff,
+            p.lancaster.diff = p.lancaster.diff,
+            max_weight = max(W),
+            max_p = max(ps[-1]),
+            p.shapiro = p.shapiro,
+            p.KS = p.KS,
+            frac_W_zero = frac_W_zero,
+            frac_p_zero = frac_p_zero,
+            indic.diff = indic.diff, 
+            AIC = AIC))
 }
 
-system.time(result <- sim.normal.gammaX(mu.delta = 0.2, 
-                                        mu.alpha = -0.2, sigma = 0.1, 
+system.time(result <- sim.normal.gammaX(mu.delta = 2, 
+                                        mu.alpha = 2, sigma = 0.1, 
                                         sigma.alpha = 0.05, 
                                         sigma.delta = 0.1, 
                                         p = 2, B = 200, scale = 2, 
                                         n = 20, H = 8, ell = 4,
-                                        Kshape = 100, Tshape = 100,
-                                        q1 = 2, q2 = 3))
+                                        Kshape = 50, Tshape = 50,
+                                        q1 = 2, q2 = 2, phi.bound = 0.5))
 
 
 # MC
