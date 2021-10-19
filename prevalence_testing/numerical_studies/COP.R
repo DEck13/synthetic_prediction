@@ -403,6 +403,82 @@ ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
   return(list(ps = ps, W = W, Is = Is, AIC = AIC, BIC = BIC))
 }
 
+ps.indic.W.decay.nls <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
+  
+  n <- length(Y) - 1
+  
+  # empty
+  ps <- c()
+  
+  for (i in 1:(n + 1)) {
+    
+    # set up
+    Ti <- Ts[i]
+    Ki <- K[i]
+    Tstari <- Tstar[i]
+    
+    m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
+    m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
+    
+    # compute losses
+    for (h in 1:H) {
+      for (t in 1:Ti) {
+        
+        yi <- Y[[i]][-1][(t + H - h + 1):(t + Ki + H - h)]
+        xi <- X[[i]][-1, ][(t + H - h + 1):(t + Ki + H - h),]
+        p <- ncol(xi)
+        
+        # lag
+        yilag <- Y[[i]][-(Ti + 1)][(t + H - h + 1):(t + Ki + H - h)]
+        
+        # decay
+        decay.indic <-  ifelse((t + H - h + 1):(t + Ki + H - h) >= Tstari + 1, yes = 1, no = 0)
+        # OLS
+        lmodi.adj <- nls(yi ~ eta + exp(- ((t + H - h + 1):(t + Ki + H - h) - Tstari - 1) * c) * alpha + yilag * phi + xi %*% beta,
+                         start = list(eta = rnorm(1), c = rnorm(1), alpha = rnorm(1), phi = runif(1), beta = rnorm(p)))
+        lmodi.unadj <- lm(yi ~ 1 + yilag + xi)
+        
+        # beta.hat
+        beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
+        beta.hat.adj[which(is.na(beta.hat.adj) == TRUE)] <- 0
+        beta.hat.unadj <- matrix(coef(lmodi.unadj), nrow = 1)
+        
+        yhat.adj <- tail(yi, 1)
+        yhat.unadj <- tail(yi, 1)
+        for (j in 1:h) {
+          yhat.adj <- c(yhat.adj, 
+                        beta.hat.adj[1] + exp(-(t + Ki + H - h + j - Tstari - 1) * beta.hat.adj[2]) * beta.hat.adj[3] + 
+                          yhat.adj[j] * beta.hat.adj[4] + 
+                          X[[i]][-1, ][t + Ki + H - h + j, ] %*% matrix(beta.hat.adj[-(1:4)]))
+          yhat.unadj <- c(yhat.unadj, beta.hat.unadj %*% matrix(c(1, yhat.unadj[j], X[[i]][-1, ][t + Ki + H - h + j, ])))
+        }
+        
+        # losses
+        m1.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.adj[h + 1])
+        m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + 1])
+      }
+    }
+    # loss differential
+    d <- m2.L.i - m1.L.i
+    ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
+  }
+  
+  # weights
+  if (is.matrix(X[[1]]) == FALSE) {
+    for (i in 1:(n + 1)) {
+      X[[i]] <- as.matrix(X[[i]])
+    }
+  }
+  # Weights
+  W <- round(scm(X = X, Tstar = Tstar)$par, digits = 3)
+  
+  # test
+  Is <- ifelse(ps <= .05, yes = 1, no = 0)
+  
+  # output
+  return(list(ps = ps, W = W, Is = Is))
+}
+
 # set working directory
 setwd("/Users/mac/Desktop/Research/Post-Shock Prediction/")
 
@@ -475,13 +551,17 @@ Y <- COP_close$COP_Close[-1]
 # data frame
 COP_close <- data.frame(COP_close[-nrow(COP_close), ], Y)
 
+COP_close <- data.frame(COP_close[-1, ], COP_close[-nrow(COP_close), -c(1,8)])
+
+colnames(COP_close)[9:14] <- c('ylag2', paste0(colnames(COP_close)[3:7], '.lag'))
+
 
 # number of horizons
 H <- 10
 # training sample size
 K <- 30
 # number of days after shock date
-L <- 30
+L <- 7
 
 #### Monday, March 17th, 2008
 
@@ -489,48 +569,198 @@ L <- 30
 
 # shock effect date
 start <- which(COP_close$Date == "2008-03-14")
-start_day_20080317 <- as.numeric(1:nrow(COP_close) == start)
+start_day_20080317 <- as.numeric(1:nrow(COP_close) %in% start:(start + L))
 COP_close <- COP_close %>% mutate(start_day_20080317 = start_day_20080317)
 TS2 <- COP_close[(start - (1 + 15 + K + H)):(start + L),]
-
-
 # inflation adjustment
 TS2[, 2:8] <- TS2[, 2:8] * inflation_adj$dollars_2020[inflation_adj$year == 2008] 
+
+start2 <- which(TS2$Date == "2008-03-14")
+expterm <- exp(-(1:nrow(TS2) - start2)) * ifelse(1:nrow(TS2) >= start2, yes = 1, no = 0)
+
+m_COP_3_17.null <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + 
+                   USD_Close + TB_Close, 
+                 data = TS2)
+m_COP_3_17 <- lm(Y ~ COP_Close + start_day_20080317 + GSPC_Close + WTI_Close + 
+                   USD_Close + TB_Close, 
+                 data = TS2)
+m_COP.exp <- lm(Y ~ COP_Close + expterm + GSPC_Close + WTI_Close + 
+                       USD_Close + TB_Close,  
+                     data = TS2)
+
+
+
+# decay
+
+# NLS
+m_COP.decay <- nls(Y ~ eta + exp(- (1:nrow(TS2) - (start2 + 1)) * c) * alpha + COP_Close * phi + 
+                     cbind(GSPC_Close, WTI_Close, USD_Close, TB_Close) %*% beta, data = TS2,
+                 start = list(eta = rnorm(1), c = rnorm(1), alpha = rnorm(1), phi = runif(1), beta = rnorm(4)))
+# complicate
+co.D <- c()
+for (d in 1:nrow(TS2)) {
+  co.D <- rbind(co.D, TS2[d, c(2:7, 9:14)] * TS2$start_day_20080317[d])
+}
+co.D <- as.matrix(co.D)
+
+m_COP.complicate <- lm(TS2$Y ~ as.matrix(TS2[, c(2:7, 9:14)]) + co.D + TS2$start_day_20080317)
+
+# AICs
+AIC.20080314.null <- AIC(m_COP_3_17.null)
+AIC.20080314.permanent <- AIC(m_COP_3_17)
+AIC.20080314.decay1 <- AIC(m_COP.exp)
+AIC.20080314.decay2 <- AIC(m_COP.decay)
+AIC.20080314.complicate <- AIC(m_COP.complicate)
+
+AIC.20080314 <- c(AIC.20080314.null, AIC.20080314.permanent, 
+                  AIC.20080314.decay1, AIC.20080314.decay2,
+                  AIC.20080314.complicate)
 
 #### 2008 shock effects
 
 # shock effect date
 start <- which(COP_close$Date == "2008-09-08")
-start_day_20080908 <- as.numeric(1:nrow(COP_close) %in% start)
+start_day_20080908 <- as.numeric(1:nrow(COP_close) %in% start:(start + L))
 COP_close <- COP_close %>% mutate(start_day_20080908 = start_day_20080908)
 TS3 <- COP_close[(start - (1 + 15 + K + H)):(start + L),]
 # adjust for inflation
 TS3[, 2:8] <- TS3[, 2:8] * inflation_adj$dollars_2020[inflation_adj$year == 2008] 
 
+start2 <- which(TS3$Date == "2008-09-08")
+expterm <- exp(-(1:nrow(TS3) - start2)) * ifelse(1:nrow(TS3) >= start2, yes = 1, no = 0)
+
+# models
+m_COP_null <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + USD_Close + TB_Close, data = TS3)
+m_COP_Sept_08 <- lm(Y ~ COP_Close + start_day_20080908 + GSPC_Close + WTI_Close + USD_Close + TB_Close, data = TS3)
+m_COP_exp <- lm(Y ~ COP_Close + expterm + GSPC_Close + WTI_Close + 
+                  USD_Close + TB_Close,  data = TS3)
+m_COP_decay <- nls(Y ~ eta + exp(- (1:nrow(TS3) - (start2 + 1)) * c) * alpha + COP_Close * phi + 
+                     cbind(GSPC_Close, WTI_Close, USD_Close, TB_Close) %*% beta, data = TS3,
+                   start = list(eta = rnorm(1), c = rnorm(1), alpha = rnorm(1), phi = runif(1, min = -1), beta = rnorm(4)))
+# complicate
+co.D <- c()
+for (d in 1:nrow(TS3)) {
+  co.D <- rbind(co.D, TS3[d, c(2:7, 9:14)] * TS3$start_day_20080908[d])
+}
+co.D <- as.matrix(co.D)
+
+m_COP.complicate <- lm(TS3$Y ~ as.matrix(TS3[, c(2:7, 9:14)]) + co.D + TS3$start_day_20080908)
+
+
+# AICs
+AIC.20080908.null <- AIC(m_COP_null) 
+AIC.20080908.permanent <- AIC(m_COP_Sept_08) 
+AIC.20080908.decay1 <- AIC(m_COP_exp) 
+AIC.20080908.decay2 <- AIC(m_COP_decay) 
+AIC.20080908.complicate <- AIC(m_COP.complicate) 
+
+AIC.20080908 <- c(AIC.20080908.null, AIC.20080908.permanent, 
+                  AIC.20080908.decay1, AIC.20080908.decay2,
+                  AIC.20080908.complicate)
+
+
 #### Thursday, November 27, 2014
 
 # shock effect date
 start <- which(COP_close$Date == "2014-11-26")
-start_day_20141127 <- as.numeric(1:nrow(COP_close) == start)
+start_day_20141127 <- as.numeric(1:nrow(COP_close) %in% start:(start + L))
 COP_close <- COP_close %>% mutate(start_day_20141127 = start_day_20141127)
 # time window
 TS4 <- COP_close[(start - (1 + 15 + K + H)):(start + L),]
 # adjust for inflation
 TS4[, 2:8] <- TS4[, 2:8] * inflation_adj$dollars_2020[inflation_adj$year == 2014] 
 
+start2 <- which(TS4$Date == "2014-11-26")
+expterm <- exp(-(1:nrow(TS4) - start2)) * ifelse(1:nrow(TS4) >= start2, yes = 1, no = 0)
+
+# models
+m_COP_11_27_14.null <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + USD_Close + TB_Close, data = TS4)
+m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day_20141127 + GSPC_Close + WTI_Close + USD_Close + TB_Close, 
+                     data = TS4)
+m_COP_exp <- lm(Y ~ COP_Close + expterm + GSPC_Close + WTI_Close + USD_Close + TB_Close,  data = TS4)
+m_COP_decay <- nls(Y ~ eta + exp(- (1:nrow(TS4) - (start2 + 1)) * c) * alpha + COP_Close * phi + 
+                     cbind(GSPC_Close, WTI_Close, USD_Close, TB_Close) %*% beta, data = TS4,
+                   start = list(eta = rnorm(1), c = rnorm(1), alpha = rnorm(1), phi = runif(1, min = -1), beta = rnorm(4)))
+# complicate
+co.D <- c()
+for (d in 1:nrow(TS4)) {
+  co.D <- rbind(co.D, TS4[d, c(2:7, 9:14)] * TS4$start_day_20141127[d])
+}
+co.D <- as.matrix(co.D)
+
+m_COP.complicate <- lm(TS4$Y ~ as.matrix(TS4[, c(2:7, 9:14)]) + co.D + TS4$start_day_20141127)
+
+
+# AICs of different models
+AIC.20141127.null <- AIC(m_COP_11_27_14.null) 
+AIC.20141127.permanent <- AIC(m_COP_11_27_14) 
+AIC.20141127.decay1 <- AIC(m_COP_exp) 
+AIC.20141127.decay2 <- AIC(m_COP_decay) 
+AIC.20141127.complicate <- AIC(m_COP.complicate) 
+
+AIC.20141127 <- c(AIC.20141127.null, AIC.20141127.permanent, 
+                  AIC.20141127.decay1, AIC.20141127.decay2,
+                  AIC.20141127.complicate)
 
 
 #### The March 9th, 2020 shock effect:
 
 # shock effect date
 start <- which(COP_close$Date == "2020-03-06")
-start_day_20200309 <- as.numeric(1:nrow(COP_close) == start)
+start_day_20200309 <- as.numeric(1:nrow(COP_close) %in% start:(start + L))
 COP_close <- COP_close %>% mutate(start_day_20200309 = start_day_20200309)
 # time window
 TS1 <- COP_close[(start - (1 + 15 + K + H)):(start + L),]
 
+start2 <- which(TS1$Date == "2020-03-06")
+expterm <- exp(-(1:nrow(TS1) - start2)) * ifelse(1:nrow(TS1) >= start2, yes = 1, no = 0)
+
+m_COP_03_09_20.null <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + 
+                       USD_Close + TB_Close,  
+                     data = TS1)
+m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day_20200309 + GSPC_Close + WTI_Close + 
+                       USD_Close + TB_Close,  
+                     data = TS1)
+m_COP_exp <- lm(Y ~ COP_Close + expterm + GSPC_Close + WTI_Close + USD_Close + TB_Close,  data = TS1)
+m_COP_decay <- nls(Y ~ eta + exp(- (1:nrow(TS1) - (start2 + 1)) * c) * alpha + COP_Close * phi + 
+                     cbind(GSPC_Close, WTI_Close, USD_Close, TB_Close) %*% beta, data = TS1,
+                   start = list(eta = rnorm(1), c = rnorm(1), alpha = rnorm(1), phi = runif(1, min = -1), beta = rnorm(4)))
+
+# complicate
+co.D <- c()
+for (d in 1:nrow(TS4)) {
+  co.D <- rbind(co.D, TS1[d, c(2:7, 9:14)] * TS1$start_day_20200309[d])
+}
+co.D <- as.matrix(co.D)
+
+m_COP.complicate <- lm(TS1$Y ~ as.matrix(TS1[, c(2:7, 9:14)]) + co.D + TS1$start_day_20200309)
+
+
+AIC.20200309.null <- AIC(m_COP_03_09_20.null)
+AIC.20200309.permanent <- AIC(m_COP_03_09_20)
+AIC.20200309.decay1 <- AIC(m_COP_exp)
+AIC.20200309.decay2 <- AIC(m_COP_decay)
+AIC.20200309.complicate <- AIC(m_COP.complicate)
+
+AIC.20200309 <- c(AIC.20200309.null, AIC.20200309.permanent, 
+                  AIC.20200309.decay1, AIC.20200309.decay2,
+                  AIC.20200309.complicate)
+
+AICs <- rbind(AIC.20080314, AIC.20080908, AIC.20141127)
+rownames(AICs) <- c('TS2', 'TS3', 'TS4')
+colnames(AICs) <- c('null', 'Permanent', 'Decay without scale', 'Decay with scale', 'Complicate')
+
+apply(AICs, 1, which.min)
+AICs <- rbind(AICs, apply(AICs, 2, mean))
+rownames(AICs)[4] <- 'Mean'
+AICs <- rbind(AICs, AIC.20200309)
+rownames(AICs)[5] <- 'TS1' 
+xtable(AICs)
+
+
+
 # Ti
-Ts <- rep(15 + L, 4)
+Ts <- c(nrow(TS1), nrow(TS2), nrow(TS3), nrow(TS4))
 # Tstar
 Tstar <- c(which(TS1$start_day_20200309 == 1),
            which(TS2$start_day_20080317 == 1),
@@ -550,6 +780,8 @@ res2 <- ps.indic.W.decay(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H, Ts =
 res3 <- ps.indic.W.complicate(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), 
                               q1 = 2, q2 = 2, 
                               H = H, Ts = Ts, ell = 4, B = 200, bw = 4)
+res2 <- ps.indic.W.decay.nls(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H, Ts = Ts, ell = 4, B = 200, bw = 4)
+
 ps1 <- res1$ps
 ps2 <- res2$ps
 ps3 <- res3$ps
