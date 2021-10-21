@@ -289,22 +289,33 @@ We want to determine which forecast is appropriate over a horizon while the meth
 \vspace*{0.5cm}\noindent\textbf{Note}: We need to explain what the voting method is, possibly in algorithmic format. Also note that the p-values that we obtain are computed using a bootstrap procedure. Perhaps an additional proposition that states the performance of these bootstrap p-values would further guarantee reliability. 
 
 \begin{prop}
-  Let $p_i \sim \mc{D}$ be independent sequence of p-values for $i = 1, \ldots, n+1$ and some distribution $\mc{D}$, where $p_1$ is the p-value of the time series of interest. Let  $\alpha$ denote the significance level. If $\P(p_1 \leq \alpha) \neq 0.5$, with probability one, the expected misclassification rate for voting in prevalence testing is
-  \begin{align*}
-    \begin{cases}
+
+Suppose $p_1, \ldots, p_{n+1}$ be a sequence of pairwise independent $p$-values  with $\P(p_i \leq \alpha)=\kappa$ for $i = 1, \ldots, n+1$, where $\alpha$ is the significance level, $\kappa$ is a real-valued constant in $[0,1]$, and  $p_1$ is the p-value of the time series of interest. If $\P(p_1 \leq \alpha) \neq 0.5$,
+\begin{align*}
+  \E \bigg\{\left|I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}
+  - I( p_1 \leq  \alpha) \right|\bigg\}
+  \to  \begin{cases}
     1- \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) > 0.5 \\
     \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) < 0.5 
-  \end{cases} .
-  \end{align*}
+  \end{cases}
+\end{align*}
+That is, as $n\to \infty$, the expected misclassification rate of voting converges to 
+\begin{align*}
+  \begin{cases}
+    1- \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) > 0.5 \\
+    \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) < 0.5 
+  \end{cases}
+\end{align*}
+and the limiting misclassification rate is bounded by 0.5.
 \end{prop}
 
 \begin{proof}
- Since $\P(p_1 \leq \alpha)\in \reals$, by Strong Law of Large Numbers,
+Notice that as $\P(p_i \leq \alpha)=\kappa$ for $i = 1, \ldots, n+1$ and $I(p_i \leq  \alpha) $ is a Bernoulli random variable, $I(p_i \leq  \alpha)$ is identically distributed for  $i = 1, \ldots, n+1$. Since $p_i$ is pairwise independent and $p_i$ are identically distributed for $i = 2, \ldots, n+1$, by Weak Law of Large Numbers, 
 \begin{align*}
   \frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha)  
-   \stackrel{a.s.}{\rightarrow}  \P(p_i \leq \alpha) = \P(p_1 \leq \alpha),
+   \stackrel{p}{\rightarrow}  \P(p_i \leq \alpha) = \P(p_1 \leq \alpha),
 \end{align*}
-which follows from the fact that $p_i$ are i.i.d. Define
+Define
 \begin{align*}
   f \colon [0,1] \mapsto \{0,1\} 
   \text{ with }
@@ -317,8 +328,20 @@ Let $C(f)$ denote the continuity set of $f$. Suppose that $\P(p_1 \leq  \alpha) 
 By Slutsky's Theorem, we have
 \begin{align*}
   I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}
-  \stackrel{a.s.}{\rightarrow} 
+  \stackrel{p}{\rightarrow} 
   I\{ \P(p_1 \leq  \alpha) \geq 0.5\}.
+\end{align*}
+It follows that
+\begin{align*}
+   I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}- I( p_1 \leq  \alpha) 
+  \stackrel{p}{\rightarrow} 
+  I\{ \P(p_1 \leq  \alpha) \geq 0.5\} - I( p_1 \leq  \alpha) 
+\end{align*}
+Since the function $g(x)= |x|$ is continuous in $x$,  by continuous mapping theorem, 
+\begin{align*}
+  \bigg|  I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}
+  - I( p_1 \leq  \alpha) \bigg| \stackrel{p}{\rightarrow}   |I\{ \P(p_1 \leq  \alpha) \geq 0.5\}
+  - I( p_1 \leq  \alpha) |
 \end{align*}
 Moreover, note that
 \begin{align*}
@@ -330,22 +353,35 @@ Moreover, note that
   \end{cases} \\
   & \leq  0.5.
 \end{align*}
-That implies that with probability one, 
+Due to the fact that
 \begin{align*}
-  \E \left\{ \left|I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}
-  - I( p_1 \leq  \alpha) \right|\right\}
-  = \begin{cases}
+ \left|I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}
+  - I( p_1 \leq  \alpha) \right| \leq 1
+\end{align*}
+is bounded by 1, by Dominated Convergence Theorem for the version of convergence in measure,
+\begin{align*}
+ \left|I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}
+  - I( p_1 \leq  \alpha) \right|
+  \stackrel{\mathcal{L}_1}{\rightarrow}  |I\{ \P(p_1 \leq  \alpha) \geq 0.5\}
+  - I( p_1 \leq  \alpha) |.
+\end{align*}
+That would imply that 
+\begin{align*}
+  \E \bigg\{\left|I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}
+  - I( p_1 \leq  \alpha) \right|\bigg\}
+  \to  \begin{cases}
     1- \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) > 0.5 \\
     \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) < 0.5 
-  \end{cases}.
+  \end{cases}
 \end{align*}
-That is, with probability one, the expected misclassification rate is as above.
+That is, the expected misclassification rate of voting converges to 
+\begin{align*}
+  \begin{cases}
+    1- \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) > 0.5 \\
+    \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) < 0.5 
+  \end{cases}
+\end{align*}
 \end{proof}
-
-\begin{remark}
-  Since indicator functions are bounded in $\mc{L}^2$, by Chebyshev-Rachman Strong Law of Large Numbers, the independence assumption can be relaxed to be that those p-values are uncorrelated.
-\end{remark}
-
 
 
 
