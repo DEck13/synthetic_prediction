@@ -64,7 +64,12 @@
 \newcommand\red[1]{{\color{red}#1}}
 \def\bs#1{\boldsymbol{#1}}
 \def\P{\mathbb{P}}
+\def\var{\mathbf{Var}}
+\def\naturals{\mathbb{N}}
+\def\cp{\overset{p}{\to}}
+\def\clt{\overset{\mathcal{L}^2}{\to}}
 
+\newtheorem{corollary}{Corollary}
 \newcommand{\ceil}[1]{\lceil #1 \rceil}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert} % A norm with 1 argument
 \DeclareMathOperator{\Var}{Var} % Variance symbol
@@ -290,7 +295,7 @@ We want to determine which forecast is appropriate over a horizon while the meth
 
 \begin{prop}
 
-Suppose $p_1, \ldots, p_{n+1}$ be a sequence of pairwise independent $p$-values  with $\P(p_i \leq \alpha)=\kappa$ for $i = 1, \ldots, n+1$, where $\alpha$ is the significance level, $\kappa$ is a real-valued constant in $[0,1]$, and  $p_1$ is the p-value of the time series of interest. If $\P(p_1 \leq \alpha) \neq 0.5$,
+\label{votprop}Suppose $p_2, \ldots, p_{n+1}$ is  a sequence of pairwise independent $p$-values  with $\P(p_i \leq \alpha)=\kappa$ for $i = 1, \ldots, n+1$, where $\alpha$ is the significance level, $\kappa$ is a real-valued constant in $[0,1]$, and  $p_1$ is the p-value of the time series of interest. If $\P(p_1 \leq \alpha) \neq 0.5$,
 \begin{align*}
   \E \bigg\{\left|I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}
   - I( p_1 \leq  \alpha) \right|\bigg\}
@@ -299,14 +304,6 @@ Suppose $p_1, \ldots, p_{n+1}$ be a sequence of pairwise independent $p$-values 
     \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) < 0.5 
   \end{cases}
 \end{align*}
-%That is, as $n\to \infty$, the expected misclassification rate of voting converges to 
-%\begin{align*}
-%  \begin{cases}
-%    1- \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) > 0.5 \\
-%    \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) < 0.5 
-%  \end{cases}
-%\end{align*}
-%and the limiting misclassification rate is bounded by 0.5.
 \end{prop}
 
 \begin{proof}
@@ -383,6 +380,97 @@ That is, the expected misclassification rate of voting converges to
 \end{align*}
 \end{proof}
 
+\begin{lem}
+  \label{gwlln}  For each $n\in \naturals$, let $c_{n1}, \ldots, c_{nn}$ be real numbers bounded by some $K > 0$, and let $X_{n1}, \ldots, X_{nn}$ be pairwise independent random variables defined on a probability space $(\Omega_n, \mc{F}_n, \P_n)$, and let $\E_n$ and $\var_n$ denote the corresponding expectation and variance. If $(b_n)$ is a sequence of positive numbers such that $b_n \uparrow \infty$ such that
+    \begin{align*}
+      \sum_{i=1}^n \P_n (|X_{ni}| > b_n) \to 0
+      \quad \text{ and } 
+      \quad \frac{1}{(b_n)^2} \sum_{i=1}^n \E_n[X_{ni}^2; |X_{ni}|\leq b_n] \to 0,
+    \end{align*}
+    then
+    \begin{align*}
+      \frac{1}{b_n} \sum_{i=1}^n c_{ni} (X_{ni} - \E_n[X_{ni}; X_{ni} \leq b_n]) \cp 0.
+    \end{align*}
+\end{lem}
+
+\begin{proof}
+  For each $n\in \naturals$ set
+    \begin{align*}
+      S_n = \sum_{i=1}^n c_{ni} X_{ni}, \quad T_n = \sum_{i=1}^n c_{ni} Y_{ni},
+      \quad Y_{ni} = X_{ni} I(|X_{ni}|\leq b_n), \quad i = 1, \ldots, n.
+    \end{align*}
+   The goal is to show that  $(S_n- \E_n[T_n])/b_n \cp 0$. For this, it suffices to show that (1) $(T_n - S_n)/b_n \cp 0$ and (2) $(T_n - \E_n[T_n])/b_n \cp 0$ because
+    \begin{align*}
+      (T_n - \E_n[T_n])/b_n -(T_n - S_n)/b_n = (S_n- \E_n[T_n])/b_n .
+    \end{align*}
+     We first prove (1). Notice that for every $\varepsilon > 0$ and $n\in \naturals$,
+    \begin{align*}
+      \{|S_n- T_n| > \varepsilon\}\subseteq \bigcup_{i=1}^n \{X_{ni}\neq Y_{ni}\}
+      = \bigcup_{i=1}^n \{|X_{ni}|>b_n\},
+    \end{align*}
+    and, as a result, by Boole's inequality we have
+    \begin{align*}
+      \P_n (|S_n - T_n|>\varepsilon) \leq \sum_{i=1}^n \P_n(|X_{ni}|>b_n) \to 0,
+    \end{align*}
+    which proves (1). Next, we prove (2). Since $\mc{L}^2$ implies convergence in probability, it suffices to show that $(T_n-\E[T_n])/b_n \clt 0$, i.e., $\var[T_n]/(b_n)^2 \to 0$. Since $X_{n1}, \ldots, X_{nn}$ are pairwise independent, so are $Y_{n1}, \ldots, Y_{nn}$, and consequently
+    \begin{align*}
+      \Var_n[T_n]=\sum_{i=1}^n \Var_n[Y_{ni}] \leq \sum_{i=1}^n \E_n[(c_{ni}X_{ni})^2; |X_{ni}|\leq b_n] \leq K^2\sum_{i=1}^n \E_n[(X_{ni})^2; |X_{ni}|\leq b_n].
+    \end{align*}
+    As a result,
+    \begin{align*}
+    0\leq   \frac{\Var_n[T_n]}{b_n^2}\leq K^2 \cdot  \frac{1}{b_n^2}\sum_{i=1}^n \E_n[(X_{ni})^2; |X_{ni}|\leq b_n] \to 0,
+    \end{align*}
+    which proves the result by sandwich theorem.
+\end{proof}
+
+\newpage
+\begin{corollary}
+\label{coro1}Let $(w_2, \ldots, w_{n+1})$ be weights such that $w_i \in [0,1]$ and $\sum_{i=2}^{n+1} w_i=1$. Define
+\begin{align*}
+  \mc{I}_n = \{i = \in 2,\ldots, n+1\colon 0< w_i < 1\}.
+\end{align*}
+Suppose that  $\mc{I}_n$  is non-empty, $|\mc{I}_n| \to \infty$ as $n \to \infty$, and $w_i b_n\leq K$ for $i\in \mc{I}_n$ and some $K>0$, where $b_n \geq 1$ and $b_n \to \infty$ as $n\to \infty$. Assume for $i \in \mc{I}_n$,  $p_i$ are pairwise independent $p$-values  with 
+\begin{align*}
+  \sum_{i\in \mc{I}_n}\P(p_i \leq \alpha) = \sum_{i\in \mc{I}_n} w_i \kappa_i \to \kappa_{1},
+\end{align*}
+where $\kappa_i =  \P(p_i \leq \alpha)\in [0,1]$ for $i \in \mc{I}_n$, $\alpha$ is the significance level, $\kappa_1 = \P(p_1 \leq \alpha)$, and  $p_1$ is the p-value of the time series of interest. If $\P(p_1 \leq \alpha) \neq 0.5$,
+\begin{align*}
+  \E \bigg\{\left|I\left\{ \sum_{i\in \mc{I}_n} w_i I(p_i \leq  \alpha) \geq 0.5\right\}
+  - I( p_1 \leq  \alpha) \right|\bigg\}
+  \to  \begin{cases}
+    1- \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) > 0.5 \\
+    \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) < 0.5 
+  \end{cases}
+\end{align*}
+\end{corollary}
+
+\begin{proof}
+  The proof is rather similar to Proposition \ref{votprop}. It suffices to show that
+  \begin{align*}
+   \sum_{i\in \mc{I}_n} w_i I(p_i \leq  \alpha) \cp \kappa_1 =  \P(p_1 \leq \alpha).
+  \end{align*}
+  and the remaining proof is the same as that of Proposition \ref{votprop} in terms of applying Dominated Convergence Theorem in the version of  convergence in probability. As $p_i$ are pairwise independent for $i\in \mc{I}_n$, $I(p_i\leq \alpha)$ are pairwise independent for $i \in \mc{I}_n$. The idea is to prove the required condition of Lemma \ref{gwlln} holds. As  $\mc{I}_n$  is non-empty, $|\mc{I}_n| \to \infty$, $b_n > 1$, and  $b_n \to \infty$ as $n \to \infty$, 
+  \begin{align*}
+    & \sum_{i\in \mc{I}_n} \P\big( I(p_i \leq  \alpha) > b_n\big) \to 0\\
+   & \frac{1}{b_n^2} \sum_{i\in \mc{I}_n} \E\big[ I(p_i \leq  \alpha) \,|\, I(p_i \leq  \alpha) \leq b_n\big]
+     =  \frac{1}{b_n^2} \sum_{i\in \mc{I}_n} \P\big(p_i \leq\alpha \big)
+     = \frac{1}{b_n^2} \sum_{i\in \mc{I}_n} w_i \kappa_i  \to 0
+  \end{align*}
+  because $ \sum_{i\in \mc{I}_n} w_i \kappa_i = O(1)$ by the assumption $\sum_{i\in \mc{I}_n} w_i \kappa_i \to \kappa_{1}$. Let $c_{ni} = w_i b_n$ for $i \in \mc{I}_n$. Since $w_i b_n\leq K$ for some $K > 0$ and $b_n$, we have 
+  \begin{align*}
+    & \frac{1}{b_n} \sum_{i\in \mc{I}_n}  c_{ni} \big(  I(p_i \leq  \alpha) - \P( I(p_i \leq  \alpha) \, |\,  I(p_i \leq  \alpha)  \leq b_n )  \big) \\
+  = \quad     &\frac{1}{b_n} \sum_{i\in \mc{I}_n}  c_{ni} \big(  I(p_i \leq  \alpha) - \P( I(p_i \leq  \alpha) \big)  \cp 0
+  \end{align*}
+  which follows from Lemma \ref{gwlln}. The above is equivalent to
+  \begin{align*}
+   \sum_{i\in \mc{I}_n}  w_i I(p_i \leq  \alpha) - \sum_{i\in \mc{I}_n} w_i  \kappa_i  \cp 0
+  \end{align*}
+  As $\sum_{i\in \mc{I}_n} w_i  \kappa_i\to \kappa_1$ as $n \to \infty$, by Slutsky's Theorem,
+  \begin{align*}
+     \sum_{i\in \mc{I}_n}  w_i I(p_i \leq  \alpha)  \cp \kappa_1,
+  \end{align*}
+  which finishes the proof.
+\end{proof}
 
 
 
@@ -425,9 +513,9 @@ y_{i',t} &= \eta_{i'} + \mu_\alpha + \delta_{i'}'\x_{1,T^*_1+1} + \sum_{j=1}^{q_
 \end{align*}
 where $\alpha_j(\x) = \mu_\alpha + \delta_j'\x$, and we have 
 \begin{align*}
-  |y_{1,t} - \hat y_{1,t}| &= \Bigg\vert (\eta_1 - \hat\eta_1) + (\alpha_1 - \hat{\alpha}_1(\x_{1,T^*_1+1})) + \sum_{j=1}^{q_1}\left[(\phi_{1,j} + \tilde{\phi}_{1,j})y_{1,t-j} - (\hat\phi_{1,j} + \hat{\tilde{\phi}}_{1,j})\hat{y}_{1,t-j}\left] \\ 
+  |y_{1,t} - \hat y_{1,t}| &= \Bigg\vert (\eta_1 - \hat\eta_1) + (\alpha_1 - \hat{\alpha}_1(\x_{1,T^*_1+1})) + \sum_{j=1}^{q_1}\left[(\phi_{1,j} + \tilde{\phi}_{1,j})y_{1,t-j} - (\hat\phi_{1,j} + \hat{\tilde{\phi}}_{1,j})\hat{y}_{1,t-j}\right] \\ 
   &\qquad+ \sum_{j=0}^{q_2-1}\left[(\theta_{1,j+1} + \tilde{\theta}_{1,j+1})'\x_{1,t-j} - (\hat\theta_{1,j+1} + \hat{\tilde{\theta}}_{1,j+1})'\hat\x_{1,t-j}\right] + \varepsilon_{1,t} \Bigg\vert \\
-  |y_{i',t} - \hat y_{i',t}| &= \Bigg\vert (\eta_{i'} - \hat\eta_{i'}) + (\alpha_{i'} - \hat{\alpha}_{i'}(\x_{1,T^*_1+1})) + \sum_{j=1}^{q_1}\left[(\phi_{i',j} + \tilde{\phi}_{i',j})y_{i',t-j} - (\hat\phi_{i',j} + \hat{\tilde{\phi}}_{i',j})\hat{y}_{i',t-j}\left] \\ 
+  |y_{i',t} - \hat y_{i',t}| &= \Bigg\vert (\eta_{i'} - \hat\eta_{i'}) + (\alpha_{i'} - \hat{\alpha}_{i'}(\x_{1,T^*_1+1})) + \sum_{j=1}^{q_1}\left[(\phi_{i',j} + \tilde{\phi}_{i',j})y_{i',t-j} - (\hat\phi_{i',j} + \hat{\tilde{\phi}}_{i',j})\hat{y}_{i',t-j}\right] \\ 
   &\qquad+ \sum_{j=0}^{q_2-1}\left[(\theta_{i',j+1} + \tilde{\theta}_{i',j+1})'\x_{1,t-j} - (\hat\theta_{i',j+1} + \hat{\tilde{\theta}}_{i',j+1})'\hat\x_{1,t-j}\right] + \varepsilon_{i',t} \Bigg\vert.
 \end{align*}
 \textbf{Needs finishing, but the argument is simple: estimation uncertainty declines as error variance decreases. And differences in the random effects decrease as variability decreases.} \vspace*{0.5cm}
@@ -440,7 +528,7 @@ where $\alpha_j(\x) = \mu_\alpha + \delta_j'\x$, and we have
   \mu_{\min} &= \min\left(\mu_\eta,\mu_{\phi_j},\mu_{\tilde\phi_j},\min(\mu_\delta),\min(\mu_{\theta_k}),\min(\mu_{\tilde\theta_k}); j = 1,\ldots,q_1, k = 1,\ldots,q_2\right), \\
   \mu_{\max} &= \max\left(\mu_\eta,\mu_{\phi_j},\mu_{\tilde\phi_j},\max(\mu_\delta),\max(\mu_{\theta_k}),\max(\mu_{\tilde\theta_k}); j = 1,\ldots,q_1, k = 1,\ldots,q_2\right), \\
   \lambda_{\max} &= \max\left(\lambda_{\text{max},\theta_k}, \lambda_{\text{max},\theta_\delta}, \lambda_{\text{max},\gamma}; k = 1,\ldots,q_2\right), \\
-  \sigma^2_\max &= \max\left(\sigma^2_\eta,\sigma^2_{\phi_j},\sigma^2_i,\sigma^2_\alpha,\sigma^2_{\tilde\phi_j}; i = 1,\ldots,n+1, j = 1,\ldots,q_1\right).  
+  \sigma^2_{\max} &= \max\left(\sigma^2_{\eta},\sigma^2_{\phi_j},\sigma^2_i,\sigma^2_{\alpha},\sigma^2_{\tilde{\phi}_j}; i = 1,\ldots,n+1, j = 1,\ldots,q_1\right).  
 \end{align*}
 
 
