@@ -619,9 +619,11 @@ The conclusion follows by noting that $c_1 - c_2 = |a_1 - a_2|$ and $d_1 - d_2 =
 	provided that 
 	\begin{align*}
   |\mu_\delta'\x_{1,T^*+1} - \mu_\delta'\x_{i',T^*+1}| &< \gamma, \\
-  |\mu_{\tilde\theta_1}'\x_{1,T^*+1} - \mu_{\tilde\theta_{i'}}'\x_{i',T^*+1}| &< \gamma, \\
+%  |\mu_{\tilde\theta_1}'\x_{1,T^*+1} - \mu_{\tilde\theta_{i'}}'\x_{i',T^*+1}| &< \gamma, \\
   \left\vert\mu_{\tilde\theta_{1}}'\x_{1,t} - \mu_{\tilde\theta_{i'}}'\x_{i',t}\right\vert &< \gamma, \qquad \text{for all} \; t, \\
-  |\mu_{\tilde\phi_1}^j - \mu_{\tilde\phi_{i'}}^j| &< \gamma, \qquad \text{for all} \; j. 
+  |\mu_{\tilde\phi_1}^j - \mu_{\tilde\phi_{i'}}^j| &< \gamma, \qquad \text{for all} \; j, \\
+  |\x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1}| &< \gamma, \\
+  |\x_{1,t}'\Sigma_{\tilde\theta_{1}}\x_{1,t} - \x_{i',t}'\Sigma_{\tilde\theta_{i'}}\x_{i',t}| &< \gamma, \qquad \text{for all} \; t.
 	\end{align*}
 \end{prop}
 
@@ -633,26 +635,52 @@ A similar recursion to that seen in the proof of Proposition~\ref{prop:signalton
 	&\qquad\leq |\mu_\delta'\x_{1,T^*+1} - \mu_\delta'\x_{i',T^*+1}| 
 	  + \sum_{j=1}^{t - (T^*+1)}\left\vert\mu_{\tilde\phi_{1}}^j(\mu_\delta'\x_{1,T^*+1}) - \mu_{\tilde\phi_{i'}}^j(\mu_\delta'\x_{i',T^*+1})\right\vert \\ 
 	&\qquad\qquad+ |\mu_{\tilde\theta_{1}}'\x_{1,t} - \mu_{\tilde\theta_{i'}}'\x_{i',t}| + \sum_{j=1}^{t - (T^*+1)}\left\vert \mu_{\tilde\phi_{1}}^j(\mu_{\tilde\theta_{1}}'\x_{1,t-j}) - \mu_{\tilde\phi_{i'}}^j(\mu_{\tilde\theta_{i'}}'\x_{i',t-j})\right\vert \\
-	&\qquad\qquad + \mu_\eta\sum_{j=0}^{T^*-1}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*}\right\vert\mu_{\phi}^j + \sum_{j=0}^{T^*-1}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,t-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',t-j}) \right\vert\mu_{\phi}^j \\
+	&\qquad\qquad + \mu_\eta\sum_{j=0}^{T^*-1}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*}\right\vert\mu_{\phi}^j + \sum_{j=0}^{T^*-1}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,T^*-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',T^*-j}) \right\vert\mu_{\phi}^j \\
 	&\qquad\leq |\mu_\delta'\x_{1,T^*+1} - \mu_\delta'\x_{i',T^*+1}| + |\mu_{\tilde\theta_{1}}'\x_{1,t} - \mu_{\tilde\theta_{i'}}'\x_{i',t}| \\
 	&\qquad\qquad + \sum_{j=1}^{t - (T^*+1)}\left[\vert\mu_{\tilde\phi_{1}}^j - \mu_{\tilde\phi_{i'}}^j\vert\max(\mu_\delta'\x_{1,T^*+1},\mu_\delta'\x_{i',T^*+1}) + \left\vert\mu_\delta'\x_{1,T^*+1} -\mu_\delta'\x_{i',T^*+1}\right\vert\mu_{\tilde\phi_{1}}^j\right] \\
 	&\qquad\qquad + \sum_{j=1}^{t - (T^*+1)}\left[\vert\mu_{\tilde\phi_{1}}^j - \mu_{\tilde\phi_{i'}}^j\vert\max(\mu_\delta'\x_{1,t-j},\mu_\delta'\x_{i',t-j}) + \left\vert\mu_{\tilde\theta_{1}}'\x_{1,t-j} - \mu_{\tilde\theta_{i'}}'\x_{i',t-j}\right\vert\mu_{\tilde\phi_{1}}^j\right] \\
-	&\qquad\qquad + \mu_\eta\sum_{j=0}^{T^*-1}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*}\right\vert\mu_{\phi}^j + \sum_{j=0}^{T^*-1}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,t-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',t-j}) \right\vert\mu_{\phi}^j,	
+	&\qquad\qquad + \mu_\eta\sum_{j=0}^{T^*-1}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*}\right\vert\mu_{\phi}^j + \sum_{j=0}^{T^*-1}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,T^*-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',T^*-j}) \right\vert\mu_{\phi}^j,	
 \end{align*}
 where the second inequality follows from applications of Lemma~\ref{lem:absdiff}. Continuing from the second inequality, the conditions of this proposition imply that
 \begin{align*}
   &|\E(y_{1,t} - y_{i',t})|	\\
   &\qquad\leq 2\gamma + \sum_{j=1}^{\infty}\left[\vert\mu_{\tilde\phi_{1}}^j - \mu_{\tilde\phi_{i'}}^j\vert\max(\mu_\delta'\x_{1,T^*+1},\mu_\delta'\x_{i',T^*+1}) + \gamma\mu_{\tilde\phi_{1}}^j\right] \\
   &\qquad\qquad + \sum_{j=1}^{\infty}\left[\vert\mu_{\tilde\phi_{1}}^j - \mu_{\tilde\phi_{i'}}^j\vert\max(\mu_\delta'\x_{1,t-j},\mu_\delta'\x_{i',t-j}) + \gamma\mu_{\tilde\phi_{1}}^j\right] \\
-  &\qquad\qquad + \mu_\eta\sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*}\right\vert\mu_{\phi}^j + \sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,t-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',t-j}) \right\vert\mu_{\phi}^j  \\
+  &\qquad\qquad + \mu_\eta\sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*}\right\vert\mu_{\phi}^j + \sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,T^*-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',T^*-j}) \right\vert\mu_{\phi}^j  \\
   &\qquad\leq 2\gamma + 2\gamma\frac{\max(\mu_\delta)}{(1 - \mu_{\tilde\phi_{1}})(1 - \mu_{\tilde\phi_{i'}})} \\
-  &\qquad\qquad + \mu_\eta\sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*}\right\vert\mu_{\phi}^j + \sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,t-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',t-j}) \right\vert\mu_{\phi}^j \\
-  &\qquad\leq 2\gamma + 2\gamma\frac{\max(\mu_\delta)}{(1 - \mu_{\tilde\phi_{1}})(1 - \mu_{\tilde\phi_{i'}})} + \gamma\frac{\mu_{\eta}}{1 - \mu_{\phi}} + \sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,t-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',t-j}) \right\vert\mu_{\phi}^j \\
+  &\qquad\qquad + \mu_\eta\sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*}\right\vert\mu_{\phi}^j + \sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,T^*-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',T^*-j}) \right\vert\mu_{\phi}^j \\
+  &\qquad\leq 2\gamma + 2\gamma\frac{\max(\mu_\delta)}{(1 - \mu_{\tilde\phi_{1}})(1 - \mu_{\tilde\phi_{i'}})} + \gamma\frac{\mu_{\eta}}{1 - \mu_{\phi}} + \sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,T^*-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',T^*-j}) \right\vert\mu_{\phi}^j \\
   &\qquad\leq 2\gamma + 2\gamma\frac{\max(\mu_\delta)}{(1 - \mu_{\tilde\phi_{1}})(1 - \mu_{\tilde\phi_{i'}})} + \gamma\frac{\mu_{\eta}}{1 - \mu_{\phi}} + \gamma\frac{\max(\mu_\theta) + 1}{1 - \mu_\phi}, 
 \end{align*}  
-where the last inequality follows from Lemma~\ref{lem:absdiff}. We can choose $\gamma$ small enough so that $|\E(y_{1,t} - y_{i',t})| < \varepsilon$.
+where the last inequality follows from Lemma~\ref{lem:absdiff}. We can choose $\gamma$ small enough so that $|\E(y_{1,t} - y_{i',t})| < \varepsilon$. A similar recursion for the variance yields 
+\begin{align*}
+ &\left\vert \Var(y_{1,t}) - \Var(y_{i',t})\right\vert 
+   = \left\vert \x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1} + \x_{1,t}'\Sigma_{\tilde\theta_i}\x_{1,t} -   \x_{i',t}'\Sigma_{\tilde\theta_{i'}}\x_{i',t} \right. \\
+   &\qquad\left. + \mu_{\tilde\phi_1}^2\Var(y_{1,t-1}) - \mu_{\tilde\phi_{i'}}^2\Var(y_{i',t-1}) \right\vert \\
+   &\leq \left\vert \x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1} + \x_{1,t}'\Sigma_{\tilde\theta_i}\x_{1,t} -   \x_{i',t}'\Sigma_{\tilde\theta_{i'}}\x_{i',t}\right\vert \\
+   &\qquad + \left\vert\mu_{\tilde\phi_1}^2\Var(y_{1,t-1}) - \mu_{\tilde\phi_{i'}}^2\Var(y_{i',t-1})\right\vert \\
+   &= \left\vert \x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1} + \x_{1,t}'\Sigma_{\tilde\theta_1}\x_{1,t} -   \x_{i',t}'\Sigma_{\tilde\theta_{i'}}\x_{i',t}\right\vert \\
+   &\qquad + \left\vert \mu_{\tilde\phi_1}^2\left(\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2 + \x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} + \x_{1,t-1}'\Sigma_{\tilde\theta_1}\x_{1,t-1} + \mu_{\tilde\phi_1}^2\Var(y_{1,t-2})\right) \right.\\
+   &\qquad\qquad\left.- \mu_{\tilde\phi_{i'}}^2\left(\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2 + \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1} + \x_{i',t-1}'\Sigma_{\tilde\theta_{i'}}\x_{i',t-1} + \mu_{\tilde\phi_{i'}}^2\Var(y_{i',t-2})\right) \right\vert \\
+   &\leq \left\vert \x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1}\right\vert + \left\vert\x_{1,t}'\Sigma_{\tilde\theta_1}\x_{1,t} -   \x_{i',t}'\Sigma_{\tilde\theta_{i'}}\x_{i',t}\right\vert \\ 
+   &\qquad+ \left\vert \mu_{\tilde\phi_1}^2\left(\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2 + \x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} + \x_{1,t-1}'\Sigma_{\tilde\theta_1}\x_{1,t-1}\right) \right.\\
+   &\qquad\qquad\left.- \mu_{\tilde\phi_{i'}}^2\left(\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2 + \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1} + \x_{i',t-1}'\Sigma_{\tilde\theta_{i'}}\x_{i',t-1}\right) \right\vert \\
+   &\qquad + \left\vert \mu_{\tilde\phi_1}^4\Var(y_{1,t-2}) - \mu_{\tilde\phi_{i'}}^4\Var(y_{i',t-2}) \right\vert \\
+   &\leq \sum_{j=0}^{t - (T^* + 1)}\left[ \left\vert \mu_{\tilde\phi_1}^{2j}\x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \mu_{\tilde\phi_{i'}}^{2j}\x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1}\right\vert \right. \\
+   &\qquad\left. + \left\vert \mu_{\tilde\phi_1}^{2j}\x_{1,t-j}'\Sigma_{\tilde\theta_1}\x_{1,t-j} - \mu_{\tilde\phi_{i'}}^{2j}\x_{i',t-j}'\Sigma_{\tilde\theta_{i'}}\x_{i',t-j} \right\vert + \left\vert\mu_{\tilde\phi_1}^{2j} - \mu_{\tilde\phi_{i'}}^{2j}\right\vert(\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2)\right] \\
+   &\qquad + \left\vert \mu_{\tilde\phi_1}^{2(t - T^*)}\Var(y_{1,t - T^*}) - \mu_{\tilde\phi_{i'}}^{2(t - T^*)}\Var(y_{i',t - T^*}) \right\vert \\
+   &\leq \sum_{j=0}^{t - (T^* + 1)}\left[ \left\vert \mu_{\tilde\phi_1}^{2j} - \mu_{\tilde\phi_{i'}}^{2j}\right\vert \lambda_{\text{max}} +  \left\vert\x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1}\right\vert\mu_{\tilde\phi_1}^{2j} \right. \\
+   &\qquad\left. + \left\vert \mu_{\tilde\phi_1}^{2j} - \mu_{\tilde\phi_{i'}}^{2j}\right\vert \lambda_{\text{max}} +  \left\vert\x_{1,t-j}'\Sigma_{\tilde\theta_1}\x_{1,t-j} - \x_{i',t-j}'\Sigma_{\tilde\theta_{i'}}\x_{i',t-j}\right\vert\mu_{\tilde\phi_1}^{2j} + \left\vert\mu_{\tilde\phi_1}^{2j} - \mu_{\tilde\phi_{i'}}^{2j}\right\vert(\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2)\right] \\
+   &\qquad + \left\vert \mu_{\tilde\phi_1}^{2(t - T^*)}\sum_{j=0}^{T^*-1}\left(\sigma^2_\eta + \sigma^2 + \x_{1,T^*-j}'\Sigma_\theta\x_{1,T^*-j}\right)\mu_{\phi}^{2j} \right. \\ 
+   &\qquad\qquad\left. - \mu_{\tilde\phi_{i'}}^{2(t - T^*)}\sum_{j=0}^{T^*-1}\left(\sigma^2_\eta + \sigma^2 + \x_{i',T^*-j}'\Sigma_\theta\x_{i',T^*-j}\right)\mu_{\phi}^{2j} \right\vert \\
+   &\leq 2\gamma\frac{\lambda_{\max}}{(1 - \mu_{\tilde\phi_1}^{2})(1 - \mu_{\tilde\phi_{i'}}^{2})} + 2\gamma\frac{1}{1 - \mu_{\tilde\phi_1}^2} + \gamma\frac{\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2}{(1 - \mu_{\tilde\phi_1}^{2})(1 - \mu_{\tilde\phi_{i'}}^{2})} \\
+   &\qquad+ (\sigma^2_\eta + \sigma^2)\left\vert \mu_{\tilde\phi_1}^{2(t - T^*)} - \mu_{\tilde\phi_{i'}}^{2(t - T^*)} \right\vert\sum_{j=0}^{T^*-1}\mu_{\phi}^{2j} \\
+   &\qquad+ \sum_{j=0}^{2(t - T^*)}\left\vert \mu_{\tilde\phi_1}^{2(t - T^*)}\x_{1,T^*-j}'\Sigma_\theta\x_{1,T^*-j} - \mu_{\tilde\phi_{i'}}^{2(t - T^*)}\x_{i',T^*-j}'\Sigma_\theta\x_{i',T^*-j} \right\vert \mu_{\phi}^{2j} \\
+   &\leq 2\gamma\frac{\lambda_{\max}}{(1 - \mu_{\tilde\phi_1}^{2})(1 - \mu_{\tilde\phi_{i'}}^{2})} + 2\gamma\frac{1}{1 - \mu_{\tilde\phi_1}^2} + \gamma\frac{\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2}{(1 - \mu_{\tilde\phi_1}^{2})(1 - \mu_{\tilde\phi_{i'}}^{2})} \\ 
+   &\qquad + \gamma\frac{\sigma^2_\eta + \sigma^2}{1 - \mu_\phi^2} + \gamma\frac{\lambda_{\max}}{1 - \mu_\phi^2} + \gamma\frac{1}{1 - \mu_\phi^2}
+   \end{align*}
+We can choose $\gamma$ small enough so that $|\Var(y_{1,t}) - \Var(y_{i',t})| < \varepsilon$.
 \end{proof}
-
 
 
 
