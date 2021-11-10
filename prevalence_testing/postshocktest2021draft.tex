@@ -282,6 +282,24 @@ We see that model \eqref{model-gen} with its accompanying random effects structu
 \subsection{Forecasting and testing for shock persistence}
 \label{forecast}
 
+
+In this section, we motivates the relation between shock persistence testing and forecasting comparison. In time series literature, under a squared error loss $L(\cdot)$, the forecast using the conditional mean is the best point forecast that minimizes the expected loss if the model is specified correctly. That being said, even if the time series does experience a shock but the shock is not persistent, the expected loss of the conditional forecast should converge to the minimum expected loss that any forecast can achieve as sample size increases. On the other hand, if the shock is persistent, the conditional mean forecast that incorporates the shock information should enjoy a smaller expected loss than any conditional mean forecast without such information does. In other words, the problem of testing for shock persistence boils down into comparing the conditional mean forecast that is adjusted by shock information and the one that is unadjusted. To deal with this problem, we applied the forecast comparison procedure of  \cite{quaedvlieg2021multi} to conduct shock persistence testing.
+
+In this paper, we extend the framework of post-shock forecast \citep{lin2021minimizing}, which aggregates outside information by constructing a donor pool, to post-shock persistence testing. The donor pool consists of time series called  ``donors'' that are similar to the time series of interest. As we do not observe the future data, information from donors can aid our decision making and forecasts. Note that what  similarity exactly means here can be vague but the donors and the time series of interest should come from a common population in principle; see more details of how to select donors in \cite{lin2021minimizing}. In this paper, we also proposed several theoretical results with some detailed conditions on the donor pool, which may alleviate the difficulty of dealing with similarity when choosing donors.
+
+
+In this paper, we propose a new way of aggregating information from donor pool to conduct post-shock persistence testing, which is quite different from \cite{lin2021minimizing}. The general structure of this aggregation technique is illustrated as below. Suppose we are given a nonempty donor pool with size $n$ that consist of donors $\mc{T}_2, \ldots, \mc{T}_{n+1}$, whose data, including shock information, are observed. With shock information, we are able to compute unadjusted forecast that does not incorporate shock information and adjusted forecast that does. The forecast comparison using methodology of \cite{quaedvlieg2021multi} for each donor yields a $p$-value, $p_{i+1}$ for $i$th donor in the donor pool. Given $\{p_i \colon i = 2, \ldots, n+1\}$, we propose a methodology for judging whether the shock of the time series of interest is persistent or not. Next, we illustrate the details of our methodology as below.
+
+
+
+For each donor $\mc{T}_i$, $i = 2, \ldots, n+1$, to compare adjusted and unadjusted forecasts,  a model needs to be specified. The model should describe how the shock impacts the time series. Note that the model needs not to be the same for every donor in the donor pool. However, certain conditions need to be imposed as discussed previously.  Given a model for each donor pool, we compute the unadjusted forecast and adjusted forecast. For the sake of generality, unadjusted forecast and adjusted forecast are two different principles of forecast with one ignoring the shock and the other accommodating it.  From our best knowledge, in the literature of post-shock prediction, the reliable post-shock point forecast exists only for $t=T^*+1$ when the shock occurs. The adjusted forecast and unadjusted forecast are the same for $t\leq  T^*$ whereas the adjusted forecast and unadjusted forecast differs by an adjustment that depends on the model chosen. 
+
+\newpage
+
+
+
+
+
 \noindent\textbf{Note}: Our forecast needs to be written with respect to our general model. Specifics can be given when we conduct our numerical examples.
 \vspace*{0.5cm}
 
