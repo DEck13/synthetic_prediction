@@ -183,59 +183,39 @@ A studentized test statistic corresponding to the null hypothesis \eqref{test} i
 where $\bar{d}_{i} = \textbf{w}_i'\textbf{d}_{i}$ and we choose to estimate $\zeta_{i} = \sqrt{\textbf{w}_i'\Omega_{i}\textbf{w}_i}$ directly based on $\textbf{w}_i'\textbf{d}_{i,t}$ using the HAC estimator \citep{giacomini2006tests} where $\Omega_{i} = \text{avar}\left(\sqrt{T}_i(\bar{d}_{i} - \mbf{\mu}_{i})\right)$.
 
 
+We now demonstrate that computing p-values corresponding to the hypothesis test \eqref{test} using the moving block bootstrap (MBB) is a good approximation. Let $l$ be the block length of the MBB where we assume that $T_i = lK_i$. Let $I_1$,\ldots,$I_{K_i}$ be iid random variables uniformly distributed on $\{1,\ldots,T_i-l+1\}$, and define the array 
+$$
+  \tau_{T_i} = \{I_1+1, \ldots, I_1+l, \ldots, I_{K_i}+1, \ldots, I_{K_i}+l\}.
+$$
+The pseudo time-series is therefore $\textbf{d}^b_{i,t} = \textbf{d}^b_{i,\tau_{T_i}}$, with elements $d^{hb}_{i,t}$.
+
+\begin{equation} \label{whb}
+	\left(\hat{\omega}_{i}^{hb}\right)^2 = \frac{1}{K_i}\sum_{k=1}^{K_i}\left[\frac{1}{l}\left(\sum_{t=1}^l d^{hb}_{i,(k-1)l + t} - \bar{d}^{hb}_{i}\right)^2\right],
+\end{equation}
+where $\bar{d}^{hb}_{i} = \frac{1}{T_i}\sum_{t=1}^{T_i} d^{hb}_{i,t}$. From the conditions of Theorem 1 and Corollary 1 in \cite{quaedvlieg2021multi}  we have 
+\begin{equation} \label{boott}
+  \sup_{z\in\R}\Big\vert \Prob^b\left[\sqrt{T_i}\frac{\textbf{w}_i'\bar{\dbf}^b_{i} - \textbf{w}_i'\bar{\dbf}_{i} }{\hat{\zeta}^b_{i}}\right] 
+  - \Prob\left[\sqrt{T_i}\frac{\textbf{w}_i'\bar{\dbf}_{i} -  \textbf{w}_i'\mbf{\mu}_{i}}{\hat{\zeta}^b_{i}}\right]
+  \Big\vert \overset{P}{\longrightarrow} 0,
+\end{equation}
+as $T_i\to\infty$ where $l=l_{T_i}=o(\sqrt{T_i})$. We can compute a bootstrap $p$-value as 
+$$
+  \hat{p}_i^B = \frac{1}{B}\sum_{b=1}^B 1\{t_{i,\text{aSPA}} < t^b_{i,\text{aSPA}}\}. 
+$$
+The results \eqref{boott} implies that 
+\begin{equation} \label{bootp}
+  |\hat p_i^B - \hat p_i| \overset{P}{\to} 0, \quad \text{as} \quad T_i,B \to \infty, 
+\end{equation}
+    where $\hat p_i = \Prob(t_{i,\alpha} < t_{i,\text{aSPA}})$ and $t_{i,\alpha}$ is a critical value corresponding to the distribution of $t_{i,\text{aSPA}}$. Therefore bootstrap inference in the donor pool is a good approximation. %We now consider how bootstrap inference in the donor pool is used to test whether a shock is prevalent or transient for the time series under study.
+
+
 
 
 
 \subsection{Model setup}
 \label{modelsetup}
 
-\noindent\textbf{Note}: We need to update the modeling setup. We should present a general modeling class which includes both the decay model and the permanent shift model.
-
-\vspace{0.5cm}\noindent\textbf{Possible modeling approach}
-
-\vspace{0.5cm} We now describe the assumed autoregressive models with random effects for which post-shock aggregated estimators are provided. The model $\mc{M}$ is defined as
-\begin{align}
-\mc{M} \colon \begin{array}{l}
-  y_{i,t} =\eta_i + \sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j} + \alpha_i D_{i,t}f(t) + \varepsilon_{i,t},\\[.2cm]
-  %\; f(\mc{F}_{i,t-1},\x_{i,t-1},\alpha_i) =  \\[.2cm] %+ \sum_{j=1}^{q_3}\t\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_4-1}\t\theta_{i,j+1}'\mbf{x}_{i,t-j}, \\[.2cm]
-  \; \alpha_i = \mu_{\alpha} + \delta_i'\mbf{x}_{i, T_i^*+1} + \t{\varepsilon}_{i},
-  %\sum_{j=1}^{q_3}\delta_{i,j}'\mbf{x}_{i, T_i^*-j+1}+ \t{\varepsilon}_{i}, 
-\end{array}\label{model}
-\end{align}
-where $D_{i,t} = I(t \geq T_i^* + 1)$, $I(\cdot)$ is the indicator function, $\x_{i,t} \in \R^{p}$ are fixed with $p \geq 1$, $f(t)$ is a bounded continuous function which does not cross zero and $\lim_{t\to\infty}g(t) = a \in \R$. Let 
-$\mathbf{\phi}_i = (\phi_{i,1},\ldots,\phi_{i,q_1})'$, 
-$\mathbf{\theta}_i = (\theta_{i,1},\ldots,\theta_{i,q_2})'$, 
-%$\tilde{\mathbf{\phi}}_i = (\t\phi_{i,1},\ldots,\t\phi_{i,q_3})'$, 
-%$\tilde{\mathbf{\theta}}_i = (\t\theta_{i,1},\ldots,\t\theta_{i,q_4})'$, 
-$\mathbf{\delta}_i = (\delta_{i,1},\ldots,\delta_{i,q_3})'$, 
-and suppose that the regression coefficients in \eqref{model} have the following random effects structure:
-\begin{align*}
-  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = \mu_\eta, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}, \\
-  \mathbf{\phi}_i &\simiid \mc{F}_{\mathbf{\phi}} \text{ where } |\phi_{i,j}| < 1, \\
-  \mathbf{\theta}_i &\simiid \mc{F}_{\mathbf{\theta}} \text{ with }  \; \mrm{E}_{\mc{F}_{\mathbf{\theta}}}(\theta_i) = \mu_{\mathbf{\theta}}, \mrm{Var}_{\mc{F}_{\mathbf{\theta}}}(\mathbf{\theta}_i)  = \Sigma^2_{\mathbf{\theta}}, \\
-  %\tilde{\mathbf{\phi}}_i &\simiid \mc{F}_{\tilde{\mathbf{\phi}}} \text{ where } |\t\phi_{i,j}| < 1, \\
-  %\tilde{\mathbf{\theta}}_i &\simiid \mc{F}_{\tilde{\mathbf{\theta}}} \text{ with }  \; \mrm{E}_{\mc{F}_{\tilde{\mathbf{\theta}}}}(\theta_i) = \mu_{\tilde{\mathbf{\theta}}}, \mrm{Var}_{\mc{F}_{\tilde{\mathbf{\theta}}}}(\tilde{\mathbf{\theta}}_i)  = \Sigma^2_{\tilde{\mathbf{\theta}}}, \\  
-  \mathbf{\delta}_i &\simiid  \mc{F}_{\mathbf{\delta}} \text{ with } \mrm{E}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\mu_{\mathbf{\delta}}, \mrm{Var}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\Sigma_{\mathbf{\delta}}, \\
-\varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i,  \\
-\t{\varepsilon}_{i} &\simiid  \mc{F}_{\t{\varepsilon}} \text{ with }\mrm{E}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=0, \mrm{Var}_{\mc{F}_{\t{\varepsilon}}}(\t{\varepsilon}_{i})=\sigma^2_{\alpha}, \\
-&\eta_i \indep \mathbf{\phi}_i \indep \mathbf{\theta}_i \indep 
-%\tilde{\mathbf{\phi}}_i \indep \tilde{\mathbf{\theta}}_i \indep 
-\mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i,t}.
-\end{align*}
-The model \eqref{model} with the above random effects structure is a generalization of both model formulations in \cite{lin2021minimizing}. \textbf{Need to carefully show}. In this formulation $f(t)$ represents either a permanent or transient structural change to the time series that results from the shock.
-
-We further define the parameter sets
-\begin{align}
-\begin{array}{l}
- \;\, \Theta = \{(\eta_i, \mathbf{\phi}_i, \mathbf{\theta}_i, \mathbf{\delta}_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1})\colon    t= 1, \ldots, T_i, i = 2, \ldots, n +1\} \\
-   \Theta_1 = \{(\eta_i, \mathbf{\phi}_i, \mathbf{\theta}_i, \mathbf{\delta}_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1})\colon  t= 1, \ldots, T_i, i = 1\}
-\end{array}\label{parameter} 
-\end{align}
-
-
-\vspace*{0.5cm}\noindent\textbf{Alternative model formulation} 
-
-\vspace*{0.5cm} We now describe the assumed autoregressive models with random effects for which post-shock aggregated estimators are provided. The model $\mc{M}$ is defined as
+We now describe the assumed autoregressive models with random effects for which post-shock aggregated estimators are provided. The model $\mc{M}$ is defined as
 \begin{align}
 \mc{M} \colon \begin{array}{l}
   y_{i,t} = \left(\eta_i + \sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j}\right)(1 - D_{i,t}) + f(\mathcal{F}_{i,t},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
@@ -244,7 +224,7 @@ We further define the parameter sets
   %\sum_{j=1}^{q_3}\delta_{i,j}'\mbf{x}_{i, T_i^*-j+1}+ \t{\varepsilon}_{i}, 
 \end{array}\label{model-gen}
 \end{align}
-where $g(t)$ is a known or estimable bounded continuous function which does not cross zero and $\lim_{t\to\infty}g(t) = a \in \R$. Let 
+where $D_{i,t} = I(t \geq T_i^* + 1)$, $I(\cdot)$ is the indicator function, $\x_{i,t} \in \R^{p}$ are fixed with $p \geq 1$. Let 
 $\mathbf{\phi}_i = (\phi_{i,1},\ldots,\phi_{i,q_1})'$, 
 $\mathbf{\theta}_i = (\theta_{i,1},\ldots,\theta_{i,q_2})'$, 
 $\tilde{\mathbf{\phi}}_i = (\t\phi_{i,1},\ldots,\t\phi_{i,q_{1}})'$, 
@@ -266,14 +246,22 @@ and suppose that the regression coefficients in \eqref{model-gen} have the follo
 \tilde{\mathbf{\phi}}_{i,j} \indep \lambda_{i,j} \indep \mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i}, 
 \end{split}
 \end{equation}
-%where the distributions $\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1})$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}_{i'}}(\x_{i,T_i^*+1})$ are such that $\mrm{E}(\mathcal{F}_{\tilde{\mathbf{\phi}}_i}(\x_{i,T_i^*+1})) - \mrm{E}(\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i',T_i^*+1})) \to 0$ as $\|\x_{i,T_i^*+1} - \x_{i',T_i^*+1}\| \to 0$.
-%the distribution $\mathcal{F}_k(\x_{i,T_i^*})$ is a discrete distribution conditional on $\x_{i,T_i^*}$, $\theta_{i,j} = 0$ for any $q_1 < j \leq \t q_{i,1}$, and $\phi_{i,j} = 0$ for any $q_2 < j \leq \t q_{i,2}$. 
-%The model \eqref{model-gen} with the above random effects structure is a generalization of both model formulations in \cite{lin2021minimizing}. \textbf{Need to carefully show}. Note that for model \eqref{model-gen} to be of use for post-shock forecasting, the variation in $\mathcal{F}_{\tilde{\mathbf{\phi}}}$ needs to be small relative to the signal captured in $\x_{i,T_i^*}$, and $\sigma^2_\alpha$ and $\Sigma^2_\gamma$ needs to be small relative to $\mu_\alpha + \delta_i'\x_{i,T_i^*}$ and $\beta_o + \beta\mbf{x}_{i,T_i^*+1}$ respectively. 
 where the distributions $\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1})$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}_{i'}}(\x_{i,T_i^*+1})$ satisfy $\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1}) \overset{d}{=} \mathcal{F}_{\tilde{\mathbf{\phi}}_{j}}(\x_{i',T_i^*+1})$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}_j}(\x_{i,T_i^*+1}) \overset{d}{=} \mathcal{F}_{\tilde{\mathbf{\theta}}_{j}}(\x_{i',T_i^*+1})$ when $\x_{i,T_i^*+1} = \x_{i',T_i^*+1}$. Note that for model \eqref{model-gen} to be of use for post-shock forecasting, the variation in $\mathcal{F}_{\tilde{\mathbf{\phi}}}$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}}$ must be small relative to the signal strength.
 
 
-We see that model \eqref{model-gen} with its accompanying random effects structure is flexible enough to capture changing structural dynamics as well as a mean-shift. These dynamic changes depend heavily on the value of $\mbf{x}_{i,T_i^*+1}$, the covariates recorded right before the first post-shock response is observed. Under this setup any two series $i,j$ with small $\|\mbf{x}_{i,T_i^*+1} - \mbf{x}_{j,T_i^*+1}\|_2$ are expected to experience similar structural changes. This makes distance based weighting an attractive avenue.
+We see that model \eqref{model-gen} with its accompanying random effects structure \eqref{random-effects} is flexible enough to capture changing structural dynamics as well as a mean-shift, and is a generalization of the model in \cite{lin2021minimizing}. Note that the flexibility of allowing for changing structural dynamics is useful for fitting purposes, but it does not necessarily reflect the state of the world in the post-shock setting. It is of course possible that there is no shock or a simple mean-shift. 
 
+The post-shock dynamic changes depend heavily on the value of $\mbf{x}_{i,T_i^*+1}$, the covariates recorded right before the first post-shock response is observed. Under this setup any two series $i,j$ with small $\|\mbf{x}_{i,T_i^*+1} - \mbf{x}_{j,T_i^*+1}\|_2$ are expected to experience similar structural changes. This makes distance based weighting an attractive avenue.
+
+
+
+%We further define the parameter sets
+%\begin{align}
+%\begin{array}{l}
+% \;\, \Theta = \{(\eta_i, \mathbf{\phi}_i, \mathbf{\theta}_i, \mathbf{\delta}_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1})\colon    t= 1, \ldots, T_i, i = 2, \ldots, n +1\} \\
+%   \Theta_1 = \{(\eta_i, \mathbf{\phi}_i, \mathbf{\theta}_i, \mathbf{\delta}_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1})\colon  t= 1, \ldots, T_i, i = 1\}
+%\end{array}\label{parameter} 
+%\end{align}
 
 
 
@@ -300,12 +288,7 @@ For each donor $\mc{T}_i$, $i = 2, \ldots, n+1$, to compare adjusted and unadjus
  
  Even if the data contain shock information for each donor, it is impossible to compute the adjusted conditional mean forecast based on $\mathcal{F}_{i, t-h}$ when $t -h \leq T_i^*$, i.e., we only have training data that do no have any shock information. Note that this is not a big problem when $t-h \geq T_i^* +1$ because  $\mathcal{F}_{i, t-h}$ starts to incorporate shock information. In the literature, \cite{lin2021minimizing} utilizes donor pool information to provide an unbiased estimator of the shock effect such that the adjusted  conditional mean forecast is the unadjusted one plus the shock effect estimate. However, the unbiased estimation comes with the cost of assuming certain models (in terms of first and second moments) for the shock effect across the donor pool and the method only works for additive shock effect model.  To our best knowledge, there  is no other available methods that can accommodate the case when the shock model is nonlinear. However, even if the model is misspecified, using additive shock effect model to approximate the scalar shock effect that occurs at $t=T_i^*+1$ may still help as opposed to doing nothing.
 
-
-\newpage
-
-
-
-
+\vspace*{0.5cm}
 
 \noindent\textbf{Note}: Our forecast needs to be written with respect to our general model. Specifics can be given when we conduct our numerical examples.
 \vspace*{0.5cm}
@@ -318,7 +301,12 @@ In our post-shock setting we consider the following candidate forecasts:
 We want to determine which forecast is appropriate over a horizon while the methods in \cite{lin2021minimizing} were only appropriate in the nowcasting setting in which prediction was only focused on the response immediately following the shock.
 
 
-\vspace*{0.5cm}\noindent\textbf{Note}: We need to explain what the voting method is, possibly in algorithmic format. Also note that the p-values that we obtain are computed using a bootstrap procedure. Perhaps an additional proposition that states the performance of these bootstrap p-values would further guarantee reliability. 
+
+
+
+\newpage
+
+\noindent\textbf{Note}: We need to explain what the voting method is, possibly in algorithmic format. Also note that the p-values that we obtain are computed using a bootstrap procedure. Perhaps an additional proposition that states the performance of these bootstrap p-values would further guarantee reliability. 
 
 \begin{prop}
 
@@ -450,7 +438,7 @@ That is, the expected misclassification rate of voting converges to
     which proves the result by sandwich theorem.
 \end{proof}
 
-\newpage
+
 \begin{corollary}
 \label{coro1}Let $(w_2, \ldots, w_{n+1})$ be weights such that $w_i \in [0,1]$ and $\sum_{i=2}^{n+1} w_i=1$. Define
 \begin{align*}
@@ -502,55 +490,11 @@ where $\kappa_i =  \P(p_i \leq \alpha)\in [0,1]$ for $i \in \mc{I}_n$, $\alpha$ 
 
 
 
-\vspace*{0.5cm}\noindent\textbf{Possible theoretical approach}: \\
 
 
-Let $l$ be the block length of the moving block bootstrap (MBB) where we assume that $T_i = lK_i$. Let $I_1$,\ldots,$I_{K_i}$ be iid random variables uniformly distributed on $\{1,\ldots,T_i-l+1\}$, and define the array 
-$$
-  \tau_{T_i} = \{I_1+1, \ldots, I_1+l, \ldots, I_{K_i}+1, \ldots, I_{K_i}+l\}.
-$$
-The pseudo time-series is therefore $\textbf{d}^b_{i,t} = \textbf{d}^b_{i,\tau_{T_i}}$, with elements $d^{hb}_{i,t}$.
+\newpage
 
-\begin{equation} \label{whb}
-	\left(\hat{\omega}_{i}^{hb}\right)^2 = \frac{1}{K_i}\sum_{k=1}^{K_i}\left[\frac{1}{l}\left(\sum_{t=1}^l d^{hb}_{i,(k-1)l + t} - \bar{d}^{hb}_{i}\right)^2\right],
-\end{equation}
-where $\bar{d}^{hb}_{i} = \frac{1}{T_i}\sum_{t=1}^{T_i} d^{hb}_{i,t}$. From the conditions of Theorem 1 and Corollary 1 in \cite{quaedvlieg2021multi}  we have 
-\begin{equation} \label{boott}
-  \sup_{z\in\R}\Big\vert \Prob^b\left[\sqrt{T_i}\frac{\textbf{w}_i'\bar{\dbf}^b_{i} - \textbf{w}_i'\bar{\dbf}_{i} }{\hat{\zeta}^b_{i}}\right] 
-  - \Prob\left[\sqrt{T_i}\frac{\textbf{w}_i'\bar{\dbf}_{i} -  \textbf{w}_i'\mbf{\mu}_{i}}{\hat{\zeta}^b_{i}}\right]
-  \Big\vert \overset{P}{\longrightarrow} 0,
-\end{equation}
-as $T_i\to\infty$ where $l=l_{T_i}=o(\sqrt{T_i})$. We can compute a bootstrap $p$-value as 
-$$
-  \hat{p}_i^B = \frac{1}{B}\sum_{b=1}^B 1\{t_{i,\text{aSPA}} < t^b_{i,\text{aSPA}}\}. 
-$$
-The results \eqref{boott} implies that 
-\begin{equation} \label{bootp}
-  |\hat p_i^B - \hat p_i| \overset{P}{\to} 0, \quad \text{as} \quad T_i,B \to \infty, 
-\end{equation}
-    where $\hat p_i = \Prob(t_{i,\alpha} < t_{i,\text{aSPA}})$ and $t_{i,\alpha}$ is a critical value corresponding to the distribution of $t_{i,\text{aSPA}}$. Therefore bootstrap inference in the donor pool is a good approximation. %We now consider how bootstrap inference in the donor pool is used to test whether a shock is prevalent or transient for the time series under study.
-
-
-\vspace*{0.5cm}\noindent\textbf{This needs some work (ignore for now)} Now consider a case where there exists a $2 \leq i' < n + 1$ where $\x_{1,t} = \x_{i',t}$. Now suppose for simplicity that $T^*_{j'} = T^*_1$ and that $T_{i'} = T_1$ where $T_1 > T^*_1 + q_1 + q_2 + 2$. This assumes that we have data for the first time series beyond the shock point. We will show that when there is a covariate clone of the time series under study, then estimation in this series will approximate estimation in the time series under study provided that the underlying variability is very small relative to the signal. To see this, consider $t > T^*_1$, where 
-\begin{align*}
-y_{1,t} &= \eta_1 + \mu_\alpha + \delta_1'\x_{1,T^*_1+1} + \sum_{j=1}^{q_1} (\phi_{1,j} + \tilde{\phi}_{1,j})y_{1,t-j} + \sum_{j=0}^{q_2-1}(\theta_{1,j+1} + \tilde{\theta}_{1,j+1})'\x_{1,t-j} + \tilde{\varepsilon}_{1} + \varepsilon_{1,t}, \\
-y_{i',t} &= \eta_{i'} + \mu_\alpha + \delta_{i'}'\x_{1,T^*_1+1} + \sum_{j=1}^{q_1} (\phi_{i',j} + \tilde{\phi}_{i',j})y_{i',t-j} + \sum_{j=0}^{q_2-1}(\theta_{i',j+1} + \tilde{\theta}_{i',j+1})'\x_{1,t-j} + \tilde{\varepsilon}_{i'} + \varepsilon_{i',t}, \\
-\hat y_{1,t} &= \hat \eta_1 + \hat{\alpha}_1(\x_{1,T^*_1+1}) + \sum_{j=1}^{q_1} (\hat{\phi}_{1,j} + \hat{\tilde{\phi}}_{1,j})\hat y_{1,t-j} + \sum_{j=0}^{q_2-1}(\hat\theta_{1,j+1} + \hat{\tilde{\theta}}_{1,j+1})'\hat\x_{1,t-j}, \\
-\hat y_{i',t} &= \hat\eta_{i'} + \hat{\alpha}_{i'}(\x_{1,T^*_1+1}) + \sum_{j=1}^{q_1} (\hat{\phi}_{i',j} + \hat{\tilde{\phi}}_{i',j})\hat y_{i',t-j} + \sum_{j=0}^{q_2-1}(\hat\theta_{i',j+1} + \hat{\tilde{\theta}}_{i',j+1})'\hat\x_{1,t-j}, 
-\end{align*}
-where $\alpha_j(\x) = \mu_\alpha + \delta_j'\x$, and we have 
-\begin{align*}
-  |y_{1,t} - \hat y_{1,t}| &= \Bigg\vert (\eta_1 - \hat\eta_1) + (\alpha_1 - \hat{\alpha}_1(\x_{1,T^*_1+1})) + \sum_{j=1}^{q_1}\left[(\phi_{1,j} + \tilde{\phi}_{1,j})y_{1,t-j} - (\hat\phi_{1,j} + \hat{\tilde{\phi}}_{1,j})\hat{y}_{1,t-j}\right] \\ 
-  &\qquad+ \sum_{j=0}^{q_2-1}\left[(\theta_{1,j+1} + \tilde{\theta}_{1,j+1})'\x_{1,t-j} - (\hat\theta_{1,j+1} + \hat{\tilde{\theta}}_{1,j+1})'\hat\x_{1,t-j}\right] + \varepsilon_{1,t} \Bigg\vert \\
-  |y_{i',t} - \hat y_{i',t}| &= \Bigg\vert (\eta_{i'} - \hat\eta_{i'}) + (\alpha_{i'} - \hat{\alpha}_{i'}(\x_{1,T^*_1+1})) + \sum_{j=1}^{q_1}\left[(\phi_{i',j} + \tilde{\phi}_{i',j})y_{i',t-j} - (\hat\phi_{i',j} + \hat{\tilde{\phi}}_{i',j})\hat{y}_{i',t-j}\right] \\ 
-  &\qquad+ \sum_{j=0}^{q_2-1}\left[(\theta_{i',j+1} + \tilde{\theta}_{i',j+1})'\x_{1,t-j} - (\hat\theta_{i',j+1} + \hat{\tilde{\theta}}_{i',j+1})'\hat\x_{1,t-j}\right] + \varepsilon_{i',t} \Bigg\vert.
-\end{align*}
-\textbf{Needs finishing, but the argument is simple: estimation uncertainty declines as error variance decreases. And differences in the random effects decrease as variability decreases.} \vspace*{0.5cm}
-
-
-
-
-\vspace*{0.5cm} We now demonstrate an idealized setting in which the above logic holds. We first present some intermediary technical results and definitions. Let $\lambda_{\text{max},\theta_k}$, $\lambda_{\text{max},\theta_\delta}$, $\lambda_{\text{max},\gamma}$ respectively be the largest eigenvalues of $\Sigma_{\theta_k}$, $\Sigma_{\delta}$, and $\Sigma_{\gamma}$ for $k = 1,\ldots,q_2$. Define  
+\vspace*{0.5cm} We now demonstrate an idealized theoretical setting for which our post-shock testing methodology involving a distance based weighted average of p-values works well. The idea is that inferences based on distance based weighted nearly recovers the time series under study when there exists a time series in the donor pool, indexed by $i'$, such that $\x_{1,t} \approx \x_{i',t}$ and the signal strength in our modeling setup \eqref{model-gen} and \eqref{random-effects} is large relative to variation. We first present some intermediary technical results and definitions. Let $\lambda_{\text{max},\theta_k}$, $\lambda_{\text{max},\theta_\delta}$, $\lambda_{\text{max},\gamma}$ respectively be the largest eigenvalues of $\Sigma_{\theta_k}$, $\Sigma_{\delta}$, and $\Sigma_{\gamma}$ for $k = 1,\ldots,q_2$. Define  
 \begin{align*}
   \mu_{\min} &= \min\left(\mu_\eta,\mu_{\phi_j},\mu_{\tilde\phi_j},\min(\mu_\delta),\min(\mu_{\theta_k}),\min(\mu_{\tilde\theta_k}); j = 1,\ldots,q_1, k = 1,\ldots,q_2\right), \\
   \mu_{\max} &= \max\left(\mu_\eta,\mu_{\phi_j},\mu_{\tilde\phi_j},\max(\mu_\delta),\max(\mu_{\theta_k}),\max(\mu_{\tilde\theta_k}); j = 1,\ldots,q_1, k = 1,\ldots,q_2\right), \\
@@ -578,7 +522,7 @@ where $\alpha_j(\x) = \mu_\alpha + \delta_j'\x$, and we have
 \textbf{Remarks}:
 \begin{enumerate}
 	\item The conditions \eqref{condition-1} govern the signal strength necessary in the expected behavior of the underlying random effects structure relative to variability necessary for the overall signal to noise ratio for the overall time series to be lower bounded by some positive value $C$.
-	\item The conditions of Proposition~\ref{prop:signaltonoise} state that there is an increasing trend in $y_{i,t}$ for all $i$.
+	\item The conditions of Proposition~\ref{prop:signaltonoise} state that there is an increasing trend in $y_{i,t}$ for all $i$. This can be relaxed, but a fully general argument is cumbersome.
 \end{enumerate}
 
 
@@ -641,7 +585,7 @@ The conclusion follows by noting that $c_1 - c_2 = |a_1 - a_2|$ and $d_1 - d_2 =
 \begin{prop}
 	Let $\bf{y}_{i,t}$, $i = 1,\ldots,n_i$, $t = 1,\ldots, T$ be a collection of independent time series. Let each time series $\bf{y}_{i,t}$ be generated by model \eqref{model-gen} with accompanying random effects structure \eqref{random-effects}, where $y_{i,t}$ is a scalar response $\x_{i,t} \in \R^p$ is a fixed vector of covariates. Suppose that there is a common shock time $p + 2 < T^* < T - (p+2)$ where $q_1 = q_2 = 1$, $\|\x_{i,t}\| = 1$, each entry of $\x_{i,t}$ is non-negative, $\mu_{\min} > 0$, and $y_{i,0} = 0$. Let $i' \geq 2$ be an index. Then, for any $\epsilon > 0$ we can choose an $\gamma > 0$ such that 
 	$$
-	  \left\vert\E(y_{i,t} - y_{i',t})\right\vert \leq \epsilon,
+	  \left\vert\E(y_{i,t} - y_{i',t})\right\vert \leq \epsilon, \qquad |\Var(y_{1,t}) - \Var(y_{i',t})| < \varepsilon,
 	$$
 	provided that 
 	\begin{align*}
@@ -709,7 +653,42 @@ where the last inequality follows from Lemma~\ref{lem:absdiff}. We can choose $\
 We can choose $\gamma$ small enough so that $|\Var(y_{1,t}) - \Var(y_{i',t})| < \varepsilon$.
 \end{proof}
 
+\begin{lem}[Technical Lemma 2] \label{lem:diffsig2noise}
+Let $a_j, b_j \in \R$, $j = 1,2$. Suppose that $b_j > b > 0$ for $j = 1,2$. Then for any $\varepsilon > 0$ we have 
+$$
+  \left\vert\frac{a_1}{b_1} - \frac{a_2}{b_2}\right\vert \leq \varepsilon,
+$$
+provided that $|a_1-a_2|$,$|b_1-b_2| < \delta$ for some chosen $\delta > 0$.
+\end{lem}
 
+\begin{proof}
+\begin{align*}
+  \left\vert\frac{a_1}{b_1} - \frac{a_2}{b_2}\right\vert 
+    &= \left\vert\frac{a_1b_2 - a_2b_1}{b_1b_2}\right\vert 
+    = \left\vert\frac{(a_1 - a_2 + a_2)(b_2 - b_1 + b_1) - a_2b_1}{b_1b_2}\right\vert \\
+    &= \left\vert \frac{a_1(b_2 - b_1) + a_2b_1 + (a_1 - a_2)b_1 - a_2b_1}{b_1b_2} \right\vert \leq \frac{2\delta}{b^2} \\
+    &\leq \frac{|a_1|\delta + |b_1|\delta}{b^2} \leq \varepsilon, 
+\end{align*}
+where $\delta \leq \varepsilon b^2/(|a_1| + |b_1|)$.
+\end{proof}
+
+
+
+\noindent\textbf{This needs some work (ignore for now)} Now consider a case where there exists a $2 \leq i' < n + 1$ where $\x_{1,t} = \x_{i',t}$. Now suppose for simplicity that $T^*_{j'} = T^*_1$ and that $T_{i'} = T_1$ where $T_1 > T^*_1 + q_1 + q_2 + 2$. This assumes that we have data for the first time series beyond the shock point. We will show that when there is a covariate clone of the time series under study, then estimation in this series will approximate estimation in the time series under study provided that the underlying variability is very small relative to the signal. To see this, consider $t > T^*_1$, where 
+\begin{align*}
+y_{1,t} &= \eta_1 + \mu_\alpha + \delta_1'\x_{1,T^*_1+1} + \sum_{j=1}^{q_1} (\phi_{1,j} + \tilde{\phi}_{1,j})y_{1,t-j} + \sum_{j=0}^{q_2-1}(\theta_{1,j+1} + \tilde{\theta}_{1,j+1})'\x_{1,t-j} + \tilde{\varepsilon}_{1} + \varepsilon_{1,t}, \\
+y_{i',t} &= \eta_{i'} + \mu_\alpha + \delta_{i'}'\x_{1,T^*_1+1} + \sum_{j=1}^{q_1} (\phi_{i',j} + \tilde{\phi}_{i',j})y_{i',t-j} + \sum_{j=0}^{q_2-1}(\theta_{i',j+1} + \tilde{\theta}_{i',j+1})'\x_{1,t-j} + \tilde{\varepsilon}_{i'} + \varepsilon_{i',t}, \\
+\hat y_{1,t} &= \hat \eta_1 + \hat{\alpha}_1(\x_{1,T^*_1+1}) + \sum_{j=1}^{q_1} (\hat{\phi}_{1,j} + \hat{\tilde{\phi}}_{1,j})\hat y_{1,t-j} + \sum_{j=0}^{q_2-1}(\hat\theta_{1,j+1} + \hat{\tilde{\theta}}_{1,j+1})'\hat\x_{1,t-j}, \\
+\hat y_{i',t} &= \hat\eta_{i'} + \hat{\alpha}_{i'}(\x_{1,T^*_1+1}) + \sum_{j=1}^{q_1} (\hat{\phi}_{i',j} + \hat{\tilde{\phi}}_{i',j})\hat y_{i',t-j} + \sum_{j=0}^{q_2-1}(\hat\theta_{i',j+1} + \hat{\tilde{\theta}}_{i',j+1})'\hat\x_{1,t-j}, 
+\end{align*}
+where $\alpha_j(\x) = \mu_\alpha + \delta_j'\x$, and we have 
+\begin{align*}
+  |y_{1,t} - \hat y_{1,t}| &= \Bigg\vert (\eta_1 - \hat\eta_1) + (\alpha_1 - \hat{\alpha}_1(\x_{1,T^*_1+1})) + \sum_{j=1}^{q_1}\left[(\phi_{1,j} + \tilde{\phi}_{1,j})y_{1,t-j} - (\hat\phi_{1,j} + \hat{\tilde{\phi}}_{1,j})\hat{y}_{1,t-j}\right] \\ 
+  &\qquad+ \sum_{j=0}^{q_2-1}\left[(\theta_{1,j+1} + \tilde{\theta}_{1,j+1})'\x_{1,t-j} - (\hat\theta_{1,j+1} + \hat{\tilde{\theta}}_{1,j+1})'\hat\x_{1,t-j}\right] + \varepsilon_{1,t} \Bigg\vert \\
+  |y_{i',t} - \hat y_{i',t}| &= \Bigg\vert (\eta_{i'} - \hat\eta_{i'}) + (\alpha_{i'} - \hat{\alpha}_{i'}(\x_{1,T^*_1+1})) + \sum_{j=1}^{q_1}\left[(\phi_{i',j} + \tilde{\phi}_{i',j})y_{i',t-j} - (\hat\phi_{i',j} + \hat{\tilde{\phi}}_{i',j})\hat{y}_{i',t-j}\right] \\ 
+  &\qquad+ \sum_{j=0}^{q_2-1}\left[(\theta_{i',j+1} + \tilde{\theta}_{i',j+1})'\x_{1,t-j} - (\hat\theta_{i',j+1} + \hat{\tilde{\theta}}_{i',j+1})'\hat\x_{1,t-j}\right] + \varepsilon_{i',t} \Bigg\vert.
+\end{align*}
+\textbf{Needs finishing, but the argument is simple: estimation uncertainty declines as error variance decreases. And differences in the random effects decrease as variability decreases.} \vspace*{0.5cm}
 
 
 
@@ -766,10 +745,6 @@ We can choose $\gamma$ small enough so that $|\Var(y_{1,t}) - \Var(y_{i',t})| < 
 %		&\qquad + \sum_{j=0}^{T^* - 1}\left[\mu_\eta(\mu_{\tilde\phi_{i}}^{t - T^*} + \mu_{\tilde\phi_{i'}}^{t - T^*})\mu_{\phi}^j + \left(\mu_{\tilde\phi_{i}}^{t - T^*}(\mu_{\theta}'\x_{i,t-j}) + \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i,t-j})\right)\mu_{\phi}^j\right].
 %\end{align*}
 %\end{proof}
-	
-	
-	
-
 
 
 
@@ -796,7 +771,6 @@ We can choose $\gamma$ small enough so that $|\Var(y_{1,t}) - \Var(y_{i',t})| < 
 %    \frac{\|\mu_{\tilde\phi}\|}{\|\Sigma_{\tilde{\phi}}\|}             
 %  \right\}.
 %$$
-
 
 
 
