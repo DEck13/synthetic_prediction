@@ -1,0 +1,439 @@
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{xifthen} % Allows us to put in optional arguments to questions
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{manfnt}
+\usepackage{ifthen}
+\usepackage{listings}
+\usepackage{nicefrac,mathtools}
+\usepackage[top=2.3cm,bottom=2.3cm,right=2.4cm,left=2.4cm]{geometry}
+\usepackage{color}   %May be necessary if you want to color links
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{showexpl}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{chngcntr}
+\usepackage{xparse}
+\usepackage{etoolbox}
+\usepackage{blkarray}
+\usepackage{fancyvrb}
+\usepackage{cprotect}
+\hypersetup{
+    colorlinks=blue, %set true if you want colored links
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=blue,  %choose some color if you want links to stand out
+}
+% control space before and after verbatim
+\makeatletter
+\preto{\@verbatim}{\topsep=0pt \partopsep=-2pt }
+\makeatother
+%%% New version of \caption puts things in smaller type, single-spaced 
+%%% and indents them to set them off more from the text.
+\makeatletter
+\long\def\@makecaption#1#2{
+  \vskip 0.8ex
+  \setbox\@tempboxa\hbox{\small {\bf #1:} #2}
+  \parindent 1.5em  %% How can we use the global value of this???
+  \dimen0=\hsize
+  \advance\dimen0 by -3em
+  \ifdim \wd\@tempboxa >\dimen0
+  \hbox to \hsize{
+    \parindent 0em
+    \hfil 
+    \parbox{\dimen0}{\def\baselinestretch{0.96}\small
+      {\bf #1.} #2
+      %%\unhbox\@tempboxa
+    } 
+    \hfil}
+  \else \hbox to \hsize{\hfil \box\@tempboxa \hfil}
+  \fi
+}
+\makeatother
+
+% code
+\NewDocumentCommand{\codeword}{v}{%
+\texttt{\textcolor{blue}{#1}}%
+}
+\hypersetup{
+  linkcolor  = blue,
+  citecolor  = blue,
+  urlcolor   = magenta,
+  colorlinks = true,
+}
+
+% control space of verbatim
+\makeatletter
+\preto{\@verbatim}{\topsep=-2pt \partopsep=-2pt }
+\makeatother
+
+\newcommand{\prea}[1]{\noindent \textcolor{blue}{#1}}
+
+
+\newcommand{\answer}[1]{\noindent \textcolor{blue}{\emph{Answer:} #1}}
+\cMakeRobust\answer
+
+% parskip
+\setlength{\parskip}{.2cm}
+
+% bold explanations inside theorem
+\newtheoremstyle{mystyle}%                % Name
+  {}%                                     % Space above
+  {}%                                     % Space below
+  {\itshape}%                                     % Body font
+  {}%                                     % Indent amount
+  {\bfseries}%                            % Theorem head font
+  {.}%                                    % Punctuation after theorem head
+  { }%                                    % Space after theorem head, ' ', or \newline
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}%                                     % Theorem head spec (can be left empty, meaning `normal')
+
+\theoremstyle{mystyle}
+
+\renewcommand{\P}{\mathsf{P}}  % Normal distribution
+
+% double bar
+\def\dbar#1{\bar{\bar{#1}}}
+
+% extra space equal
+\def\se{\; = \;}
+\def\sp{\; + \;}
+\def\sperp{\; \perp \;}
+% points
+\def\points#1{[#1 pts]}
+\def\bra#1{[#1]}
+\def\sra{\quad \Rightarrow \quad }
+\def\avert#1{\left\Vert #1 \right\Vert}
+\def\sand{\qquad \text{and} \qquad}
+
+\newcommand{\mc}[1]{\mathcal{#1}}
+\def\mbf#1{\mathbf{#1}}
+\def\mrm#1{\mathrm{#1}}
+\def\mbi#1{\boldsymbol{#1}} % Bold and italic (math bold italic)
+\def\v#1{\mbi{#1}} % Vector notation
+
+\newcommand{\norm}[1]{\|{#1}\|} % A norm with 1 argument
+\newcommand{\lone}[1]{\norm{#1}_1} % l1 norm
+\newcommand{\ltwo}[1]{\norm{#1}_2} % l2 norm
+\newcommand{\linf}[1]{\norm{#1}_\infty} % l-infinity norm
+\newcommand{\dnorm}[1]{\norm{#1}_*} % Dual norm
+\newcommand{\lfro}[1]{\left\|{#1}\right\|_{\rm Fr}} % Frobenius norm
+\newcommand{\matrixnorm}[1]{\left|\!\left|\!\left|{#1}
+  \right|\!\right|\!\right|} % Matrix norm with three bars
+\newcommand{\matrixnorms}[1]{|\!|\!|{#1}|\!|\!|} % Small matrix norm
+\newcommand{\opnorm}[1]{\matrixnorm{#1}_{\rm op}}
+\newcommand{\opnorms}[1]{\matrixnorms{#1}_{\rm op}}
+\newcommand{\normbigg}[1]{\bigg\|{#1}\bigg\|} % A norm with 1 argument and bigg
+                                              % brackets.
+\newcommand{\lonebigg}[1]{\normbigg{#1}_1} % l1 norm
+\newcommand{\ltwobigg}[1]{\normbigg{#1}_2} % l2 norm
+\newcommand{\linfbigg}[1]{\normbigg{#1}_\infty} % l-infinity norm
+\newcommand{\norms}[1]{\|{#1}\|} % A norm with 1 argument and normal (small)
+                                 % brackets.
+\newcommand{\lones}[1]{\norms{#1}_1} % l1 norm with small brackets
+\newcommand{\ltwos}[1]{\norms{#1}_2} % l2 norm with small brackets
+\newcommand{\linfs}[1]{\norms{#1}_\infty} % l-infinity norm with small brackets
+
+\newcommand{\hinge}[1]{\left[{#1}\right]_+}
+
+\newcommand{\defeq}{:=}
+\newcommand{\eqdef}{=:}
+\newcommand{\what}[1]{\widehat{#1}} % Wide hat 
+\newcommand{\wt}[1]{\widetilde{#1}} % Wide tilde
+\newcommand{\wb}[1]{\overline{#1}} % Wide bar
+
+\newcommand{\half}{\frac{1}{2}}
+
+\newcommand{\reals}{\mathbb{R}} % Real number symbol
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}} % Complex numbers
+\newcommand{\integers}{\mathbb{Z}} % Integer symbol
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\rationals}{\mathbb{Q}} % Rational numbers
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\naturals}{\mathbb{N}} % Natural numbers
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\I}{\mathbb{I}}
+\newcommand{\sm}{\mathbb{S}}
+
+\newcommand{\<}{\left\langle} % Angle brackets
+\renewcommand{\>}{\right\rangle} % End angle brackets
+
+\renewcommand{\iff}{\Leftrightarrow}
+\renewcommand{\choose}[2]{\binom{#1}{#2}}  % Choose
+\newcommand{\chooses}[2]{{}_{#1}C_{#2}}  % Small choose
+
+%%%% Probability symbols and associated distances %%%%
+
+\def\var#1{\mathsf{Var}(#1)}
+\newcommand{\Var}{\mathsf{Var}}
+\def\cov#1{\mathrm{Cov}(#1)}
+\def\covv#1#2{\mathrm{Cov}(#1,#2)}
+\newcommand{\simiid}{\stackrel{\rm iid}{\sim}}
+\newcommand{\openleft}[2]{\left({#1},{#2}\right]} % Interval open on left
+\newcommand{\openright}[2]{\left[{#1},{#2}\right)} % Interval open on right
+
+\newcommand{\indic}[1]{\mbf{1}\left\{#1\right\}} % Indicator function
+
+% Distances between probability measures
+\newcommand{\tvnorm}[1]{\norm{#1}_{\rm TV}} % Total variation
+\newcommand{\tvnorms}[1]{\norms{#1}_{\rm TV}}
+\newcommand{\dkl}[2]{D_{\rm kl}\left({#1} |\!| {#2}\right)} % KL divergence
+\newcommand{\dkls}[2]{D_{\rm kl}({#1} |\!| {#2})}  % Small KL-divergence
+\newcommand{\dchi}[2]{D_{\chi^2}\left({#1} |\!| {#2}\right)}  % chi^2-divergence
+\newcommand{\fdiv}[2]{D_f\left({#1} |\!| {#2}\right)} % f divergence
+\newcommand{\kl}[2]{D_{\rm kl}\left({#1} |\!| {#2} \right)}
+\newcommand{\dhel}{d_{\rm hel}}  % Hellinger distance
+\newcommand{\helaff}{A_{\rm hel}}  % Hellinger affinity
+
+% Convergence of random variables
+\newcommand{\cd}{\stackrel{d}{\rightarrow}}
+\newcommand{\cas}{\stackrel{a.s.}{\rightarrow}}
+\newcommand{\cc}{\stackrel{completely}{\rightarrow}}
+\newcommand{\cp}{\stackrel{p}{\rightarrow}}
+\newcommand{\cl}{\stackrel{\mc{L}_1}{\longrightarrow}}
+\newcommand{\ctv}{\stackrel{\TV}{\rightarrow}}
+\newcommand{\cae}{\stackrel{a.e.}{\rightarrow}}
+\newcommand{\cmu}{\stackrel{\mu}{\rightarrow}}
+\newcommand{\clp}{\stackrel{\mc{L}^p}{\rightarrow}}
+\newcommand{\clt}{\stackrel{\mc{L}^2}{\rightarrow}}
+
+\newcommand{\normal}{\mathsf{N}}  % Normal distribution
+\newcommand{\E}{\mathsf{E}}  
+\newcommand{\Cov}{\mathsf{Cov}}  % Normal distribution
+\newcommand{\uniform}{\mathsf{Uni}}  % Uniform distribution
+
+\newcommand{\TV}{\mathsf{TV}}  % Normal distribution
+\newcommand{\f}{\mathsf{f}}  % Normal distribution
+\newcommand{\Hp}{\mathsf{H}}  % Normal distribution
+
+
+
+% Simple floor/ceiling stuff
+\newcommand{\floor}[1]{\left\lfloor{#1} \right\rfloor}
+\newcommand{\ceil}[1]{\left\lceil{#1} \right\rceil}
+
+\providecommand{\argmax}{\mathop{\rm argmax}} % Defining math symbols
+\providecommand{\argmin}{\mathop{\rm argmin}}
+\providecommand{\dom}{\mathop{\rm dom}}
+\providecommand{\diag}{\mathop{\rm diag}}
+\providecommand{\tr}{\mathop{\rm tr}}
+\providecommand{\abs}{\mathop{\rm abs}}
+\providecommand{\card}{\mathop{\rm card}}
+\providecommand{\sign}{\mathop{\rm sign}}
+\providecommand{\cl}{\mathop{\rm cl}}
+\providecommand{\interior}{\mathop{\rm int}}
+\providecommand{\conv}{\mathop{\rm Conv}}
+\providecommand{\relint}{\mathop{\rm relint}}
+\providecommand{\vol}{\mathop{\rm Vol}}
+\providecommand{\supp}{\mathop{\rm supp}}
+
+\providecommand{\minimize}{\mathop{\rm minimize}}
+\providecommand{\maximize}{\mathop{\rm maximize}}
+\providecommand{\subjectto}{\mathop{\rm subject\;to}}
+
+% Proof environments
+% The Theorems are numbered consecutively
+% Lemmas are numbered by section, and observations, claims, facts, and 
+% assumptions take their numbering. Propositions and definitions have their
+% own numbering by section.
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{assumption}{Assumption}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\newenvironment{proof-sketch}{\noindent{\bf Sketch of Proof}
+  \hspace*{1em}}{\qed\bigskip\\}
+\newenvironment{proof-idea}{\noindent{\bf Proof Idea}
+  \hspace*{1em}}{\qed\bigskip\\}
+\newenvironment{proof-of-lemma}[1][{}]{\noindent{\bf Proof of Lemma {#1}}
+  \hspace*{1em}}{\qed\bigskip\\}
+\newenvironment{proof-of-proposition}[1][{}]{\noindent{\bf
+    Proof of Proposition {#1}}
+  \hspace*{1em}}{\qed\bigskip\\}
+\newenvironment{proof-of-theorem}[1][{}]{\noindent{\bf Proof of Theorem {#1}}
+  \hspace*{1em}}{\qed\bigskip\\}
+\newenvironment{inner-proof}{\noindent{\bf Proof}\hspace{1em}}{
+  $\bigtriangledown$\medskip\\}
+%% \newenvironment{proof-of-lemma}[1][{}]{\noindent{\bf Proof of Lemma {#1}}
+%%   \hspace*{1em}\renewcommand{\qedsymbol}{$\bigtriangledown$}}{\qed\bigskip\\}
+\newenvironment{proof-attempt}{\noindent{\bf Proof Attempt}
+  \hspace*{1em}}{\qed\bigskip\\}
+\newenvironment{proofof}[1]{\noindent{\bf Proof} of {#1}:
+  \hspace*{1em}}{\qed\bigskip\\}
+\newenvironment{remark}{\noindent{\bf Remark}
+  \hspace*{1em}}{\bigskip}
+
+%% Example environments
+
+\newcounter{example}
+
+\newenvironment{example}[1][]{
+  \refstepcounter{example}
+  \ifthenelse{\isempty{#1}}{  %
+    % There is no text to display in the example
+    \noindent \textbf{\\ Example \theexample:}\hspace*{.05em}
+  }{%
+    \noindent \textbf{\\ Example \theexample} \bfseries({#1}) \hspace*{.05em}
+  }}{% 
+ \hfill $\Vert$}
+
+\newenvironment{example*}[1][]{
+  \ifthenelse{\isempty{#1}}{%
+    % There is no text to display in the example
+    \\
+     \noindent \textbf{\\Example:}\hspace*{.05em}
+  }{%
+    \noindent \textbf{Example} ({#1})\textbf{:}\hspace*{.05em}
+  }}{%
+ \hfill $\Vert$ }
+
+\numberwithin{example}{section} 
+
+\def\balign#1\ealign{\begin{align}#1\end{align}}
+\def\baligns#1\ealigns{\begin{align*}#1\end{align*}}
+%~~~~~~~~~~~~~~~
+% Text with quads around it
+%~~~~~~~~~~~~~~~
+\newcommand{\qtext}[1]{\quad\text{#1}\quad} 
+%~~~~~~~~~~~~~~~
+% Shorthand for math formatting
+%~~~~~~~~~~~~~~~
+\def\mbb#1{\mathbb{#1}} 
+\def\mbi#1{\boldsymbol{#1}} % Bold and italic (math bold italic)
+\def\mbf#1{\mathbf{#1}}
+\def\mc#1{\mathcal{#1}}
+\def\mrm#1{\mathrm{#1}}
+\def\tbf#1{\textbf{#1}}
+\def\tsc#1{\textsc{#1}}
+%~~~~~~~~~~~~~~~
+% Common sets
+%~~~~~~~~~~~~~~~
+\def\reals{\mathbb{R}} % Real number symbol
+\def\integers{\mathbb{Z}} % Integer symbol
+\def\rationals{\mathbb{Q}} % Rational numbers
+\def\naturals{\mathbb{N}} % Natural numbers
+\def\complex{\mathbb{C}} % Complex numbers
+%~~~~~~~~~~~~~~~
+% Common functions
+%~~~~~~~~~~~~~~~
+\def\indic#1{\mbb{I}\left({#1}\right)} % Indicator function
+\providecommand{\argmax}{\mathop\mathrm{arg max}} % Defining math symbols
+\providecommand{\argmin}{\mathop\mathrm{arg min}}
+\providecommand{\arccos}{\mathop\mathrm{arccos}}
+\providecommand{\dom}{\mathop\mathrm{dom}} % Domain
+\providecommand{\range}{\mathop\mathrm{range}} % Range
+\providecommand{\diag}{\mathop\mathrm{diag}}
+\providecommand{\tr}{\mathop\mathrm{tr}}
+\providecommand{\abs}{\mathop\mathrm{abs}}
+\providecommand{\card}{\mathop\mathrm{card}}
+\providecommand{\sign}{\mathop\mathrm{sign}}
+\def\rank#1{\mathrm{rank}({#1})}
+\def\supp#1{\mathrm{supp}({#1})}
+%~~~~~~~~~~~~~~~
+% Common probability symbols
+%~~~~~~~~~~~~~~~
+\def\Earg#1{\E\left[{#1}\right]}
+\def\Esubarg#1#2{\E_{#1}\left[{#2}\right]}
+\def\Parg#1{\P\left({#1}\right)}
+\def\Psubarg#1#2{\P_{#1}\left[{#2}\right]}
+\def\Covarg#1{\Cov\left[{#1}\right]}
+\def\Covsubarg#1#2{\Cov_{#1}\left[{#2}\right]}
+\newcommand{\family}{\mathcal{P}} % probability family / statistical model
+\newcommand{\iid}{\stackrel{\mathrm{iid}}{\sim}}
+\newcommand{\ind}{\stackrel{\mathrm{ind}}{\sim}}
+\def\Covarg#1{\Cov\left[{#1}\right]}
+\def\Covsubarg#1#2{\Cov_{#1}\left[{#2}\right]}
+\newcommand{\model}{\mathcal{P}} % probability family / statistical model
+%~~~~~~~~~~~~~~~
+% Distributions
+%~~~~~~~~~~~~~~~
+\def\Gsn{\mathcal{N}}
+\def\Ber{\textnormal{Bernoulli}}
+\def\Bin{\textnormal{Binomial}}
+\def\Unif{\textnormal{Uniform}}
+\def\Mult{\textnormal{Mult}}
+\def\NegMult{\textnormal{NegMult}}
+\def\Dir{\textnormal{Dir}}
+\def\Bet{\textnormal{Beta}}
+\def\Gam{\textnormal{Gamma}}
+\def\Poi{\textnormal{Poisson}}
+\def\HypGeo{\textnormal{HypGeo}}
+\def\GEM{\textnormal{GEM}}
+\def\BP{\textnormal{BP}}
+\def\DP{\textnormal{DP}}
+\def\BeP{\textnormal{BeP}}
+\def\Exp{\textnormal{Exp}}
+\def\Wishart{\textnormal{Wishart}}
+%~~~~~~~~~~~~~~~
+% Theorem-like environments
+%~~~~~~~~~~~~~~~
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}
+\newtheorem{exercise}{Exercise}[section]
+\newenvironment{solution}
+  {\renewcommand\qedsymbol{$\blacksquare$}\begin{proof}[Solution]}
+  {\end{proof}}
+
+% Functions related to linear algebra
+\def\row{\mathrm{row}} 
+\def\col#1{\mathrm{col}(#1)}
+\def\tr#1{\mathrm{trace}(#1)}
+
+
+
+% matrix with columns and names
+\let\bbordermatrix\bordermatrix
+\patchcmd{\bbordermatrix}{20}{20}{}{}
+\patchcmd{\bbordermatrix}{\left(}{\left[}{}{}
+\patchcmd{\bbordermatrix}{\right)}{\right]}{}{}
+
+
+
+\def\bul{\text{\textbullet}}
+\def\ans{\emph{Answer:} \; }
+\def\vip{\vspace{.5cm}}
+\def\sip{\vspace{-.5cm}}
+\def\ss#1{\mathrm{SS}_{\rm #1}}
+\def\df#1{\mathrm{df}_{\rm #1}}
+
+
+\def\bbar#1#2{\bar{#1}_{#2\text{\textbullet}}}
+
+\def\dbar#1{\bar{#1}_{\text{\textbullet}\text{\textbullet}\text{\textbullet}}}
+\def\dbara#1#2{\bar{#1}_{#2\text{\textbullet}}}
+\def\dbaraa#1#2{\bar{#1}_{#2\text{\textbullet}\text{\textbullet}}}
+\def\dbarb#1#2{\bar{#1}_{\text{\textbullet}#2\text{\textbullet}}}
+\def\ddbar#1#2#3{\bar{#1}_{#2#3\text{\textbullet}}}
+\def\ms#1{\mathrm{MS}_{\text{#1}}}
+
+\def\tbar#1{\bar{#1}_{\text{\textbullet}\text{\textbullet}\text{\textbullet}\text{\textbullet}}}
+\def\tbara#1#2{\bar{#1}_{#2\text{\textbullet}\text{\textbullet}\text{\textbullet}}}
+\def\tbarb#1#2{\bar{#1}_{\text{\textbullet}#2\text{\textbullet}\text{\textbullet}}}
+\def\tbarc#1#2{\bar{#1}_{\text{\textbullet}\text{\textbullet}#2\text{\textbullet}}}
+
+\def\tbarbc#1#2#3{\bar{#1}_{\text{\textbullet}#2#3\text{\textbullet}}}
+
+\def\smd#1#2{#1 \,\Delta\, #2}
+
+
+\def\bs#1{\boldsymbol{#1}}
+\def\ball#1#2{\mbf{B}_{#1}^o(#2)}
+
+\def\mball#1#2#3{\mbf{B}_{#1}^o(#2; #3)}
+
+\def\indic#1{\mathbb{1}_{#1}}
+\def\kld#1#2{D(#1\Vert #2)}
+\def\hd#1#2{H^2(#1\Vert #2)}
