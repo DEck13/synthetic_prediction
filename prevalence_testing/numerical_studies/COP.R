@@ -108,32 +108,98 @@ taSPA.mhfc <- function(ell, d, B, bw = 4) {
   return(p)
 }
 
+ols.est.alphahat <- function(Tstar, Y, X) {
+  
+  n <- length(Y) - 1
+  T <- c()
+  for (i in 1:(n + 1)) {
+    T <- c(T, length(Y[[i]]) - 1)
+  }
+  
+  # empty
+  alphahat <- c()
+  se <- c()
+  res <- c()
+  lmod <- c()
+  
+  
+  for (i in 2:(n + 1)) {
+    
+    # set up
+    Ti <- T[i]
+    Tstari <- Tstar[i]
+    yi <- Y[[i]][-1]
+    xi <- X[[i]][-1, ]
+    
+    # lag
+    yilag <- Y[[i]][-Ti]
+    
+    # OLS
+    lmodi <- lm(yi ~ 1 + ifelse(1:(Ti-1) == Tstari + 1, yes = 1, no = 0) + 
+                  yilag + xi)
+    
+    # find estimates
+    alphahat <- c(alphahat, coef(lmodi)[2])
+    se <- c(se, summary(lmodi)$coef[2, 2])
+    res[[i - 1]] <- residuals(lmodi)
+    lmod[[i - 1]] <- lmodi
+  }
+  
+  # uname
+  names(alphahat) <- names(se) <- NULL
+  
+  # adjustment estimator
+  alphahat.adj <- mean(alphahat)
+  
+  # weighted adjustment estimator
+  if (is.matrix(X[[1]]) == FALSE) {
+    for (i in 1:(n + 1)) {
+      X[[i]] <- as.matrix(X[[i]])
+    }
+  }
+  # Weights
+  W <- round(scm(X = X, Tstar = Tstar)$par, digits = 3)
+  # Computation
+  alphahat.wadj <- as.numeric(crossprod(W, alphahat))
+  
+  # Inverse-Variance Estimator
+  alphahat.IVW <- sum(alphahat / se ^ 2) /  (sum(1 / se ^ 2))
+  
+  est <- c(alphahat.adj, alphahat.wadj, alphahat.IVW)
+  names(est) <- c('adj', 'wadj', 'IVW')
+  
+  # output
+  return(list(alphahat = alphahat, est = est, Tstar = Tstar, X = X, Y = Y, 
+              lmod = lmod, res = res, Wstar = W, se = se))
+  
+}
+
 # functions that return alpha.hat and synthetic weights
-ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
+ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05, retro = TRUE) {
   
   n <- length(Y) - 1
   
   # empty
   ps <- c()
   
-  AICs <- c()
-  BICs <- c()
-  for (i in 1:(n + 1)) {
+  if (retro == TRUE) k <- 1 else 2
+  
+  for (i in k:(n + 1)) {
     
     # set up
     Ti <- Ts[i]
     Ki <- K[i]
     Tstari <- Tstar[i]
     
+    sym <- ols.est.alphahat(Tstar = Tstar[c(i, 2:(i - 1))], X = X[c(i, 2:(i - 1))], Y = Y[c(i, 2:(i - 1))])
+    
+    alpha.wadj <- sym$est[2]
+    
     m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
     m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
     
-    AICs.i <- c()
-    BICs.i <- c()
     # compute losses
     for (h in 1:H) {
-      AICs.h.i <- c()
-      BICs.h.i <- c()
       for (t in 1:Ti) {
         
         yi <- Y[[i]][-1][(t + H - h + 1):(t + Ki + H - h)]
@@ -146,8 +212,6 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
         lmodi.adj <- lm(yi ~ 1 + ifelse((t + H - h + 1):(t + Ki + H - h) >= Tstari + 1, yes = 1, no = 0) + 
                           yilag + xi)
         lmodi.unadj <- lm(yi ~ 1 + yilag + xi)
-        AICs.h.i <- c(AICs.h.i, AIC(lmodi.adj))
-        BICs.h.i <- c(BICs.h.i, BIC(lmodi.adj))
         
         # beta.hat
         beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
@@ -156,7 +220,17 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
         
         yhat.adj <- tail(yi, 1)
         yhat.unadj <- tail(yi, 1)
+        
+        
+        if (t + Ki + H - h <= Tstari + 1 & i >= 3) {
+          
+          
+        }
+        
         for (j in 1:h) {
+          
+          
+          
           yhat.adj <- c(yhat.adj, beta.hat.adj %*% matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
                                                             yhat.adj[j], X[[i]][-1, ][t + Ki + H - h + j, ])))
           yhat.unadj <- c(yhat.unadj, beta.hat.unadj %*% matrix(c(1, yhat.unadj[j], X[[i]][-1, ][t + Ki + H - h + j, ])))
@@ -167,15 +241,11 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
         m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + 1])
       }
     }
-    AICs.i <- c(AICs.i, mean(AICs.h.i))
-    BICs.h.i <- c(BICs.h.i, BIC(lmodi.adj))
     # loss differential
     d <- m2.L.i - m1.L.i
     ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
   }
   
-  AIC <- mean(AICs.i)
-  BIC <- mean(BICs.i)
   # weights
   if (is.matrix(X[[1]]) == FALSE) {
     for (i in 1:(n + 1)) {
@@ -199,9 +269,9 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
   # empty
   ps <- c()
   
-  AICs <- c()
-  BICs <- c()
-  for (i in 1:(n + 1)) {
+  if (retro == TRUE) k <- 1 else 2
+  
+  for (i in k:(n + 1)) {
     
     # set up
     Ti <- Ts[i]
@@ -211,12 +281,8 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
     m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
     m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
     
-    AICs.i <- c()
-    BICs.i <- c()
     # compute losses
     for (h in 1:H) {
-      AICs.h.i <- c()
-      BICs.h.i <- c()
       for (t in 1:Ti) {
         
         yi <- Y[[i]][-1][(t + H - h + 1):(t + Ki + H - h)]
@@ -231,8 +297,6 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
         # OLS
         lmodi.adj <- lm(yi ~ 1 + decay + yilag + xi)
         lmodi.unadj <- lm(yi ~ 1 + yilag + xi)
-        AICs.h.i <- c(AICs.h.i, AIC(lmodi.adj))
-        BICs.h.i <- c(BICs.h.i, BIC(lmodi.adj))
         
         # beta.hat
         beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
@@ -252,16 +316,12 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
         m1.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.adj[h + 1])
         m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + 1])
       }
-      AICs.i <- c(AICs.i, mean(AICs.h.i))
-      BICs.i <- c(BICs.i, mean(BICs.h.i))
     }
     # loss differential
     d <- m2.L.i - m1.L.i
     ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
   }
   
-  AIC <- mean(AICs.i)
-  BIC <- mean(BICs.i)
   # weights
   if (is.matrix(X[[1]]) == FALSE) {
     for (i in 1:(n + 1)) {
@@ -288,9 +348,9 @@ ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
   # empty
   ps <- c()
   
-  AICs <- c()
-  BICs <- c()
-  for (i in 1:(n + 1)) {
+  if (retro == TRUE) k <- 1 else 2
+  
+  for (i in k:(n + 1)) {
     
     # set up
     Ti <- Ts[i]
@@ -300,12 +360,8 @@ ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
     m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
     m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
     
-    AICs.i <- c()
-    BICs.i <- c()
     # compute losses
     for (h in 1:H) {
-      AICs.h.i <- c()
-      BICs.h.i <- c()
       for (t in 1:Ti) {
         TL <- length(Y[[i]])
         yi <- Y[[i]][-(1:q1)][(t + H - h + 1):(t + Ki + H - h)]
@@ -314,7 +370,8 @@ ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
         # yi lags
         yilags <- c()
         for (j in 1:q1) {
-          yilags <- cbind(yilags, Y[[i]][(t + H - h + 2 - j):(t + Ki + H - h - j + 1)])
+          yijlag <- Y[[i]][-c(1:(q1 - j), (TL - (q1 - 1)):(TL - (q1 - j)))][(t + H - h + 1):(t + Ki + H - h)]
+          yilags <- cbind(yilags, yijlag)
         }
         
         # x and x lags
@@ -322,7 +379,8 @@ ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
         if (q2 > 1) {
           
           for (j in 1:(q2 - 1)) {
-            x.xlags <- cbind(x.xlags, X[[i]][(t + H - h + 2 - j):(t + Ki + H - h - j + 1),])
+            xj.xlags <- X[[i]][-c(1:(q2 - 1 - j), (TL - (q2 - 1 - 1)):(TL - (q2 - 1 - j))), ][(t + H - h + 1):(t + Ki + H - h), ]
+            x.xlags <- cbind(x.xlags, xj.xlags)
           }
         }
         
@@ -338,8 +396,6 @@ ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
         # OLS
         lmodi.adj <- lm(yi ~ 1 + yilags + x.xlags + yilags.D.i.t + x.xlags.D.i.t + D.i.t)
         lmodi.unadj <- lm(yi ~ 1 + yilags + x.xlags)
-        AICs.h.i <- c(AICs.h.i, AIC(lmodi.adj))
-        BICs.h.i <- c(BICs.h.i, BIC(lmodi.adj))
         
         # beta.hat
         beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
@@ -376,16 +432,12 @@ ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
         m1.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.adj[h + q1])
         m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + q1])
       }
-      AICs.i <- c(AICs.i, mean(AICs.h.i))
-      BICs.i <- c(BICs.i, mean(BICs.h.i))
     }
     # loss differential
     d <- m2.L.i - m1.L.i
     ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
   }
   
-  AIC <- mean(AICs.i)
-  BIC <- mean(BICs.i)
   
   # weights
   if (is.matrix(X[[1]]) == FALSE) {
@@ -410,7 +462,9 @@ ps.indic.W.decay.nls <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
   # empty
   ps <- c()
   
-  for (i in 1:(n + 1)) {
+  if (retro == TRUE) k <- 1 else 2
+  
+  for (i in k:(n + 1)) {
     
     # set up
     Ti <- Ts[i]

@@ -135,8 +135,8 @@ taSPA.mhfc(ell = 2, d = d, B = 200, bw = 4)
  \texttt{ols.est.alphahat(Tstar,Y,X)} is the core function in \citeA{lin2021minimizing} that is used to compute the weighted adjusted shock effect estimate $\hat{\alpha}_{\rm wadj}$ that aggregates information in the donor pool. Suppose the donor pool size is $n$. Given the shock time points, it performs $n$ OLS regressions across the donor pool to estimate the shock effect of each donor. The regression is based on the $\textbf{AR}(1)$ model with covariates as specified in Section 2.1 of \citeA{lin2021minimizing}.  The function internally uses \texttt{scm} function to compute the weights $\mbf{W}^*$ and weight the donors' shock effects to compute $\hat{\alpha}_{\rm wadj}$. It also computes the $\hat{\alpha}_{\rm IVW}$ estimate and $\hat{\alpha}_{\rm adj}$ estimate. See more details of these two estimates in \citeA{lin2021minimizing}. Note that
 \begin{itemize}
 	\item \texttt{X} is a list of covariates with length $n+1$, where the first element of the list should be the covariates of the time series of interest and the remaining elements of the list are the covariates of the donors. The covariates should be in the class of \texttt{matrix} with size $T_i\times p$ for $i = 1, \ldots, n+1$.
-	\item \texttt{Tstar} is a vector of shock-effect time points when the shock occurs at $T^*_i+1$ for $i = 1, \ldots, n+1$. The size of \texttt{Tstar} should be $n+1$.
-	\item \texttt{Y} is a list of responses with length $n +1$,  where the first element of the list should be the response of the time series of interest and the remaining elements of the list are the responses of the donors. It should be a vector.
+	\item \texttt{Tstar} is a vector of shock-effect time points when the shock occurs at $T^*_i+2$ for $i = 1, \ldots, n+1$. The size of \texttt{Tstar} should be $n+1$. 
+	\item \texttt{Y} is a list of responses with length $n +1$,  where the first element of the list should be the response of the time series of interest and the remaining elements of the list are the responses of the donors. It should be a vector.  Note  that to compute the lag, the effective sample size used is $T_i - 1$, where $T_i$ is the time series length of $i$th time series.
 \end{itemize}
  
  This function outputs
@@ -158,7 +158,7 @@ taSPA.mhfc(ell = 2, d = d, B = 200, bw = 4)
 n <- 10; p <- 2
 Ts <- ceiling(rgamma(n + 1, scale = 10, shape = 10)) # Time Length
 Tstar <- c() # Shock Time Points
-for (t in T) {
+for (t in Ts) {
   Tstar <- c(Tstar, sample((p + 3 + 1):(t - 1), size = 1))
 }
 phi <- round(runif(n + 1, 0, 1), 3) # autoregressive parameters
@@ -170,8 +170,7 @@ gamma <- c()
 for (i in 1:(n + 1)) {
   Ti <- Ts[i]
   Tstari <- Tstar[i]
-  Ki <- K[i]
-  X[[i]] <- matrix(rgamma(n = p * (Ti + Ki + H + 1),
+  X[[i]] <- matrix(rgamma(n = p * (Ti + 1),
                           shape = 1, scale = 1), ncol = p, byrow = TRUE) 
   gamma[[i]] <- matrix(rnorm(p, mean = 1, sd = 1), nrow = 1)
   epsilontildei <- rnorm(n = 1, sd = 1)
@@ -210,18 +209,21 @@ ols.est.alphahat(Tstar,Y,X)
  	y_{i,t} &= \eta_i + \phi_i y_{i, t-1}  + \bs{x}_{i, t}\bs{\theta} + \alpha_i I(t > T_i^*+1) + \varepsilon_{i,t},\\
  	\alpha_i & = \mu_{\alpha} + \bs{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
  \end{align*}
- where $T_i^*+1$ is the time point when the shock occurs for $i = 2, \ldots, n+1$, $\bs{x}_{i,t}$ is the covariate, and $\eta_i$ is the intercept. Note that only $\bs{\theta}$, $\eta_i$, and $\alpha_i$ are estimable. The above model is called permanent model due to the presence of a persistent shock term. For each donor, this function computes the adjusted forecast and unadjusted forecast, construct the corresponding loss differential matrix, and perform the forecast comparison test.  Suppose the donor pool size is $n$. The input for this function is
+ where $T_i^*+1$ is the time point when the shock occurs for $i = 2, \ldots, n+1$, $\bs{x}_{i,t}$ is the covariate, and $\eta_i$ is the intercept. Note that only $\bs{\theta}$, $\eta_i$, and $\alpha_i$ are estimable. The above model is called permanent model due to the presence of a persistent shock term. For each donor, this function computes the adjusted forecast and unadjusted forecast, construct the corresponding loss differential matrix, and perform the forecast comparison test.  Suppose the donor pool size is $n$. \emph{It is important to note that the ordering of the donors should be with respect to the timing when those time series occur, from the earliest to the latest.}
+ 
+ The input for this function is
 \begin{itemize}
-	\item \texttt{Tstar} is a vector of shock-effect time points when the shock occurs at $T^*_i+1$ for $i = 1, \ldots, n+1$. The size of \texttt{Tstar} should be $n+1$.
-	\item \texttt{Y} is a list of responses with length $n +1$,  where the first element of the list should be the response of the time series of interest and the remaining elements of the list are the responses of the donors. It should be a vector.
+	\item \texttt{Tstar} is a vector of shock-effect time points when the shock occurs at $T^*_i+2$ for $i = 1, \ldots, n+1$. The size of \texttt{Tstar} should be $n+1$. 
+	\item \texttt{Y} is a list of responses with length $n +1$,  where the first element of the list should be the response of the time series of interest and the remaining elements of the list are the responses of the donors. It should be a vector.  Note  that to compute the lag, the effective sample size used is $T_i - 1$, where $T_i$ is the time series length of $i$th time series.
 	\item \texttt{X} is a list of covariates with length $n+1$, where the first element of the list should be the covariates of the time series of interest and the remaining elements of the list are the covariates of the donors. The covariates should be in the class of \texttt{matrix} with size $T_i\times p$ for $i = 1, \ldots, n+1$. Note that the sample size of each element  in \texttt{X} should be  $T_i+ K_i + H$, where $K_i$ is the training sample size and $T_i$ is the length of the donor time series that are wished to be considered as the data used in forecast comparison. $H$ is the maximum horizon.
-	\item \texttt{K} is a vector of training sample sizes that are used to compute $h$-step forecast for each data point. \texttt{K} has a length of $n+1$. The first element of \texttt{K} can be \texttt{NA} as forecast comparison is not available for the time series of interest.
+	\item \texttt{K} is a vector of training sample sizes that are used to compute $h$-step forecast for each data point. \texttt{K} has a length of $n+1$. If \texttt{retro = FALSE}, \texttt{K[1]} can be \texttt{NA}.
 	\item \texttt{H} is the maximum $h$ that an $h$-step forecast that is wished to be considered in the multi-horizon forecast comparison testing procedure in \citeA{quaedvlieg2021multi}.
 	\item \texttt{Ts} is a vector of length $n+1$, and it specifies the length of the time series (ordered from the time series of interest to donors).
 	\item \texttt{ell} is the block length of the moving block bootstrap. See details in \texttt{taSPA.mhfc}.
 	\item \texttt{B} is the bootstrap sample size. See details in \texttt{taSPA.mhfc}.
 	\item \texttt{bw} is the bandwidth of computation for HAC estimator. See details in \texttt{taSPA.mhfc}.
 	\item \texttt{sig.levl} is the significance level for the test. It is 0.05 in default.
+	\item \texttt{retro} is a logical value indicating \texttt{TRUE} or \texttt{FALSE}. If  \texttt{TRUE}, the $p$-value for the time series of interest will be computed. If  \texttt{FALSE}, only the $p$-values of donors will be computed. This argument is intended for retrospective data analysis where the $p$-value of the time series of interest is needed.
 \end{itemize}
  
  The output of this function is
@@ -230,6 +232,7 @@ ols.est.alphahat(Tstar,Y,X)
  	\item \texttt{W} is a vector of synthetic weights and is of length $n$.
  	\item  \texttt{Is} is a sequence of rejection/acceptance decisions from forecast comparison for the donors, where 1 stands for rejection and 0 for acceptance. It is of length $n$.
  \end{itemize}
+ 
  
  \emph{Examples:}
  
@@ -285,15 +288,15 @@ est <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = K,
  
  \section{\texttt{ps.indic.W.complicate}}
  
- \texttt{ps.indic.W.complicate(Tstar,Y,X,K,H,Ts,ell,B,bw,sig.levl)} performs the same functionality as  \texttt{ps.indic.W.permanent} but with a different model as 
+ \texttt{ps.indic.W.complicate(Tstar,Y,X,K,H,Ts,q1,q2,ell,B,bw,sig.levl)} performs the same functionality as  \texttt{ps.indic.W.permanent} but with a different model as 
  \begin{align*}
  	y_{i,t}
- 	&= \left(\eta_i + \sum_{j=1}^{q_2} \phi_{i,j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1} \right) (1-D_{i,t}) + f(\mc{F}_{i, t} \alpha_i)D_{i,t} + \varepsilon_{i,t}  \\
+ 	&= \left(\eta_i + \sum_{j=1}^{q_1} \phi_{i,j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1} \right) (1-D_{i,t}) + f(\mc{F}_{i, t} \alpha_i)D_{i,t} + \varepsilon_{i,t}  \\
  	f(\mc{F}_{i,t},\alpha_i)	 & = \alpha_i +\sum_{j=1}^{q_1} \tilde{\phi}_{i, j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j} \tilde{\bs{\theta}}_{i, j +1} \\
  	\alpha_i & = \mu_{\alpha} + \bs{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i}
  \end{align*}
  where $D_{i,t}=I(t > T_i^*+1)$. Note that only $\eta_i, \alpha_i - \eta_i, \phi_{i,j}, \bs{\theta}_{i, j+1}, \tilde{\phi}_{i,j}-\phi_{i,j}, \tilde{\bs{\theta}}_{i,j+1}-\bs{\theta}_{i, j+1}$ are estimable.
-The role of the shock in this model is that the dynamics of $y_{i,t}$ change after the shock.
+The role of the shock in this model is that the dynamics of $y_{i,t}$ change after the shock. Note that to prepare the lagged response and covariates, the effective sample size is $T_i-\max\{q_1, q_2-1\}$. Note that current code only allows for $q_2\leq q_1 + 1$.
 
 Examples are similar to those for \texttt{ps.indic.W.permanent}.
 
