@@ -196,12 +196,12 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
       alpha.wadj <- sym$est[2]
     }
     
-    m1.L.i <- matrix(NA, nrow = Ti - Ki - H, ncol = H)
-    m2.L.i <- matrix(NA, nrow = Ti - Ki - H, ncol = H)
+    m1.L.i <- matrix(NA, nrow = Ti - Ki - H - 1, ncol = H)
+    m2.L.i <- matrix(NA, nrow = Ti - Ki - H - 1, ncol = H)
     
     # compute losses
     for (h in 1:H) {
-      for (t in 1:(Ti - Ki - H)) {
+      for (t in 1:(Ti - Ki - H - 1)) {
         
         yi <- Y[[i]][-1][(t + H - h + 1):(t + Ki + H - h)]
         xi <- X[[i]][-1, ][(t + H - h + 1):(t + Ki + H - h),]
@@ -261,7 +261,7 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
   return(list(ps = ps, W = W, Is = Is, AIC = AIC, BIC = BIC))
 }
 
-ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
+ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05, retro = TRUE) {
   
   n <- length(Y) - 1
   
@@ -283,12 +283,12 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
     }
     
     
-    m1.L.i <- matrix(NA, nrow = Ti - Ki - H, ncol = H)
-    m2.L.i <- matrix(NA, nrow = Ti - Ki - H, ncol = H)
+    m1.L.i <- matrix(NA, nrow = Ti - Ki - H - 1, ncol = H)
+    m2.L.i <- matrix(NA, nrow = Ti - Ki - H - 1, ncol = H)
     
     # compute losses
     for (h in 1:H) {
-      for (t in 1:(Ti - Ki - H)) {
+      for (t in 1:(Ti - Ki - H - 1)) {
         
         yi <- Y[[i]][-1][(t + H - h + 1):(t + Ki + H - h)]
         xi <- X[[i]][-1, ][(t + H - h + 1):(t + Ki + H - h),]
@@ -354,7 +354,7 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
 # functions that return alpha.hat and synthetic weights for decaying shock effects
 ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
                                   q1, q2, 
-                                  ell, B, bw, sig.levl = .05) {
+                                  ell, B, bw, sig.levl = .05, retro = TRUE) {
   
   n <- length(Y) - 1
   
@@ -482,7 +482,7 @@ ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
   return(list(ps = ps, W = W, Is = Is, AIC = AIC, BIC = BIC))
 }
 
-ps.indic.W.decay.nls <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) {
+ps.indic.W.decay.nls <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05, retro = TRUE) {
   
   n <- length(Y) - 1
   
@@ -503,12 +503,12 @@ ps.indic.W.decay.nls <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
       alpha.wadj <- sym$est[2]
     }
     
-    m1.L.i <- matrix(NA, nrow = Ti - Ki - H, ncol = H)
-    m2.L.i <- matrix(NA, nrow = Ti - Ki - H, ncol = H)
+    m1.L.i <- matrix(NA, nrow = Ti - Ki - H - 1, ncol = H)
+    m2.L.i <- matrix(NA, nrow = Ti - Ki - H - 1, ncol = H)
     
     # compute losses
     for (h in 1:H) {
-      for (t in 1:(Ti - Ki - H)) {
+      for (t in 1:(Ti - Ki - H - 1)) {
         
         yi <- Y[[i]][-1][(t + H - h + 1):(t + Ki + H - h)]
         xi <- X[[i]][-1, ][(t + H - h + 1):(t + Ki + H - h),]
@@ -656,7 +656,7 @@ H <- 10
 # training sample size
 K <- 30
 # number of days after shock date
-L <- 30
+L <- 7
 
 #### Monday, March 17th, 2008
 
