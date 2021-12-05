@@ -218,7 +218,7 @@ ols.est.alphahat(Tstar,Y,X)
 	\item \texttt{X} is a list of covariates with length $n+1$, where the first element of the list should be the covariates of the time series of interest and the remaining elements of the list are the covariates of the donors. The covariates should be in the class of \texttt{matrix} with size $T_i\times p$ for $i = 1, \ldots, n+1$. Note that the sample size of each element  in \texttt{X} should be  $T_i+ K_i + H$, where $K_i$ is the training sample size and $T_i$ is the length of the donor time series that are wished to be considered as the data used in forecast comparison. $H$ is the maximum horizon.
 	\item \texttt{K} is a vector of training sample sizes that are used to compute $h$-step forecast for each data point. \texttt{K} has a length of $n+1$. If \texttt{retro = FALSE}, \texttt{K[1]} can be \texttt{NA}.
 	\item \texttt{H} is the maximum $h$ that an $h$-step forecast that is wished to be considered in the multi-horizon forecast comparison testing procedure in \citeA{quaedvlieg2021multi}.
-	\item \texttt{Ts} is a vector of length $n+1$, and it specifies the length of the time series (ordered from the time series of interest to donors).
+	\item \texttt{Ts} is a vector of length $n+1$, and it specifies the length of the time series (ordered from the time series of interest to donors). Note that for each element of \texttt{Ts}, it should be at least greater than or equal to $K_i + H + 2$.
 	\item \texttt{ell} is the block length of the moving block bootstrap. See details in \texttt{taSPA.mhfc}.
 	\item \texttt{B} is the bootstrap sample size. See details in \texttt{taSPA.mhfc}.
 	\item \texttt{bw} is the bandwidth of computation for HAC estimator. See details in \texttt{taSPA.mhfc}.
@@ -296,7 +296,7 @@ est <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = K,
  	\alpha_i & = \mu_{\alpha} + \bs{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i}
  \end{align*}
  where $D_{i,t}=I(t > T_i^*+1)$. Note that only $\eta_i, \alpha_i - \eta_i, \phi_{i,j}, \bs{\theta}_{i, j+1}, \tilde{\phi}_{i,j}-\phi_{i,j}, \tilde{\bs{\theta}}_{i,j+1}-\bs{\theta}_{i, j+1}$ are estimable.
-The role of the shock in this model is that the dynamics of $y_{i,t}$ change after the shock. Note that to prepare the lagged response and covariates, the effective sample size is $T_i-\max\{q_1, q_2-1\}$. Note that current code only allows for $q_2\leq q_1 + 1$.
+The role of the shock in this model is that the dynamics of $y_{i,t}$ change after the shock. Note that to prepare the lagged response and covariates, the effective sample size is $T_i-\max\{q_1, q_2-1\}$.  Note that for each element of \texttt{Ts}, it should be at least greater than or equal to $K_i + H + \max\{q_1, q_2-1\}+1$.
 
 Examples are similar to those for \texttt{ps.indic.W.permanent}.
 

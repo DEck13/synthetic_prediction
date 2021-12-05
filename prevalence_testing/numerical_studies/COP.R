@@ -135,7 +135,7 @@ ols.est.alphahat <- function(Tstar, Y, X) {
     yilag <- Y[[i]][-Ti]
     
     # OLS
-    lmodi <- lm(yi ~ 1 + ifelse(1:(Ti-1) == Tstari + 1, yes = 1, no = 0) + 
+    lmodi <- lm(yi ~ 1 + ifelse(1:Ti == Tstari + 1, yes = 1, no = 0) + 
                   yilag + xi)
     
     # find estimates
@@ -191,16 +191,17 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
     Ki <- K[i]
     Tstari <- Tstar[i]
     
-    sym <- ols.est.alphahat(Tstar = Tstar[c(i, 2:(i - 1))], X = X[c(i, 2:(i - 1))], Y = Y[c(i, 2:(i - 1))])
+    if (i > 2) {
+      sym <- ols.est.alphahat(Tstar = Tstar[c(i, 2:(i - 1))], X = X[c(i, 2:(i - 1))], Y = Y[c(i, 2:(i - 1))])
+      alpha.wadj <- sym$est[2]
+    }
     
-    alpha.wadj <- sym$est[2]
-    
-    m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
-    m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
+    m1.L.i <- matrix(NA, nrow = Ti - Ki - H, ncol = H)
+    m2.L.i <- matrix(NA, nrow = Ti - Ki - H, ncol = H)
     
     # compute losses
     for (h in 1:H) {
-      for (t in 1:Ti) {
+      for (t in 1:(Ti - Ki - H)) {
         
         yi <- Y[[i]][-1][(t + H - h + 1):(t + Ki + H - h)]
         xi <- X[[i]][-1, ][(t + H - h + 1):(t + Ki + H - h),]
@@ -221,19 +222,17 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
         yhat.adj <- tail(yi, 1)
         yhat.unadj <- tail(yi, 1)
         
-        
-        if (t + Ki + H - h <= Tstari + 1 & i >= 3) {
-          
-          
-        }
-        
         for (j in 1:h) {
+          yhat.adj.h <- matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
+                                 yhat.adj[j], X[[i]][-1, ][t + Ki + H - h + j, ]))
+          yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.unadj[j], X[[i]][-1, ][t + Ki + H - h + j, ]))
           
+          if (t + Ki + H - h == Tstari & i >= 3 & h == 1) {
+            yhat.adj.h <- yhat.adj.h + alpha.wadj
+          }
           
-          
-          yhat.adj <- c(yhat.adj, beta.hat.adj %*% matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
-                                                            yhat.adj[j], X[[i]][-1, ][t + Ki + H - h + j, ])))
-          yhat.unadj <- c(yhat.unadj, beta.hat.unadj %*% matrix(c(1, yhat.unadj[j], X[[i]][-1, ][t + Ki + H - h + j, ])))
+          yhat.adj <- c(yhat.adj, yhat.adj.h)
+          yhat.unadj <- c(yhat.unadj, yhat.unadj.h)
         }
         
         # losses
@@ -278,12 +277,18 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
     Ki <- K[i]
     Tstari <- Tstar[i]
     
-    m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
-    m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
+    if (i > 2) {
+      sym <- ols.est.alphahat(Tstar = Tstar[c(i, 2:(i - 1))], X = X[c(i, 2:(i - 1))], Y = Y[c(i, 2:(i - 1))])
+      alpha.wadj <- sym$est[2]
+    }
+    
+    
+    m1.L.i <- matrix(NA, nrow = Ti - Ki - H, ncol = H)
+    m2.L.i <- matrix(NA, nrow = Ti - Ki - H, ncol = H)
     
     # compute losses
     for (h in 1:H) {
-      for (t in 1:Ti) {
+      for (t in 1:(Ti - Ki - H)) {
         
         yi <- Y[[i]][-1][(t + H - h + 1):(t + Ki + H - h)]
         xi <- X[[i]][-1, ][(t + H - h + 1):(t + Ki + H - h),]
@@ -305,11 +310,19 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05) 
         
         yhat.adj <- tail(yi, 1)
         yhat.unadj <- tail(yi, 1)
+        
         for (j in 1:h) {
-          yhat.adj <- c(yhat.adj, beta.hat.adj %*% matrix(c(1, exp(-(t + Ki + H - h + j - Tstari - 1)) * 
-                                                              ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
-                                                            yhat.adj[j], X[[i]][-1, ][t + Ki + H - h + j, ])))
-          yhat.unadj <- c(yhat.unadj, beta.hat.unadj %*% matrix(c(1, yhat.unadj[j], X[[i]][-1, ][t + Ki + H - h + j, ])))
+          yhat.adj.h <- beta.hat.adj %*% matrix(c(1, exp(-(t + Ki + H - h + j - Tstari - 1)) * 
+                                      ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
+                                    yhat.adj[j], X[[i]][-1, ][t + Ki + H - h + j, ]))
+          yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.unadj[j], X[[i]][-1, ][t + Ki + H - h + j, ]))
+          
+          if (t + Ki + H - h == Tstari & i >= 3 & h == 1) {
+            yhat.adj.h <- yhat.adj.h + alpha.wadj
+          }
+          
+          yhat.adj <- c(yhat.adj, yhat.adj.h)
+          yhat.unadj <- c(yhat.unadj, yhat.unadj.h)
         }
         
         # losses
@@ -357,15 +370,20 @@ ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
     Ki <- K[i]
     Tstari <- Tstar[i]
     
-    m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
-    m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
+    if (i > 2) {
+      sym <- ols.est.alphahat(Tstar = Tstar[c(i, 2:(i - 1))], X = X[c(i, 2:(i - 1))], Y = Y[c(i, 2:(i - 1))])
+      alpha.wadj <- sym$est[2]
+    }
+    
+    m1.L.i <- matrix(NA, nrow = Ti - Ki - H - max(q1, q2 - 1), ncol = H)
+    m2.L.i <- matrix(NA, nrow = Ti - Ki - H - max(q1, q2 - 1), ncol = H)
     
     # compute losses
     for (h in 1:H) {
-      for (t in 1:Ti) {
+      for (t in 1:(Ti - Ki - H - max(q1, q2 - 1))) {
         TL <- length(Y[[i]])
-        yi <- Y[[i]][-(1:q1)][(t + H - h + 1):(t + Ki + H - h)]
-        xi <- X[[i]][-(1:q1), ][(t + H - h + 1):(t + Ki + H - h),]
+        yi <- Y[[i]][-(1:max(q1, q2 - 1))][(t + H - h + 1):(t + Ki + H - h)]
+        xi <- X[[i]][-(1:max(q1, q2 - 1)), ][(t + H - h + 1):(t + Ki + H - h),]
         
         # yi lags
         yilags <- c()
@@ -401,9 +419,12 @@ ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
         beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
         beta.hat.adj[which(is.na(beta.hat.adj) == TRUE)] <- 0
         beta.hat.unadj <- matrix(coef(lmodi.unadj), nrow = 1)
+        beta.hat.unadj[which(is.na(beta.hat.unadj) == TRUE)] <- 0
+        
         
         yhat.adj <- Y[[i]][(t + Ki + H - h + 1 - q1):(t + Ki + H - h)]
         yhat.unadj <- Y[[i]][(t + Ki + H - h + 1 - q1):(t + Ki + H - h)]
+        
         for (j in 1:h) {
           
           x.xlags.for.pred <- X[[i]][-(1:q1), ][t + Ki + H - h + j, ]
@@ -418,14 +439,20 @@ ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
           x.xlags.for.pred.D.i.t <- x.xlags.for.pred * D.i.t
           yilags.for.pred.D.i.t <- yhat.adj[j:(j + q1 - 1)] * D.i.t
           
+          yhat.adj.h <- beta.hat.adj %*% matrix(c(1, yhat.adj[j:(j + q1 - 1)], 
+                                                  x.xlags.for.pred, 
+                                                  yilags.for.pred.D.i.t,
+                                                  x.xlags.for.pred.D.i.t,
+                                                  D.i.t))
+          yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.adj[j:(j + q1 - 1)], 
+                                                      x.xlags.for.pred))
           
-          yhat.adj <- c(yhat.adj, beta.hat.adj %*% matrix(c(1,   yhat.adj[j:(j + q1 - 1)], 
-                                                            x.xlags.for.pred, 
-                                                            yilags.for.pred.D.i.t,
-                                                            x.xlags.for.pred.D.i.t,
-                                                            D.i.t)))
-          yhat.unadj <- c(yhat.unadj, beta.hat.unadj %*% matrix(c(1, yhat.adj[j:(j + q1 - 1)], 
-                                                                  x.xlags.for.pred)))
+          if (t + Ki + H - h == Tstari & i >= 3 & h == 1) {
+            yhat.adj.h <- yhat.adj.h + alpha.wadj
+          }
+          
+          yhat.adj <- c(yhat.adj, yhat.adj.h)
+          yhat.unadj <- c(yhat.unadj, yhat.unadj.h)
         }
         
         # losses
@@ -471,12 +498,17 @@ ps.indic.W.decay.nls <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
     Ki <- K[i]
     Tstari <- Tstar[i]
     
-    m1.L.i <- matrix(NA, nrow = Ti, ncol = H)
-    m2.L.i <- matrix(NA, nrow = Ti, ncol = H)
+    if (i > 2) {
+      sym <- ols.est.alphahat(Tstar = Tstar[c(i, 2:(i - 1))], X = X[c(i, 2:(i - 1))], Y = Y[c(i, 2:(i - 1))])
+      alpha.wadj <- sym$est[2]
+    }
+    
+    m1.L.i <- matrix(NA, nrow = Ti - Ki - H, ncol = H)
+    m2.L.i <- matrix(NA, nrow = Ti - Ki - H, ncol = H)
     
     # compute losses
     for (h in 1:H) {
-      for (t in 1:Ti) {
+      for (t in 1:(Ti - Ki - H)) {
         
         yi <- Y[[i]][-1][(t + H - h + 1):(t + Ki + H - h)]
         xi <- X[[i]][-1, ][(t + H - h + 1):(t + Ki + H - h),]
@@ -496,15 +528,23 @@ ps.indic.W.decay.nls <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
         beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
         beta.hat.adj[which(is.na(beta.hat.adj) == TRUE)] <- 0
         beta.hat.unadj <- matrix(coef(lmodi.unadj), nrow = 1)
+        beta.hat.unadj[which(is.na(beta.hat.unadj) == TRUE)] <- 0
         
         yhat.adj <- tail(yi, 1)
         yhat.unadj <- tail(yi, 1)
         for (j in 1:h) {
-          yhat.adj <- c(yhat.adj, 
-                        beta.hat.adj[1] + exp(-(t + Ki + H - h + j - Tstari - 1) * beta.hat.adj[2]) * beta.hat.adj[3] + 
-                          yhat.adj[j] * beta.hat.adj[4] + 
-                          X[[i]][-1, ][t + Ki + H - h + j, ] %*% matrix(beta.hat.adj[-(1:4)]))
-          yhat.unadj <- c(yhat.unadj, beta.hat.unadj %*% matrix(c(1, yhat.unadj[j], X[[i]][-1, ][t + Ki + H - h + j, ])))
+          
+          yhat.adj.h <-  beta.hat.adj[1] + exp(-(t + Ki + H - h + j - Tstari - 1) * beta.hat.adj[2]) * beta.hat.adj[3] + 
+            yhat.adj[j] * beta.hat.adj[4] + 
+            X[[i]][-1, ][t + Ki + H - h + j, ] %*% matrix(beta.hat.adj[-(1:4)])
+          yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.unadj[j], X[[i]][-1, ][t + Ki + H - h + j, ]))
+          
+          if (t + Ki + H - h == Tstari & i >= 3 & h == 1) {
+            yhat.adj.h <- yhat.adj.h + alpha.wadj
+          }
+          
+          yhat.adj <- c(yhat.adj, yhat.adj.h)
+          yhat.unadj <- c(yhat.unadj, yhat.unadj.h)
         }
         
         # losses
@@ -567,6 +607,7 @@ USD <- na.omit(USD)
 USD <- USD %>% mutate(Date = rownames(USD))
 
 ## 13-Week T-Bill
+# ~/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Research/Post-Shock Prediction/
 TB <- read.csv('^IRX.csv', na.strings = 'null')
 TB <- na.omit(TB)
 
@@ -615,7 +656,7 @@ H <- 10
 # training sample size
 K <- 30
 # number of days after shock date
-L <- 7
+L <- 30
 
 #### Monday, March 17th, 2008
 
@@ -834,18 +875,9 @@ res2 <- ps.indic.W.decay(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H, Ts =
 res3 <- ps.indic.W.complicate(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), 
                               q1 = 2, q2 = 2, 
                               H = H, Ts = Ts, ell = 4, B = 200, bw = 4)
-res2 <- ps.indic.W.decay.nls(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H, Ts = Ts, ell = 4, B = 200, bw = 4)
 
 ps1 <- res1$ps
 ps2 <- res2$ps
 ps3 <- res3$ps
 
-fisher <- function(ps) {
-  abs(1 - pchisq( -2 * sum(log(ps[-1] + 1e-10)) , df = 2 * length(ps[-1])) - ps[1])
-}
-Pearson <- function(ps) {
-  abs(1 - pchisq( -2 * sum(log(1 - ps[-1] + 1e-10)) , df = 2 * length(ps[-1])) - ps[1])
-}
 
-fisher(ps1)
-Pearson(ps1)
