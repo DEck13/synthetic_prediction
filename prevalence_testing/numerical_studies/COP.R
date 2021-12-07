@@ -352,7 +352,7 @@ ps.indic.W.decay <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05, 
 }
 
 # functions that return alpha.hat and synthetic weights for decaying shock effects
-ps.indic.W.complicate <- function(Tstar, Y, X, K, H, Ts,
+ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
                                   q1, q2, 
                                   ell, B, bw, sig.levl = .05, retro = TRUE) {
   
@@ -698,18 +698,18 @@ for (d in 1:nrow(TS2)) {
 }
 co.D <- as.matrix(co.D)
 
-m_COP.complicate <- lm(TS2$Y ~ as.matrix(TS2[, c(2:7, 9:14)]) + co.D + TS2$start_day_20080317)
+m_COP.dynamic <- lm(TS2$Y ~ as.matrix(TS2[, c(2:7, 9:14)]) + co.D + TS2$start_day_20080317)
 
 # AICs
 AIC.20080314.null <- AIC(m_COP_3_17.null)
 AIC.20080314.permanent <- AIC(m_COP_3_17)
 AIC.20080314.decay1 <- AIC(m_COP.exp)
 AIC.20080314.decay2 <- AIC(m_COP.decay)
-AIC.20080314.complicate <- AIC(m_COP.complicate)
+AIC.20080314.dynamic <- AIC(m_COP.dynamic)
 
 AIC.20080314 <- c(AIC.20080314.null, AIC.20080314.permanent, 
                   AIC.20080314.decay1, AIC.20080314.decay2,
-                  AIC.20080314.complicate)
+                  AIC.20080314.dynamic)
 
 #### 2008 shock effects
 
@@ -739,7 +739,7 @@ for (d in 1:nrow(TS3)) {
 }
 co.D <- as.matrix(co.D)
 
-m_COP.complicate <- lm(TS3$Y ~ as.matrix(TS3[, c(2:7, 9:14)]) + co.D + TS3$start_day_20080908)
+m_COP.dynamic <- lm(TS3$Y ~ as.matrix(TS3[, c(2:7, 9:14)]) + co.D + TS3$start_day_20080908)
 
 
 # AICs
@@ -747,11 +747,11 @@ AIC.20080908.null <- AIC(m_COP_null)
 AIC.20080908.permanent <- AIC(m_COP_Sept_08) 
 AIC.20080908.decay1 <- AIC(m_COP_exp) 
 AIC.20080908.decay2 <- AIC(m_COP_decay) 
-AIC.20080908.complicate <- AIC(m_COP.complicate) 
+AIC.20080908.dynamic <- AIC(m_COP.dynamic) 
 
 AIC.20080908 <- c(AIC.20080908.null, AIC.20080908.permanent, 
                   AIC.20080908.decay1, AIC.20080908.decay2,
-                  AIC.20080908.complicate)
+                  AIC.20080908.dynamic)
 
 
 #### Thursday, November 27, 2014
@@ -783,7 +783,7 @@ for (d in 1:nrow(TS4)) {
 }
 co.D <- as.matrix(co.D)
 
-m_COP.complicate <- lm(TS4$Y ~ as.matrix(TS4[, c(2:7, 9:14)]) + co.D + TS4$start_day_20141127)
+m_COP.dynamic <- lm(TS4$Y ~ as.matrix(TS4[, c(2:7, 9:14)]) + co.D + TS4$start_day_20141127)
 
 
 # AICs of different models
@@ -791,11 +791,11 @@ AIC.20141127.null <- AIC(m_COP_11_27_14.null)
 AIC.20141127.permanent <- AIC(m_COP_11_27_14) 
 AIC.20141127.decay1 <- AIC(m_COP_exp) 
 AIC.20141127.decay2 <- AIC(m_COP_decay) 
-AIC.20141127.complicate <- AIC(m_COP.complicate) 
+AIC.20141127.dynamic <- AIC(m_COP.dynamic) 
 
 AIC.20141127 <- c(AIC.20141127.null, AIC.20141127.permanent, 
                   AIC.20141127.decay1, AIC.20141127.decay2,
-                  AIC.20141127.complicate)
+                  AIC.20141127.dynamic)
 
 
 #### The March 9th, 2020 shock effect:
@@ -828,18 +828,18 @@ for (d in 1:nrow(TS4)) {
 }
 co.D <- as.matrix(co.D)
 
-m_COP.complicate <- lm(TS1$Y ~ as.matrix(TS1[, c(2:7, 9:14)]) + co.D + TS1$start_day_20200309)
+m_COP.dynamic <- lm(TS1$Y ~ as.matrix(TS1[, c(2:7, 9:14)]) + co.D + TS1$start_day_20200309)
 
 
 AIC.20200309.null <- AIC(m_COP_03_09_20.null)
 AIC.20200309.permanent <- AIC(m_COP_03_09_20)
 AIC.20200309.decay1 <- AIC(m_COP_exp)
 AIC.20200309.decay2 <- AIC(m_COP_decay)
-AIC.20200309.complicate <- AIC(m_COP.complicate)
+AIC.20200309.dynamic <- AIC(m_COP.dynamic)
 
 AIC.20200309 <- c(AIC.20200309.null, AIC.20200309.permanent, 
                   AIC.20200309.decay1, AIC.20200309.decay2,
-                  AIC.20200309.complicate)
+                  AIC.20200309.dynamic)
 
 AICs <- rbind(AIC.20080314, AIC.20080908, AIC.20141127)
 rownames(AICs) <- c('TS2', 'TS3', 'TS4')
@@ -872,7 +872,7 @@ for (i in 1:4) {
 
 res1 <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H, Ts = Ts, ell = 4, B = 200, bw = 4)
 res2 <- ps.indic.W.decay(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H, Ts = Ts, ell = 4, B = 200, bw = 4)
-res3 <- ps.indic.W.complicate(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), 
+res3 <- ps.indic.W.dynamic(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), 
                               q1 = 2, q2 = 2, 
                               H = H, Ts = Ts, ell = 4, B = 200, bw = 4)
 

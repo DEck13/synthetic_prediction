@@ -286,9 +286,9 @@ est <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = K,
                             H = 10, Ts = Ts, ell = 4, B = 200, bw = 4)
  \end{verbatim}
  
- \section{\texttt{ps.indic.W.complicate}}
+ \section{\texttt{ps.indic.W.dynamic}}
  
- \texttt{ps.indic.W.complicate(Tstar,Y,X,K,H,Ts,q1,q2,ell,B,bw,sig.levl)} performs the same functionality as  \texttt{ps.indic.W.permanent} but with a different model as 
+ \texttt{ps.indic.W.dynamic(Tstar,Y,X,K,H,Ts,q1,q2,ell,B,bw,sig.levl)} performs the same functionality as  \texttt{ps.indic.W.permanent} but with a different model as 
  \begin{align*}
  	y_{i,t}
  	&= \left(\eta_i + \sum_{j=1}^{q_1} \phi_{i,j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1} \right) (1-D_{i,t}) + f(\mc{F}_{i, t} \alpha_i)D_{i,t} + \varepsilon_{i,t}  \\
