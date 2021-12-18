@@ -841,25 +841,41 @@ $K_i+H+T_i^* > T_i+K_i+H$
 \end{align*}
 
 
+\newpage
+
 \section{Numerical Examples}
 
 
 
 \begin{table}[H]
-	\caption{Results for Cocono Philips}
+	\caption{Results for Conoco Philips ($n=3$), $\mbf{W}^* = (0.221, 0, 0.779)$ from scaled covariates}
 \begin{center}
   \begin{tabular}{cccccccccr}
-     $L$ ($T_i-T^*_i$) & Model & $p_1$ & $\mathbf{W}^*=(0,0,1)$ & $|\hat{p}-p_1|$ & Vote & weighted Vote  & weighted  AIC\\
+     $L$ ($T_i-T^*_i$) & Model & $p_1$ &  $|\hat{p}-p_1|$ & Vote & weighted Vote  & weighted  AIC\\
      \hline 
-     7 & Permanent & 1 & & 0 & \textcolor{red}{0}  & \textcolor{red}{0} & $212.554$ \\
-     7 & Decaying & 0 && $0.395$ &  0 (incorrect)  & 0 (incorrect) & $214.447$ \\
-      7 & Dynamic & 1 && $0.090$   &  \textcolor{red}{0} & \textcolor{red}{0}  & 198.307 \\[.2cm]
-     15 & Permanent & 1 &  & 0 & \textcolor{red}{0} &  \textcolor{red}{0}    & 249.637 \\
-     15 & Decaying & 0 & & 0 & \textcolor{red}{1} & \textcolor{red}{1}   & $250.107$  \\
-     15 & Dynamic & 1 & & 0 & \textcolor{red}{0}  & \textcolor{red}{0}  & $232.084$\\[.2cm]
-     30 & Permanent & 1 &  & $0$ &  \textcolor{red}{0} & \textcolor{red}{0}  &  302.089 \\
-     30 & Decaying & 0 & & 0 & \textcolor{red}{1}  & \textcolor{red}{1}  &  $302.432$ \\
-     30 & Dynamic & 1 & & 0 & \textcolor{red}{0} &\textcolor{red}{0}  & 298.345
+     7 & Permanent & 1  & 0 & \textcolor{red}{0}  & \textcolor{red}{0} & $289.61$ \\      7 & Dynamic & 1 & $0$   &  \textcolor{red}{0} & \textcolor{red}{0}  & 420.86 \\[.2cm]
+     15 & Permanent & 1   & 0 & \textcolor{red}{0} &  \textcolor{red}{0}    & 294.74 \\
+     15 & Dynamic & 1 & 0 & \textcolor{red}{0}  & \textcolor{red}{0}  & $416.12$\\[.2cm]
+     30 & Permanent & 1   & $0$ &  \textcolor{red}{0} & \textcolor{red}{0}  &  303.88 \\
+     30 & Dynamic & 1  & 0 & \textcolor{red}{0} &\textcolor{red}{0}  & 435.22
+  \end{tabular}
+\end{center}	
+\end{table}
+
+
+
+\begin{table}[H]
+	\caption{Results for Conoco Philips ($n=5$), $\mbf{W}^* = (0, 0, 0, 0.363, 0.637)$ from scaled covariates}
+\begin{center}
+  \begin{tabular}{cccccccccr}
+     $L$ ($T_i-T^*_i$) & Model & $p_1$  & $|\hat{p}-p_1|$ & Vote & weighted Vote  & weighted  AIC\\
+     \hline 
+     7 & Permanent & 1  & 0 & \textcolor{red}{0}  & \textcolor{red}{0} & $236.21$ \\
+      7 & Dynamic & 1 & $0$   &  \textcolor{red}{0} & \textcolor{red}{0}  & $324.91$ \\[.2cm]
+     15 & Permanent & 1   & 0 & \textcolor{red}{0} &  \textcolor{red}{0}    & 273.95 \\
+     15 & Dynamic & 1  & 0 & \textcolor{red}{0}  & \textcolor{red}{0}  & $370.83$\\[.2cm]
+     30 & Permanent & 1   & $0$ &  \textcolor{red}{0} & \textcolor{red}{0}  &  346.17 \\
+     30 & Dynamic & 1 & 0 & \textcolor{red}{0} &\textcolor{red}{0}  & 451.16
   \end{tabular}
 \end{center}	
 \end{table}

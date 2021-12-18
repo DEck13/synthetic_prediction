@@ -280,8 +280,8 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
 
 # functions that return alpha.hat and synthetic weights for decaying shock effects
 ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
-                               q1, q2, 
-                               ell, B, bw, sig.levl = .05, retro = TRUE,
+                                  q1, q2, 
+                                  ell, B, bw, sig.levl = .05, retro = TRUE,
                                nolag.i.x = NA, selfW = NA, scale = FALSE) {
   
   n <- length(Y) - 1
@@ -445,7 +445,7 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
           }
         }
         
-        
+
         
         # losses
         m1.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.adj[h + q1])
@@ -480,7 +480,6 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
 
 # set working directory
 setwd("~/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Research/Post-Shock Prediction/")
-
 
 ## Conoco Phillips
 getSymbols('COP', from = "2000-01-01")
@@ -550,6 +549,7 @@ for (i in 1:length(tom)) {
 Y <- COP_close$COP_Close[-1]
 
 # data frame
+# important: the date of Y is the date in the dataframe plus one day
 COP_close <- data.frame(COP_close[-nrow(COP_close), ], Y)
 
 COP_close <- data.frame(COP_close[-1, ], COP_close[-nrow(COP_close), -c(1,8)])
@@ -576,14 +576,12 @@ TS2 <- COP_close[(start - (1 + 15 + K + H)):(start + L),]
 # inflation adjustment
 TS2[, 2:8] <- TS2[, 2:8] * inflation_adj$dollars_2020[inflation_adj$year == 2008] 
 
-
 m_COP_3_17.null <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + 
-                   USD_Close + TB_Close, 
-                 data = TS2)
+                        USD_Close + TB_Close, 
+                      data = TS2)
 m_COP_3_17 <- lm(Y ~ COP_Close + start_day_20080317 + GSPC_Close + WTI_Close + 
                    USD_Close + TB_Close, 
                  data = TS2)
-
 # dynamic
 co.D <- c()
 for (d in 1:nrow(TS2)) {
@@ -603,16 +601,13 @@ AIC.20080314 <- c(AIC.20080314.null, AIC.20080314.permanent,
 
 #### 2008 shock effects
 
-# shock effect date
+# 1st shock effect date
 start <- which(COP_close$Date == "2008-09-08")
 start_day_20080908 <- as.numeric(1:nrow(COP_close) %in% start:(start + L))
 COP_close <- COP_close %>% mutate(start_day_20080908 = start_day_20080908)
 TS3 <- COP_close[(start - (1 + 15 + K + H)):(start + L),]
 # adjust for inflation
 TS3[, 2:8] <- TS3[, 2:8] * inflation_adj$dollars_2020[inflation_adj$year == 2008] 
-
-start2 <- which(TS3$Date == "2008-09-08")
-expterm <- exp(-(1:nrow(TS3) - start2)) * ifelse(1:nrow(TS3) >= start2, yes = 1, no = 0)
 
 # models
 m_COP_null <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + USD_Close + TB_Close, data = TS3)
@@ -632,8 +627,75 @@ AIC.20080908.null <- AIC(m_COP_null)
 AIC.20080908.permanent <- AIC(m_COP_Sept_08) 
 AIC.20080908.dynamic <- AIC(m_COP.dynamic) 
 
-AIC.20080908 <- c(AIC.20080908.null, AIC.20080908.permanent,
+AIC.20080908 <- c(AIC.20080908.null, AIC.20080908.permanent, 
                   AIC.20080908.dynamic)
+
+# 2nd shock effect date
+start <- which(COP_close$Date == "2008-09-12")
+start_day_20080912 <- as.numeric(1:nrow(COP_close) %in% start:(start + L))
+COP_close <- COP_close %>% mutate(start_day_20080912 = start_day_20080912)
+TS4 <- COP_close[(start - (1 + 15 + K + H)):(start + L),]
+# inflation adjustment
+TS4[, 2:8] <- TS4[, 2:8] * inflation_adj$dollars_2020[inflation_adj$year == 2008] 
+
+# models
+m_COP_null <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + USD_Close + TB_Close + 
+                   ifelse(TS4$Date == "2008-09-08", yes = 1, no = 0),  data = TS4)
+m_COP_Sept_12 <- lm(Y ~ COP_Close + start_day_20080912 + GSPC_Close + WTI_Close + USD_Close + TB_Close + 
+                      ifelse(TS4$Date == "2008-09-08", yes = 1, no = 0), data = TS4)
+# dynamic
+co.D <- c()
+for (d in 1:nrow(TS4)) {
+  co.D <- rbind(co.D, TS4[d, c(2:7, 9:14)] * TS3$start_day_20080908[d])
+}
+co.D <- as.matrix(co.D)
+
+m_COP.dynamic <- lm(TS4$Y ~ as.matrix(TS4[, c(2:7, 9:14)]) + co.D + TS4$start_day_20080912 + ifelse(TS4$Date == "2008-09-08", yes = 1, no = 0))
+
+# AICs
+AIC.20080912.null <- AIC(m_COP_null) 
+AIC.20080912.permanent <- AIC(m_COP_Sept_12) 
+AIC.20080912.dynamic <- AIC(m_COP.dynamic) 
+
+AIC.20080912 <- c(AIC.20080912.null, AIC.20080912.permanent, 
+                  AIC.20080912.dynamic)
+
+
+# 3rd shock effect date
+start <- which(COP_close$Date == "2008-09-26")
+start_day_20080926 <- as.numeric(1:nrow(COP_close) %in% start:(start + L))
+COP_close <- COP_close %>% mutate(start_day_20080926 = start_day_20080926)
+TS5 <- COP_close[(start - (1 + 15 + K + H)):(start + L),]
+# adjust for inflation
+TS5[, 2:8] <- TS5[, 2:8] * inflation_adj$dollars_2020[inflation_adj$year == 2008] 
+
+# models
+m_COP_null <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + USD_Close + TB_Close + 
+                   ifelse(TS4$Date == "2008-09-08", yes = 1, no = 0) + 
+                   ifelse(TS4$Date == "2008-09-12", yes = 1, no = 0), data = TS5)
+m_COP_Sept_26 <- lm(Y ~ COP_Close + start_day_20080926 + GSPC_Close + WTI_Close + USD_Close + TB_Close +
+                    ifelse(TS4$Date == "2008-09-08", yes = 1, no = 0) + 
+                      ifelse(TS4$Date == "2008-09-12", yes = 1, no = 0), data = TS5)
+# dynamic
+co.D <- c()
+for (d in 1:nrow(TS5)) {
+  co.D <- rbind(co.D, TS5[d, c(2:7, 9:14)] * TS5$start_day_20080926[d])
+}
+co.D <- as.matrix(co.D)
+
+m_COP.dynamic <- lm(TS5$Y ~ as.matrix(TS5[, c(2:7, 9:14)]) + co.D + TS5$start_day_20080926 +
+                      ifelse(TS4$Date == "2008-09-08", yes = 1, no = 0) + 
+                      ifelse(TS4$Date == "2008-09-12", yes = 1, no = 0))
+
+
+# AICs
+AIC.20080926.null <- AIC(m_COP_null) 
+
+AIC.20080926.permanent <- AIC(m_COP_Sept_08) 
+AIC.20080926.dynamic <- AIC(m_COP.dynamic) 
+
+AIC.20080926 <- c(AIC.20080926.null, AIC.20080926.permanent, 
+                  AIC.20080926.dynamic)
 
 
 #### Thursday, November 27, 2014
@@ -643,22 +705,22 @@ start <- which(COP_close$Date == "2014-11-26")
 start_day_20141127 <- as.numeric(1:nrow(COP_close) %in% start:(start + L))
 COP_close <- COP_close %>% mutate(start_day_20141127 = start_day_20141127)
 # time window
-TS4 <- COP_close[(start - (1 + 15 + K + H)):(start + L),]
+TS6 <- COP_close[(start - (1 + 15 + K + H)):(start + L),]
 # adjust for inflation
-TS4[, 2:8] <- TS4[, 2:8] * inflation_adj$dollars_2020[inflation_adj$year == 2014] 
+TS6[, 2:8] <- TS6[, 2:8] * inflation_adj$dollars_2020[inflation_adj$year == 2014] 
 
 # models
-m_COP_11_27_14.null <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + USD_Close + TB_Close, data = TS4)
+m_COP_11_27_14.null <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + USD_Close + TB_Close, data = TS6)
 m_COP_11_27_14 <- lm(Y ~ COP_Close + start_day_20141127 + GSPC_Close + WTI_Close + USD_Close + TB_Close, 
-                     data = TS4)
+                     data = TS6)
 # dynamic
 co.D <- c()
-for (d in 1:nrow(TS4)) {
-  co.D <- rbind(co.D, TS4[d, c(2:7, 9:14)] * TS4$start_day_20141127[d])
+for (d in 1:nrow(TS6)) {
+  co.D <- rbind(co.D, TS6[d, c(2:7, 9:14)] * TS6$start_day_20141127[d])
 }
 co.D <- as.matrix(co.D)
 
-m_COP.dynamic <- lm(TS4$Y ~ as.matrix(TS4[, c(2:7, 9:14)]) + co.D + TS4$start_day_20141127)
+m_COP.dynamic <- lm(TS4$Y ~ as.matrix(TS6[, c(2:7, 9:14)]) + co.D + TS6$start_day_20141127)
 
 
 # AICs of different models
@@ -667,7 +729,6 @@ AIC.20141127.permanent <- AIC(m_COP_11_27_14)
 AIC.20141127.dynamic <- AIC(m_COP.dynamic) 
 
 AIC.20141127 <- c(AIC.20141127.null, AIC.20141127.permanent, 
-                  AIC.20141127.decay1, AIC.20141127.decay2,
                   AIC.20141127.dynamic)
 
 
@@ -681,14 +742,14 @@ COP_close <- COP_close %>% mutate(start_day_20200309 = start_day_20200309)
 TS1 <- COP_close[(start - (1 + 15 + K + H)):(start + L),]
 
 m_COP_03_09_20.null <- lm(Y ~ COP_Close + GSPC_Close + WTI_Close + 
-                       USD_Close + TB_Close,  
-                     data = TS1)
+                            USD_Close + TB_Close,  
+                          data = TS1)
 m_COP_03_09_20 <- lm(Y ~ COP_Close + start_day_20200309 + GSPC_Close + WTI_Close + 
                        USD_Close + TB_Close,  
                      data = TS1)
 # dynamic
 co.D <- c()
-for (d in 1:nrow(TS4)) {
+for (d in 1:nrow(TS1)) {
   co.D <- rbind(co.D, TS1[d, c(2:7, 9:14)] * TS1$start_day_20200309[d])
 }
 co.D <- as.matrix(co.D)
@@ -705,28 +766,33 @@ AIC.20200309 <- c(AIC.20200309.null, AIC.20200309.permanent,
 
 
 # Ti
-Ts <- c(nrow(TS1), nrow(TS2), nrow(TS3), nrow(TS4))
+Ts <- c(nrow(TS1), nrow(TS2), nrow(TS3), nrow(TS4), nrow(TS5), nrow(TS6))
 # Tstar
 Tstar <- c(which(TS1$Date == "2020-03-05"),
            which(TS2$Date == "2008-03-13"),
            which(TS3$Date == "2008-09-05"), 
+           which(TS4$Date == "2008-09-11"), 
+           which(TS5$Date == "2008-09-25"), 
            which(TS6$Date == "2014-11-25"))
 # Y
 Y <- c()
 X <- c()
-TS <- list(TS1, TS2, TS3, TS4)
-for (i in 1:4) {
+TS <- list(TS1, TS2, TS3, TS4, TS5, TS6)
+for (i in 1:6) {
   Y[[i]] <- TS[[i]]$Y
   X[[i]] <- as.matrix(TS[[i]][, 3:7])
 }
 
-res1 <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H,
-                             Ts = Ts, ell = 4, B = 200, bw = 4, scale = TRUE)
-res2 <- ps.indic.W.dynamic(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), 
-                              q1 = 2, q2 = 2, 
-                              H = H, Ts = Ts, ell = 4, B = 200, bw = 4,
-                           scale = TRUE)
+nolag.i.x <- list(c(4, 5), list(ifelse(TS4$Date == "2008-09-08", yes = 1, no = 0), 
+                                cbind(ifelse(TS5$Date == "2008-09-08", yes = 1, no = 0),
+                                      ifelse(TS5$Date == "2008-09-12", yes = 1, no = 0))))
 
+res1 <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = rep(K, 6), H = H, Ts = Ts, ell = 4, B = 200, bw = 4, 
+                             scale = TRUE)
+res2 <- ps.indic.W.dynamic(Tstar = Tstar, Y = Y, X = X, K = rep(K, 6), 
+                              q1 = 2, q2 = 2, 
+                              H = H, Ts = Ts, ell = 4, B = 200, bw = 4, nolag.i.x = nolag.i.x,
+                           scale = TRUE)
 res1$ps
 sum(res1$ps[-1] * res1$W)
 sum(res1$Is[-1] * res1$W)
@@ -735,22 +801,22 @@ res2$ps
 sum(res2$ps[-1] * res2$W)
 sum(res2$Is[-1] * res2$W)
 
-AICs <- rbind(AIC.20080314, AIC.20080908,  AIC.20141127)
-rownames(AICs) <- c('TS2', 'TS3', 'TS4')
+
+AICs <- rbind(AIC.20080314, AIC.20080908, AIC.20080912, AIC.20080926, AIC.20141127)
+rownames(AICs) <- c('TS2', 'TS3', 'TS4', 'TS5', 'TS6')
 colnames(AICs) <- c('null', 'Permanent',  'dynamic')
 
 apply(AICs, 1, which.min)
 AICs <- rbind(AICs, apply(AICs, 2, mean))
-rownames(AICs)[4] <- 'Mean'
+rownames(AICs)[6] <- 'Mean'
 
 
 wAICs <- c()
 for (j in 1:3) {
-  wAICs <- c(wAICs, sum(AICs[1:3, j] *  res1$W))
+  wAICs <- c(wAICs, sum(AICs[1:5, j] *  res1$W))
 }
 
 AICs <- rbind(AICs, wAICs, AIC.20200309)
-rownames(AICs)[c(5, 6)] <- c('wAIC', 'TS1' )
+rownames(AICs)[c(7, 8)] <- c('wAIC', 'TS1' )
 xtable(AICs)
-
 

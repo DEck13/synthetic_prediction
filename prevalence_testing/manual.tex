@@ -32,6 +32,7 @@ Suppose the donor pool size is $n$. \texttt{scm(X,Tstar)} takes \texttt{X} and \
 \begin{itemize}
 	\item \texttt{X} is a list of covariates with length $n+1$, where the first element of the list should be the covariates of the time series of interest and the remaining elements of the list are the covariates of the donors. The covariates should be in the class of \texttt{matrix} with size $T_i\times p$ for $i = 1, \ldots, n+1$.
 	\item \texttt{Tstar} is a vector of shock-effect time points when the shock occurs at $T^*_i+1$ for $i = 1, \ldots, n+1$. The size of \texttt{Tstar} should be $n+1$.
+	\item The default for \texttt{scale} is \texttt{scale = FALSE}. If \texttt{scale = TRUE}, the function  collects $\mc{Q}=\{\mathbf{x}_{i, T_i^*+1}\colon i = 1, \ldots, n+1\}$ and scale and center within $\mc{Q}$, i.e., center by the sample mean of $\{x_{i, j, T_i^*+1} \colon i = 1, \ldots, n+1\}$, where $j$ index stands for the $j$th variable.
 \end{itemize}
 
 \emph{Examples:}
@@ -224,6 +225,7 @@ ols.est.alphahat(Tstar,Y,X)
 	\item \texttt{bw} is the bandwidth of computation for HAC estimator. See details in \texttt{taSPA.mhfc}.
 	\item \texttt{sig.levl} is the significance level for the test. It is 0.05 in default.
 	\item \texttt{retro} is a logical value indicating \texttt{TRUE} or \texttt{FALSE}. If  \texttt{TRUE}, the $p$-value for the time series of interest will be computed. If  \texttt{FALSE}, only the $p$-values of donors will be computed. This argument is intended for retrospective data analysis where the $p$-value of the time series of interest is needed.
+	\item \texttt{scale} option can allow users to compute weights based on scaled covariates or not. See details in \texttt{scm}.
 \end{itemize}
  
  The output of this function is
@@ -288,7 +290,7 @@ est <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = K,
  
  \section{\texttt{ps.indic.W.dynamic}}
  
- \texttt{ps.indic.W.dynamic(Tstar,Y,X,K,H,Ts,q1,q2,ell,B,bw,sig.levl)} performs the same functionality as  \texttt{ps.indic.W.permanent} but with a different model as 
+ \texttt{ps.indic.W.dynamic(Tstar,Y,X,K,H,Ts,q1,q2,ell,B,bw,sig.levl)} performs the similar functionality as  \texttt{ps.indic.W.permanent} but with a different model as 
  \begin{align*}
  	y_{i,t}
  	&= \left(\eta_i + \sum_{j=1}^{q_1} \phi_{i,j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1} \right) (1-D_{i,t}) + f(\mc{F}_{i, t} \alpha_i)D_{i,t} + \varepsilon_{i,t}  \\
@@ -298,31 +300,10 @@ est <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = K,
  where $D_{i,t}=I(t > T_i^*+1)$. Note that only $\eta_i, \alpha_i - \eta_i, \phi_{i,j}, \bs{\theta}_{i, j+1}, \tilde{\phi}_{i,j}-\phi_{i,j}, \tilde{\bs{\theta}}_{i,j+1}-\bs{\theta}_{i, j+1}$ are estimable.
 The role of the shock in this model is that the dynamics of $y_{i,t}$ change after the shock. Note that to prepare the lagged response and covariates, the effective sample size is $T_i-\max\{q_1, q_2-1\}$.  Note that for each element of \texttt{Ts}, it should be at least greater than or equal to $K_i + H + \max\{q_1, q_2-1\}+1$.
 
+Additional functionality of \texttt{ps.indic.W.dynamic} compared to \texttt{ps.indic.W.permanent} is the specification of \texttt{nolag.i.x}, which allows users to add extra covariates that are not wished to be lagged in the model of $y_{i,t}$. \texttt{nolag.i.x} should be a list object of length two with the first element being a vector of indices referencing to the donor. The second element should be a list object with elements being the added covariates (of matrix or vector type) that are not wished to be lagged. 
+
 Examples are similar to those for \texttt{ps.indic.W.permanent}.
 
-\section{\texttt{ps.indic.W.decay}}
- 
- \texttt{ps.indic.W.decay(Tstar,Y,X,K,H,Ts,ell,B,bw,sig.levl)} performs the same functionality as  \texttt{ps.indic.W.permanent} but with a different model as 
- \begin{align*}
- 	y_{i,t} &= \eta_i + \phi_i y_{i, t-1}  + \bs{x}_{i, t}\bs{\theta} + \xi_i D_{i,t} + \varepsilon_{i,t},\\
- 	\xi_i &= \alpha_i \cdot e^{-(t-T_i^*-1)} \\
- 	\alpha_i & = \mu_{\alpha} + \bs{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
- \end{align*}
- where $D_{i,t}=I(t > T_i^*+1)$. Note that only $\eta_i, \phi_i, \alpha_i, \bs{\theta}$ are estimable. This model captures the type of the shock that has exponential decay.
- 
- Examples are similar to those for \texttt{ps.indic.W.permanent}.
- 
- \section{\texttt{ps.indic.W.decay.nls}}
- 
- \texttt{ps.indic.W.decay.nls(Tstar,Y,X,K,H,Ts,ell,B,bw,sig.levl)} performs the same functionality as  \texttt{ps.indic.W.permanent} but with a different model as 
- \begin{align*}
- 	y_{i,t} &= \eta_i + \phi_i y_{i, t-1}  + \bs{x}_{i, t}\bs{\theta} + \xi_i D_{i,t} + \varepsilon_{i,t},\\
- 	\xi_i &= \alpha_i \cdot e^{-c(t-T_i^*-1)} \\
- 	\alpha_i & = \mu_{\alpha} + \bs{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
- \end{align*}
- where $D_{i,t}=I(t > T_i^*+1)$. Note that only $\eta_i, \phi_i, \alpha_i, \bs{\theta},c$ are estimable. This model  is more general than \texttt{ps.indic.W.decay} with enabling estimability of the speed of the exponential decay, $c$. The estimation is based on \texttt{nls} function. Note that singularity problems may occur for this model when applied to complicate or large dataset.
- 
- Examples are similar to those for \texttt{ps.indic.W.permanent}.
 
 \bibliography{synthetic-prediction-notes.bib}
 \end{document}
