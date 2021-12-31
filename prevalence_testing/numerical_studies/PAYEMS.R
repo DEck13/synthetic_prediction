@@ -47,6 +47,11 @@ getSymbols("CPIAUCSL", src = 'FRED')
 ## https://fred.stlouisfed.org/series/FEDFUNDS: Consumer Price Index
 getSymbols("FEDFUNDS", src = 'FRED')
 
+## https://fred.stlouisfed.org/series/LNS12000031: Black Employment Count
+getSymbols("LNS12000031", src = 'FRED')
+
+
+
 ###          COVARIATES          ###
 ###             END              ###
 
@@ -79,7 +84,7 @@ shock_time_vec <- c('1957-04-01', ##Flu hits US
 
 ## Now, we take the outcome variable and covariates and smash them into a 
 ## large matrix, including lags of the covariates.
-datasets <- list(W825RC1, RPI, PCE, INDPRO, CPIAUCSL, FEDFUNDS)
+datasets <- list(W825RC1, RPI, PCE, INDPRO, CPIAUCSL, FEDFUNDS, LNS12000031)
 df <- PAYEMS
 for (i in 1:length(datasets)) {df <- merge(df, datasets[[i]])}
 
@@ -89,7 +94,7 @@ difflog_df <- data.frame(diff(as.matrix(log(df))))
 # We create lags of the covariates
 # https://stackoverflow.com/questions/38119225/debugging-function-to-create-multiple-lags-for-multiple-columns-dplyr
 
-difflog_df.lag <- shift(difflog_df, n=1:3, give.names = T)  ##column indexes of columns to be lagged as "[,startcol:endcol]", "n=1:3" specifies the number of lags (lag1, lag2 and lag3 in this case)
+difflog_df.lag <- shift(difflog_df, n=1:2, give.names = T)  ##column indexes of columns to be lagged as "[,startcol:endcol]", "n=1:3" specifies the number of lags (lag1, lag2 and lag3 in this case)
 
 # We we combine and original series and the lags
 merged <- bind_cols(difflog_df, difflog_df.lag)
@@ -108,17 +113,19 @@ merged <- subset(merged, select = -c(W825RC1,
                                     RPI, 
                                     PCE, 
                                     INDPRO, 
-                                    CPIAUCSL))
+                                    CPIAUCSL,
+                                    LNS12000031))
 
-#We have missing data in the late 1950s, so we are faced with a choice:
+
+#Finally, we have missing data in the late 1950s, so we are faced with a choice:
 
 #(1) We can drop all rows with NA entries, which will remove the 1950s donors.
 complete_cases_merged <- merged[complete.cases(merged),]
-paste('This a dataset of dimension', dim(complete_cases_merged)[1], 'by', dim(complete_cases_merged)[2])
+paste('This is a dataset of dimension', dim(complete_cases_merged)[1], 'by', dim(complete_cases_merged)[2])
 
-#(2) We can drop all columns with NA values
+#(2) We can drop all columns with NA values, which will drop some covariates, but keep all 5 donors.
 no_NA_cols_merged <- merged[ , colSums(is.na(merged)) == 0]
-paste('This a dataset of dimension', dim(no_NA_cols_merged)[1], 'by', dim(no_NA_cols_merged)[2])
+paste('This is a dataset of dimension', dim(no_NA_cols_merged)[1], 'by', dim(no_NA_cols_merged)[2])
 
 
 # And we're done!  Either of the two datasets above will work.  It's a question of whether we 
