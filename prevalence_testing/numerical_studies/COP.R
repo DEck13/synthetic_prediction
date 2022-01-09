@@ -754,3 +754,30 @@ rownames(AICs)[c(5, 6)] <- c('wAIC', 'TS1' )
 xtable(AICs)
 
 
+# plot shock transience
+setwd('~/Desktop/Research/synthetic prediction/')
+
+# data
+ts <- COP_close[(start - (1 + 15 + K + H)):nrow(COP_close),]
+
+# load package
+require('tikzDevice')
+# tex package specification
+options(tikzLatexPackages 
+        = c(getOption( "tikzLatexPackages" ),
+            "\\usepackage{amsmath,amsfonts,amsthm, palatino, mathpazo}"))
+# file setting
+tikz(file = 'COPtransience.tex', width = 5.5, height = 4, standAlone = TRUE)
+# plot
+plot(x = as.Date(ts$Date), y = ts$COP_Close, type = 'l',
+     xlab = 'Date $t$', ylab = 'Price $y_{1,t}$',
+     main = 'Shock transience of Conoco Phillips Stock Price $y_{1,t}$',
+     col = 'deepskyblue')
+# segments
+segments(x0 = as.Date("2020-03-09"), y0 = 30, y1 = 60, lty = 3, col = 'magenta')
+segments(x0 = as.Date("2020-03-06"), y0 = 30, y1 = 60, lty = 3, col = 'magenta')
+segments(x0 = as.Date("2020-03-06"), x1 = as.Date("2020-05-15"),
+         y0 = ts$COP_Close[which(ts$Date == as.Date("2020-03-06"))],
+         col = 'indianred1', lty = 4)
+# output
+dev.off()
