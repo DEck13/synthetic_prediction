@@ -44,17 +44,14 @@ getSymbols("INDPRO", src = 'FRED')
 ## https://fred.stlouisfed.org/series/CPIAUCSL: Consumer Price Index
 getSymbols("CPIAUCSL", src = 'FRED')
 
-## https://fred.stlouisfed.org/series/FEDFUNDS: Consumer Price Index
+## https://fred.stlouisfed.org/series/FEDFUNDS: Federal Funds Index
 getSymbols("FEDFUNDS", src = 'FRED')
 
 ## https://fred.stlouisfed.org/series/LNS12000031: Black Employment Count
-getSymbols("LNS12000031", src = 'FRED')
-
-
+getSymbols("LNS12000031", src = 'FRED') ######## NOTE: IF THIS is not super important as variable, let's drop it
 
 ###          COVARIATES          ###
 ###             END              ###
-
 
 
 
@@ -69,7 +66,7 @@ getSymbols("LNS12000031", src = 'FRED')
 
 # As a rule, when the shock occurs mid-month, we take that to be the shock-time, even though
 # the shock effect is distributed across that month as well as the following month(s)
-shock_time_vec <- c('1957-04-01', ##Flu hits US
+shock_time_vec <- c('1957-04-01', ## Flu hits US
                     '1958-08-01', ## Fed Funds rate increases from .68 to 1.53 in one month
                     '1973-10-01', ## OAPEC oil embargo begins
                     '1980-03-01', ## program announced on March 14th by Carter
