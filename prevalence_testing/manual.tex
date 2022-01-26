@@ -226,6 +226,7 @@ ols.est.alphahat(Tstar,Y,X)
 	\item \texttt{sig.levl} is the significance level for the test. It is 0.05 in default.
 	\item \texttt{retro} is a logical value indicating \texttt{TRUE} or \texttt{FALSE}. If  \texttt{TRUE}, the $p$-value for the time series of interest will be computed. If  \texttt{FALSE}, only the $p$-values of donors will be computed. This argument is intended for retrospective data analysis where the $p$-value of the time series of interest is needed.
 	\item \texttt{scale} option can allow users to compute weights based on scaled covariates or not. See details in \texttt{scm}.
+	\item \texttt{sc.x} is a list of one vector and a list, where the ordering matters. The first vector should be a vector of indices referring to which time series wish to consider additional covariates that are present in the models but not considered in the weight computation. The second list should be a list of matrices with length equal to the length of the first vector. The matrices are the matrices of covariates, which are present in the models but not considered in the weight computation.
 \end{itemize}
  
  The output of this function is
