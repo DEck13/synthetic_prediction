@@ -205,10 +205,10 @@ ols.est.alphahat(Tstar,Y,X)
  
  \section{\texttt{ps.indic.W.permanent}}
  
- \texttt{ps.indic.W.permanent(Tstar,Y,X,K,H,Ts,ell,B,bw,sig.levl)} is a core function that produces the synthetic weights from \texttt{scm}, a sequence of $p$-values and corresponding rejection/acceptance decisions for each donor in the donor pool based on a give significance level and the test  function \texttt{taSPA.mhfc}. The assumed model for this function is
+ \texttt{ps.indic.W.permanent(Tstar,Y,X,K,H,Ts,ell,B,bw,sig.levl,retro,q1,selfW)} is a core function that produces the synthetic weights from \texttt{scm}, a sequence of $p$-values and corresponding rejection/acceptance decisions for each donor in the donor pool based on a give significance level and the test  function \texttt{taSPA.mhfc}. The assumed model for this function is
  \begin{align*}
- 	y_{i,t} &= \eta_i + \phi_i y_{i, t-1}  + \bs{x}_{i, t}\bs{\theta} + \alpha_i I(t > T_i^*+1) + \varepsilon_{i,t},\\
- 	\alpha_i & = \mu_{\alpha} + \bs{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
+ 	y_{i,t} &= \eta_i + \sum_{j=1}^{q_1} \phi_{i,j} y_{i, t-j}  +\sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1}  + \alpha_i  D_{i,t}+ \varepsilon_{i,t},\\
+ 	\alpha_i & = \mu_{\alpha} + \sum_{j=0}^{q_2-1} \bs{x}_{i, T_i^*+1-j}\bs{\delta}_{i, j + 1} + \varepsilon_{\alpha, i},
  \end{align*}
  where $T_i^*+1$ is the time point when the shock occurs for $i = 2, \ldots, n+1$, $\bs{x}_{i,t}$ is the covariate, and $\eta_i$ is the intercept. Note that only $\bs{\theta}$, $\eta_i$, and $\alpha_i$ are estimable. The above model is called permanent model due to the presence of a persistent shock term. For each donor, this function computes the adjusted forecast and unadjusted forecast, construct the corresponding loss differential matrix, and perform the forecast comparison test.  Suppose the donor pool size is $n$. \emph{It is important to note that the ordering of the donors should be with respect to the timing when those time series occur, from the earliest to the latest.}
  
@@ -226,8 +226,9 @@ ols.est.alphahat(Tstar,Y,X)
 	\item \texttt{sig.levl} is the significance level for the test. It is 0.05 in default.
 	\item \texttt{retro} is a logical value indicating \texttt{TRUE} or \texttt{FALSE}. If  \texttt{TRUE}, the $p$-value for the time series of interest will be computed. If  \texttt{FALSE}, only the $p$-values of donors will be computed. This argument is intended for retrospective data analysis where the $p$-value of the time series of interest is needed.
 	\item \texttt{scale} option can allow users to compute weights based on scaled covariates or not. See details in \texttt{scm}.
-	\item \texttt{sc.x} is a list of one vector and a list, where the ordering matters. The first vector should be a vector of indices referring to which time series wish to consider additional covariates that are present in the models but not considered in the weight computation. The second list should be a list of matrices with length equal to the length of the first vector. The matrices are the matrices of covariates, which are present in the models but not considered in the weight computation.
+	\item \texttt{q1} specifies the number of lags for the response.
 \end{itemize}
+Note that the specification $q_2$ is not considered in this function as users can just include them in the covariates and this step does not influence the computation of the function.
  
  The output of this function is
  \begin{itemize}
@@ -292,11 +293,11 @@ est <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = K,
  \section{\texttt{ps.indic.W.dynamic}}
  
  \texttt{ps.indic.W.dynamic(Tstar,Y,X,K,H,Ts,q1,q2,ell,B,bw,sig.levl)} performs the similar functionality as  \texttt{ps.indic.W.permanent} but with a different model as 
- \begin{align*}
+\begin{align*}
  	y_{i,t}
  	&= \left(\eta_i + \sum_{j=1}^{q_1} \phi_{i,j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1} \right) (1-D_{i,t}) + f(\mc{F}_{i, t} \alpha_i)D_{i,t} + \varepsilon_{i,t}  \\
  	f(\mc{F}_{i,t},\alpha_i)	 & = \alpha_i +\sum_{j=1}^{q_1} \tilde{\phi}_{i, j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j} \tilde{\bs{\theta}}_{i, j +1} \\
- 	\alpha_i & = \mu_{\alpha} + \bs{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i}
+ 	\alpha_i & = \mu_{\alpha} + \sum_{j=0}^{q_2-1} \bs{x}_{i, T_i^*+1-j}\bs{\delta}_{i, j + 1} + \varepsilon_{\alpha, i},
  \end{align*}
  where $D_{i,t}=I(t > T_i^*+1)$. Note that only $\eta_i, \alpha_i - \eta_i, \phi_{i,j}, \bs{\theta}_{i, j+1}, \tilde{\phi}_{i,j}-\phi_{i,j}, \tilde{\bs{\theta}}_{i,j+1}-\bs{\theta}_{i, j+1}$ are estimable.
 The role of the shock in this model is that the dynamics of $y_{i,t}$ change after the shock. Note that to prepare the lagged response and covariates, the effective sample size is $T_i-\max\{q_1, q_2-1\}$.  Note that for each element of \texttt{Ts}, it should be at least greater than or equal to $K_i + H + \max\{q_1, q_2-1\}+1$.

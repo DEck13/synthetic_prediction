@@ -854,7 +854,7 @@ In this section, we illustrate shock prevalence testing using two real data exam
 Post-shock  prevalence testing is motivated by post-shock prediction  \citep{lin2021minimizing} and also an extension of it from the perspective of hypothesis testing. Applying our methodology  on one of the datasets demonstrated in \cite{lin2021minimizing} helps connect our work to \cite{lin2021minimizing} and spell out the differences between two methodologies.
 
 
-As illustrated in Section 5.1 in \cite{lin2021minimizing}, it is found that Conoco Phillips stock price experienced unprecedented shocks due to  oil supply control and COVID-19 pandemic on one single day,  March 9th, 2020. In this data example, we are interested in investigating whether this shock is prevalent, i.e., whether the impact of the shock on the stock price will persist over time. Denote the stock price of Conoco Phillips at time $t$ as $y_{i,t}$ for $i$th time series, where $i = 1, \ldots n+1$, the time series of interest is ordered as the 1st time series, and $n$ is the donor pool size. We used the same covariates  as \cite{lin2021minimizing} did in the model of $y_{i,t}$, which are S\&P 500 index prices, West Texas Intermediate (WTI) crude oil prices, dollar index, and 13-week treasury bill rates. 
+As illustrated in Section 5.1 in \cite{lin2021minimizing}, it is found that Conoco Phillips stock price experienced unprecedented shocks due to  oil supply control and COVID-19 pandemic on one single day,  March 9th, 2020. In this data example, we are interested in investigating whether this shock is prevalent, i.e., whether the impact of the shock on the stock price will persist over time. Denote the stock price of Conoco Phillips at time $t$ as $y_{i,t}$ for $i$th time series, where $i = 1, \ldots n+1$, the time series of interest is ordered as the 1st time series, and $n$ is the donor pool size. In the model of $y_{i,t}$, the covariates we consider are S\&P 500 index prices, West Texas Intermediate (WTI) crude oil prices, dollar index, 13-week treasury bill rates, and Chicago Board Options Exchange volatility index (VIX). 
 
 We considered the shock effects that occurred on March 15, 2008, September 2008, and November 27, 2014, where the rationale behind this selection is discussed in Section 5.1(3) in  \cite{lin2021minimizing}. However, we analyzed the multiple shock effects on September (September 8th, 2008; September 16th, 2008; and September 26, 2008) differently. Under the  setting of our methodology, it is possible that the occurrence of  those shocks can be modeled by one persistent shock effect or explained by that the model of $y_{i,t}$ changes after September 5th, 2008. In other words, we analyzed the three shock effects within one time series and considered three donors in our donor pool. 
 
@@ -864,44 +864,44 @@ We considered the shock effects that occurred on March 15, 2008, September 2008,
 
 To analyze the dataset, we propose two models. Denote the covariate matrix at time $t$ for $i$th time series by $\bs{x}_{i,t}$.  The first model $\mc{M}_1$, called ``permanent'' model, is 
  \begin{align*}
- 	y_{i,t} &= \eta_i + \phi_i y_{i, t-1}  + \bs{x}_{i, t}\bs{\theta} + \alpha_i  D_{i,t}+ \varepsilon_{i,t},\\
- 	\alpha_i & = \mu_{\alpha} + \bs{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
+ 	y_{i,t} &= \eta_i + \sum_{j=1}^{q_1} \phi_{i,j} y_{i, t-j}  +\sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1}  + \alpha_i  D_{i,t}+ \varepsilon_{i,t},\\
+ 	\alpha_i & = \mu_{\alpha} + \sum_{j=0}^{q_2-1} \bs{x}_{i, T_i^*+1-j}\bs{\delta}_{i, j + 1} + \varepsilon_{\alpha, i},
  \end{align*}
-where $D_{i,t} = I(t > T_i^*+1)$, $i = 1, \ldots, n+1$ and $t = 1, \ldots, T_i$. Note that we allow the shock effect to take effect for multiple time points instead of one time point as in  \cite{lin2021minimizing}. This simple model describes the setting where one additive shock effect is persistent over time. The second model $\mc{M}_2$, called ``dynamic'' model, is
+where $q_1 = q_2=2$, $D_{i,t} = I(t > T_i^*+1)$, $i = 1, \ldots, n+1$ and $t = 1, \ldots, T_i$. Note that we allow the shock effect to take effect for multiple time points instead of one time point as in  \cite{lin2021minimizing}. This simple model describes the setting where one additive shock effect is persistent over time. The second model $\mc{M}_2$, called ``dynamic'' model, is
 \begin{align*}
  	y_{i,t}
  	&= \left(\eta_i + \sum_{j=1}^{q_1} \phi_{i,j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1} \right) (1-D_{i,t}) + f(\mc{F}_{i, t} \alpha_i)D_{i,t} + \varepsilon_{i,t}  \\
  	f(\mc{F}_{i,t},\alpha_i)	 & = \alpha_i +\sum_{j=1}^{q_1} \tilde{\phi}_{i, j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j} \tilde{\bs{\theta}}_{i, j +1} \\
- 	\alpha_i & = \mu_{\alpha} + \bs{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
+ 	\alpha_i & = \mu_{\alpha} + \sum_{j=0}^{q_2-1} \bs{x}_{i, T_i^*+1-j}\bs{\delta}_{i, j + 1} + \varepsilon_{\alpha, i},
  \end{align*}
  where $q_1 = q_2=2$,  $D_{i,t} = I(t > T_i^*+1)$, $i = 1, \ldots, n+1$, and $t = 1, \ldots, T_i$. We estimate $\mc{M}_1$ and $\mc{M}_2$ using ordinary least squares (OLS) estimation. $\mc{M}_2$ adds more flexibility to $\mc{M}_1$ by allowing that the model of $y_{i,t}$ changes after the shock, as seen from the term related to $1-D_{i,t}$,  though the model still preserves the autoregressive model form. In practice, $\mc{M}_2$ should make more sense than $\mc{M}_1$ as it accommodates for more complicated cases. However, $\mc{M}_2$  requires far more degrees of freedom for estimation and this can increase variance in estimation. We used weighted AIC for model selection, which is detailed as follows. For $i$th donor in the donor pool, we can compute its AICs for $\mc{M}_1$ and $\mc{M}_2$, say $a^1_i$ and $a^2_i$, and also its synthetic weight $W_i^*$, where $\mbf{W}^* = (w_2^*, \ldots, w_{n+1}^*)$ and its computation is detailed in the next paragraph. Let $A^{1*}= \sum_{i=2}^{n+1} w_i^* a^1_i$ and $A^{2*}= \sum_{i=2}^{n+1} w_i^*a^2_i$. We will select $\mc{M}_1$ if $A^{1*} < A^{2*}$ and vice versa. 
  
  In computing the weights, to avoid the impact of unit differences from different columns of covariates on weighting, we center and scale the covariates. The steps are detailed as below. Consider
 \begin{align*}
 	\bs{X}= \begin{pmatrix}
-		\bs{x}_{1, T_1^*+1}\\
-		\vdots  \\
-		\bs{x}_{n+1, T_{n+1}^*+1}
+		\bs{x}_{1, T_1^*+1} & \bs{x}_{1, T_1^*}\\
+		\vdots & \vdots  \\
+		\bs{x}_{n+1, T_{n+1}^*+1} & \bs{x}_{1, T_1^*}
 	\end{pmatrix},
 \end{align*}
-where $t = T_i^*+1$ is the time point when the shock effect takes place for $i$th time series. For each column of $\bs{X}$, we center it by subtracting its column mean and scale the resulting column vector by dividing the standard deviation of the resulting column vector. Denote the resulting covariates matrix by $\bs{X}^*$. We compute the synthetic weights $\mbf{W}^*$  based on $\bs{X}^*$ according to procedures detailed in Section 2.2 of \cite{lin2021minimizing}. However, for the model of $y_{i,t}$, we do not conduct such centering and scaling procedure.
+where $t = T_i^*+1$ is the time point when the shock effect takes place for $i$th time series. Note that the reason for including $\bs{x}_{i, T_i^*}$ is that we consider $q_2=2$ in $\mc{M}_1$ and $\mc{M}_2$. In other words, the consider the 1-step lagged covariates in the model and its corresponding shock effect time point is $T_i^*$. For each column of $\bs{X}$, we center it by subtracting its column mean and scale the resulting column vector by dividing the standard deviation of the resulting column vector. Denote the resulting covariates matrix by $\bs{X}^*$. We compute the synthetic weights $\mbf{W}^*$  based on $\bs{X}^*$ according to procedures detailed in Section 2.2 of \cite{lin2021minimizing}. However, for the model of $y_{i,t}$, we do not conduct such centering and scaling procedure.
 
 
 From the definition of $D_{i,t} = I(t > T_i^*+1)$, it is evident that the number of post-shock time points, i.e., time $t$ for which $t > T_i^*+1$, affects the inference results. As our methodology only requires $T_i-T_i^*$ is not small compared to $T_i$, we attempted three post-shock time length for our inference, say $L = 7, 15, 30$. Recall that in  Section \ref{forecast}, we refer to the forecast  that incorporates shock information as adjusted forecast and the one that does not as unadjusted forecast. As specified in Section \ref{forecast}, post-shock prevalence testing requires specification of  the maximum number $H$ of forecast horizons and training sample size $K$, where $h$-step forecasts of adjusted forecast and unadjusted forecast are compared for $h = 1, \ldots, H$. We set $H = 10$, $K = 30$, and $T_i =  H + K + L+15$ for $i = 2, \ldots, 4$. That being said, for $t = K + H + 1, \ldots, T_i$ and $h = 1, \ldots, H$, different $h$-step adjusted and unadjusted forecasts for $y_{i,t}$ under $\mc{M}_1$ or  $\mc{M}_2$ are compared. 
 
 
 \begin{table}[H]
-	\caption{Results for Conoco Philips ($n=3$), $\mbf{W}^* = (0.221, 0, 0.779)$ from scaled covariates} \label{coptable}
+	\caption{Results for Conoco Philips ($n=3$), $\mbf{W}^* = (0.183, 0, 0.817)$ from scaled covariates} \label{coptable}
 \begin{center}
   \begin{tabular}{cccccccccr}
      $L$  & Model & weighted  AIC & $p_1$ &  $|\hat{p}-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
      \hline 
-     7 & $\mc{M}_1$  & $289.61$ & 1  & 0 & 0 (Yes) &0 (Yes)  \\      
-     7 & $\mc{M}_2$  & 420.86 & 1 & $0$   & 0 (Yes) &0 (Yes)   \\[.2cm]
-     15 & $\mc{M}_1$ & 294.74 & 1   & 0 &0 (Yes) & 0 (Yes)     \\
-     15 &  $\mc{M}_2$ & $416.12$ & 1 & 0 &0 (Yes)  &0 (Yes)  \\[.2cm]
-     30 &  $\mc{M}_1$ & 303.88 & 1   & $0$ & 0 (Yes) &0 (Yes)   \\
-     30 &  $\mc{M}_2$ & 435.22 & 1  & 0 &0 (Yes) & 0 (Yes)  
+     7 & $\mc{M}_1$  & $214.10$ & 1  & 0 & 0 (Yes) &0 (Yes)  \\      
+     7 & $\mc{M}_2$  & 205.23 & 1 & $0$   & 0 (Yes) &0 (Yes)   \\[.2cm]
+     15 & $\mc{M}_1$ & 246.67 & 1   & $0.82$ & 0 (Yes) &1 (No)    \\
+     15 &  $\mc{M}_2$ & $238.24$ & 1 & 0 &0 (Yes)  &0 (Yes)  \\[.2cm]
+     30 &  $\mc{M}_1$ & 303.43 & 1   & $0.82$ & 0 (Yes) &1 (No)   \\
+     30 &  $\mc{M}_2$ & 293.38 & 1  & 0 &0 (Yes) & 0 (Yes)  
   \end{tabular}
 \end{center}	
 \end{table}
@@ -909,13 +909,15 @@ From the definition of $D_{i,t} = I(t > T_i^*+1)$, it is evident that the number
 
 We implemented our analysis of the Conoco Phillips dataset and summarized the results in Table \ref{coptable}. We discuss our finding in several parts as follows.
 
-Note that the synthetic weight vector $\mbf{W}^*$ for the three donors is $(0.221, 0, 0.779)$. It suggests that the donor associated with the shock on November 27, 2014 is the most similar time series relative to the time series of interest, and the one on March 15, 2008 is the second. As pointed out by \cite{lin2021minimizing} in Section 5.1(3), the shocks experienced by the first and  third donor are related to recessions, and oil supply shock, respectively. The results are intuitive in the sense that from a retrospective perspective of a data analyst, the shock experienced by the series $\{y_{1,t}\colon t = 1, \ldots, T_1\}$ is due to oil supply shock and recessions caused by COVID-19 pandemic.
+Note that the synthetic weight vector $\mbf{W}^*$ for the three donors is $(0.183, 0, 0.817)$. It suggests that the donor associated with the shock on November 27, 2014 is the most similar time series relative to the time series of interest, and the one on March 15, 2008 is the second. As pointed out by \cite{lin2021minimizing} in Section 5.1(3), the shocks experienced by the first and  third donor are related to recessions, and oil supply shock, respectively. The results are intuitive in the sense that from a retrospective perspective of a data analyst, the shock experienced by the series $\{y_{1,t}\colon t = 1, \ldots, T_1\}$ is due to oil supply shock and recessions caused by COVID-19 pandemic.
 
-Additionally, from Table \ref{coptable}, for all $L = 7, 15, 30$, $\mc{M}_1$ is preferred over $\mc{M}_2$. Nevertheless, the inference results of  $\mc{M}_1$  do not differ from $\mc{M}_2$, as seen from the fourth column to the seventh column of Table \ref{coptable}. It is possible that   $\mc{M}_2$ is also a good fit for the dataset. 
 
-It is important to note that $p_1$ is the $p$-value of the forecast comparison between adjusted forecast and unadjusted forecast if we have the data $\{y_{1,t} \colon 1, \ldots, T_1\}$, where $T_1 > T_1^*$. In other words, it cannot be computed without observing $y_{1, t}$ for $t > T_1^*$ and we present $p_1$ only for retrospective analysis. Also, $\hat{p}$ is the $p$-value from weighting the $p$-values of the forecast comparison  between adjusted and unadjusted forecast for donors using $\mbf{W}^*$. Notice that $|\hat{p}-p_1|$ is uniformly zero and $p_1$ is uniformly 1 for different $L$ and models. It suggests $\hat{p}$ turns out to be a good estimate of $p_1$; and the test  using $\hat{p}$ fails to reject that  the shock, which was to take effect at $t=T_1^*+1$,  is prevalent for $t > T_1^*+1$ under a significance level of 5\%.
 
-Recall from Section \ref{forecast}, voting procedure suggests shock transience (shock prevalence) if the majority of the tests  suggests shock transience (shock prevalence, respectively). We record 0 if the voting procedure suggests shock transience and 1 if shock prevalence. The weighted voting procedure weight those testing indicators using $\mbf{W}^*$; and returns shock prevalence if the output exceeds 0.5 and shock transience if the output is smaller than 0.5. As we observe $\{y_{1,t} \colon 1, \ldots, T_1\}$, we are able to check whether the decision of voting and weighted voting is correct. From the sixth and seventh columns of Table \ref{coptable}, we can see that voting and weighted voting procedures suggest shock transience and this decision is consistent across different $L$ and different models. As $p_1$ is uniformly 1, it is reasonable to expect $\P(p_1\leq .05)$ be small. Note that Proposition \ref{votprop} and Corollary \ref{coro1} show that the decisions made by voting and weighted voting procedures should be correct with very high probability if we assume the asymptotic approximation of the expected absolute error works well for  $n = 3$. 
+In term of Table \ref{coptable}, it is important to note that $p_1$ is the $p$-value of the forecast comparison between adjusted forecast and unadjusted forecast if we have the data $\{y_{1,t} \colon 1, \ldots, T_1\}$, where $T_1 > T_1^*$. In other words, it cannot be computed without observing $y_{1, t}$ for $t > T_1^*$ and we present $p_1$ only for retrospective analysis. Also, $\hat{p}$ is the $p$-value from weighting the $p$-values of the forecast comparison  between adjusted and unadjusted forecast for donors using $\mbf{W}^*$. From Table \ref{coptable}, for all $L = 7, 15, 30$, $\mc{M}_2$ is preferred over $\mc{M}_1$. Notice that $|\hat{p}-p_1|$ is uniformly zero and $p_1$ is uniformly 1 for different $L$ and $\mc{M}_2$. The test  using $\hat{p}$ with $\mc{M}_2$ fails to reject that  the shock, which was to take effect at $t=T_1^*+1$,  is prevalent for $t > T_1^*+1$ under a significance level of 5\%. Nevertheless, the results appear to be a little different for $\mc{M}_1$. For $L=7$, $|\hat{p}-p_1|=0$ for $\mc{M}_1$ whereas $|\hat{p}-p_1|=0.82$ for $L = 15, 30$. Based on the performance of $\mc{M}_2$, it is possible that as the time window $L$ increases, the signal from changing parameters covariates is ``misunderstood'' by $\mc{M}_1$ as shock signal. 
+
+
+
+Recall from Section \ref{forecast}, voting procedure suggests shock transience (shock prevalence) if the majority of the tests  suggests shock transience (shock prevalence, respectively). We record 0 if the voting procedure suggests shock transience and 1 if shock prevalence. The weighted voting procedure weight those testing indicators using $\mbf{W}^*$; and returns shock prevalence if the output exceeds 0.5 and shock transience if the output is smaller than 0.5. As we observe $\{y_{1,t} \colon 1, \ldots, T_1\}$, we are able to check whether the decision of voting and weighted voting is correct. From the sixth column of Table \ref{coptable}, we can see that voting procedure suggests shock transience for $\mc{M}_1$ and $\mc{M}_2$ for different $L$. However, weighted voting suggests shock transience for $\mc{M}_2$ for different $L$ but shock prevalence for $\mc{M}_1$ and $L=15, 30$ and shock transience for $\mc{M}_1$ and $L = 7$. As $p_1$ is uniformly 1, it is reasonable to expect $\P(p_1\leq .05)$ be small. Note that Proposition \ref{votprop} and Corollary \ref{coro1} show that the decisions made by voting and weighted voting procedures should be correct with very high probability if we assume the asymptotic approximation of the expected absolute error works well for  $n = 3$. Note that the interpretation and meaning of $p_1$ is closely connected with models. For example, $\mc{M}_1$ would imply a persistent shock whereas $\mc{M}_2$ is more general in suggesting changing dynamics. Thus, even if  this theoretical statement  may be correct, it makes practical sense only when model is identified well. This comment corresponds to the possibility that $\mc{M}_1$ may ``misunderstand'' the wrong signal of changing dynamics that are instead captured by $\mc{M}_2$.
 
 To verify our results, we plot $\{y_{1,t} \colon 1, \ldots, T_1\}$ in Figure \ref{copshocktransience}. Two dashed vertical lines are plotted in Figure \ref{copshocktransience}, where the left one corresponds to $t = T_1^*$ and the right one  corresponds to $t = T_1^*+1$. As shown by \cite{lin2021minimizing}, $y_{1,t}$ experienced a substantial shock at  $t = T_1^*+1$ and it is evident from $y_{1, T_1^*}-y_{1, T_1^*+1}$ shown in Figure 1. We also graphed a benchmark horizontal dashed line for comparison, which corresponds to the stock price $y_{1, T_1^*}$. However, notice that even if $y_{1,t}$ first experienced a considerable drop at $t = T_1^*+1$,   it started to revert back and became closer to the benchmark horizontal line as $t$ increases for $t > T_1^*$. This observation confirms our results as the reverting behavior implies that the impact of the shock starts to diminish as $t$ increases and that the shock is very likely to be transient.
 
@@ -949,13 +951,13 @@ To verify our results, we plot $\{y_{1,t} \colon 1, \ldots, T_1\}$ in Figure \re
 
 
 \begin{table}[H]
-	\caption{Results for persons on nonfarm payrolls ($n=4$), $\mbf{W}^* = (0, 0, 0, 1)$ from scaled covariates} \label{uemtable}
+	\caption{Results for persons on nonfarm payrolls ($n=3$), $\mbf{W}^* = (0, 0.278, 0.722)$ from scaled covariates} \label{uemtable}
 \begin{center}
   \begin{tabular}{ccccccccr}
       Model & weighted  AIC & $p_1$ &  $|\hat{p}-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
      \hline 
-     $\mc{M}_1$  & $-655.03$ & 0  & 1 & 1 (No) &1 (No)  \\      
-      $\mc{M}_2$  & $-660.14$ & 1 & $0.19$   & 0 (Yes) &0 (Yes)   \\[.2cm]
+     $\mc{M}_1$  & $-687.836$ & 0  & 1 & 1 (No) &1 (No)  \\      
+      $\mc{M}_2$ ($q_1=q_2=1$)  & $-688.428$ & 0.470 & $0.146$   & 0 (Yes) &0 (Yes)   \\[.2cm]
   \end{tabular}
 \end{center}	
 \end{table}
