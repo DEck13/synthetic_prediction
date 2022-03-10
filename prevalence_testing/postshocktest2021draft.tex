@@ -862,7 +862,7 @@ We considered the shock effects that occurred on March 15, 2008, September 2008,
 
 
 
-To analyze the dataset, we propose two models. Denote the covariate matrix at time $t$ for $i$th time series by $\bs{x}_{i,t}$.  The first model $\mc{M}_1$, called ``permanent'' model, is 
+To analyze the dataset, we propose two models. Denote the covariate vector at time $t$ for $i$th time series by $\bs{x}_{i,t}$.  The first model $\mc{M}_1$, called ``permanent'' model, is 
  \begin{align*}
  	y_{i,t} &= \eta_i + \sum_{j=1}^{q_1} \phi_{i,j} y_{i, t-j}  +\sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1}  + \alpha_i  D_{i,t}+ \varepsilon_{i,t},\\
  	\alpha_i & = \mu_{\alpha} + \sum_{j=0}^{q_2-1} \bs{x}_{i, T_i^*+1-j}\bs{\delta}_{i, j + 1} + \varepsilon_{\alpha, i},
@@ -947,11 +947,37 @@ To verify our results, we plot $\{y_{1,t} \colon 1, \ldots, T_1\}$ in Figure \re
 %\end{table}
 
 
-\subsection{Testing shock prevalence for persons on nonfarm payrolls}
+\subsection{Testing shock prevalence for Month-on-Month Change in Log Nonfarm Payrolls (Seasonally Adjusted)}
 
+Arguably the most watched macroeconomic indicator for the US economy is the monthly release of the total nonfarm payrolls, which relects the gains or losses of persons employed. The pandemic-induced recession of 2020 coincided with a one-month drop in US nonfarm payrolls in excess of 20 million people, or $13.57\%$, between March and April 2020.  This decline exceeds all other monthly declines by many orders of magnitude, and hence then distance-based weighting employed in \citep{lin2021minimizing} could not hope to recover the full shock effect.  However, the test developed herein does not rely as heavily upon the assumption of a common shock distribution for donors or the assumption that the donors represent a rich and diverse sampling from that distribution.  Instead, what is needed is that the donor pool serve as an information source about the persistence of a shock effect in the time series under study.  
+
+To that end, we assemble a donor pool of US recessions induced by large shocks in the last three decades: the recessions of 1981-82, 2001-2003, and 2007-2009.  We employ a suite of monthly macroeconomic indicators as covariates for the linear model as for arriving at a optimal weighting of the donor pool.  These indicators are all transformed to their month-on-month change in log values, so as to be consistent with the time series under study and to capture the signal inherent in changes, not raw levels, of macroeconomic variables.  These indicators are the US unemployment insurance tranfers, real personal income, personal consumption expenditures, industrial production, consumer price index, Federal Reserve funds rate, and the count of black americans age 20 and over on US nonfarm payrolls.
+
+In table 2, we observe that weighted AIC prefers $\mc{M}_2$, and thus we turn our interest to that model.  Since $p_{1}$ is far above the rejection threshold, we lack the evidence to reject the null of a transient shock in the time series under study, the month-on-month change in log employment in the span 2019-2022.  The weighted pvalue, $\hat p $, misses the ground truth p-value by .146 in absolute value, yet renders the correct decision.
+
+
+\textbf{Questions to answer and points to hit}
+\begin{enumerate}
+\item Why did I choose the donors I chose? X 
+\item Why did I use the columns I did in OLS? X
+\item Why did I use the columns I did in the estimation of the points on the simplex?
+\item Discuss the two models, M1, M2
+\item Weighted AIC just as in previous example?
+\item By weighted AIC, M2 is the preferred model
+\item We can see that $p_{1}$ is far larger than the rejection threshold, indicating that we lack the evidence to reject the null of a transiet shock
+\item The weighted pvalue, $\hat p $, misses the ground truth p-value by .146 in absolute value
+\item The method of voting renders the correct decision
+\item The method of weighted voting renders the correct decision
+\item Ask Jilei to correct y-axis
+\item Ask Jilei whether AIC was used in the same way as first example
+\item Ask Jilei whether covariate set $\textbf{X}$ is same as simplex optimization $\textbf{X}$
+\item Ask Jilei to drop RPI as a covariate in OLS (but not necessarily for optimization)
+\item Ask Jilei to include chart with data stopping at March 2020 to better visualize how payrolls change by month
+
+\end{enumerate}
 
 \begin{table}[H]
-	\caption{Results for persons on nonfarm payrolls ($n=3$), $\mbf{W}^* = (0, 0.278, 0.722)$ from scaled covariates} \label{uemtable}
+	\caption{Results for Month-on-Month Change in Log Nonfarm Payrolls (Seasonally Adjusted) ($n=3$), $\mbf{W}^* = (0, 0.278, 0.722)$ from scaled covariates} \label{uemtable}
 \begin{center}
   \begin{tabular}{ccccccccr}
       Model & weighted  AIC & $p_1$ &  $|\hat{p}-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
