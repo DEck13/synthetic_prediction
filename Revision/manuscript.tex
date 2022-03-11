@@ -426,25 +426,25 @@ The shock effects $\alpha_i$s have different means under $\mc{M}_{21}$ and $\mc{
 \end{prop}
 Under Proposition \ref{propriskwadj2}, we can obtain a risk-reduction inequality that is similar to \eqref{varwadj},
 \begin{align*}
-\var{\hat{\alpha}_{\rm wadj}}
+\text{Var}(\hat{\alpha}_{\rm wadj})
 & =\sum_{i=2}^{n+1}(\sigma_i w_i^*)^2\mrm{E}\big\{(\mbf{M}'_i\mbf{M}_i)^{-1}_{22}\big\} + \sum_{i=2}^{n+1} (w_i^*)^2 (\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}) < (\E{\alpha_1})^2,
 \end{align*}
 where $\mbf{x}_{i, T_i^*+1}'\Sigma_{\delta}\mbf{x}_{i, T_i^*+1} + \sigma^2_{\alpha}$ may be replaced with $\sigma^2_{\alpha}$ in $\mc{M}_{21}$. The conclusions and intuitions will be identically the same as what we have in Section \ref{conditionsmodel1}. Proposition \ref{unbiased} shows that $\hat{\alpha}_{\rm adj}$ is a biased estimator of $\E{\alpha_1}$ under $\mc{M}_{21}$ and $\mc{M}_{22}$ in general. Hence, Proposition \ref{proprisk} no longer holds for $\hat{\alpha}_{\rm adj}$ under $\mc{M}_{21}$ and $\mc{M}_{22}$.
 
 As an alternative, we can derive similar risk-reduction conditions that are appropriate for this setting. By Lemma \ref{risklemma}, we will achieve risk-reduction when
 \begin{align*}
- \E{\alpha_1^2} &= \var{\alpha_1}+(\E{\alpha_1})^2\\
+ \E{\alpha_1^2} &= \text{Var}(\hat{\alpha}_{1})+(\E{\alpha_1})^2\\
  &>\E{\hat{\alpha}_{\rm adj}-\alpha_1}^2\\
-  &=\var{\hat{\alpha}_{\rm adj}} +  (\E{\hat{\alpha}_{\rm adj}}-\alpha_1)^2 \\
-  &=\var{\hat{\alpha}_{\rm adj}} +  \var{\alpha_1} + (\E{\hat{\alpha}_{\rm adj}}-\E{\alpha_1})^2.
+  &=\text{Var}(\hat{\alpha}_{\rm adj}) +  (\E{\hat{\alpha}_{\rm adj}}-\alpha_1)^2 \\
+  &=\text{Var}(\hat{\alpha}_{\rm adj}) +  \var{\alpha_1} + (\E{\hat{\alpha}_{\rm adj}}-\E{\alpha_1})^2.
 \end{align*}
 The above inequality simplifies to 
 \begin{equation} \label{ineq}
- (\E{\alpha_1})^2 >\var{\hat{\alpha}_{\rm adj}}+ (\E{\hat{\alpha}_{\rm adj}}-\E{\alpha_1})^2.
+ (\E{\alpha_1})^2 >\text{Var}(\hat{\alpha}_{\rm adj}) + (\E{\hat{\alpha}_{\rm adj}}-\E{\alpha_1})^2.
 \end{equation}
 
 
-As mentioned in Section \ref{constructionofestimators}, it is difficult to evaluate the expectation and variance of $\hat{\alpha}_{\rm IVW}$. We note that $\hat{\alpha}_{\rm IVW}$ is generally biased for $\E{\alpha_1}$. We can adapt the above to derive a risk-reduction condition for $\hat{\alpha}_{\rm IVW}$: under $\mc{M}_{1}$, $\mc{M}_{21}$, and $\mc{M}_{22}$, $\Delta(\hat\alpha_{\rm IVW}) > 0$ when $\var{\hat{\alpha}_{\rm IVW}} +(\E{\hat{\alpha}_{\rm IVW}}-\E{\alpha_1})^2<(\E{\alpha_1})^2$.  In fact, more generally, using similar proof of Lemma \ref{risklemma}, it can be shown that under $\mc{M}_2$, the risk-reduction quantities are
+As mentioned in Section \ref{constructionofestimators}, it is difficult to evaluate the expectation and variance of $\hat{\alpha}_{\rm IVW}$. We note that $\hat{\alpha}_{\rm IVW}$ is generally biased for $\E{\alpha_1}$. We can adapt the above to derive a risk-reduction condition for $\hat{\alpha}_{\rm IVW}$: under $\mc{M}_{1}$, $\mc{M}_{21}$, and $\mc{M}_{22}$, $\Delta(\hat\alpha_{\rm IVW}) > 0$ when $\text{Var}(\hat{\alpha}_{\rm IVW}) +(\E{\hat{\alpha}_{\rm IVW}}-\E{\alpha_1})^2<(\E{\alpha_1})^2$.  In fact, more generally, using similar proof of Lemma \ref{risklemma}, it can be shown that under $\mc{M}_2$, the risk-reduction quantities are
 \begin{align*}
   \Delta(\hat{\alpha}_{\rm adj}) 
   &= (\E{\alpha_1})^2 -\var{\hat{\alpha}_{\rm adj}}-(\E{\hat{\alpha}_{\rm adj}}-\E{\alpha_1})^2,\\

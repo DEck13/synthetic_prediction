@@ -39,7 +39,7 @@
 \newcommand{\y}{\textbf{y}}
 \newcommand{\X}{\textbf{X}}
 \newcommand{\Y}{\textbf{Y}}
-\newcommand{\L}{\textbf{L}}
+\newcommand{\Llet}{\textbf{L}}
 \newcommand{\Hist}{\mathcal{H}}
 \newcommand{\Prob}{\mathbb{P}}
 \def\mbf#1{\mathbf{#1}} % bold but not italic
@@ -103,7 +103,7 @@
 
 \allowdisplaybreaks
 
-\title{Prospective testing for the prevalence or transience of a shock effect before it occurs}
+\title{Prospective testing for the prevalence or transience of a shock effect over a set time horizon before it occurs}
 \author{}
 \date{}
 
@@ -114,31 +114,35 @@
 %We develop a forecasting methodology for providing credible forecasts for time series that have recently undergone a shock. We achieve this by borrowing knowledge from other time series that have undergone similar shocks for which post-shock outcomes are observed. Three shock effect estimators are motivated with the aim of minimizing average forecast risk. We propose risk-reduction propositions that provide conditions that establish when our methodology works. Bootstrap and leave-one-out cross validation procedures are provided to prospectively assess the performance of our methodology. Several simulated data examples, and two real data examples of forecasting Conoco Phillips and Apple stock price are provided for verification and illustration
 
 \begin{abstract}
-We develop a hypothesis testing procedure to prospectively test whether an anticipated shock is likely to be transient or permanent over a time horizon. We achieve this by borrowing knowledge from other time series that have undergone similar shocks for which post-shock outcomes are observed. These additional time series form a donor pool. 
-For each of the time series in the donor pool we calculate a p-value corresponding to a hypothesis test on the relevance of the inclusion of shock-effect information in predicting the response over the time horizon.
-These p-values are then combined to form an aggregated p-value which guides one decision in determining whether the shock effect for the time series under study is expected to be prevalent or transient. This p-value can be computed before the shock-effect is observed in the time series under study provided one can form a suitable donor pool. Several simulated data examples, and two real data examples of forecasting Conoco Phillips stock price and .... are provided for verification and illustration.
+We develop a hypothesis testing procedure to prospectively test whether an anticipated shock is likely to be transient or permanent over a set time horizon. We achieve this by borrowing knowledge from other time series that have undergone similar shocks for which post-shock outcomes are observed. These additional time series form a donor pool. 
+For each time series in the donor pool we calculate a p-value corresponding to a hypothesis test on the relevance of the inclusion of shock-effect information in predicting the response over the time horizon.
+These p-values are then combined to form an aggregated p-value which guides one decision in determining whether the shock effect for the time series under study is expected to be prevalent or transient. This p-value can be computed before the shock-effect is observed in the time series under study provided one can form a suitable donor pool. Two real data examples for forecasting daily Conoco Phillips stock prices and monthly employment data as well as several simulations are provided for verification and illustration.
 \end{abstract}
 
 
 \section{Introduction}
 
 %We provide forecasting adjustment techniques with the goal of lowering overall forecast error when the time series under study has undergone a structural shock.
-We provide forecasting methodology for assessing the lingering effect of an anticipated structural shock to a time series under study. We focus on the setting in which a structural shock has occurred and one desires a prediction for the post-shock response over a set time horizon $H$. Specific interest is in determining whether the shock is expected to be permanent or transient over $H$. Standard forecasting methods may not yield any guidance on the post-shock trajectories \citep{baumeister2014real}. 
-This is a general problem that has many real life applications. For example, one may acquire terrible or great news about a company and desire to determine whether that news is bound to impact the stock price of that company over a relevant time period.  Companies may be interested in forecasting the demand of their products after they were involved in a brand crisis, but they only have recent sales data from pre-crises times. %Policy makers, economists, and citizens alike may be interested in determining whether inflation will dissipate or persist for the foreseeable future
-All is not lost in this forecasting setting, one may be able to supplement the present forecast with past data borrowed from other time series which contain post-shock trajectories arising from materially similar structural shocks.
+In this article we provide forecasting methodology for assessing the transient or permanent behavior of an anticipated structural shock that has yet to have a measured impact on a time series under study. We focus on the setting in which a structural shock has occurred and one desires predictions to be made before post-shock responses are observed over a set time horizon $H$. Specific interest is in determining whether the shock is expected to be permanent or transient over $H$. 
 
-The core idea of our methodology is to sensibly aggregate similar past realized shock effects which arose from other time series, and then incorporate the aggregated shock effect estimator into the present forecast.
+This is a general problem facing many real life applications. For example, one may acquire terrible or great news about a company and desire to determine whether that news is bound to impact the stock price of that company over a relevant time period.  Companies may be interested in forecasting the demand of their products after they were involved in a brand crisis, but they only have recent sales data from pre-crises times. Policy makers, economists, and citizens alike may be interested in the expected future behavior of the unemployment rate in the upcoming quarter or year. %Policy makers, economists, and citizens alike may be interested in determining whether inflation will dissipate or persist for the foreseeable future
+Standard forecasting methods may not yield any guidance on the post-shock trajectories \citep{baumeister2014real}. That being said, one may be able to construct credible forecasts in this setting \citep{lin2021minimizing}. The procedure of \cite{lin2021minimizing} works by supplementing the present forecast with past data borrowed from other time series which contain post-shock trajectories arising from materially similar structural shocks.
 
-Our testing method embraces ideas from 
+The method of \cite{lin2021minimizing} showed success in the nowcasting setting in which one is interested in predicting the value of the first post-shock response. As it currently stands this method is not appropriate for more nuanced forecasts involving $h$-ahead time points. In this article we develop a  hypothesis testing procedure motivated by the methodology of \cite{lin2021minimizing} and the multi-horizon forecast testing procedure of \cite{quaedvlieg2021multi} in order to test whether or not time series which incorporate shock information exhibit superior predictive performance over forecasts which do not over a set time horizon. This effectively tests whether a shock is transient or permanent over a set time horizon.
+
+
+\textcolor{red}{This needs work} The core idea of our methodology is to sensibly aggregate similar past realized shock effects which arose from other time series, and then incorporate the aggregated shock effect estimator into the present forecast. Our testing method embraces ideas from 
 forecast aggregation in the post-shock setting \citep{lin2021minimizing}, 
 forecast comparison \citep{diebold1995comparing, quaedvlieg2021multi}, 
-p-value combination, 
+and p-value combination. 
+It also has similarities with 
 conditional forecasting \citep{baumeister2014real, kilian2017structural}, 
 time series pooling using cross-sectional panel data \citep{ramaswamy1993empirical, pesaran1999pooled, hoogstrate2000pooling, baltagi2008forecasting, koop2012forecasting, liu2020forecasting},
 forecasting with judgement and models \citep{svensson2005monetary, monti2008forecast}, 
 synthetic control methodology \citep{abadie2010synthetic, agarwal2020two},  
 expectation shocks \citep{croushore2006data, baumeister2014general, clements2019measuring}.
 
+\vspace*{0.5cm}\noindent\textcolor{red}{Need more pointed references on similar methods. Need to discuss how this method extends \cite{lin2021minimizing} and is an application of \cite{quaedvlieg2021multi}.}
 
 
 
@@ -146,9 +150,10 @@ expectation shocks \citep{croushore2006data, baumeister2014general, clements2019
 
 \label{section2}
 
-We will suppose that a researcher has multivariate time series data $\y_{i,t}$, $t = 1, \ldots,  T_i$ and $i = 1, \ldots, n+1$. We let $\y_{i,t} = (y_{i,t}$, $\x_{i,t}$) where $y_{i,t}$ is a scalar response and $\x_{i,t}$ is a vector of covariates that are revealed to the analyst prior to the observation of $y_{1,t}$.  Suppose that the analyst is interested in forecasting $y_{1,t}$, the first time series in the collection. 
-We will suppose that each time series $\y_{i,t}$ undergoes a shock at time $T^*_i \leq T_i + 1$. To define an interesting setting, we will suppose that $T^*_1 = T_1 + 1$, and $1 < T^*_i < T_i + 1$ for $i \geq 2$. 
-We will suppose that $\x_{i,t=T^*_i}$ is observed before the shock takes effect on $y_{i,t=T^*_i}$.
+We will suppose that a researcher has multivariate time series data $\y_{i,t}$, $t = 1, \ldots,  T_i$ and $i = 1, \ldots, n+1$. We let $\y_{i,t} = (y_{i,t}$, $\x_{i,t}$) where $y_{i,t}$ is a scalar response and $\x_{i,t}$ is a vector of covariates that are revealed to the analyst prior to the observation of $y_{1,t}$.  We will suppose that the analyst in interesting in forecasts over a time horizon $H$ where $H > 1$ to define an interesting problem that differs from \cite{lin2021minimizing}.
+%Suppose that the analyst is interested in forecasting $y_{1,t}$, the first time series in the collection. 
+We will suppose that each time series $\y_{i,t}$ undergoes a shock at time $T^*_i \leq T_i + H$, and we will suppose that $T^*_1 = T_1 + 1$ and $1 < T^*_i < T_i + H$ for $i \geq 2$. 
+We will specify that $\x_{i,t=T^*_i}$ is observed before the shock takes effect on $y_{i,t=T^*_i}$.
 
 We are interested in point forecasts $y_{i,t}^h$ at multiple horizons, $h = 1, \ldots, H$ with the aim of determining whether the shock has an effect on $y_{i,t}^h$.
 \cite{quaedvlieg2021multi} provided a methodology for comparing forecasts jointly across all horizons of a forecast path, $h = 1,\ldots, H$. In our post-shock setting, we want to compare the forecasts 
@@ -157,9 +162,9 @@ $$
 $$
 where $y^{1,h}_{i,t}$ is the forecast for $y_{i,t}$ that accounts for the yet-to-be observed structural shock and is based on the information set $\mathcal{F}_{t-h}$, and $\hat y^{2,h}_{i,t}$ is defined similarly for the forecast that does not include any shock effect information. We will compare these forecasts in terms of their loss differential
 $$
-  \dbf_{i,t} = \L_{i,t,1} - \L_{i,t,2},
+  \dbf_{i,t} = \Llet_{i,t,1} - \Llet_{i,t,2},
 $$
-where $\L_{i,t,j} \in \R^H$ has elements $L^h(y_{i,t}$, $\hat y_{i,t}^{j,h})$, $j = 1,2$, and $L$ is a loss function. Hypothesis tests in \cite{quaedvlieg2021multi} are with respect to $E(\dbf_{i,t}) = \mbf\mu_{i,t}$. Conditions for these tests require conditions of \cite{giacomini2006tests}. 
+where $\Llet_{i,t,j} \in \R^H$ has elements $L^h(y_{i,t}$, $\hat y_{i,t}^{j,h})$, $j = 1,2$, and $L$ is a loss function. Hypothesis tests in \cite{quaedvlieg2021multi} are with respect to $E(\dbf_{i,t}) = \mbf\mu_{i,t}$. Conditions for these tests require conditions of \cite{giacomini2006tests}. 
 
 We will be interested in $\mathbf{\mu}_i = \lim_{T\to\infty}\frac{1}{T}\sum_{i=1}^T \mathbf{\mu}_{i,t}$.
 
@@ -787,65 +792,12 @@ where $\alpha_j(\x) = \mu_\alpha + \delta_j'\x$, and we have
 
 
 
-\section{Simulation Setup}
-\label{simulation}
-
-Let $n$ denote the donor pool size, $p$ denote the number of covariates used, $H$ denote the number of horizon used, $T_i$ denote the length of time series to be evaluated for time series $i$, $K_i$ denote the training sample size used for each  forecasting  time series $i$, $T_i^*$ denote the time point just before the realization of the shock for time series $i$ for $i = 1, \ldots, n+1$.
 
 
-In this setting $n$, $p$, and $H$ are pre-determined. $T_i, K_i \sim \mrm{Gamma}(15, 10)$.  The total sample size for $i$th time series is $T_i + K_i + H$. $T_i^*$ is randomly sampled from $\ceil{\frac{1}{4}T_i}+1$ to $\ceil{\frac{3}{4} T_i} + K_i+ H$. If $T_i, K_i < 90$, we force them to be 90. The adopted model for the data is as below:
-\begin{align*}
-  y_{i,t} &= \eta_i + \phi_i y_{i,t-1} + \mbf{x}_{i,t} \bs{\beta}_i + \alpha_i I(t > T_i^*) + \varepsilon_{i,t},\\
-  \alpha_i &= \mu_{\alpha} + \mbf{x}_{i,T_i^*+1}\bs{\gamma}_i + \tilde{\varepsilon}_{i},
-\end{align*}
-where
-\begin{align*}
-  \phi_i & \sim \text{ indep. }  U(0,1) \\
-  \eta_i & \sim \text{ indep. }  \mc{N}(0,1) \\
-  \varepsilon_{i,t} & \sim \text{ indep. } \mc{N}(0, \sigma^2)\\
-  \tilde{\varepsilon}_i & \sim \text{ indep. } \mc{N}(0, \sigma_{\alpha}^2)
-  \\
-  \bs{\gamma}_i & \sim \text{ indep. } \mc{N}(\mu_{\gamma}\bs{1}_p, \sigma_{\gamma}^2 \mbf{I}_p) \\
-  \bs{\beta}_i & \sim \text{ indep. }  \mc{N}(\bs{0}_p, \mbf{I}_p).
-\end{align*}
-Moreover, the elements of $\mathbf{x}_{i,t}$ are independently distributed as $\mrm{Gamma}(1,\delta)$.
-
-Note that $K_i$ is training sample size for time series $i$. Consider
-\begin{align*}
-  K_i & \sim \ceil{\mrm{Gamma}(a_{K}, b_K)}\\
-   T_i & \sim \ceil{\mrm{Gamma}(a_{T}, b_T)} \\
-  T_i^* &\equiv \max\{T_i+1, \ceil{0.5 \cdot(T_i+K_i+H)}\},
-\end{align*}
-
-$K_i+H+T_i^* > T_i+K_i+H$
-
- Then, we consider the following simulation setup
-\begin{verbatim}
-  ns <- c(5, 10, 20, 40)
-  Tscale <- Kscale <- 1 / 2 # b_T, b_K 
-  K.T.shape <- c(200, 400, 800, 1600) # for K_i and T_i
-  mu.gamma.delta <- 2 # mean for parameter vector of shock
-  sigma.delta.gamma <- 0.1 # sd for parameter vector of shock
-  sigma.alpha <- 0.05 # sd for shock noise  
-  sigma <- 0.1 # sd for response noise
-  mu.alpha <- 50 # intercept for shock (relatively large)
-  H <- 8 
-  ell <- 4
-  scale <- 2 # scale for covariates that follow Gamma distribution
-\end{verbatim}
-
-\begin{align*}
-  y_{i,t} &= \eta_i + \phi_i y_{i,t-1} + \mbf{x}_{i,t} \bs{\beta}_i + \xi_i\cdot  I(t > T_i^*) + \varepsilon_{i,t},\\
-  \xi_i &= \alpha_i \cdot e^{-(t-T_i^*-1)} \\
-  \alpha_i &= \mu_{\alpha} + \mbf{x}_{i,T_i^*+1}\bs{\gamma}_i + \tilde{\varepsilon}_{i},
-\end{align*}
-
-
-\newpage
 
 \section{Numerical Examples}
 
-In this section, we illustrate shock prevalence testing using two real data examples. Section \ref{sptcop} discusses the prevalence testing of the shock that Conoco Phillips stock experienced on March 9th, 2020. 
+In this section, we illustrate shock prevalence testing using two real data examples. Section \ref{sptcop} discusses the prevalence testing of the shock that Conoco Phillips stock experienced on March 9th, 2020. Section \ref{sptuem} discusses the prevalence testing of the shock that seasonally adjusted log nonfarm payrolls experienced in April, 2020.
 
 \subsection{Testing shock prevalence for Conoco Phillips stock price series}
 
@@ -949,30 +901,32 @@ To verify our results, we plot $\{y_{1,t} \colon 1, \ldots, T_1\}$ in Figure \re
 
 \subsection{Testing shock prevalence for Month-on-Month Change in Log Nonfarm Payrolls (Seasonally Adjusted)}
 
-Arguably the most watched macroeconomic indicator for the US economy is the monthly release of the total nonfarm payrolls, which relects the gains or losses of persons employed. The pandemic-induced recession of 2020 coincided with a one-month drop in US nonfarm payrolls in excess of 20 million people, or $13.57\%$, between March and April 2020.  This decline exceeds all other monthly declines by many orders of magnitude, and hence then distance-based weighting employed in \citep{lin2021minimizing} could not hope to recover the full shock effect.  However, the test developed herein does not rely as heavily upon the assumption of a common shock distribution for donors or the assumption that the donors represent a rich and diverse sampling from that distribution.  Instead, what is needed is that the donor pool serve as an information source about the persistence of a shock effect in the time series under study.  
+\label{sptuem}
 
-To that end, we assemble a donor pool of US recessions induced by large shocks in the last three decades: the recessions of 1981-82, 2001-2003, and 2007-2009.  We employ a suite of monthly macroeconomic indicators as covariates for the linear model as for arriving at a optimal weighting of the donor pool.  These indicators are all transformed to their month-on-month change in log values, so as to be consistent with the time series under study and to capture the signal inherent in changes, not raw levels, of macroeconomic variables.  These indicators are the US unemployment insurance tranfers, real personal income, personal consumption expenditures, industrial production, consumer price index, Federal Reserve funds rate, and the count of black americans age 20 and over on US nonfarm payrolls.
+Arguably the most watched macroeconomic indicator for the US economy is the monthly release of the total nonfarm payrolls, which reflects the gains or losses of persons employed. The pandemic-induced recession of 2020 coincided with a one-month drop in US nonfarm payrolls in excess of 20 million people, or $13.57\%$, between March and April 2020.  This decline exceeds all other monthly declines by many orders of magnitude, and hence then distance-based weighting employed in \citep{lin2021minimizing} could not hope to recover the full shock effect.  However, the test developed herein does not rely as heavily upon the assumption of a common shock distribution for donors or the assumption that the donors represent a rich and diverse sampling from that distribution (\textcolor{red}{Think about this}).  Instead, what is needed is that the donor pool serve as an information source about the persistence of a shock effect in the time series under study.  
 
-In table 2, we observe that weighted AIC prefers $\mc{M}_2$, and thus we turn our interest to that model.  Since $p_{1}$ is far above the rejection threshold, we lack the evidence to reject the null of a transient shock in the time series under study, the month-on-month change in log employment in the span 2019-2022.  The weighted pvalue, $\hat p $, misses the ground truth p-value by .146 in absolute value, yet renders the correct decision.
+To that end, we assemble a donor pool of US recessions induced by large shocks in the last three decades: the recessions of 1981-82, 2001-2003, and 2007-2009 (\textcolor{red}{Justification needed for these shocks; the March 2020 lockdown was an unprecedented halting of economic activity}).  We employ a suite of monthly macroeconomic indicators as covariates for the linear model as for arriving at an optimal weighting of the donor pool.  These indicators are all transformed to their month-on-month change in log values, so as to be consistent with the time series under study and to capture the signal inherent in changes, not raw levels, of macroeconomic variables.  These indicators are the US unemployment insurance transfers, real personal income, personal consumption expenditures, industrial production, consumer price index, Federal Reserve funds rate, and the count of black Americans age 20 and over on US nonfarm payrolls.
+
+In table 2, we observe that weighted AIC prefers $\mc{M}_2$, and thus we turn our interest to that model.  Since $p_{1}$ is far above the rejection threshold, we lack the evidence to reject the null of a transient shock in the time series under study, the month-on-month change in log employment in the span 2019-2022.  The weighted p-value, $\hat p $, misses the ground truth p-value by .146 in absolute value, yet renders the correct decision.
 
 
 \textbf{Questions to answer and points to hit}
 \begin{enumerate}
 \item Why did I choose the donors I chose? X 
 \item Why did I use the columns I did in OLS? X
-\item Why did I use the columns I did in the estimation of the points on the simplex?
-\item Discuss the two models, M1, M2
-\item Weighted AIC just as in previous example?
-\item By weighted AIC, M2 is the preferred model
+\item Why did I use the columns I did in the estimation of the points on the simplex? X
+\item Discuss the two models, M1, M2 X
+\item Weighted AIC just as in previous example?  X
+\item By weighted AIC, M2 is the preferred model Yes
 \item We can see that $p_{1}$ is far larger than the rejection threshold, indicating that we lack the evidence to reject the null of a transiet shock
 \item The weighted pvalue, $\hat p $, misses the ground truth p-value by .146 in absolute value
 \item The method of voting renders the correct decision
 \item The method of weighted voting renders the correct decision
-\item Ask Jilei to correct y-axis
-\item Ask Jilei whether AIC was used in the same way as first example
-\item Ask Jilei whether covariate set $\textbf{X}$ is same as simplex optimization $\textbf{X}$
-\item Ask Jilei to drop RPI as a covariate in OLS (but not necessarily for optimization)
-\item Ask Jilei to include chart with data stopping at March 2020 to better visualize how payrolls change by month
+\item Ask Jilei to correct y-axis X
+\item Ask Jilei whether AIC was used in the same way as first example X
+\item Ask Jilei whether covariate set $\textbf{X}$ is same as simplex optimization $\textbf{X}$ 
+\item Ask Jilei to drop RPI as a covariate in OLS (but not necessarily for optimization) (needs checking)
+\item Ask Jilei to include chart with data stopping at March 2020 to better visualize how payrolls change by month X
 
 \end{enumerate}
 
@@ -996,7 +950,17 @@ In table 2, we observe that weighted AIC prefers $\mc{M}_2$, and thus we turn ou
 	\end{center}	
 \end{figure}
 
-\newpage
+
+
+\subsection{Simulations}
+\label{simulation}
+
+
+
+\section{Discussion}
+
+Talk about post-shock forecasting as parameterizing exogeniety and using hindsight in the donor pool to explicitly estimate exogeneity apriori.
+
 
 
 
