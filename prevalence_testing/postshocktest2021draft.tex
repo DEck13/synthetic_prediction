@@ -910,6 +910,8 @@ To that end, we assemble a donor pool of US recessions induced by large shocks i
 In table 2, we observe that weighted AIC prefers $\mc{M}_2$, and thus we turn our interest to that model.  Since $p_{1}$ is far above the rejection threshold, we lack the evidence to reject the null of a transient shock in the time series under study, the month-on-month change in log employment in the span 2019-2022.  The weighted p-value, $\hat p $, misses the ground truth p-value by .146 in absolute value, yet renders the correct decision.
 
 
+The variable selection steps are outlined as follows. At first, we have the same set of covariates $\{\mc{X}_1, \ldots, \mc{X}_p\}$ for each donor, where $\mc{X}_1$ corresponds to the name of the covariate. Next, for each donor, we conduct stepwise variable selection based on AIC so that for each donor, we end up with a model with covariates that may differ across  donors, say $\{\mc{X}_j \colon j\in \mc{I}_i\}$ for $i = 2, \ldots, n+1$, where $\mc{I}_j$ is the collection of the indices corresponding to which covariate is selected. Next, we  take the union $\cup_{i=2}^{n+1}\{\mc{X}_j \colon j\in \mc{I}_i\}$ to obtain the final set of covariates that are present in the model of every donor and the time series of interest.
+
 \textbf{Questions to answer and points to hit}
 \begin{enumerate}
 \item Why did I choose the donors I chose? X 

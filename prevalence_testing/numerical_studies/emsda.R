@@ -619,7 +619,7 @@ difflog_df <- data.frame(diff(as.matrix(log(df))))
 # We create lags of the covariates
 # https://stackoverflow.com/questions/38119225/debugging-function-to-create-multiple-lags-for-multiple-columns-dplyr
 
-difflog_df.lag <- shift(difflog_df, n=1:2, give.names = T)  ##column indexes of columns to be lagged as "[,startcol:endcol]", "n=1:3" specifies the number of lags (lag1, lag2 and lag3 in this case)
+difflog_df.lag <- shift(difflog_df, n=1:1, give.names = T)  ##column indexes of columns to be lagged as "[,startcol:endcol]", "n=1:3" specifies the number of lags (lag1, lag2 and lag3 in this case)
 
 # We we combine and original series and the lags
 merged <- bind_cols(difflog_df, difflog_df.lag)
@@ -657,7 +657,8 @@ paste('This is a dataset of dimension', dim(no_NA_cols_merged)[1], 'by', dim(no_
 # want 5 donors with fewer covariates, or fewer donors with more covariates.
 
 
-dat <- no_NA_cols_merged
+dat <- complete_cases_merged
+dat <- dat[, c(1, 3, 2, 4, 6, 8, 10)]
 date <- rownames(dat)
 # setup
 H <- 12
@@ -665,112 +666,83 @@ K <- 24
 L <- 12
 
 # Time Series 2
-shock.t2 <- which(date == '1958-08-01') + 1
-shock.adj <- which(date == '1957-04-01') + 1
+shock.t2 <- which(date == '1980-03-01') + 1
 TS2 <- dat[(shock.t2 - (1 + 12 + K + H)):(shock.t2 + L),]
 TS2$shock.t2 <- as.numeric((shock.t2 - (1 + 12 + K + H)):(shock.t2 + L) %in% shock.t2:(shock.t2 + L))
-TS2$shock.adj <- as.numeric((shock.t2 - (1 + 12 + K + H)):(shock.t2 + L) == shock.adj)
-TS2$shock.adj.2 <- as.numeric((shock.t2 - (1 + 12 + K + H)):(shock.t2 + L) %in% shock.adj:(shock.t2 + L))
 ## time series 2 modeling
-
-# use AIC to choose between models
-mod.t2.null <- lm(PAYEMS ~ PAYEMS_lag_1 + INDPRO_lag_1 + CPIAUCSL_lag_1, data = TS2)
-mod.t2.permanent.m1 <- lm(PAYEMS ~ PAYEMS_lag_1 + INDPRO_lag_1 + CPIAUCSL_lag_1 + 
-                                                  shock.adj + shock.t2, data = TS2)
-mod.t2.permanent.m2 <- lm(PAYEMS ~ PAYEMS_lag_1 + INDPRO_lag_1 + CPIAUCSL_lag_1 + 
-                            shock.adj.2 + shock.t2, data = TS2)
-
-AIC(mod.t2.null);AIC(mod.t2.permanent.m1);AIC(mod.t2.permanent.m2)
-# choose the second model
-mod.t2.permanent <- mod.t2.permanent.m2
-
+mod.t2.permanent <- lm(PAYEMS ~ PAYEMS_lag_1 + FEDFUNDS + W825RC1_lag_1 + 
+                         PCE_lag_1 + CPIAUCSL_lag_1 + LNS12000031_lag_1 + shock.t2, data = TS2)
+mod.t2.null <- lm(PAYEMS ~ PAYEMS_lag_1 + FEDFUNDS + W825RC1_lag_1 + 
+                    PCE_lag_1 + CPIAUCSL_lag_1 + LNS12000031_lag_1, data = TS2)
 ## dynamic
 co.D <- c()
 for (d in 1:nrow(TS2)) {
-  co.D <- rbind(co.D, TS2[d, c(2, 4, 3, 5, 6, 7)] * TS2$shock.t2[d])
+  co.D <- rbind(co.D, TS2[d, 2:7] * TS2$shock.t2[d])
 }
 co.D <- as.matrix(co.D)
 ## modeling
-# choose between models
-mod.t2.dynamic.null <- lm(TS2$PAYEMS ~ as.matrix(TS2[, c(2, 4, 3, 5, 6, 7)]) + co.D + TS2$shock.t2)
-mod.t2.dynamic.m1 <- lm(TS2$PAYEMS ~ as.matrix(TS2[, c(2, 4, 3, 5, 6, 7)]) + co.D + TS2$shock.t2 + TS2$shock.adj)
-mod.t2.dynamic.m2 <- lm(TS2$PAYEMS ~ as.matrix(TS2[, c(2, 4, 3, 5, 6, 7)]) + co.D + TS2$shock.t2 + TS2$shock.adj.2)
-AIC(mod.t2.dynamic.null); AIC(mod.t2.dynamic.m1); AIC(mod.t2.dynamic.m2)
-# choose m2
-mod.t2.dynamic <- lm(TS2$PAYEMS ~ as.matrix(TS2[, c(2, 4, 3, 5, 6, 7)]) + co.D + TS2$shock.t2 +  TS2$shock.adj.2)
+mod.t2.dynamic <- lm(TS2$PAYEMS ~ as.matrix(TS2[, 2:7]) + co.D + TS2$shock.t2)
 # AICs
-AICs.19580801 <- c(AIC(mod.t2.null), AIC(mod.t2.permanent), AIC(mod.t2.dynamic))
+AICs.19800301 <- c(AIC(mod.t2.null), AIC(mod.t2.permanent), AIC(mod.t2.dynamic))
+
 
 # Time Series 3
-shock.t3 <- which(date == '1973-10-01') + 1
+shock.t3 <- which(date == '2001-09-01') + 1
 TS3 <- dat[(shock.t3 - (1 + 12 + K + H)):(shock.t3 + L),]
 TS3$shock.t3 <- as.numeric((shock.t3 - (1 + 12 + K + H)):(shock.t3 + L) %in% shock.t3:(shock.t3 + L))
 ## time series 2 modeling
-mod.t3.permanent <- lm(PAYEMS ~ PAYEMS_lag_1 + INDPRO_lag_1 + CPIAUCSL_lag_1 + shock.t3, data = TS3)
-mod.t3.null <- lm(PAYEMS ~ PAYEMS_lag_1 + INDPRO_lag_1 + CPIAUCSL_lag_1, data = TS3)
+mod.t3.permanent <- lm(PAYEMS ~ PAYEMS_lag_1 + FEDFUNDS + W825RC1_lag_1 + 
+                         PCE_lag_1 + CPIAUCSL_lag_1 + LNS12000031_lag_1 + shock.t3, data = TS3)
+mod.t3.null <- lm(PAYEMS ~ PAYEMS_lag_1 + FEDFUNDS + W825RC1_lag_1 + 
+                    PCE_lag_1 + CPIAUCSL_lag_1 + LNS12000031_lag_1, data = TS3)
 ## dynamic
 co.D <- c()
 for (d in 1:nrow(TS3)) {
-  co.D <- rbind(co.D, TS3[d, c(2, 4, 3, 5, 6, 7)] * TS3$shock.t3[d])
+  co.D <- rbind(co.D, TS3[d, 2:7] * TS3$shock.t3[d])
 }
 co.D <- as.matrix(co.D)
 ## modeling
-mod.t3.dynamic <- lm(TS3$PAYEMS ~ as.matrix(TS3[, c(2, 4, 3, 5, 6, 7)]) + co.D + TS3$shock.t3)
+mod.t3.dynamic <- lm(TS3$PAYEMS ~ as.matrix(TS3[, 2:7]) + co.D + TS3$shock.t3)
 # AICs
-AICs.19731001 <- c(AIC(mod.t3.null), AIC(mod.t3.permanent), AIC(mod.t3.dynamic))
+AICs.20010901 <- c(AIC(mod.t3.null), AIC(mod.t3.permanent), AIC(mod.t3.dynamic))
 
 # Time Series 4
-shock.t4 <- which(date == '1980-03-01') + 1
+shock.t4 <- which(date == '2008-03-01') + 1
 TS4 <- dat[(shock.t4 - (1 + 12 + K + H)):(shock.t4 + L),]
 TS4$shock.t4 <- as.numeric((shock.t4 - (1 + 12 + K + H)):(shock.t4 + L) %in% shock.t4:(shock.t4 + L))
 ## time series 2 modeling
-mod.t4.permanent <- lm(PAYEMS ~ PAYEMS_lag_1 + INDPRO_lag_1 + CPIAUCSL_lag_1 + shock.t4, data = TS4)
-mod.t4.null <- lm(PAYEMS ~ PAYEMS_lag_1 + INDPRO_lag_1 + CPIAUCSL_lag_1, data = TS4)
+mod.t4.permanent <- lm(PAYEMS ~ PAYEMS_lag_1 + FEDFUNDS + W825RC1_lag_1 + 
+                         PCE_lag_1 + CPIAUCSL_lag_1 + LNS12000031_lag_1 + shock.t4, data = TS4)
+mod.t4.null <- lm(PAYEMS ~ PAYEMS_lag_1 + FEDFUNDS + W825RC1_lag_1 + 
+                    PCE_lag_1 + CPIAUCSL_lag_1 + LNS12000031_lag_1, data = TS4)
 ## dynamic
 co.D <- c()
 for (d in 1:nrow(TS4)) {
-  co.D <- rbind(co.D, TS4[d, c(2, 4, 3, 5, 6, 7)] * TS4$shock.t4[d])
+  co.D <- rbind(co.D, TS4[d, 2:7] * TS4$shock.t4[d])
 }
 co.D <- as.matrix(co.D)
 ## modeling
-mod.t4.dynamic <- lm(TS4$PAYEMS ~ as.matrix(TS4[, c(2, 4, 3, 5, 6, 7)]) + co.D + TS4$shock.t4)
+mod.t4.dynamic <- lm(TS4$PAYEMS ~ as.matrix(TS4[, 2:7]) + co.D + TS4$shock.t4)
 # AICs
-AICs.19800301 <- c(AIC(mod.t4.null), AIC(mod.t4.permanent), AIC(mod.t4.dynamic))
-
-
-# Time Series 5
-shock.t5 <- which(date == '2001-09-01') + 1
-TS5 <- dat[(shock.t5 - (1 + 12 + K + H)):(shock.t5 + L),]
-TS5$shock.t5 <- as.numeric((shock.t5 - (1 + 12 + K + H)):(shock.t5 + L) %in% shock.t5:(shock.t5 + L))
-## time series 2 modeling
-mod.t5.permanent <- lm(PAYEMS ~ PAYEMS_lag_1 + INDPRO_lag_1 + CPIAUCSL_lag_1 + shock.t5, data = TS5)
-mod.t5.null <- lm(PAYEMS ~ PAYEMS_lag_1 + INDPRO_lag_1 + CPIAUCSL_lag_1, data = TS5)
-## dynamic
-co.D <- c()
-for (d in 1:nrow(TS5)) {
-  co.D <- rbind(co.D, TS5[d, c(2, 4, 3, 5, 6, 7)] * TS5$shock.t5[d])
-}
-co.D <- as.matrix(co.D)
-## modeling
-mod.t5.dynamic <- lm(TS5$PAYEMS ~ as.matrix(TS5[, c(2, 4, 3, 5, 6, 7)]) + co.D + TS5$shock.t5)
-# AICs
-AICs.20010901 <- c(AIC(mod.t5.null), AIC(mod.t5.permanent), AIC(mod.t5.dynamic))
+AICs.20080301 <- c(AIC(mod.t4.null), AIC(mod.t4.permanent), AIC(mod.t4.dynamic))
 
 # Time Series 1
 shock.t1 <- which(date == '2020-03-01') + 1
 TS1 <- dat[(shock.t1 - (1 + 12 + K + H)):(shock.t1 + L),]
 TS1$shock.t1 <- as.numeric((shock.t1 - (1 + 12 + K + H)):(shock.t1 + L) %in% shock.t1:(shock.t1 + L))
 ## time series 2 modeling
-mod.t1.permanent <- lm(PAYEMS ~ PAYEMS_lag_1 + INDPRO_lag_1 + CPIAUCSL_lag_1 + shock.t1, data = TS1)
-mod.t1.null <- lm(PAYEMS ~ PAYEMS_lag_1 + INDPRO_lag_1 + CPIAUCSL_lag_1, data = TS1)
+mod.t1.permanent <- lm(PAYEMS ~ PAYEMS_lag_1 + FEDFUNDS + W825RC1_lag_1 + 
+                         PCE_lag_1 + CPIAUCSL_lag_1 + LNS12000031_lag_1 + shock.t1, data = TS1)
+mod.t1.null <- lm(PAYEMS ~ PAYEMS_lag_1 + FEDFUNDS + W825RC1_lag_1 + 
+                    PCE_lag_1 + CPIAUCSL_lag_1 + LNS12000031_lag_1, data = TS1)
 ## dynamic
 co.D <- c()
 for (d in 1:nrow(TS1)) {
-  co.D <- rbind(co.D, TS1[d, c(2, 4, 3, 5, 6, 7)] * TS1$shock.t1[d])
+  co.D <- rbind(co.D, TS1[d, 2:7] * TS1$shock.t1[d])
 }
 co.D <- as.matrix(co.D)
 ## modeling
-mod.t1.dynamic <- lm(TS1$PAYEMS ~ as.matrix(TS1[, c(2, 4, 3, 5, 6, 7)]) + co.D + TS1$shock.t1)
+mod.t1.dynamic <- lm(TS1$PAYEMS ~ as.matrix(TS1[, 2:7]) + co.D + TS1$shock.t1)
 # AICs
 AICs.20200301 <- c(AIC(mod.t1.null), AIC(mod.t1.permanent), AIC(mod.t1.dynamic))
 
@@ -781,32 +753,30 @@ Tstar <- rep(49, 5)
 # Y
 Y <- c()
 X <- c()
-TS <- list(TS1, TS2, TS3, TS4, TS5)
-for (i in 1:5) {
+TS <- list(TS1, TS2, TS3, TS4)
+for (i in 1:4) {
   Y[[i]] <- TS[[i]]$PAYEMS
-  X[[i]] <- as.matrix(TS[[i]][, c(4, 6)])
+  X[[i]] <- as.matrix(TS[[i]][, c(3, 4, 5, 6, 7)])
 }
 
-# additional covariates that are needed to be adjusted in time series 2
-sc.x <- nolag.i.x <- list(2, list(TS2$shock.adj.2))
 
 # testing 
-res1 <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = rep(K, 5), H = H,
+res1 <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H,
                              Ts = Ts, ell = 4, B = 200, bw = 4, 
-                             sc.x = sc.x,
                              scale = TRUE)
 
 res2 <- ps.indic.W.dynamic(Tstar = Tstar
-                           , Y = Y, X = X, K = rep(K, 5), 
-                           q1 = 2, q2 = 2, nolag.i.x = nolag.i.x,
+                           , Y = Y, X = X, K = rep(K, 4), 
+                           q1 = 1, q2 = 1, 
                            H = H, Ts = Ts, ell = 4, B = 200, bw = 4,
                            scale = TRUE)
 
 Wstar <- res1$W
 
 
-AICs <- rbind(AICs.19580801, AICs.19731001, AICs.19800301, AICs.20010901)
+AICs <- rbind(AICs.19800301, AICs.20010901, AICs.20080301)
 
+matrix(Wstar, nrow = 1) %*% AICs
 
 # plot shock transience
 setwd('~/Desktop/Research/synthetic prediction/')
@@ -824,8 +794,8 @@ options(tikzLatexPackages
 tikz(file = 'UEMtransience.tex', width = 5.5, height = 4, standAlone = TRUE)
 # plot
 plot(x = as.Date(rownames(ts)), y = ts$PAYEMS, type = 'l',
-     xlab = 'Time $t$', ylab = 'Persons on nonfarm payrolls $y_{1,t}$',
-     main = 'Shock transience of persons on nonfarm payrolls $y_{1,t}$',
+     xlab = 'Time $t$', ylab = 'Change in Log Nonfarm Payrolls $y_{1,t}$',
+     main = 'Shock transience of $y_{1,t}$',
      col = 'deepskyblue')
 # segments
 segments(x0 = as.Date("2020-04-01"), y0 = -.12, y1 = .02, lty = 3, col = 'magenta')
