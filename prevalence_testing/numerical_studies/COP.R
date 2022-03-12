@@ -566,7 +566,7 @@ H <- 10
 # training sample size
 K <- 30
 # number of days after shock date
-L <- 7
+L <- 30
 
 #### Monday, March 17th, 2008
 
@@ -605,6 +605,7 @@ AIC.20080314.dynamic <- AIC(m_COP.dynamic)
 
 AIC.20080314 <- c(AIC.20080314.null, AIC.20080314.permanent, 
                   AIC.20080314.dynamic)
+I.AIC.2 <- ifelse(AIC(m_COP_3_17) > AIC(m_COP.dynamic), yes = 1, no = 0)
 
 #### 2008 shock effects
 
@@ -641,7 +642,7 @@ AIC.20080908.dynamic <- AIC(m_COP.dynamic)
 
 AIC.20080908 <- c(AIC.20080908.null, AIC.20080908.permanent,
                   AIC.20080908.dynamic)
-
+I.AIC.3 <- ifelse(AIC(m_COP_Sept_08) > AIC(m_COP.dynamic), yes = 1, no = 0)
 
 #### Thursday, November 27, 2014
 
@@ -677,7 +678,7 @@ AIC.20141127.dynamic <- AIC(m_COP.dynamic)
 AIC.20141127 <- c(AIC.20141127.null, AIC.20141127.permanent, 
                   AIC.20141127.dynamic)
 
-
+I.AIC.4 <- ifelse(AIC(m_COP_11_27_14) > AIC(m_COP.dynamic), yes = 1, no = 0)
 #### The March 9th, 2020 shock effect:
 
 # shock effect date
@@ -743,6 +744,7 @@ sum(res2$ps[-1] * res2$W)
 sum(res2$Is[-1] * res2$W)
 
 AICs <- rbind(AIC.20080314, AIC.20080908,  AIC.20141127)
+
 rownames(AICs) <- c('TS2', 'TS3', 'TS4')
 colnames(AICs) <- c('null', 'Permanent',  'dynamic')
 
@@ -760,6 +762,9 @@ AICs <- rbind(AICs, wAICs, AIC.20200309)
 rownames(AICs)[c(5, 6)] <- c('wAIC', 'TS1' )
 xtable(AICs)
 
+# weighted comparison
+I.AICs <- c(I.AIC.2, I.AIC.3, I.AIC.4)
+matrix(res1$W, nrow = 1) %*% I.AICs
 
 # plot shock transience
 setwd('~/Desktop/Research/synthetic prediction/')

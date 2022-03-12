@@ -684,7 +684,7 @@ co.D <- as.matrix(co.D)
 mod.t2.dynamic <- lm(TS2$PAYEMS ~ as.matrix(TS2[, 2:7]) + co.D + TS2$shock.t2)
 # AICs
 AICs.19800301 <- c(AIC(mod.t2.null), AIC(mod.t2.permanent), AIC(mod.t2.dynamic))
-
+I.AIC.2 <- ifelse(AIC(mod.t2.permanent) > AIC(mod.t2.dynamic), yes = 1, no = 0)
 
 # Time Series 3
 shock.t3 <- which(date == '2001-09-01') + 1
@@ -705,6 +705,7 @@ co.D <- as.matrix(co.D)
 mod.t3.dynamic <- lm(TS3$PAYEMS ~ as.matrix(TS3[, 2:7]) + co.D + TS3$shock.t3)
 # AICs
 AICs.20010901 <- c(AIC(mod.t3.null), AIC(mod.t3.permanent), AIC(mod.t3.dynamic))
+I.AIC.3 <- ifelse(AIC(mod.t3.permanent) > AIC(mod.t3.dynamic), yes = 1, no = 0)
 
 # Time Series 4
 shock.t4 <- which(date == '2008-03-01') + 1
@@ -725,6 +726,7 @@ co.D <- as.matrix(co.D)
 mod.t4.dynamic <- lm(TS4$PAYEMS ~ as.matrix(TS4[, 2:7]) + co.D + TS4$shock.t4)
 # AICs
 AICs.20080301 <- c(AIC(mod.t4.null), AIC(mod.t4.permanent), AIC(mod.t4.dynamic))
+I.AIC.4 <- ifelse(AIC(mod.t4.permanent) > AIC(mod.t4.dynamic), yes = 1, no = 0)
 
 # Time Series 1
 shock.t1 <- which(date == '2020-03-01') + 1
@@ -775,8 +777,9 @@ Wstar <- res1$W
 
 
 AICs <- rbind(AICs.19800301, AICs.20010901, AICs.20080301)
-
+I.AICs <- c(I.AIC.2, I.AIC.3, I.AIC.4)
 matrix(Wstar, nrow = 1) %*% AICs
+matrix(Wstar, nrow = 1) %*% I.AICs
 
 # plot shock transience
 setwd('~/Desktop/Research/synthetic prediction/')
