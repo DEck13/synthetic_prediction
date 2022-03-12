@@ -512,7 +512,7 @@ where the last second step assumes that $\{I(p_i\leq \alpha)\colon i\in \mc{I}_n
 
 
 
-Suppose we are interested in comparing two models $\mc{M}_1$ and $\mc{M}_2$ using AIC for forecasting the response in the time series of interest. However, direct comparison is not feasible as the data are not observed. Instead, we can conduct such inference based on the donor pool. Let the AIC of $\mc{M}_j$ for $i$th time series be $a_i^j$ for $i = 1, \ldots, n+1$ and $j = 1, 2$. Let $\xi_i = \P(a_i^1 > a_i^2)$. Note that if the data generating process is based on $\mc{M}_1$ and is true for all the donors and time series of interest, $\xi_i$ is expected to be high. Additionally, it is reasonable to assume $\xi_i =\xi $ for $\xi \in [0,1]$ and $i = 1, \ldots, n+1$.  Notice that this setup is similar to the setup of weighted voting or voting we discussed before. So, under similar arguments, we propose the following corollary for synthetic pairwise model selection.
+Suppose we are interested in comparing two models $\mc{M}_1$ and $\mc{M}_2$ using AIC for forecasting the response in the time series of interest. However, direct comparison is not feasible as the data are not observed. Instead, we can conduct such inference based on the donor pool. Let the AIC of $\mc{M}_j$ for $i$th time series be $a_i^j$ for $i = 1, \ldots, n+1$ and $j = 1, 2$. Let $\xi_i = \P(a_i^1 < a_i^2)$. Note that if the data generating process is based on $\mc{M}_1$ and is true for all the donors and time series of interest, $\xi_i$ is expected to be high. Additionally, it is reasonable to assume $\xi_i =\xi $ for $\xi \in [0,1]$ and $i = 1, \ldots, n+1$.  Notice that this setup is similar to the setup of weighted voting or voting we discussed before. So, under similar arguments, we propose the following corollary for synthetic pairwise model selection.
 
 
 \begin{corollary}[Synthetic pairwise model selection]
@@ -524,10 +524,10 @@ Suppose that  $\mc{I}_n$  is non-empty, $|\mc{I}_n| \to \infty$ as $n \to \infty
 \begin{align*}
   \sum_{i\in \mc{I}_n}\P(a_i^1 > a_i^2) = \sum_{i\in \mc{I}_n} w_i \xi_i \to \xi_{1},
 \end{align*}
-where $\xi_i =  \P(a_i^1 > a_i^2)\in [0,1]$ for $i \in \mc{I}_n$. If $\xi  \neq 0.5$, as $n\to \infty$, 
+where $\xi_i =  \P(a_i^1 < a_i^2)\in [0,1]$ for $i \in \mc{I}_n$. If $\xi  \neq 0.5$, as $n\to \infty$, 
 \begin{align*}
-  \E \bigg\{\left|I\left\{ \sum_{i\in \mc{I}_n} w_i I(a_i^1 > a_i^2) \geq 0.5\right\}
-  - I( a_1^1 > a_1^2) \right|\bigg\}
+  \E \bigg\{\left|I\left\{ \sum_{i\in \mc{I}_n} w_i I(a_i^1 < a_i^2) \geq 0.5\right\}
+  - I( a_1^1 < a_1^2) \right|\bigg\}
   \to  \begin{cases}
     1- \xi_1 & \text{ if } \xi_1 > 0.5 \\
    \xi_1 & \text{ if } \xi_1 < 0.5 
