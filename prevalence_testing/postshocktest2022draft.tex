@@ -224,14 +224,14 @@ where $\bar{d}^{hb}_{i} = \frac{1}{T_i}\sum_{t=1}^{T_i} d^{hb}_{i,t}$. From the 
   \Big\vert \overset{P}{\longrightarrow} 0,
 \end{equation}
 as $T_i\to\infty$ where $l=l_{T_i}=o(\sqrt{T_i})$. We can compute a bootstrap $p$-value as 
-$$
-  \hat{p}_i^B = \frac{1}{B}\sum_{b=1}^B 1\{t_{i,\text{aSPA}} < t^b_{i,\text{aSPA}}\}. 
-$$
-The results \eqref{boott} implies that 
 \begin{equation} \label{bootp}
-  |\hat p_i^B - \hat p_i| \overset{P}{\to} 0, \quad \text{as} \quad T_i,B \to \infty, 
+  \hat{p}_i^B = \frac{1}{B}\sum_{b=1}^B 1\{t_{i,\text{aSPA}} < t^b_{i,\text{aSPA}}\}. 
 \end{equation}
-    where $\hat p_i = \Prob(t_{i,\alpha} < t_{i,\text{aSPA}})$ and $t_{i,\alpha}$ is a critical value corresponding to the distribution of $t_{i,\text{aSPA}}$. Therefore bootstrap inference in the donor pool is a good approximation. %We now consider how bootstrap inference in the donor pool is used to test whether a shock is prevalent or transient for the time series under study.
+The results \eqref{boott} implies that 
+$$
+  |\hat p_i^B - \hat p_i| \overset{P}{\to} 0, \quad \text{as} \quad T_i,B \to \infty, 
+$$
+where $\hat p_i = \Prob(t_{i,\alpha} < t_{i,\text{aSPA}})$ and $t_{i,\alpha}$ is a critical value corresponding to the distribution of $t_{i,\text{aSPA}}$. Therefore bootstrap inference in the donor pool is a good approximation. %We now consider how bootstrap inference in the donor pool is used to test whether a shock is prevalent or transient for the time series under study.
 
 
 
@@ -271,27 +271,45 @@ and suppose that the regression coefficients in \eqref{model-gen} have the follo
 \tilde{\mathbf{\phi}}_{i,j} \indep \lambda_{i,j} \indep \mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i}, 
 \end{split}
 \end{equation}
-where the distributions $\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1})$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}_{i'}}(\x_{i,T_i^*+1})$ satisfy $\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1}) \overset{d}{=} \mathcal{F}_{\tilde{\mathbf{\phi}}_{j}}(\x_{i',T_i^*+1})$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}_j}(\x_{i,T_i^*+1}) \overset{d}{=} \mathcal{F}_{\tilde{\mathbf{\theta}}_{j}}(\x_{i',T_i^*+1})$ when $\x_{i,T_i^*+1} = \x_{i',T_i^*+1}$. Note that for model \eqref{model-gen} to be of use for post-shock forecasting, the variation in $\mathcal{F}_{\tilde{\mathbf{\phi}}}$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}}$ must be small relative to the signal strength.
+where the distributions $\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1})$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}_{i'}}(\x_{i,T_i^*+1})$ satisfy 
+$\|\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1}) - \mathcal{F}_{\tilde{\mathbf{\phi}}_{j}}(\x_{i',T_i^*+1})\|_p \to 0$ and $\|\mathcal{F}_{\tilde{\mathbf{\theta}}_j}(\x_{i,T_i^*+1}) - \mathcal{F}_{\tilde{\mathbf{\theta}}_{j}}(\x_{i',T_i^*+1})\|_p \to 0$ as $\|\x_{i,T_i^*+1} - \x_{i',T_i^*+1}\| \to 0$ where $\|\cdot\|_p$ is a distance metric for distributions and $\|\cdot\|$ is a norm for elements in Euclidean space. Note that for model \eqref{model-gen} to be of use for post-shock forecasting, the variation in $\mathcal{F}_{\tilde{\mathbf{\phi}}}$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}}$ must be small relative to the signal strength which is captured in $\x_{i,T^*_i+1}$.
 
 
-We see that model \eqref{model-gen} with its accompanying random effects structure \eqref{random-effects} is flexible enough to capture changing structural dynamics as well as a mean-shift, and is a generalization of the model in \cite{lin2021minimizing}. Note that the flexibility of allowing for changing structural dynamics is useful for fitting purposes, but it does not necessarily reflect the state of the world in the post-shock setting. It is of course possible that there is no shock or a simple mean-shift. In fact, the simple mean shift model can be fit and one can test whether the additional flexibility of model \eqref{model-gen} is warranted for series in the donor pool. A general testing procedure is discussed in Section \ref{sec:aggmeth} (\textcolor{red}{need to discuss that model selection is aggregated, the primary goal concerns the series under study}).
+We see that model \eqref{model-gen} with its accompanying random effects structure \eqref{random-effects} is flexible enough to capture changing structural dynamics as well as a mean-shift, and is a generalization of the models mentioned in \cite{lin2021minimizing}. Note that the flexibility of allowing for changing structural dynamics is useful for fitting purposes, but it does not necessarily reflect the state of the world in the post-shock setting. It is of course possible that there is no shock or a simple mean-shift. In fact, the simple mean shift model can be fit and one can test whether the additional flexibility of model \eqref{model-gen} is warranted for series in the donor pool. A general testing procedure is discussed in Section \ref{sec:aggmeth} (\textcolor{red}{need to discuss that model selection is aggregated, the primary goal concerns the series under study}).
 
 The post-shock dynamic changes depend heavily on the value of $\mbf{x}_{i,T_i^*+1}$, the covariates recorded right before the first post-shock response is observed. Under this setup any two series $i,j$ with small $\|\mbf{x}_{i,T_i^*+1} - \mbf{x}_{j,T_i^*+1}\|_2$ are expected to experience similar structural changes. This makes distance based weighting an attractive avenue.
 
-\vspace*{0.5cm}\noindent\textcolor{red}{Explain h-ahead forecasts here}
+\vspace*{0.5cm}\noindent\textcolor{red}{Jilei, explain how the h-ahead forecasts are computed here}
+
 
 
 
 \subsection{Aggregation methods}
 \label{sec:aggmeth}
 
-\noindent\textcolor{red}{Much more is needed here}
+In this section we discuss aggregation techniques for combining the multi-horizon forecast p-values in Section \ref{sec:multhor} computed from forecasts from models in Section \ref{modelsetup} to illicit a decision about the transient or persistence of a structural shock. 
 
+The post-shock dynamics in model~\eqref{model-gen} with random effect structure~\eqref{random-effects} are explicitly constructed so that series with similar covariates at time $T^*_i + 1$ have similar post-shock dynamics. This facilitates the use of simple p-value combination methods provided that there exists donors $i$ in the donor pool which have $\x_{i,T^*_i+1}$ close to $\x_{1,T^*_1+1}$. We will motivate two such p-value combination approaches. 
 
-\noindent\textbf{Note}: We need to explain what the voting method is, possibly in algorithmic format. Also note that the p-values that we obtain are computed using a bootstrap procedure. Perhaps an additional proposition that states the performance of these bootstrap p-values would further guarantee reliability. 
+The first approach is a weighted average of the p-values computed in the donor pool which are calculated as in Section \ref{sec:multhor}. The weights reflect the similarity between $\x_{i,T^*_i+1}$ and $\x_{1,T^*_1+1}$, and are similar to the weights computed in \cite{lin2021minimizing}. We now discuss the details. Let
+\begin{align*}
+	\bs{X}= \begin{pmatrix}
+		\bs{x}_{1, T_1^*+1} & \cdots & \bs{x}_{1, T_1^*-q_2+1}\\
+		\vdots &  \ddots & \vdots  \\
+		\bs{x}_{n+1, T_{n+1}^*+1} & \cdots & \bs{x}_{1, T_1^*-q_2+1}
+	\end{pmatrix}.
+\end{align*}
+The reason for including $\bs{x}_{i, T_i^*-q_2+1}$ is that the dynamic model \eqref{model-gen} considers lagged covariate values in its shock construction. Let $\mbf{X}^*$ be the same as $\bs{X}$ with each column scaled to have mean 0 and standard deviation 1. We compute the weights $\mbf{W}^*$  based on $\bs{X}^*$ according to procedures detailed in Section 2.2 of \cite{lin2021minimizing}. Note that the modeling part for the response $y_{i,t}$ does not necessarily involve scaled covariates. From this construction we obtain the weighted average p-value 
+\begin{equation} \label{wpval}
+ \hat{p}_1 = \sum_{i=2}^{n+1} w_i^* \hat{p}_i^B,	
+\end{equation}
+where $\hat{p}_i^B$ is given as \eqref{bootp} and $w_i^*$ is the weight corresponding to the similarity between the first and $(i+1)$th row of $\mbf{X}^*$.
+
+We now motivate a voting method based on the p-values computed in the donor pool.
+\textcolor{red}{Jilei, you need to explain what the voting method is, possibly in algorithmic format.}
+
 
 \begin{prop}
-
 \label{votprop}Suppose $p_2, \ldots, p_{n+1}$ is  a sequence of pairwise independent $p$-values  with $\P(p_i \leq \alpha)=\kappa$ for $i = 1, \ldots, n+1$, where $\alpha$ is the significance level, $\kappa$ is a real-valued constant in $[0,1]$, and  $p_1$ is the p-value of the time series of interest. If $\P(p_1 \leq \alpha) \neq 0.5$,  as $n\to \infty$, 
 \begin{align*}
   \E \bigg\{\left|I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}
@@ -319,8 +337,8 @@ where $\kappa_i =  \P(p_i \leq \alpha)\in [0,1]$ for $i \in \mc{I}_n$, $\alpha$ 
   \E \bigg\{\left|I\left\{ \sum_{i\in \mc{I}_n} w_i I(p_i \leq  \alpha) \geq 0.5\right\}
   - I( p_1 \leq  \alpha) \right|\bigg\}
   \to  \begin{cases}
-    1- \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) > 0.5 \\
-    \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) < 0.5 
+    1- \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) > 0.5, \\
+    \P(p_1 \leq \alpha) & \text{ if } \P(p_1 \leq \alpha) < 0.5. 
   \end{cases}
 \end{align*}
 \end{prop}
@@ -343,7 +361,7 @@ where the last second step assumes that $\{I(p_i\leq \alpha)\colon i\in \mc{I}_n
 
 We now motivate a model selection framework for comparing different models in the donor pool with a goal of inferring which model is most appropriate for the time series under study.
 
-Suppose we are interested in comparing two models $\mc{M}_1$ and $\mc{M}_2$ using AIC for forecasting the response in the time series of interest. However, direct comparison is not feasible as the data are not observed. Instead, we can conduct such inference based on the donor pool. Let the AIC of $\mc{M}_j$ for $i$th time series be $a_i^j$ for $i = 1, \ldots, n+1$ and $j = 1, 2$. Let $\xi_i = \P(a_i^1 < a_i^2)$. Note that if the data generating process is based on $\mc{M}_1$ and is true for all the donors and time series of interest, $\xi_i$ is expected to be high. Additionally, it is reasonable to assume $\xi_i =\xi $ for $\xi \in [0,1]$ and $i = 1, \ldots, n+1$.  Notice that this setup is similar to the setup of weighted voting or voting we discussed before. So, under similar arguments, we propose the following corollary for synthetic pairwise model selection.
+Suppose we are interested in comparing two models $\mc{M}_0$ and $\mc{M}$ using AIC for forecasting the response in the time series of interest. However, direct comparison is not feasible as the data are not observed. Instead, we can conduct such inference based on the donor pool. Let the AIC of $\mc{M}_j$ for $i$th time series be $a_i^j$ for $i = 1, \ldots, n+1$ and $j = 1, 2$. Let $\xi_i = \P(a_i^1 < a_i^2)$. Note that if the data generating process is based on $\mc{M}_0$ and is true for all the donors and time series of interest, $\xi_i$ is expected to be high. Additionally, it is reasonable to assume $\xi_i =\xi $ for $\xi \in [0,1]$ and $i = 1, \ldots, n+1$.  Notice that this setup is similar to the setup of weighted voting or voting we discussed before. So, under similar arguments, we propose the following corollary for synthetic pairwise model selection.
 
 
 \begin{corollary}[Synthetic pairwise model selection]
@@ -351,7 +369,7 @@ Suppose we are interested in comparing two models $\mc{M}_1$ and $\mc{M}_2$ usin
 \begin{align*}
   \mc{I}_n = \{i =  2,\ldots, n+1\colon 0< w_i < 1\}.
 \end{align*}
-Suppose that  $\mc{I}_n$  is non-empty, $|\mc{I}_n| \to \infty$ as $n \to \infty$, and $w_i b_n\leq K$ for $i\in \mc{I}_n$ and some $K>0$, where $b_n \geq 1$ and $b_n \to \infty$ as $n\to \infty$. Assume for $i \in \mc{I}_n$,  $\{a_i^1, a_i^2\}$ are AICs of $\mc{M}_1$ and  $\mc{M}_2$ for $i$th time series, which are pairwise independent of $\{a_j^1, a_j^2\}$ for $j \neq i$ and that
+Suppose that  $\mc{I}_n$  is non-empty, $|\mc{I}_n| \to \infty$ as $n \to \infty$, and $w_i b_n\leq K$ for $i\in \mc{I}_n$ and some $K>0$, where $b_n \geq 1$ and $b_n \to \infty$ as $n\to \infty$. Assume for $i \in \mc{I}_n$,  $\{a_i^1, a_i^2\}$ are AICs of $\mc{M}_0$ and  $\mc{M}$ for $i$th time series, which are pairwise independent of $\{a_j^1, a_j^2\}$ for $j \neq i$ and that
 \begin{align*}
   \sum_{i\in \mc{I}_n}\P(a_i^1 < a_i^2) = \sum_{i\in \mc{I}_n} w_i \xi_i \to \xi_{1},
 \end{align*}
@@ -405,23 +423,8 @@ For each donor $\mc{T}_i$, $i = 2, \ldots, n+1$, to compare adjusted and unadjus
  
  With the presence of autoregressive parameters in some models, unbiased estimation with OLS  is not feasible but the bias is $O(T^{-1})$, where $T$ is the time series length \citep{shaman1988bias}. In this paper, we use the OLS estimates to approximate the adjusted conditional mean forecast and unadjusted one. The bias decades away as $T\to \infty$.
 
-\vspace*{0.5cm}
-
-\noindent\textbf{Note}: Our forecast needs to be written with respect to our general model. Specifics can be given when we conduct our numerical examples.
-\vspace*{0.5cm}
-
-In our post-shock setting we consider the following candidate forecasts: 
-\begin{align*}
-  &\text{Forecast 1}: \\
-  &\text{Forecast 2}: 
-\end{align*}
-We want to determine which forecast is appropriate over a horizon while the methods in \cite{lin2021minimizing} were only appropriate in the nowcasting setting in which prediction was only focused on the response immediately following the shock.
 
 
-
-
-
-\newpage
 
 
 \newpage
@@ -713,49 +716,37 @@ where $\alpha_j(\x) = \mu_\alpha + \delta_j'\x$, and we have
 
 \section{Numerical Examples}
 
-In this section, we illustrate shock prevalence testing using two real data examples. Section \ref{sptcop} discusses the prevalence testing of the shock that Conoco Phillips stock experienced on March 9th, 2020. Section \ref{sptuem} discusses the prevalence testing of the shock that seasonally adjusted log nonfarm payrolls experienced in April, 2020.
+In this section, we illustrate shock prevalence testing using two real data examples. Section \ref{sptcop} discusses the prevalence testing of the shock that Conoco Phillips stock experienced on March 9th, 2020. Section \ref{sptuem} discusses the prevalence testing of the shock that seasonally adjusted log nonfarm payrolls experienced in April, 2020. 
+
+We will consider two models to analyze these datasets. The first model $\mc{M}_0$ is a simplification of the model~\eqref{model-gen} involving no changes to the post-shock dynamics. This model is explicitly written as,
+ \begin{align*}
+ 	y_{i,t} &= \eta_i + \sum_{j=1}^{q_1} \phi_{i,j} y_{i, t-j}  +\sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1}  + \alpha_i  D_{i,t}+ \varepsilon_{i,t},\\
+ 	\alpha_i & = \mu_{\alpha} + \sum_{j=0}^{q_2-1} \bs{x}_{i, T_i^*+1-j}\bs{\delta}_{i, j + 1} + \varepsilon_{\alpha, i},
+ \end{align*}
+where $D_{i,t} = I(t > T_i^*+1)$, $i = 1, \ldots, n+1$ and $t = 1, \ldots, T_i$. Model $\mc{M}_0$ describes the setting where one additive shock effect is permanent (persistent) over time, and we will refer to it as the ``permanent" model (\textcolor{red}{should be ``persistent"?}). The second model under consideration is  the ``dynamic'' model \eqref{model-gen} which is denoted $\mc{M}$ . Both models will specify that $q_1=q_2$.
+%\begin{align*}
+ %	y_{i,t}
+% 	&= \left(\eta_i + \sum_{j=1}^{q_1} \phi_{i,j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1} \right) (1-D_{i,t}) + f(\mc{F}_{i, t} \alpha_i)D_{i,t} + \varepsilon_{i,t}  \\
+% 	f(\mc{F}_{i,t},\alpha_i)	 & = \alpha_i +\sum_{j=1}^{q_1} \tilde{\phi}_{i, j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j} \tilde{\bs{\theta}}_{i, j +1} \\
+% 	\alpha_i & = \mu_{\alpha} + \sum_{j=0}^{q_2-1} \bs{x}_{i, T_i^*+1-j}\bs{\delta}_{i, j + 1} + \varepsilon_{\alpha, i},
+% \end{align*}
+ %where $q_1 = q_2=2$,  $D_{i,t} = I(t > T_i^*+1)$, $i = 1, \ldots, n+1$, and $t = 1, \ldots, T_i$. We estimate $\mc{M}_0$ and $\mc{M}$ using ordinary least squares (OLS) estimation. $\mc{M}$ adds more flexibility to $\mc{M}_0$ by allowing that the model of $y_{i,t}$ changes after the shock, as seen from the term related to $1-D_{i,t}$,  though the model still preserves the autoregressive model form. In practice, $\mc{M}$ should make more sense than $\mc{M}_0$ as it accommodates for more complicated cases. However, $\mc{M}$  requires far more degrees of freedom for estimation and this can increase variance in estimation. For this purpose, the synthetic pairwise model selection proposed in the Corollary \ref{coro2} can be used to select between $\mc{M}_0$ and $\mc{M}$.
+
 
 \subsection{Testing shock prevalence for Conoco Phillips stock price series}
 
 \label{sptcop}
 
-Post-shock  prevalence testing is motivated by post-shock prediction  \citep{lin2021minimizing} and also an extension of it from the perspective of hypothesis testing. Applying our methodology  on one of the datasets demonstrated in \cite{lin2021minimizing} helps connect our work to \cite{lin2021minimizing} and spell out the differences between two methodologies.
+%Post-shock  prevalence testing is motivated by post-shock prediction  \citep{lin2021minimizing} and also an extension of it from the perspective of hypothesis testing. Applying our methodology  on one of the datasets demonstrated in \cite{lin2021minimizing} helps connect our work to \cite{lin2021minimizing} and spell out the differences between two methodologies.
 
 
-As illustrated in Section 5.1 in \cite{lin2021minimizing}, it is found that Conoco Phillips stock price experienced unprecedented shocks due to  oil supply control and COVID-19 pandemic on one single day,  March 9th, 2020. In this data example, we are interested in investigating whether this shock is prevalent, i.e., whether the impact of the shock on the stock price will persist over time. Denote the stock price of Conoco Phillips at time $t$ as $y_{i,t}$ for $i$th time series, where $i = 1, \ldots n+1$, the time series of interest is ordered as the 1st time series, and $n$ is the donor pool size. In the model of $y_{i,t}$, the covariates we consider are S\&P 500 index prices, West Texas Intermediate (WTI) crude oil prices, dollar index, 13-week treasury bill rates, and Chicago Board Options Exchange volatility index (VIX). 
+As illustrated in Section 5.1 in \cite{lin2021minimizing}, it is found that Conoco Phillips stock price experienced unprecedented shocks due to a Russia-OPEC oil supply control battle and increasing COVID-19 pandemic fear which were simultaneously realized on Monday, March 9th, 2020. In this data example, we are interested in investigating whether the shock studied in \cite{lin2021minimizing} is transient or prevalent. Denote the stock price of Conoco Phillips at time $t$ as $y_{i,t}$ for $i$th time series, where $i = 1, \ldots n+1$, the time series of interest is ordered as the 1st time series, and $n$ is the donor pool size. In the model of $y_{i,t}$, the covariates we consider are S\&P 500 index prices, West Texas Intermediate (WTI) crude oil prices, dollar index, 13-week treasury bill rates, and Chicago Board Options Exchange volatility index (VIX). 
 
 We considered the shock effects that occurred on March 15, 2008, September 2008, and November 27, 2014, where the rationale behind this selection is discussed in Section 5.1(3) in  \cite{lin2021minimizing}. However, we analyzed the multiple shock effects on September (September 8th, 2008; September 16th, 2008; and September 26, 2008) differently. Under the  setting of our methodology, it is possible that the occurrence of  those shocks can be modeled by one persistent shock effect or explained by that the model of $y_{i,t}$ changes after September 5th, 2008. In other words, we analyzed the three shock effects within one time series and considered three donors in our donor pool. 
 
 
 
-
-
-To analyze the dataset, we propose two models. Denote the covariate vector at time $t$ for $i$th time series by $\bs{x}_{i,t}$.  The first model $\mc{M}_1$, called ``permanent'' model, is 
- \begin{align*}
- 	y_{i,t} &= \eta_i + \sum_{j=1}^{q_1} \phi_{i,j} y_{i, t-j}  +\sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1}  + \alpha_i  D_{i,t}+ \varepsilon_{i,t},\\
- 	\alpha_i & = \mu_{\alpha} + \sum_{j=0}^{q_2-1} \bs{x}_{i, T_i^*+1-j}\bs{\delta}_{i, j + 1} + \varepsilon_{\alpha, i},
- \end{align*}
-where $q_1 = q_2=2$, $D_{i,t} = I(t > T_i^*+1)$, $i = 1, \ldots, n+1$ and $t = 1, \ldots, T_i$. Note that we allow the shock effect to take effect for multiple time points instead of one time point as in  \cite{lin2021minimizing}. This simple model describes the setting where one additive shock effect is persistent over time. The second model $\mc{M}_2$, called ``dynamic'' model, is
-\begin{align*}
- 	y_{i,t}
- 	&= \left(\eta_i + \sum_{j=1}^{q_1} \phi_{i,j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j}\bs{\theta}_{i, j + 1} \right) (1-D_{i,t}) + f(\mc{F}_{i, t} \alpha_i)D_{i,t} + \varepsilon_{i,t}  \\
- 	f(\mc{F}_{i,t},\alpha_i)	 & = \alpha_i +\sum_{j=1}^{q_1} \tilde{\phi}_{i, j} y_{i, t-j} + \sum_{j=0}^{q_2-1} \bs{x}_{i, t-j} \tilde{\bs{\theta}}_{i, j +1} \\
- 	\alpha_i & = \mu_{\alpha} + \sum_{j=0}^{q_2-1} \bs{x}_{i, T_i^*+1-j}\bs{\delta}_{i, j + 1} + \varepsilon_{\alpha, i},
- \end{align*}
- where $q_1 = q_2=2$,  $D_{i,t} = I(t > T_i^*+1)$, $i = 1, \ldots, n+1$, and $t = 1, \ldots, T_i$. We estimate $\mc{M}_1$ and $\mc{M}_2$ using ordinary least squares (OLS) estimation. $\mc{M}_2$ adds more flexibility to $\mc{M}_1$ by allowing that the model of $y_{i,t}$ changes after the shock, as seen from the term related to $1-D_{i,t}$,  though the model still preserves the autoregressive model form. In practice, $\mc{M}_2$ should make more sense than $\mc{M}_1$ as it accommodates for more complicated cases. However, $\mc{M}_2$  requires far more degrees of freedom for estimation and this can increase variance in estimation. For this purpose, the synthetic pairwise model selection proposed in the Corollary \ref{coro2} can be used to select between $\mc{M}_1$ and $\mc{M}_2$.
- 
- In computing the weights, to avoid the impact of unit differences from different columns of covariates on weighting, we center and scale the covariates. The steps are detailed as below. Consider
-\begin{align*}
-	\bs{X}= \begin{pmatrix}
-		\bs{x}_{1, T_1^*+1} & \bs{x}_{1, T_1^*}\\
-		\vdots & \vdots  \\
-		\bs{x}_{n+1, T_{n+1}^*+1} & \bs{x}_{1, T_1^*}
-	\end{pmatrix},
-\end{align*}
-where $t = T_i^*+1$ is the time point when the shock effect takes place for $i$th time series. Note that the reason for including $\bs{x}_{i, T_i^*}$ is that we consider $q_2=2$ in $\mc{M}_1$ and $\mc{M}_2$. In other words, the consider the 1-step lagged covariates in the model and its corresponding shock effect time point is $T_i^*$. For each column of $\bs{X}$, we center it by subtracting its column mean and scale the resulting column vector by dividing the standard deviation of the resulting column vector. Denote the resulting covariates matrix by $\bs{X}^*$. We compute the synthetic weights $\mbf{W}^*$  based on $\bs{X}^*$ according to procedures detailed in Section 2.2 of \cite{lin2021minimizing}. However, for the model of $y_{i,t}$, we do not conduct such centering and scaling procedure.
-
-
-From the definition of $D_{i,t} = I(t > T_i^*+1)$, it is evident that the number of post-shock time points, i.e., time $t$ for which $t > T_i^*+1$, affects the inference results. As our methodology only requires $T_i-T_i^*$ is not small compared to $T_i$, we attempted three post-shock time length for our inference, say $L = 7, 15, 30$. Recall that in  Section \ref{forecast}, we refer to the forecast  that incorporates shock information as adjusted forecast and the one that does not as unadjusted forecast. As specified in Section \ref{forecast}, post-shock prevalence testing requires specification of  the maximum number $H$ of forecast horizons and training sample size $K$, where $h$-step forecasts of adjusted forecast and unadjusted forecast are compared for $h = 1, \ldots, H$. We set $H = 10$, $K = 30$, and $T_i =  H + K + L+15$ for $i = 2, \ldots, 4$. That being said, for $t = K + H + 1, \ldots, T_i$ and $h = 1, \ldots, H$, different $h$-step adjusted and unadjusted forecasts for $y_{i,t}$ under $\mc{M}_1$ or  $\mc{M}_2$ are compared. 
+From the definition of $D_{i,t} = I(t > T_i^*+1)$, it is evident that the number of post-shock time points, i.e., time $t$ for which $t > T_i^*+1$, affects the inference results. As our methodology only requires $T_i-T_i^*$ is not small compared to $T_i$, we attempted three post-shock time length for our inference, say $L = 7, 15, 30$. Recall that in  Section \ref{forecast}, we refer to the forecast  that incorporates shock information as adjusted forecast and the one that does not as unadjusted forecast. As specified in Section \ref{forecast}, post-shock prevalence testing requires specification of  the maximum number $H$ of forecast horizons and training sample size $K$, where $h$-step forecasts of adjusted forecast and unadjusted forecast are compared for $h = 1, \ldots, H$. We set $H = 10$, $K = 30$, and $T_i =  H + K + L+15$ for $i = 2, \ldots, 4$. That being said, for $t = K + H + 1, \ldots, T_i$ and $h = 1, \ldots, H$, different $h$-step adjusted and unadjusted forecasts for $y_{i,t}$ under $\mc{M}_0$ or  $\mc{M}$ are compared. 
 
 
 \begin{table}[H]
@@ -764,12 +755,12 @@ From the definition of $D_{i,t} = I(t > T_i^*+1)$, it is evident that the number
   \begin{tabular}{cccccccccr}
      $L$  & Model & $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)$ & $p_1$ &  $|\hat{p}-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
      \hline 
-     7 & $\mc{M}_1$  & \multirow{2}{*}{$0.817$} & 1  & 0 & 0 (Yes) &0 (Yes)  \\      
-     7 & $\mc{M}_2$  &  & 1 & $0$   & 0 (Yes) &0 (Yes)   \\[.2cm]
-     15 & $\mc{M}_1$ & \multirow{2}{*}{$0.817$}  & 1   & $0.82$ & 0 (Yes) &1 (No)    \\
-     15 &  $\mc{M}_2$ & & 1 & 0 &0 (Yes)  &0 (Yes)  \\[.2cm]
-     30 &  $\mc{M}_1$ & \multirow{2}{*}{$1$}  & 1   & $0.82$ & 0 (Yes) &1 (No)   \\
-     30 &  $\mc{M}_2$ &  & 1  & 0 &0 (Yes) & 0 (Yes)  
+     7 & $\mc{M}_0$  & \multirow{2}{*}{$0.817$} & 1  & 0 & 0 (Yes) &0 (Yes)  \\      
+     7 & $\mc{M}$  &  & 1 & $0$   & 0 (Yes) &0 (Yes)   \\[.2cm]
+     15 & $\mc{M}_0$ & \multirow{2}{*}{$0.817$}  & 1   & $0.82$ & 0 (Yes) &1 (No)    \\
+     15 &  $\mc{M}$ & & 1 & 0 &0 (Yes)  &0 (Yes)  \\[.2cm]
+     30 &  $\mc{M}_0$ & \multirow{2}{*}{$1$}  & 1   & $0.82$ & 0 (Yes) &1 (No)   \\
+     30 &  $\mc{M}$ &  & 1  & 0 &0 (Yes) & 0 (Yes)  
   \end{tabular}
 \end{center}	
 \end{table}
@@ -783,11 +774,11 @@ Note that the synthetic weight vector $\mbf{W}^*$ for the three donors is $(0.18
 
 In term of Table \ref{coptable}, it is important to note that $p_1$ is the $p$-value of the forecast comparison between adjusted forecast and unadjusted forecast if we have the data $\{y_{1,t} \colon 1, \ldots, T_1\}$, where $T_1 > T_1^*$. In other words, it cannot be computed without observing $y_{1, t}$ for $t > T_1^*$ and we present $p_1$ only for retrospective analysis. Also, $\hat{p}$ is the $p$-value from weighting the $p$-values of the forecast comparison  between adjusted and unadjusted forecast for donors using $\mbf{W}^*$. 
 
-Let $a_i^1$ and $a_i^2$ denote the AICs of $\mc{M}_1$ and $\mc{M}_2$ for $i$th time series, respectively. Using the synthetic pairwise model selection procedures specified in Corollary \ref{coro2}, as  $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)>0.5$ for $L = 7, 15, 30$, we conclude that $\mc{M}_2$ is preferred over $\mc{M}_1$.  Notice that $|\hat{p}-p_1|$ is uniformly zero and $p_1$ is uniformly 1 for different $L$ and $\mc{M}_2$. The test  using $\hat{p}$ with $\mc{M}_2$ fails to reject that  the shock, which was to take effect at $t=T_1^*+1$,  is prevalent for $t > T_1^*+1$ under a significance level of 5\%. Nevertheless, the results appear to be a little different for $\mc{M}_1$. For $L=7$, $|\hat{p}-p_1|=0$ for $\mc{M}_1$ whereas $|\hat{p}-p_1|=0.82$ for $L = 15, 30$. Based on the performance of $\mc{M}_2$, it is possible that as the time window $L$ increases, the signal from changing parameters covariates is ``misunderstood'' by $\mc{M}_1$ as shock signal. 
+Let $a_i^1$ and $a_i^2$ denote the AICs of $\mc{M}_0$ and $\mc{M}$ for $i$th time series, respectively. Using the synthetic pairwise model selection procedures specified in Corollary \ref{coro2}, as  $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)>0.5$ for $L = 7, 15, 30$, we conclude that $\mc{M}$ is preferred over $\mc{M}_0$.  Notice that $|\hat{p}-p_1|$ is uniformly zero and $p_1$ is uniformly 1 for different $L$ and $\mc{M}$. The test  using $\hat{p}$ with $\mc{M}$ fails to reject that  the shock, which was to take effect at $t=T_1^*+1$,  is prevalent for $t > T_1^*+1$ under a significance level of 5\%. Nevertheless, the results appear to be a little different for $\mc{M}_0$. For $L=7$, $|\hat{p}-p_1|=0$ for $\mc{M}_0$ whereas $|\hat{p}-p_1|=0.82$ for $L = 15, 30$. Based on the performance of $\mc{M}$, it is possible that as the time window $L$ increases, the signal from changing parameters covariates is ``misunderstood'' by $\mc{M}_0$ as shock signal. 
 
 
 
-Recall from Section \ref{forecast}, voting procedure suggests shock transience (shock prevalence) if the majority of the tests  suggests shock transience (shock prevalence, respectively). We record 0 if the voting procedure suggests shock transience and 1 if shock prevalence. The weighted voting procedure weight those testing indicators using $\mbf{W}^*$; and returns shock prevalence if the output exceeds 0.5 and shock transience if the output is smaller than 0.5. As we observe $\{y_{1,t} \colon 1, \ldots, T_1\}$, we are able to check whether the decision of voting and weighted voting is correct. From the sixth column of Table \ref{coptable}, we can see that voting procedure suggests shock transience for $\mc{M}_1$ and $\mc{M}_2$ for different $L$. However, weighted voting suggests shock transience for $\mc{M}_2$ for different $L$ but shock prevalence for $\mc{M}_1$ and $L=15, 30$ and shock transience for $\mc{M}_1$ and $L = 7$. As $p_1$ is uniformly 1, it is reasonable to expect $\P(p_1\leq .05)$ be small. Note that Proposition \ref{votprop} and Corollary \ref{coro1} show that the decisions made by voting and weighted voting procedures should be correct with very high probability if we assume the asymptotic approximation of the expected absolute error works well for  $n = 3$. Note that the interpretation and meaning of $p_1$ is closely connected with models. For example, $\mc{M}_1$ would imply a persistent shock whereas $\mc{M}_2$ is more general in suggesting changing dynamics. Thus, even if  this theoretical statement  may be correct, it makes practical sense only when model is identified well. This comment corresponds to the possibility that $\mc{M}_1$ may ``misunderstand'' the wrong signal of changing dynamics that are instead captured by $\mc{M}_2$.
+Recall from Section \ref{forecast}, voting procedure suggests shock transience (shock prevalence) if the majority of the tests  suggests shock transience (shock prevalence, respectively). We record 0 if the voting procedure suggests shock transience and 1 if shock prevalence. The weighted voting procedure weight those testing indicators using $\mbf{W}^*$; and returns shock prevalence if the output exceeds 0.5 and shock transience if the output is smaller than 0.5. As we observe $\{y_{1,t} \colon 1, \ldots, T_1\}$, we are able to check whether the decision of voting and weighted voting is correct. From the sixth column of Table \ref{coptable}, we can see that voting procedure suggests shock transience for $\mc{M}_0$ and $\mc{M}$ for different $L$. However, weighted voting suggests shock transience for $\mc{M}$ for different $L$ but shock prevalence for $\mc{M}_0$ and $L=15, 30$ and shock transience for $\mc{M}_0$ and $L = 7$. As $p_1$ is uniformly 1, it is reasonable to expect $\P(p_1\leq .05)$ be small. Note that Proposition \ref{votprop} and Corollary \ref{coro1} show that the decisions made by voting and weighted voting procedures should be correct with very high probability if we assume the asymptotic approximation of the expected absolute error works well for  $n = 3$. Note that the interpretation and meaning of $p_1$ is closely connected with models. For example, $\mc{M}_0$ would imply a persistent shock whereas $\mc{M}$ is more general in suggesting changing dynamics. Thus, even if  this theoretical statement  may be correct, it makes practical sense only when model is identified well. This comment corresponds to the possibility that $\mc{M}_0$ may ``misunderstand'' the wrong signal of changing dynamics that are instead captured by $\mc{M}$.
 
 To verify our results, we plot $\{y_{1,t} \colon 1, \ldots, T_1\}$ in Figure \ref{copshocktransience}. Two dashed vertical lines are plotted in Figure \ref{copshocktransience}, where the left one corresponds to $t = T_1^*$ and the right one  corresponds to $t = T_1^*+1$. As shown by \cite{lin2021minimizing}, $y_{1,t}$ experienced a substantial shock at  $t = T_1^*+1$ and it is evident from $y_{1, T_1^*}-y_{1, T_1^*+1}$ shown in Figure 1. We also graphed a benchmark horizontal dashed line for comparison, which corresponds to the stock price $y_{1, T_1^*}$. However, notice that even if $y_{1,t}$ first experienced a considerable drop at $t = T_1^*+1$,   it started to revert back and became closer to the benchmark horizontal line as $t$ increases for $t > T_1^*$. This observation confirms our results as the reverting behavior implies that the impact of the shock starts to diminish as $t$ increases and that the shock is very likely to be transient.
 
@@ -831,7 +822,7 @@ To that end, we assemble a donor pool of US recessions induced by large shocks i
 
 The variable selection steps are outlined as follows. At first, we have the same set of covariates $\{\mc{X}_1, \ldots, \mc{X}_p\}$ for each donor, where $\mc{X}_1$ corresponds to the name of the covariate. Next, for each donor, we conduct stepwise variable selection based on AIC so that for each donor, we end up with a model with covariates that may differ across  donors, say $\{\mc{X}_j \colon j\in \mc{I}_i\}$ for $i = 2, \ldots, n+1$, where $\mc{I}_j$ is the collection of the indices corresponding to which covariate is selected. Next, we  take the union $\cup_{i=2}^{n+1}\{\mc{X}_j \colon j\in \mc{I}_i\}$ to obtain the final set of covariates that are present in the model of every donor and the time series of interest.
 
-In Table 2, using the synthetic pairwise model selection procedures specified in Corollary \ref{coro2}, because $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)>0.5$,  we conclude that  $\mc{M}_2$ is preferred. Thus, we turn our interest to that model.  Since $p_{1}$ is far above the rejection threshold, we lack the evidence to reject the null of a transient shock in the time series under study, the month-on-month change in log employment in the span 2019-2022.  The weighted p-value, $\hat p $, misses the ground truth p-value by .146 in absolute value, yet renders the correct decision.
+In Table 2, using the synthetic pairwise model selection procedures specified in Corollary \ref{coro2}, because $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)>0.5$,  we conclude that  $\mc{M}$ is preferred. Thus, we turn our interest to that model.  Since $p_{1}$ is far above the rejection threshold, we lack the evidence to reject the null of a transient shock in the time series under study, the month-on-month change in log employment in the span 2019-2022.  The weighted p-value, $\hat p $, misses the ground truth p-value by .146 in absolute value, yet renders the correct decision.
 
 
 
@@ -862,8 +853,8 @@ In Table 2, using the synthetic pairwise model selection procedures specified in
   \begin{tabular}{ccccccccr}
       Model & $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)$  & $p_1$ &  $|\hat{p}-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
      \hline 
-     $\mc{M}_1$  & \multirow{2}{*}{0.722}& 0  & 1 & 1 (No) &1 (No)  \\      
-      $\mc{M}_2$ ($q_1=q_2=1$)  & & 0.470 & $0.146$   & 0 (Yes) &0 (Yes)   \\[.2cm]
+     $\mc{M}_0$  & \multirow{2}{*}{0.722}& 0  & 1 & 1 (No) &1 (No)  \\      
+      $\mc{M}$ ($q_1=q_2=1$)  & & 0.470 & $0.146$   & 0 (Yes) &0 (Yes)   \\[.2cm]
   \end{tabular}
 \end{center}	
 \end{table}
@@ -886,7 +877,9 @@ In Table 2, using the synthetic pairwise model selection procedures specified in
 
 \section{Discussion}
 
-Talk about post-shock forecasting as parameterizing exogeniety and using hindsight in the donor pool to explicitly estimate exogeneity apriori.
+Talk about post-shock forecasting as parameterizing exogeniety and using hindsight in the donor pool to explicitly estimate exogeneity apriori. This framing has its limits, we are not able to perform post-shock forecasts when we are temporarily removed from the known shock time. For example, in the Conoco Philips analysis it is hard to imagine a successful post-shock forecast being made in the days prior to the weekend preceding Monday, March 9th 2020 as the OPEC-Russia oil supply increases and Covid-19 fears had not yet taken shape.
+
+The post-shock forecasting methodology presented here and in \cite{lin2021minimizing} is heavily dependent on the construction of a suitable donor pool which will exhibit a degree of subjectivity. This is a limitation of our approach, but we argue that this limitation is not a deal breaker.  
 
 
 
