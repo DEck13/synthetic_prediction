@@ -26,6 +26,7 @@
 \usepackage{multirow}
 \usepackage[linesnumbered, ruled,vlined]{algorithm2e}
 \usepackage{pdflscape}
+\usepackage{algorithm2e}
 
 % margin setup
 \usepackage{geometry}
@@ -279,7 +280,21 @@ We see that model \eqref{model-gen} with its accompanying random effects structu
 
 The post-shock dynamic changes depend heavily on the value of $\mbf{x}_{i,T_i^*+1}$, the covariates recorded right before the first post-shock response is observed. Under this setup any two series $i,j$ with small $\|\mbf{x}_{i,T_i^*+1} - \mbf{x}_{j,T_i^*+1}\|_2$ are expected to experience similar structural changes. This makes distance based weighting an attractive avenue.
 
-\vspace*{0.5cm}\noindent\textcolor{red}{Jilei, explain how the h-ahead forecasts are computed here}
+\textcolor{red}{Next, we define the $h$-step forecast for $\mc{M}$, which plays an essential role in the framework of \citet{quaedvlieg2021multi}. Denote $h$-step forecast for $y_{i,t}$ by $\hat{y}_{i,t}^h$. Let the OLS estimate for
+\begin{align*}
+	\{(\eta_i, \alpha_i, \phi_{i,j_1}, \bs{\theta}_{i,j_2}, \tilde{\phi}_{i,j_1}, \tilde{\bs{\theta}}_{i,j_2}) \colon i = 2, \ldots, n+1, j_1 = 1, \ldots, q_1, j_2 = 1, \ldots, q_2\}
+\end{align*}
+ be 
+ \begin{align*}
+ 	\{(\hat{\eta}_i, \hat{\alpha}_i, \hat{\phi}_{i,j_1}, \hat{\bs{\theta}}_{i,j_2}, \hat{\tilde{\phi}}_{i,j_1}, \hat{\tilde{\bs{\theta}}}_{i,j_2}) \colon i = 2, \ldots, n+1, j_1 = 1, \ldots, q_1, j_2 = 1, \ldots, q_2\}.
+ \end{align*}
+Based on the training data $\{(\mbf{x}_{i, t}, y_{i,t}) \colon i = 2, \ldots, n+1, t = 1, \ldots, T_i\}$, for $h = 1, \ldots, H$, the $h$-step forecast $\hat{y}_{i,t}^h$ is defined as
+ \begin{align*}
+ 	\hat{y}_{i,t}^h &= \left(\hat{\eta}_i + \sum_{j=1}^{q_1}\hat{\phi}_{i,j}\hat{y}^{h-j}_{i, t-j} + \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}\hat{\bs{\theta}}_{i,j+1}\right)(1 - D_{i,t}) + f(\hat{\mathcal{F}}_{i,t},\hat{\alpha}_i)D_{i,t} ,\\[.2cm]
+  \; f(\hat{\mc{F}}_{i,t},\hat{\alpha}_i ) &= \hat{\alpha}_i +  \sum_{j=1}^{q_{1}}\hat{\tilde{\phi}}_{i,j} \hat{y}^{h-j}_{i, t-j}+ \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}\hat{\tilde{\bs{\theta}}}_{i,j+1},
+ \end{align*}
+ where it is allowed that $t> T_i$, and we set $\hat{y}^{s}_{i, t}=y_{i,t}$ for $t \leq T_i$ and $s\leq 0$. This definition is in line with  that of  the iterated $h$-step ahead forecast  in the time series literature.}
+ 
 
 
 
@@ -305,8 +320,52 @@ The reason for including $\bs{x}_{i, T_i^*-q_2+1}$ is that the dynamic model \eq
 \end{equation}
 where $\hat{p}_i^B$ is given as \eqref{bootp} and $w_i^*$ is the weight corresponding to the similarity between the first and $(i+1)$th row of $\mbf{X}^*$.
 
-We now motivate a voting method based on the p-values computed in the donor pool.
-\textcolor{red}{Jilei, you need to explain what the voting method is, possibly in algorithmic format.}
+We now motivate a voting method and a weighted voting method based on the p-values computed in the donor pool and \textcolor{red}{the algorithms are described in Algorithm \ref{voting}. There are a couple of details that are worth noting. First, for $t = T_i+1$ and $i \geq 2$, we used to the methodology of \cite{lin2021minimizing} to compute point forecast for $\hat{y}_{i,t}^{2,h}$. Note that for $t = T_i+1$, using ordinary least square conditional forecast yields $\hat{y}_{i,t}^{2,h}=  \hat{y}_{i,t}^{1,h}$ as those two forecast just differ by shock information, which is not available at this time point. We make such adjustment for the reason that  the method of  \cite{lin2021minimizing} is generally more likely to perform better than the ordinary forecast under certain conditions. Second, notice that we evaluate forecast comparison for $t = K_i + H+ \max\{q_1, q_2-1\} + 1, \ldots, T_i$ with time length smaller than $T_i$. It is because the framework of \cite{quaedvlieg2021multi} needs training sample, which implicitly requires users to feed the algorithm with moderately large dataset for a more credible analysis. }
+
+\vspace{.5cm}
+\begin{algorithm}[H]
+\SetAlgoLined \label{voting}
+
+\SetKwInOut{Input}{Input}
+\Input{$B, \ell $ --  bootstrap sample size, the  block size,   \\ 
+$\gamma$ -- bandwidth parameter in heteroskedasticity and autocorrelation  consistent covariance \\ 
+	\quad \quad matrix  estimation.\\ 
+$\alpha$ -- significance level\\$\{(y_{i,t}, \mbf{x}_{i,t})\colon i = 2,\ldots, n+1, t = 0, \ldots, T_i\}$ -- the data\\ $\{T_i^* \colon i = 1, \ldots, n+1\}$ -- the time point just before the shock\\
+$\{K_i \colon i = 2, \ldots, n+1\}$  -- training sample size for $h$-step forecast for different time series \\
+$q_1, q_2$ -- user-specified parameters in $\mc{M}$ \\
+$H$ -- maximum horizon 
+}
+
+\KwResult{(1) synthetic weights $\mbf{W}^*$, (2)  $\hat{p}_1$, and (3) decision based on voting and weighted voting}
+
+  \For{$i = 2:(n+1)$}{
+  	\If{$i > 2$}{
+  	Compute $\hat{\alpha}_{\rm wadj}$ based on \cite{lin2021minimizing} with $\{T_j^* \colon j = 2, \ldots, i-1\}$ and $\{(y_{j,t}, \mbf{x}_{j,t})\colon j= 2,\ldots, i-1, t = 0, \ldots, T_j\}$
+  	} 
+ 	 
+ 	\For{$h = 1, \ldots, H$}{
+ 		\For{$t = K_i + H+ \max\{q_1, q_2-1\} + 1, \ldots, T_i$}{
+ 		Compute $\hat{y}_{i,t}^{1, h}$ and $\hat{y}_{i,t}^{2, h}$ based on OLS estimation of $\mc{M}$ with $\{T_i^* \colon i = 1, \ldots, n+1\}$ and   training data $\{(y_{i,t}, \mbf{x}_{i,t})\colon  t =  t-h- K_i +1, \ldots, t-h\}$, where we further need the set of lagged response $\{y_{i,t}\colon t = t-h-K_i- \max\{q_1, q_2-1\}+1, t-h-K_i\}$.
+ 		
+ 		\If{$t-h = T_i^*$, $i\geq 3$, and $h =1$}{
+ 		$\hat{y}_{i,t}^{2, h}= \hat{y}_{i,t}^{2, h} + \hat{\alpha}_{\rm wadj}$
+ 		}
+ 		Compute the squared error loss $l_{t,h}^1$ based on $y_{i, t}$
+ 		 and $\hat{y}_{i,t}^{1, h}$\\
+ 		 Compute the squared error loss $l_{t,h}^2$ based on $y_{i, t}$
+ 		 and $\hat{y}_{i,t}^{2, h}$
+ 		}
+ 	}
+ 	Construct the loss differential matrix with element $l_{t,h}^2-l_{t,h}^1$ at $t$th row and $h$th column \\
+ 	Conduct multiple horizon forecast comparison test of \cite{quaedvlieg2021multi} on the loss differential matrix $\{l_{t,h}^2-l_{t,h}^1\}_{t,h}$ with parameters $\ell, B, \gamma$ to obtain forecast comparison $p$-value $\hat{p}_i$\\
+  }
+  
+ 	Compute synthetic weights $\mbf{W}^*= (w_2^*, \ldots, w_{n+1}^*)$ based on $\{\mbf{x}_{i, T_i^*+1}\colon i = 1, \ldots, n+1\}$ \\
+ 	Compute the vote $V= I\Big\{n^{-1}\sum_{i=2}^{n+1}I(\hat{p}_i \leq  \alpha) \geq 0.5\Big\}$ \\
+ 	Compute the weighted vote $V^*= I\Big\{ \sum_{i=2}^{n+1}w_i^*I(\hat{p}_i \leq  \alpha) \geq 0.5\Big\}$ 
+ 	
+ \caption{Algorithm for computing $\hat{p}_1$, weighted voting, and $\mbf{W}^*$}\label{Bu}
+\end{algorithm}
 
 
 \begin{prop}
@@ -757,9 +816,9 @@ From the definition of $D_{i,t} = I(t > T_i^*+1)$, it is evident that the number
      \hline 
      7 & $\mc{M}_0$  & \multirow{2}{*}{$0.817$} & 1  & 0 & 0 (Yes) &0 (Yes)  \\      
      7 & $\mc{M}$  &  & 1 & $0$   & 0 (Yes) &0 (Yes)   \\[.2cm]
-     15 & $\mc{M}_0$ & \multirow{2}{*}{$0.817$}  & 1   & $0.82$ & 0 (Yes) &1 (No)    \\
+     15 & $\mc{M}_0$ & \multirow{2}{*}{$0.817$}  & 1   & $0.817$ & 0 (Yes) &1 (No)    \\
      15 &  $\mc{M}$ & & 1 & 0 &0 (Yes)  &0 (Yes)  \\[.2cm]
-     30 &  $\mc{M}_0$ & \multirow{2}{*}{$1$}  & 1   & $0.82$ & 0 (Yes) &1 (No)   \\
+     30 &  $\mc{M}_0$ & \multirow{2}{*}{$1$}  & 1   & $0.817$ & 0 (Yes) &1 (No)   \\
      30 &  $\mc{M}$ &  & 1  & 0 &0 (Yes) & 0 (Yes)  
   \end{tabular}
 \end{center}	
@@ -850,11 +909,17 @@ In Table 2, using the synthetic pairwise model selection procedures specified in
 \begin{table}[H]
 	\caption{Results for Month-on-Month Change in Log Nonfarm Payrolls (Seasonally Adjusted) ($n=3$), $\mbf{W}^* = (0, 0.278, 0.722)$ from scaled covariates} \label{uemtable}
 \begin{center}
-  \begin{tabular}{ccccccccr}
-      Model & $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)$  & $p_1$ &  $|\hat{p}-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
+  \begin{tabular}{cccccccccr}
+   $L$  &  Model & $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)$  & $p_1$ &  $|\hat{p}-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
      \hline 
-     $\mc{M}_0$  & \multirow{2}{*}{0.722}& 0  & 1 & 1 (No) &1 (No)  \\      
-      $\mc{M}$ ($q_1=q_2=1$)  & & 0.470 & $0.146$   & 0 (Yes) &0 (Yes)   \\[.2cm]
+     \multirow{2}{*}{ $3$} &  $\mc{M}_0$  & \multirow{2}{*}{ 0}& 1  & 0 & 0 (Yes) &0 (Yes)  \\      
+      & $\mc{M}$ ($q_1=q_2=1$)  & & 0.070 & $0.179$   & 0 (Yes) &1 (No)   \\[.2cm]
+     \multirow{2}{*}{ $6$} &  $\mc{M}_0$  & \multirow{2}{*}{ 0}& 1  & 0 & 0 (Yes) &0 (Yes)  \\      
+      & $\mc{M}$ ($q_1=q_2=1$)  & & 0.265 & $0.498$   & 0 (Yes) &0 (Yes)   \\[.2cm]
+  \multirow{2}{*}{ $12$} &  $\mc{M}_0$  & \multirow{2}{*}{0.722}& 0  & 1 & 1 (No) &1 (No)  \\      
+      & $\mc{M}$ ($q_1=q_2=1$)  & & 0.470 & $0.146$   & 0 (Yes) &0 (Yes)   \\[.2cm]
+       \multirow{2}{*}{ $18$} &  $\mc{M}_0$  & \multirow{2}{*}{0}& 0.670  & 0.330 & 0 (Yes) & 0 (Yes)  \\      
+      & $\mc{M}$ ($q_1=q_2=1$)  & & 1 & $0$   & 0 (Yes) &0 (Yes)   \\[.2cm]
   \end{tabular}
 \end{center}	
 \end{table}

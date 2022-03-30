@@ -253,8 +253,8 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw,
         }
         
         # losses
-        m1.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.adj[h + q1])
-        m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + q1])
+        m1.L.i[t, h] <- sel(y = Y[[i]][-(1:q1)][t + Ki + H], yhat = yhat.adj[h + q1])
+        m2.L.i[t, h] <- sel(y = Y[[i]][-(1:q1)][t + Ki + H], yhat = yhat.unadj[h + q1])
       }
     }
     # loss differential
@@ -452,8 +452,8 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
         
         
         # losses
-        m1.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.adj[h + q1])
-        m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + q1])
+        m1.L.i[t, h] <- sel(y = Y[[i]][-(1:max(q1, q2 - 1))][t + Ki + H], yhat = yhat.adj[h + q1])
+        m2.L.i[t, h] <- sel(y = Y[[i]][-(1:max(q1, q2 - 1))][t + Ki + H], yhat = yhat.unadj[h + q1])
       }
     }
     # loss differential
@@ -566,7 +566,7 @@ H <- 10
 # training sample size
 K <- 30
 # number of days after shock date
-L <- 30
+L <- 7
 
 #### Monday, March 17th, 2008
 

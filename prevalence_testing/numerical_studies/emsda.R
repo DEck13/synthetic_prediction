@@ -187,8 +187,8 @@ ols.est.alphahat <- function(Tstar, Y, X) {
 }
 
 # functions that return alpha.hat and synthetic weights
-ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .05, 
-                                 sc.x = NA,
+ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, 
+                                 sig.levl = .05, q1, 
                                  retro = TRUE, selfW = NA, scale = FALSE) {
   
   n <- length(Y) - 1
@@ -210,94 +210,52 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
       alpha.wadj <- sym$est[2]
     }
     
-    m1.L.i <- matrix(NA, nrow = Ti - Ki - H - 1, ncol = H)
-    m2.L.i <- matrix(NA, nrow = Ti - Ki - H - 1, ncol = H)
+    m1.L.i <- matrix(NA, nrow = Ti - Ki - H - q1, ncol = H)
+    m2.L.i <- matrix(NA, nrow = Ti - Ki - H - q1, ncol = H)
     
     # compute losses
     for (h in 1:H) {
-      for (t in 1:(Ti - Ki - H - 1)) {
+      for (t in 1:(Ti - Ki - H - q1)) {
+        TL <- length(Y[[i]])
+        yi <- Y[[i]][-(1:q1)][(t + H - h + 1):(t + Ki + H - h)]
+        xi <- X[[i]][-(1:q1), ][(t + H - h + 1):(t + Ki + H - h),]
         
-        yi <- Y[[i]][-1][(t + H - h + 1):(t + Ki + H - h)]
-        xi <- X[[i]][-1, ][(t + H - h + 1):(t + Ki + H - h),]
-        
-        # lag
-        yilag <- Y[[i]][-(Ti + 1)][(t + H - h + 1):(t + Ki + H - h)]
-        
-        # special case that needs covariates without lags
-        sc <- c()
-        
-        if (length(sc.x) == 1) {
-          sc <- 0
-        } else {
-          if (i %in% sc.x[[1]]) {
-            sc <- 1
-          } else {
-            sc <- 0
-          }
+        # yi lags
+        yilags <- c()
+        for (j in 1:q1) {
+          yijlag <- lag(Y[[i]][-(1:q1)], n = j)[(t + H - h + 1):(t + Ki + H - h)]
+          yilags <- cbind(yilags, yijlag)
         }
         
-        if (sc == 0) {
-          # OLS
-          lmodi.adj <- lm(yi ~ 1 + ifelse((t + H - h + 1):(t + Ki + H - h) >= Tstari + 1, yes = 1, no = 0) + 
-                            yilag + xi)
-          lmodi.unadj <- lm(yi ~ 1 + yilag + xi)
-          
-          # beta.hat
-          beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
-          beta.hat.adj[which(is.na(beta.hat.adj) == TRUE)] <- 0
-          beta.hat.unadj <- matrix(coef(lmodi.unadj), nrow = 1)
-          
-          yhat.adj <- tail(yi, 1)
-          yhat.unadj <- tail(yi, 1)
-          
-          for (j in 1:h) {
-            yhat.adj.h <- matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
-                                   yhat.adj[j], X[[i]][-1, ][t + Ki + H - h + j, ]))
-            yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.unadj[j], X[[i]][-1, ][t + Ki + H - h + j, ]))
-            
-            if (t + Ki + H - h == Tstari & i >= 3 & h == 1) {
-              yhat.adj.h <- yhat.adj.h + alpha.wadj
-            }
-            yhat.adj <- c(yhat.adj, yhat.adj.h)
-            yhat.unadj <- c(yhat.unadj, yhat.unadj.h)
-          }
-          
-        } else {
-          sc.xx <- sc.x[[2]][[which(sc.x[[1]] == i)]][(t + H - h + 1):(t + Ki + H - h)]
-          
-          # OLS
-          lmodi.adj <- lm(yi ~ 1 + ifelse((t + H - h + 1):(t + Ki + H - h) >= Tstari + 1, yes = 1, no = 0) + 
-                            yilag + xi + sc.xx)
-          lmodi.unadj <- lm(yi ~ 1 + yilag + xi + sc.xx)
-          
-          # beta.hat
-          beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
-          beta.hat.adj[which(is.na(beta.hat.adj) == TRUE)] <- 0
-          beta.hat.unadj <- matrix(coef(lmodi.unadj), nrow = 1)
-          
-          yhat.adj <- tail(yi, 1)
-          yhat.unadj <- tail(yi, 1)
-          
-          for (j in 1:h) {
-            yhat.adj.h <- matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
-                                   yhat.adj[j], X[[i]][-1, ][t + Ki + H - h + j, ],
-                                   sc.xx[[2]][[which(sc.xx[[1]] == i)]][t + Ki + H - h + j - k]))
-            yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.unadj[j], X[[i]][-1, ][t + Ki + H - h + j, ],
-                                                        sc.xx[[2]][[which(sc.xx[[1]] == i)]][t + Ki + H - h + j - k]))
-            
-            if (t + Ki + H - h == Tstari & i >= 3 & h == 1) {
-              yhat.adj.h <- yhat.adj.h + alpha.wadj
-            }
-            
-            yhat.adj <- c(yhat.adj, yhat.adj.h)
-            yhat.unadj <- c(yhat.unadj, yhat.unadj.h)
-          }
-        }
+        # OLS
+        lmodi.adj <- lm(yi ~ 1 + ifelse((t + H - h + 1):(t + Ki + H - h) >= Tstari + 1, yes = 1, no = 0) + 
+                          yilags + xi)
+        lmodi.unadj <- lm(yi ~ 1 + yilags + xi)
         
+        # beta.hat
+        beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
+        beta.hat.adj[which(is.na(beta.hat.adj) == TRUE)] <- 0
+        beta.hat.unadj <- matrix(coef(lmodi.unadj), nrow = 1)
+        
+        yhat.adj <- Y[[i]][(t + Ki + H - h + 1 - q1):(t + Ki + H - h)]
+        yhat.unadj <- Y[[i]][(t + Ki + H - h + 1 - q1):(t + Ki + H - h)]
+        
+        for (j in 1:h) {
+          yhat.adj.h <- matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
+                                 yhat.adj[j:(j + q1 - 1)], X[[i]][-(1:q1), ][t + Ki + H - h + j, ]))
+          yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.adj[j:(j + q1 - 1)], X[[i]][-(1:q1), ][t + Ki + H - h + j, ]))
+          
+          if (t + Ki + H - h == Tstari & i >= 3 & h == 1) {
+            yhat.adj.h <- yhat.adj.h + alpha.wadj
+          }
+          
+          yhat.adj <- c(yhat.adj, yhat.adj.h)
+          yhat.unadj <- c(yhat.unadj, yhat.unadj.h)
+        }
         
         # losses
-        m1.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.adj[h + 1])
-        m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + 1])
+        m1.L.i[t, h] <- sel(y = Y[[i]][-(1:q1)][t + Ki + H], yhat = yhat.adj[h + q1])
+        m2.L.i[t, h] <- sel(y = Y[[i]][-(1:q1)][t + Ki + H], yhat = yhat.unadj[h + q1])
       }
     }
     # loss differential
@@ -324,6 +282,7 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, sig.levl = .
   # output
   return(list(ps = ps, W = W, Is = Is))
 }
+
 
 # functions that return alpha.hat and synthetic weights for decaying shock effects
 ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
@@ -363,7 +322,7 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
         # yi lags
         yilags <- c()
         for (j in 1:q1) {
-          yijlag <- Y[[i]][-c(1:(q1 - j), (TL - (q1 - 1)):(TL - (q1 - j)))][(t + H - h + 1):(t + Ki + H - h)]
+          yijlag <- lag(Y[[i]][-(1:max(q1, q2 - 1))], n = j)[(t + H - h + 1):(t + Ki + H - h)]
           yilags <- cbind(yilags, yijlag)
         }
         
@@ -372,7 +331,7 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
         if (q2 > 1) {
           
           for (j in 1:(q2 - 1)) {
-            xj.xlags <- X[[i]][-c(1:(q2 - 1 - j), (TL - (q2 - 1 - 1)):(TL - (q2 - 1 - j))), ][(t + H - h + 1):(t + Ki + H - h), ]
+            xj.xlags <- lag(X[[i]][-(1:max(q1, q2 - 1)), ], n = j)[(t + H - h + 1):(t + Ki + H - h), ]
             x.xlags <- cbind(x.xlags, xj.xlags)
           }
         }
@@ -419,7 +378,6 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
             
             x.xlags.for.pred <- X[[i]][-(1:q1), ][t + Ki + H - h + j, ]
             if (q2 > 1) {
-              
               for (k in 1:(q2 - 1)) {
                 x.xlags.for.pred <- cbind(x.xlags.for.pred, 
                                           X[[i]][-1, ][t + Ki + H - h + j - k, ])
@@ -468,7 +426,7 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
               
               for (k in 1:(q2 - 1)) {
                 x.xlags.for.pred <- cbind(x.xlags.for.pred, 
-                                          X[[i]][-1, ][t + Ki + H - h + j - k, ])
+                                          X[[i]][-(1:q1), ][t + Ki + H - h + j - k, ])
               }
             }
             D.i.t <- ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0) 
@@ -495,8 +453,8 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
         
         
         # losses
-        m1.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.adj[h + q1])
-        m2.L.i[t, h] <- sel(y = Y[[i]][-1][t + Ki + H], yhat = yhat.unadj[h + q1])
+        m1.L.i[t, h] <- sel(y = Y[[i]][-(1:max(q1, q2 - 1))][t + Ki + H], yhat = yhat.adj[h + q1])
+        m2.L.i[t, h] <- sel(y = Y[[i]][-(1:max(q1, q2 - 1))][t + Ki + H], yhat = yhat.unadj[h + q1])
       }
     }
     # loss differential
@@ -524,6 +482,7 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
   # output
   return(list(ps = ps, W = W, Is = Is))
 }
+
 
 
 ## 'PAYEMS' is the Federal Reserve of St. Louis' name for the monthly employment figure,
@@ -663,7 +622,7 @@ date <- rownames(dat)
 # setup
 H <- 12
 K <- 24
-L <- 12
+L <- 18
 
 # Time Series 2
 shock.t2 <- which(date == '1980-03-01') + 1
@@ -749,7 +708,7 @@ mod.t1.dynamic <- lm(TS1$PAYEMS ~ as.matrix(TS1[, 2:7]) + co.D + TS1$shock.t1)
 AICs.20200301 <- c(AIC(mod.t1.null), AIC(mod.t1.permanent), AIC(mod.t1.dynamic))
 
 # Ti
-Ts <- rep(62, 5)
+Ts <- rep(68, 5)
 # Tstar
 Tstar <- rep(49, 5)
 # Y
@@ -763,17 +722,21 @@ for (i in 1:4) {
 
 
 # testing 
-res1 <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H,
+res1 <- ps.indic.W.permanent(Tstar = Tstar, 
+                             q1 = 1, 
+                             Y = Y, X = X, K = rep(K, 4), H = H,
                              Ts = Ts, ell = 4, B = 200, bw = 4, 
                              scale = TRUE)
 
-res2 <- ps.indic.W.dynamic(Tstar = Tstar
-                           , Y = Y, X = X, K = rep(K, 4), 
+res2 <- ps.indic.W.dynamic(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), 
                            q1 = 1, q2 = 1, 
                            H = H, Ts = Ts, ell = 4, B = 200, bw = 4,
                            scale = TRUE)
 
 Wstar <- res1$W
+
+matrix(res2$ps[-1], nrow = 1) %*% matrix(res1$W)
+matrix(res2$Is[-1], nrow = 1) %*% matrix(res1$W)
 
 
 AICs <- rbind(AICs.19800301, AICs.20010901, AICs.20080301)
