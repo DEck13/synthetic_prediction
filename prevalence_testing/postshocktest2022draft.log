@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Debian) (preloaded format=pdflatex 2021.10.20)  6 APR 2022 11:50
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Debian) (preloaded format=pdflatex 2021.10.20)  6 APR 2022 11:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -736,7 +736,7 @@ File: l3backend-pdftex.def 2020-01-29 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count326
 \l__pdf_internal_box=\box71
 )
-No file postshocktest2022draft.aux.
+(./postshocktest2022draft.aux)
 \openout1 = `postshocktest2022draft.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 112.
@@ -755,6 +755,7 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 112.
 LaTeX Font Info:    ... okay on input line 112.
 LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 112.
 LaTeX Font Info:    ... okay on input line 112.
+
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count327
@@ -793,6 +794,8 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 112.
 LaTeX Info: Redefining \pageref on input line 112.
 LaTeX Info: Redefining \nameref on input line 112.
+
+(./postshocktest2022draft.out) (./postshocktest2022draft.out)
 \@outlinefile=\write4
 \openout4 = `postshocktest2022draft.out'.
 
@@ -966,17 +969,8 @@ Package natbib Warning: Citation `lin2021minimizing' on page 2 undefined on inp
 ut line 175.
 
 
-LaTeX Warning: Reference `sec:multhor' on page 2 undefined on input line 177.
-
-
 Package natbib Warning: Citation `quaedvlieg2021multi' on page 2 undefined on i
 nput line 177.
-
-
-LaTeX Warning: Reference `modelsetup' on page 2 undefined on input line 177.
-
-
-LaTeX Warning: Reference `sec:aggmeth' on page 2 undefined on input line 177.
 
 
 Package natbib Warning: Citation `quaedvlieg2021multi' on page 2 undefined on i
@@ -988,45 +982,17 @@ Package natbib Warning: Citation `quaedvlieg2021multi' on page 3 undefined on i
 nput line 194.
 
 
-LaTeX Warning: Reference `test' on page 3 undefined on input line 204.
-
-
 Package natbib Warning: Citation `giacomini2006tests' on page 3 undefined on in
 put line 208.
-
-
-LaTeX Warning: Reference `test' on page 3 undefined on input line 210.
 
 
 Package natbib Warning: Citation `quaedvlieg2021multi' on page 3 undefined on i
 nput line 221.
 
-
-LaTeX Warning: Reference `boott' on page 3 undefined on input line 231.
-
 [3]
-
-LaTeX Warning: Reference `model-gen' on page 4 undefined on input line 259.
-
-
-LaTeX Warning: Reference `model-gen' on page 4 undefined on input line 276.
-
-
-LaTeX Warning: Reference `model-gen' on page 4 undefined on input line 279.
-
-
-LaTeX Warning: Reference `random-effects' on page 4 undefined on input line 279
-.
-
 
 Package natbib Warning: Citation `lin2021minimizing' on page 4 undefined on inp
 ut line 279.
-
-
-LaTeX Warning: Reference `model-gen' on page 4 undefined on input line 279.
-
-
-LaTeX Warning: Reference `sec:aggmeth' on page 4 undefined on input line 279.
 
 
 Package natbib Warning: Citation `quaedvlieg2021multi' on page 4 undefined on i
@@ -1034,37 +1000,12 @@ nput line 296.
 
 [4]
 
-LaTeX Warning: Reference `sec:multhor' on page 5 undefined on input line 305.
-
-
-LaTeX Warning: Reference `modelsetup' on page 5 undefined on input line 305.
-
-
-LaTeX Warning: Reference `model-gen' on page 5 undefined on input line 307.
-
-
-LaTeX Warning: Reference `random-effects' on page 5 undefined on input line 307
-.
-
-
-LaTeX Warning: Reference `sec:multhor' on page 5 undefined on input line 309.
-
-
 Package natbib Warning: Citation `lin2021minimizing' on page 5 undefined on inp
 ut line 309.
 
 
-LaTeX Warning: Reference `model-gen' on page 5 undefined on input line 317.
-
-
 Package natbib Warning: Citation `lin2021minimizing' on page 5 undefined on inp
 ut line 317.
-
-
-LaTeX Warning: Reference `bootp' on page 5 undefined on input line 321.
-
-
-LaTeX Warning: Reference `voting' on page 5 undefined on input line 323.
 
 
 Package natbib Warning: Citation `lin2021minimizing' on page 5 undefined on inp
@@ -1087,23 +1028,7 @@ ut line 362.
 Package natbib Warning: Citation `quaedvlieg2021multi' on page 6 undefined on i
 nput line 362.
 
-[6]
-
-LaTeX Warning: Reference `votprop2' on page 7 undefined on input line 407.
-
-
-LaTeX Warning: Reference `votprop2' on page 7 undefined on input line 417.
-
-
-LaTeX Warning: Reference `votprop' on page 7 undefined on input line 417.
-
-
-LaTeX Warning: Reference `votprop2' on page 7 undefined on input line 417.
-
-[7]
-
-LaTeX Warning: Reference `coro2' on page 8 undefined on input line 446.
-
+[6] [7]
 
 Package natbib Warning: Citation `quaedvlieg2021multi' on page 8 undefined on i
 nput line 468.
@@ -1128,9 +1053,6 @@ nput line 473.
 Package natbib Warning: Citation `quaedvlieg2021multi' on page 8 undefined on i
 nput line 479.
 
-
-LaTeX Warning: Reference `section2' on page 8 undefined on input line 479.
-
 [8]
 
 Package natbib Warning: Citation `lin2021minimizing' on page 9 undefined on inp
@@ -1140,65 +1062,7 @@ ut line 481.
 Package natbib Warning: Citation `shaman1988bias' on page 9 undefined on input 
 line 483.
 
-[9]
-
-LaTeX Warning: Reference `model-gen' on page 10 undefined on input line 491.
-
-
-LaTeX Warning: Reference `random-effects' on page 10 undefined on input line 49
-1.
-
-
-LaTeX Warning: Reference `model-gen' on page 10 undefined on input line 502.
-
-
-LaTeX Warning: Reference `random-effects' on page 10 undefined on input line 50
-2.
-
-
-LaTeX Warning: Reference `condition-1' on page 10 undefined on input line 518.
-
-
-LaTeX Warning: Reference `prop:signaltonoise' on page 10 undefined on input lin
-e 519.
-
-[10]
-
-LaTeX Warning: Reference `condition-1' on page 11 undefined on input line 553.
-
-[11]
-
-LaTeX Warning: Reference `model-gen' on page 12 undefined on input line 580.
-
-
-LaTeX Warning: Reference `random-effects' on page 12 undefined on input line 58
-0.
-
-
-LaTeX Warning: Reference `prop:signaltonoise' on page 12 undefined on input lin
-e 596.
-
-[12]
-
-LaTeX Warning: Reference `lem:absdiff' on page 13 undefined on input line 609.
-
-
-LaTeX Warning: Reference `lem:absdiff' on page 13 undefined on input line 620.
-
-[13] [14]
-
-LaTeX Warning: Reference `sptcop' on page 15 undefined on input line 778.
-
-
-LaTeX Warning: Reference `sptuem' on page 15 undefined on input line 778.
-
-
-LaTeX Warning: Reference `model-gen' on page 15 undefined on input line 780.
-
-
-LaTeX Warning: Reference `model-gen' on page 15 undefined on input line 785.
-
-[15]
+[9] [10] [11] [12] [13] [14] [15]
 
 Package natbib Warning: Citation `lin2021minimizing' on page 16 undefined on in
 put line 802.
@@ -1212,50 +1076,18 @@ Package natbib Warning: Citation `lin2021minimizing' on page 16 undefined on in
 put line 804.
 
 
-LaTeX Warning: Reference `forecast' on page 16 undefined on input line 808.
-
-
-LaTeX Warning: Reference `forecast' on page 16 undefined on input line 808.
-
-
-LaTeX Warning: Reference `coptable' on page 16 undefined on input line 828.
-
-
 Package natbib Warning: Citation `lin2021minimizing' on page 16 undefined on in
 put line 830.
 
 [16]
 
-LaTeX Warning: Reference `coptable' on page 17 undefined on input line 834.
-
-
-LaTeX Warning: Reference `coro2' on page 17 undefined on input line 836.
-
-
-LaTeX Warning: Reference `forecast' on page 17 undefined on input line 840.
-
-
-LaTeX Warning: Reference `coptable' on page 17 undefined on input line 840.
-
-
-LaTeX Warning: Reference `votprop' on page 17 undefined on input line 840.
-
-
 LaTeX Warning: Reference `coro1' on page 17 undefined on input line 840.
-
-
-LaTeX Warning: Reference `copshocktransience' on page 17 undefined on input lin
-e 842.
-
-
-LaTeX Warning: Reference `copshocktransience' on page 17 undefined on input lin
-e 842.
 
 
 Package natbib Warning: Citation `lin2021minimizing' on page 17 undefined on in
 put line 842.
 
-<COPtransience.pdf, id=144, 397.47998pt x 289.08pt>
+<COPtransience.pdf, id=239, 397.47998pt x 289.08pt>
 File: COPtransience.pdf Graphic file (type pdf)
 <use COPtransience.pdf>
 Package pdftex.def Info: COPtransience.pdf  used on input line 847.
@@ -1265,50 +1097,22 @@ Package pdftex.def Info: COPtransience.pdf  used on input line 847.
 Package natbib Warning: Citation `lin2021minimizing' on page 18 undefined on in
 put line 879.
 
-[18 <./COPtransience.pdf>]
-
-LaTeX Warning: Reference `coro2' on page 19 undefined on input line 886.
-
-
+[18 <./COPtransience.pdf>] [19]
 Overfull \hbox (25.77557pt too wide) in paragraph at lines 914--926
  [] 
  []
 
-[19]
-<UEMtransience.pdf, id=191, 397.47998pt x 289.08pt>
+<UEMtransience.pdf, id=286, 397.47998pt x 289.08pt>
 File: UEMtransience.pdf Graphic file (type pdf)
 <use UEMtransience.pdf>
 Package pdftex.def Info: UEMtransience.pdf  used on input line 932.
 (pdftex.def)             Requested size: 312.97469pt x 227.62204pt.
-
-
-Package natbib Warning: Citation `lin2021minimizing' on page 20 undefined on in
-put line 949.
-
 [20 <./UEMtransience.pdf>]
 
-LaTeX Warning: Reference `votprop' on page 21 undefined on input line 956.
+Package natbib Warning: Citation `lin2021minimizing' on page 21 undefined on in
+put line 949.
 
-[21]
-
-LaTeX Warning: Reference `votprop2' on page 22 undefined on input line 1033.
-
-[22]
-
-LaTeX Warning: Reference `votprop2' on page 23 undefined on input line 1078.
-
-
-LaTeX Warning: Reference `votprop' on page 23 undefined on input line 1081.
-
-
-LaTeX Warning: Reference `votprop' on page 23 undefined on input line 1085.
-
-
-LaTeX Warning: Reference `gwlln' on page 23 undefined on input line 1085.
-
-
-LaTeX Warning: Reference `gwlln' on page 23 undefined on input line 1097.
-
+[21] [22]
 No file postshocktest2022draft.bbl.
 
 Package natbib Warning: There were undefined citations.
@@ -1317,23 +1121,15 @@ Package natbib Warning: There were undefined citations.
 
 LaTeX Warning: There were undefined references.
 
+Package rerunfilecheck Info: File `postshocktest2022draft.out' has not changed.
 
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `postshocktest2022draft.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `postshocktest2022draft.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  56D7E9F25469B2910F3D7A4BA892A7CC;929.
+(rerunfilecheck)             Checksum: 56D7E9F25469B2910F3D7A4BA892A7CC;929.
  ) 
 Here is how much of TeX's memory you used:
- 20681 strings out of 479304
- 379425 string characters out of 5869778
- 723100 words of memory out of 5000000
- 37376 multiletter control sequences out of 15000+600000
+ 20701 strings out of 479304
+ 379767 string characters out of 5869778
+ 725141 words of memory out of 5000000
+ 37390 multiletter control sequences out of 15000+600000
  414789 words of font info for 66 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  87i,21n,89p,1834b,620s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1357,10 +1153,10 @@ t/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist
 /fonts/type1/urw/palatino/uplb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /urw/palatino/uplr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatin
 o/uplri8a.pfb>
-Output written on postshocktest2022draft.pdf (23 pages, 349882 bytes).
+Output written on postshocktest2022draft.pdf (23 pages, 354259 bytes).
 PDF statistics:
- 307 PDF objects out of 1000 (max. 8388607)
- 256 compressed objects within 3 object streams
+ 408 PDF objects out of 1000 (max. 8388607)
+ 356 compressed objects within 4 object streams
  98 named destinations out of 1000 (max. 500000)
- 23 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 127 words of extra memory for PDF output out of 10000 (max. 10000000)
 
