@@ -1,0 +1,8 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Setting}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Model setup}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Forecasting and testing for shock persistence}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Simulation Setup}{}% 5
+\BOOKMARK [1][-]{section.4}{Numerical Examples}{}% 6
+\BOOKMARK [2][-]{subsection.4.1}{Testing shock prevalence for Conoco Phillips stock price series}{section.4}% 7
+\BOOKMARK [2][-]{subsection.4.2}{Testing shock prevalence for Month-on-Month Change in Log Nonfarm Payrolls \(Seasonally Adjusted\)}{section.4}% 8
