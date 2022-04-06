@@ -207,9 +207,10 @@ A studentized test statistic corresponding to the null hypothesis \eqref{test} i
 \end{equation}
 where $\bar{d}_{i} = \textbf{w}_i'\textbf{d}_{i}$ and we choose to estimate $\zeta_{i} = \sqrt{\textbf{w}_i'\Omega_{i}\textbf{w}_i}$ directly based on $\textbf{w}_i'\textbf{d}_{i,t}$ using the HAC estimator \citep{giacomini2006tests} where $\Omega_{i} = \text{avar}\left(\sqrt{T}_i(\bar{d}_{i} - \mbf{\mu}_{i})\right)$. 
 
-A p-value corresponding to the hypothesis test \eqref{test} is computed using a moving block bootstrap (MBB). \textcolor{red}{Need more clarity on this process}
+A p-value corresponding to the hypothesis test \eqref{test} is computed using a moving block bootstrap (MBB) of of \cite{kunsch1989jackknife} and \cite{liu1992moving}. In the moving block bootstrap (MBB), a pseudo time-series is constructed by resampling blocks of length $\ell$ from the original data.
+
 %We now demonstrate that computing p-values corresponding to the hypothesis test \eqref{test} using the moving block bootstrap (MBB) is a good approximation.
-Let $l$ be the block length of the MBB where we assume that $T_i = lK_i$. Let $I_1$,\ldots,$I_{K_i}$ be iid random variables uniformly distributed on $\{1,\ldots,T_i-l+1\}$, and define the array 
+Let $l = o(T^{1/2})$ be the block length of the MBB where we assume that $T_i = lK_i$. Let $I_1$,\ldots,$I_{K_i}$ be iid random variables uniformly distributed on $\{1,\ldots,T_i-l+1\}$, and define the array 
 $$
   \tau_{T_i} = \{I_1+1, \ldots, I_1+l, \ldots, I_{K_i}+1, \ldots, I_{K_i}+l\}.
 $$
@@ -327,7 +328,7 @@ We now motivate a voting method and a weighted voting method based on the p-valu
 \SetAlgoLined \label{voting}
 
 \SetKwInOut{Input}{Input}
-\Input{$B, \ell $ --  bootstrap sample size, the  block size,   \\ 
+\Input{$B, \ell $ --  bootstrap sample size, the  block size \textcolor{red}{Where is bootstrapping used in this algorithm?},   \\ 
 $\gamma$ -- bandwidth parameter in heteroskedasticity and autocorrelation  consistent covariance \\ 
 	\quad \quad matrix  estimation.\\ 
 $\alpha$ -- significance level\\$\{(y_{i,t}, \mbf{x}_{i,t})\colon i = 2,\ldots, n+1, t = 0, \ldots, T_i\}$ -- the data\\ $\{T_i^* \colon i = 1, \ldots, n+1\}$ -- the time point just before the shock\\
@@ -357,7 +358,7 @@ $H$ -- maximum horizon
  		}
  	}
  	Construct the loss differential matrix with element $l_{t,h}^2-l_{t,h}^1$ at $t$th row and $h$th column \\
- 	Conduct multiple horizon forecast comparison test of \cite{quaedvlieg2021multi} on the loss differential matrix $\{l_{t,h}^2-l_{t,h}^1\}_{t,h}$ with parameters $\ell, B, \gamma$ to obtain forecast comparison $p$-value $\hat{p}_i$\\
+ 	Conduct multiple horizon forecast comparison test of \cite{quaedvlieg2021multi} on the loss differential matrix $\{l_{t,h}^2-l_{t,h}^1\}_{t,h}$ \textcolor{red}{please confirm that this is the same notation as before.} with parameters $\ell, B, \gamma$ to obtain forecast comparison $p$-value $\hat{p}_i$\\
   }
   
  	Compute synthetic weights $\mbf{W}^*= (w_2^*, \ldots, w_{n+1}^*)$ based on $\{\mbf{x}_{i, T_i^*+1}\colon i = 1, \ldots, n+1\}$ \\
@@ -457,10 +458,6 @@ Note that Corollary \ref{coro2} gives an asymptotic upper bound for the misclass
 
 
 
-
-
-
-
 \subsection{Forecasting and testing for shock persistence}
 \label{forecast}
 
@@ -487,288 +484,128 @@ For each donor $\mc{T}_i$, $i = 2, \ldots, n+1$, to compare adjusted and unadjus
 
 
 \newpage
+\textbf{Repeating for reference}:
+\begin{align}
+\mc{M} \colon \begin{array}{l}
+  y_{i,t} = \left(\eta_i + \sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j}\right)(1 - D_{i,t}) + f(\mathcal{F}_{i,t},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
+  \; f(\mc{F}_{i,t},\alpha_i) = \alpha_i +  \sum_{j=1}^{q_{1}}\t\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\t\theta_{i,j+1}'\mbf{x}_{i,t-j}, \\[.2cm]
+  \; \alpha_i = \mu_{\alpha} + \delta_i'\mbf{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
+  %\sum_{j=1}^{q_3}\delta_{i,j}'\mbf{x}_{i, T_i^*-j+1}+ \t{\varepsilon}_{i}, 
+\end{array}\label{model-gen2}
+\end{align}
+where $D_{i,t} = I(t \geq T_i^* + 1)$, $I(\cdot)$ is the indicator function, $\x_{i,t} \in \R^{p}$ are fixed with $p \geq 1$. Let 
+$\mathbf{\phi}_i = (\phi_{i,1},\ldots,\phi_{i,q_1})'$, 
+$\mathbf{\theta}_i = (\theta_{i,1},\ldots,\theta_{i,q_2})'$, 
+$\tilde{\mathbf{\phi}}_i = (\t\phi_{i,1},\ldots,\t\phi_{i,q_{1}})'$, 
+$\tilde{\mathbf{\theta}}_i = (\t\theta_{i,1},\ldots,\t\theta_{i, q_{2}})'$, 
+$\mathbf{\delta}_i = (\delta_{i,1},\ldots,\delta_{i,p})'$, 
+and suppose that the regression coefficients in \eqref{model-gen2} have the following hierarchical random effects structure: 
+\begin{equation} \label{random-effects2}
+\begin{split}
+  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = \mu_\eta, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}, \\
+  \mathbf{\phi}_{i,j} &\simiid \mc{F}_{\mathbf{\phi}_j} \text{ where } |\phi_{i,j}| < 1, \\
+  \mathbf{\theta}_{i,j} &\simiid \mc{F}_{\mathbf{\theta}_j} \text{ with }  \; \mrm{E}_{\mc{F}_{\mathbf{\theta}_j}}(\theta_{i,j}) = \mu_{\mathbf{\theta}_j}, \mrm{Var}_{\mc{F}_{\mathbf{\theta}_j}}(\mathbf{\theta}_{i,j})  = \Sigma^2_{\mathbf{\theta}_j}, \\
+  \mathbf{\delta}_i &\simiid  \mc{F}_{\mathbf{\delta}} \text{ with } \mrm{E}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\mu_{\mathbf{\delta}}, \mrm{Var}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\Sigma_{\mathbf{\delta}}, \\
+\varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i,  \\
+\varepsilon_{\alpha, i} &\simiid  \mc{F}_{\varepsilon_\alpha} \text{ with }\mrm{E}_{\mc{F}_{\varepsilon_\alpha}}(\varepsilon_{\alpha, i})=0, \mrm{Var}_{\mc{F}_{\varepsilon_{\alpha}}}(\varepsilon_{\alpha, i})=\sigma^2_{\alpha}, \\
+  \tilde{\mathbf{\phi}}_{i,j} &\overset{ind}{\sim} \mathcal{F}_{\tilde{\mathbf{\phi}_j}}(\x_{i,T_i^*+1}) \; \text{where} \; |\tilde{\mathbf{\phi}}_{i,j}| < 1,  \\
+  \tilde{\mathbf{\theta}}_{i,j} &\overset{ind}{\sim} \mathcal{F}_{\tilde{\mathbf{\theta}_j}}(\x_{i,T_i^*+1}),  \\  
+ % \t q_{i,k} &\overset{ind}{\sim} \mathcal{F}_k(\x_{i,T_i^*}), \; k = 1,2, \\
+&\eta_i \indep \mathbf{\phi}_{i,j} \indep \mathbf{\theta}_{i,j} \indep 
+\tilde{\mathbf{\phi}}_{i,j} \indep \lambda_{i,j} \indep \mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i}, 
+\end{split}
+\end{equation}
 
-\vspace*{0.5cm} We now demonstrate an idealized theoretical setting for which our post-shock testing methodology involving a distance based weighted average of p-values works well. The idea is that inferences based on distance based weighted nearly recovers the time series under study when there exists a time series in the donor pool, indexed by $i'$, such that $\x_{1,t} \approx \x_{i',t}$ and the signal strength in our modeling setup \eqref{model-gen} and \eqref{random-effects} is large relative to variation. We first present some intermediary technical results and definitions. Let $\lambda_{\text{max},\theta_k}$, $\lambda_{\text{max},\theta_\delta}$, $\lambda_{\text{max},\gamma}$ respectively be the largest eigenvalues of $\Sigma_{\theta_k}$, $\Sigma_{\delta}$, and $\Sigma_{\gamma}$ for $k = 1,\ldots,q_2$. Define  
+
+We now demonstrate an idealized theoretical setting for which our post-shock testing methodology involving a distance based weighted average of p-values works well. The idea is that inferences based on distance based weighted nearly recovers the time series under study when there exists a time series in the donor pool, indexed by $i'$, such that $\x_{1,t} \approx \x_{i',t}$ and the signal strength in our modeling setup \eqref{model-gen} and \eqref{random-effects} is large relative to variation. 
+
+We first present some intermediary technical results and definitions. Let $\lambda_{\text{max},\theta_k}$, $\lambda_{\text{max},\theta_\delta}$, $\lambda_{\text{max},\gamma}$ respectively be the largest eigenvalues of $\Sigma_{\theta_k}$, $\Sigma_{\delta}$, and $\Sigma_{\gamma}$ for $k = 1,\ldots,q_2$. Define  
 \begin{align*}
   \mu_{\min} &= \min\left(\mu_\eta,\mu_{\phi_j},\mu_{\tilde\phi_j},\min(\mu_\delta),\min(\mu_{\theta_k}),\min(\mu_{\tilde\theta_k}); j = 1,\ldots,q_1, k = 1,\ldots,q_2\right), \\
   \mu_{\max} &= \max\left(\mu_\eta,\mu_{\phi_j},\mu_{\tilde\phi_j},\max(\mu_\delta),\max(\mu_{\theta_k}),\max(\mu_{\tilde\theta_k}); j = 1,\ldots,q_1, k = 1,\ldots,q_2\right), \\
   \lambda_{\max} &= \max\left(\lambda_{\text{max},\theta_k}, \lambda_{\text{max},\theta_\delta}, \lambda_{\text{max},\gamma}; k = 1,\ldots,q_2\right), \\
-  \sigma^2_{\max} &= \max\left(\sigma^2_{\eta},\sigma^2_{\phi_j},\sigma^2_i,\sigma^2_{\alpha},\sigma^2_{\tilde{\phi}_j}; i = 1,\ldots,n+1, j = 1,\ldots,q_1\right).  
+  \sigma^2_{\max} &= \max\left(\sigma^2_{\eta},\sigma^2_{\phi_j},\sigma^2_i,\sigma^2_{\alpha},\sigma^2_{\tilde{\phi}_j}; i = 1,\ldots,n+1, j = 1,\ldots,q_1\right),
 \end{align*}
-
-
-
-\begin{prop} \label{prop:signaltonoise}
-	Let $\bf{y}_{i,t}$, $i = 1,\ldots,n_i$, $t = 1,\ldots, T$ be a collection of independent time series. Let each time series $\bf{y}_{i,t}$ be generated by model \eqref{model-gen} with accompanying random effects structure \eqref{random-effects}, where $y_{i,t}$ is a scalar response $\x_{i,t} \in \R^p$ is a fixed vector of covariates. Suppose that there is a common shock time $p + 2 < T^* < T - (p+2)$ where $q_1 = q_2 = 1$, $\|\x_{i,t}\| = 1$, each entry of $\x_{i,t}$ is non-negative, $\mu_{\min} > 0$, and $y_{i,0} = 0$. Then for every $1 \leq t \leq T$ we have that 
-	\begin{equation} \label{signal-to-noise}
-	  \E(y_{i,t}) \geq C\Var(y_{i,t}),	
-	\end{equation}
-	provided that 
-	\begin{equation} \label{condition-1}
-	\begin{split}
-		\mu_\alpha + 3\mu_{\min} &\geq C\left(3\sigma^2_{\max} + 2\lambda_{\max}\right), \\
-		2\mu_{\min} &\geq C\left(2\sigma^2_{\max} + \lambda_{\max}\right).	
-	\end{split}
-	\end{equation}
-\end{prop}
-
-
-\textbf{Remarks}:
-\begin{enumerate}
-	\item The conditions \eqref{condition-1} govern the signal strength necessary in the expected behavior of the underlying random effects structure relative to variability necessary for the overall signal to noise ratio for the overall time series to be lower bounded by some positive value $C$.
-	\item The conditions of Proposition~\ref{prop:signaltonoise} state that there is an increasing trend in $y_{i,t}$ for all $i$. This can be relaxed, but a fully general argument is cumbersome.
-\end{enumerate}
-
-
-
-\begin{proof}
-For $t > T^* + 1$ we have 
+and let $\sigma^2 = \max(\lambda_{\max}, \sigma^2_{\max})$. Now arbitrarily choose $\varepsilon > 0$ and fix $i'$ where we suppose that $\|\x_{1,t} - \x_{i',t}\| < \varepsilon_1$ for all $t$ where $\varepsilon_1$ will be selected later. Pick some large $M > 0$. Fix $T = T_1 = T_{i'}$ and $T^* = T^*_1 = T^*_{i'}$. Define the events 
 \begin{align*}
-  \E(y_{i,t}) &= \E\left[\E(y_{i,t}|y_{i,t-1})\right] \\ 
-    &= \E\left[\E(\eta_i + \alpha_i + \tilde\phi_i y_{i,t-1} 
-      + \tilde\theta_i'\x_{i,t}|y_{i,t-1})\right] \\
-    &= \E(\eta_i + \mu_\alpha + \delta_i'\x_{i,T^*+1} + \tilde\phi_i y_{i,t-1} + \tilde\theta_i'\x_{i,t}) \\
-    &= \mu_\eta + \mu_\alpha + \mu_\delta'\x_{i,T^*+1} + \mu_{\tilde\theta}'\x_{i,t} + \mu_{\tilde\phi}\E(y_{i,t-1}) \\
-    &\geq (\mu_\alpha + 3\mu_{\min}) + \mu_{\min}\E(y_{i,t-1}) \\
-    &\geq \sum_{j=1}^{t - (T^* + 1)} \mu_{\min}^j(\mu_{\alpha} + 3\mu_{\min}) + \mu_{\min}^{t-T^*}\E(y_{i,T^*}) \\
-    &= \sum_{j=0}^{t - (T^* + 1)} \mu_{\min}^j(\mu_{\alpha} + 3\mu_{\min}) + \mu_{\min}^{t-T^*}\left(\E\left[\E(y_{i,T^*}|y_{i,T^*-1})\right]\right) \\   
-    &= \sum_{j=0}^{t - (T^* + 1)} \mu_{\min}^j(\mu_{\alpha} + 3\mu_{\min}) + \mu_{\min}^{t-T^*}\left(\E(\eta_i + \theta_i'\x_{i,T^*} + \phi_i y_{i,T^*-1}) \right) \\
-    &\geq \sum_{j=0}^{t - (T^* + 1)} \mu_{\min}^j(\mu_{\alpha} + 3\mu_{\min}) + \mu_{\min}^{t-T^*}\left(2\mu_{\min} + \mu_{\min} \E(y_{i,T^*-1}) \right) \\
-    &\geq \sum_{j=0}^{t - (T^* + 1)} \mu_{\min}^j(\mu_{\alpha} + 3\mu_{\min}) + \mu_{\min}^{t-T^*}\left(\sum_{j=0}^{T^*-1}\mu_{\min}^j(2\mu_{\min}) \right), 
+  E_1 := &\left\{\max\left(|\eta_1 - \eta_{i'}|,|\phi_{1,j}-\phi_{i',j}|,\|\theta_{1,k} - \theta_{i',k}\|,\|\delta_1 - \delta_{i'}\|,|\tilde\phi_{1,j}-\tilde\phi_{i',j}|,\|\tilde\theta_{1,k}-\tilde\theta_{i',k}\|,|\tilde\varepsilon_t|\right) < \varepsilon_1:\right. \\
+  &\qquad j = 1,\ldots,q_1, k = 1,\ldots,q_2, t = 1,\ldots,T \left.\right\}, \\
+  E_2 := &\{\|(\bm{\eta}',\bm{\phi}',\bm{\theta}',\bm{\delta}',\tilde{\bm{\phi}}',\tilde{\bm{\theta}}')\|_\infty < M\},
 \end{align*}
-and 
+where $\tilde\varepsilon_t = \varepsilon_{1,t} - \varepsilon_{i',t} + D_{i,t}(\varepsilon_{\alpha,1} - \varepsilon_{\alpha,i'})$ and $\bm{\eta},\bm{\phi},\bm{\theta},\bm{\delta},\tilde{\bm{\phi}}$, and $\tilde{\bm{\theta}}$ are vectors containing the random effects in \eqref{random-effects} for indices $1$ and $i'$, and we take $\|\bm{a}\|_\infty = \max_j(|a_j|)$ . We will also suppose that $\|\x_{j,t}\|_\infty < M$ for $j \in \{1,i'\}$ and all $t = 1,\ldots,T$. Note that both $\Prob(E_1^C) \to 0$ and $\Prob(E_2^C) \to 0$  as $\sigma^2 \to 0$ with $T$ and $n$ fixed. For simplicity we will set $q_1 = q_2 = 1$. 
+
+Conditional on $E = E_1 \cup E_2$, we first consider the recursion of $|y_{1,t} - y_{i',t}|$ for $t > T^*$,
 \begin{align*}
-  \Var(y_{i,t})	&= \E\left[\Var(y_{i,t}|y_{i,t-1})\right] + \Var\left[\E(y_{i,t}|y_{i,t-1})\right] \\
-  &= \E\left[\Var(\eta_i + \mu_\alpha + \delta_i'\x_{i,T^*+1} + \tilde\theta_i'\x_{i,t} + \tilde\phi_i y_{i,t-1} + \varepsilon_{i,t} + \varepsilon_{\alpha,i}|y_{i,t-1})\right] \\
-  &+ \Var\left[\E(\eta_i + \mu_\alpha + \delta_i'\x_{i,T^*+1} + \tilde\theta_i'\x_{i,t} + \tilde\phi_i y_{i,t-1} + \varepsilon_{i,t} + \varepsilon_{\alpha,i}|y_{i,t-1})\right] \\
-  &\leq 3\sigma^2_{\max} + 2\lambda_{\max} + \Var\left[\E(\tilde\phi_i y_{i,t-1}|y_{i,t-1})\right] \\
-  &= 3\sigma^2_{\max} + 2\lambda_{\max} + \mu_{\tilde\phi}^2\Var(y_{i,t-1}) \\
-  &\leq \sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\Var(y_{i,T^*}) \\
-  &= \sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\left(\E\left[\Var(y_{i,T^*}|y_{i,T^*-1})\right] + \Var\left[\E(y_{i,T^*}|y_{i,T^*-1})\right]\right) \\
-  &= \sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\left(\E\left[\Var(\eta_i + \theta_i'\x_{i,T^*} + \phi_iy_{i,T^*-1} + \varepsilon_{i,T^*}|y_{i,T^*-1})\right] \right. \\ 
-  &\qquad+  \left.\Var\left[\E(\eta_i + \theta_i'\x_{i,T^*} + \phi_iy_{i,T^*-1} + \varepsilon_{i,T^*}|y_{i,T^*-1})\right]\right)  \\
-  &\leq \sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\left(2\sigma^2_{\max} + \lambda_{\max} + \mu_{\phi}^2\Var(y_{i,T^*-1}) \right) \\ 
-  &\leq \sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\left(\sum_{j=0}^{T^*-1}\left(\mu_{\phi}^2\right)^{j}(2\sigma^2_{\max} + \lambda_{\max})\right).  
+	&|y_{1,t} - y_{i',t}| 
+		= |(\delta_1'\x_{1,T^*+1} - \delta_{i'}'\x_{i',T^*+1})
+		+ (\tilde\phi_{1}y_{1,t-1} - \tilde\phi_{i'}y_{i',t-1}) 
+		+ (\tilde\theta_{1}'\x_{1,t} - \tilde\theta_{i'}'\x_{i',t}) + \tilde\varepsilon_t| \\
+	&\qquad \leq |\delta_1'\x_{1,T^*+1} - \delta_{i'}'\x_{i',T^*+1}|
+		+ |\tilde\phi_{1}y_{1,t-1} - \tilde\phi_{i'}y_{i',t-1}| 
+		+ |\tilde\theta_{1}'\x_{1,t} - \tilde\theta_{i'}'\x_{i',t})| 
+		+ \varepsilon_1 \\
+	&\qquad\leq (8M + 1)\varepsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||y_{i',t-1}| + |\tilde\phi_1||y_{1,t-1} - y_{i',t-1}| \\
+	&\qquad\leq (8M + 1)\varepsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||y_{i',t-1}| \\ 
+	&\qquad\qquad+ |\tilde\phi_1|\left\{(8M + 1)\varepsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||y_{i',t-2}| + |\tilde\phi_1||y_{1,t-2} - y_{i',t-2}|\right\} \\
+	&\qquad= \varepsilon_1(8M + 1)(1 + |\tilde\phi_1|) + |\tilde\phi_1||\tilde\phi_{1} - \tilde\phi_{i'}|(|y_{i',t-1}| + |y_{i',t-2}|) + |\tilde\phi_1|^2|y_{1,t-2} - y_{i',t-2}| \\
+	&\qquad \leq \varepsilon_1(8M + 1)\sum_{j=0}^{t-T^*-1}|\tilde\phi_1|^j + |\tilde\phi_{1} - \tilde\phi_{i'}|\sum_{j=1}^{t-T^*}|\tilde\phi_1|^{j-1}|y_{i',t-j}| + |\tilde\phi_1|^{t-T^*}|y_{1,T^*} - y_{i',T^*}|.
 \end{align*}
-Combining the above with the condition \eqref{condition-1} yields 
-\begin{align*}
-  \frac{\E(y_{i,t})}{\Var(y_{i,t})} &\geq \frac{\sum_{j=0}^{t - (T^* + 1)} \mu_{\min}^j(\mu_{\alpha} + 3\mu_{\min}) + \mu_{\min}^{t-T^*}\left(\sum_{j=0}^{T^*-1}\mu_{\min}^j(2\mu_{\min}) \right)}{\sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\left(\sum_{j=0}^{T^*-1}\left(\mu_{\phi}^2\right)^{j}(2\sigma^2_{\max} + \lambda_{\max})\right)} \\
-  &\geq \frac{C\sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + C(\mu_{\tilde\phi}^2)^{t - T^*}\left(\sum_{j=0}^{T^*-1}\left(\mu_{\phi}^2\right)^{j}(2\sigma^2_{\max} + \lambda_{\max})\right)}{\sum_{j=0}^{t - (T^*+1)} (\mu_{\tilde\phi}^2)^j\left(3\sigma^2_{\max} + 2\lambda_{\max}\right) + (\mu_{\tilde\phi}^2)^{t - T^*}\left(\sum_{j=0}^{T^*-1}\left(\mu_{\phi}^2\right)^{j}(2\sigma^2_{\max} + \lambda_{\max})\right)} \\
-  &= C,
-\end{align*}
-for all $i$ and $t$. A similar argument holds when $t \leq T^* + 1$.
-\end{proof}
-
-
-\begin{lem}[Technical Lemma 1] \label{lem:absdiff}
-Let $a_j, b_j \in \R$, $j = 1,2$ be such that $0 < a_1,a_2 < 1$, $b_1,b_2 > 0$. Let $c_1 = \max(a_1,a_2)$, $c_2 = \min(a_1,a_2)$, $d_1 = \max(b_1,b_2)$, $d_2 = \min(b_1,b_2)$. Then, 
-$$
-  |a_1b_1 - a_2b_2| \leq |a_1 - a_2|d_1 + |b_1 - b_2|c_2.
-$$
-\end{lem}
-
-\begin{proof}
-Observe that 
-$$
-  |a_1b_1 - a_2b_2| \leq c_1d_1 - c_2d_2 = (c_1 - c_2)d_1 + (d_1 - d_2)c_2. 
-$$
-The conclusion follows by noting that $c_1 - c_2 = |a_1 - a_2|$ and $d_1 - d_2 = |b_1 - b_2|$.
-\end{proof}
-
-
-\begin{prop}
-	Let $\bf{y}_{i,t}$, $i = 1,\ldots,n_i$, $t = 1,\ldots, T$ be a collection of independent time series. Let each time series $\bf{y}_{i,t}$ be generated by model \eqref{model-gen} with accompanying random effects structure \eqref{random-effects}, where $y_{i,t}$ is a scalar response $\x_{i,t} \in \R^p$ is a fixed vector of covariates. Suppose that there is a common shock time $p + 2 < T^* < T - (p+2)$ where $q_1 = q_2 = 1$, $\|\x_{i,t}\| = 1$, each entry of $\x_{i,t}$ is non-negative, $\mu_{\min} > 0$, and $y_{i,0} = 0$. Let $i' \geq 2$ be an index. Then, for any $\epsilon > 0$ we can choose an $\gamma > 0$ such that 
-	$$
-	  \left\vert\E(y_{i,t} - y_{i',t})\right\vert \leq \epsilon, \qquad |\Var(y_{1,t}) - \Var(y_{i',t})| < \varepsilon,
-	$$
-	provided that 
-	\begin{align*}
-  |\mu_\delta'\x_{1,T^*+1} - \mu_\delta'\x_{i',T^*+1}| &< \gamma, \\
-%  |\mu_{\tilde\theta_1}'\x_{1,T^*+1} - \mu_{\tilde\theta_{i'}}'\x_{i',T^*+1}| &< \gamma, \\
-  \left\vert\mu_{\tilde\theta_{1}}'\x_{1,t} - \mu_{\tilde\theta_{i'}}'\x_{i',t}\right\vert &< \gamma, \qquad \text{for all} \; t, \\
-  |\mu_{\tilde\phi_1}^j - \mu_{\tilde\phi_{i'}}^j| &< \gamma, \qquad \text{for all} \; j, \\
-  |\x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1}| &< \gamma, \\
-  |\x_{1,t}'\Sigma_{\tilde\theta_{1}}\x_{1,t} - \x_{i',t}'\Sigma_{\tilde\theta_{i'}}\x_{i',t}| &< \gamma, \qquad \text{for all} \; t.
-	\end{align*}
-\end{prop}
-
-\begin{proof}
-A similar recursion to that seen in the proof of Proposition~\ref{prop:signaltonoise} yields
-\begin{align*}
-	&|\E(y_{1,t} - y_{i',t})| =  \left\vert \sum_{j=0}^{t - (T^*+1)}\left[\left(\mu_{\tilde\phi_{1}}^j(\mu_\delta'\x_{1,T^*+1}) - \mu_{\tilde\phi_{i'}}^j(\mu_\delta'\x_{i',T^*+1})\right) + \mu_{\tilde\phi_{1}}^j(\mu_{\tilde\theta_{1}}'\x_{1,t-j}) - \mu_{\tilde\phi_{i'}}^j(\mu_{\tilde\theta_{i'}}'\x_{i',t-j})\right]\right. \\
-		&\qquad\qquad\left. + \sum_{j=0}^{T^* - 1}\left[\mu_\eta(\mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*})\mu_{\phi}^j + \left(\mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,t-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',t-j})\right)\mu_{\phi}^j\right]\right\vert \\
-	&\qquad\leq |\mu_\delta'\x_{1,T^*+1} - \mu_\delta'\x_{i',T^*+1}| 
-	  + \sum_{j=1}^{t - (T^*+1)}\left\vert\mu_{\tilde\phi_{1}}^j(\mu_\delta'\x_{1,T^*+1}) - \mu_{\tilde\phi_{i'}}^j(\mu_\delta'\x_{i',T^*+1})\right\vert \\ 
-	&\qquad\qquad+ |\mu_{\tilde\theta_{1}}'\x_{1,t} - \mu_{\tilde\theta_{i'}}'\x_{i',t}| + \sum_{j=1}^{t - (T^*+1)}\left\vert \mu_{\tilde\phi_{1}}^j(\mu_{\tilde\theta_{1}}'\x_{1,t-j}) - \mu_{\tilde\phi_{i'}}^j(\mu_{\tilde\theta_{i'}}'\x_{i',t-j})\right\vert \\
-	&\qquad\qquad + \mu_\eta\sum_{j=0}^{T^*-1}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*}\right\vert\mu_{\phi}^j + \sum_{j=0}^{T^*-1}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,T^*-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',T^*-j}) \right\vert\mu_{\phi}^j \\
-	&\qquad\leq |\mu_\delta'\x_{1,T^*+1} - \mu_\delta'\x_{i',T^*+1}| + |\mu_{\tilde\theta_{1}}'\x_{1,t} - \mu_{\tilde\theta_{i'}}'\x_{i',t}| \\
-	&\qquad\qquad + \sum_{j=1}^{t - (T^*+1)}\left[\vert\mu_{\tilde\phi_{1}}^j - \mu_{\tilde\phi_{i'}}^j\vert\max(\mu_\delta'\x_{1,T^*+1},\mu_\delta'\x_{i',T^*+1}) + \left\vert\mu_\delta'\x_{1,T^*+1} -\mu_\delta'\x_{i',T^*+1}\right\vert\mu_{\tilde\phi_{1}}^j\right] \\
-	&\qquad\qquad + \sum_{j=1}^{t - (T^*+1)}\left[\vert\mu_{\tilde\phi_{1}}^j - \mu_{\tilde\phi_{i'}}^j\vert\max(\mu_\delta'\x_{1,t-j},\mu_\delta'\x_{i',t-j}) + \left\vert\mu_{\tilde\theta_{1}}'\x_{1,t-j} - \mu_{\tilde\theta_{i'}}'\x_{i',t-j}\right\vert\mu_{\tilde\phi_{1}}^j\right] \\
-	&\qquad\qquad + \mu_\eta\sum_{j=0}^{T^*-1}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*}\right\vert\mu_{\phi}^j + \sum_{j=0}^{T^*-1}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,T^*-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',T^*-j}) \right\vert\mu_{\phi}^j,	
-\end{align*}
-where the second inequality follows from applications of Lemma~\ref{lem:absdiff}. Continuing from the second inequality, the conditions of this proposition imply that
-\begin{align*}
-  &|\E(y_{1,t} - y_{i',t})|	\\
-  &\qquad\leq 2\gamma + \sum_{j=1}^{\infty}\left[\vert\mu_{\tilde\phi_{1}}^j - \mu_{\tilde\phi_{i'}}^j\vert\max(\mu_\delta'\x_{1,T^*+1},\mu_\delta'\x_{i',T^*+1}) + \gamma\mu_{\tilde\phi_{1}}^j\right] \\
-  &\qquad\qquad + \sum_{j=1}^{\infty}\left[\vert\mu_{\tilde\phi_{1}}^j - \mu_{\tilde\phi_{i'}}^j\vert\max(\mu_\delta'\x_{1,t-j},\mu_\delta'\x_{i',t-j}) + \gamma\mu_{\tilde\phi_{1}}^j\right] \\
-  &\qquad\qquad + \mu_\eta\sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*}\right\vert\mu_{\phi}^j + \sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,T^*-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',T^*-j}) \right\vert\mu_{\phi}^j  \\
-  &\qquad\leq 2\gamma + 2\gamma\frac{\max(\mu_\delta)}{(1 - \mu_{\tilde\phi_{1}})(1 - \mu_{\tilde\phi_{i'}})} \\
-  &\qquad\qquad + \mu_\eta\sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*} - \mu_{\tilde\phi_{i'}}^{t - T^*}\right\vert\mu_{\phi}^j + \sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,T^*-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',T^*-j}) \right\vert\mu_{\phi}^j \\
-  &\qquad\leq 2\gamma + 2\gamma\frac{\max(\mu_\delta)}{(1 - \mu_{\tilde\phi_{1}})(1 - \mu_{\tilde\phi_{i'}})} + \gamma\frac{\mu_{\eta}}{1 - \mu_{\phi}} + \sum_{j=0}^{\infty}\left\vert \mu_{\tilde\phi_{1}}^{t - T^*}(\mu_{\theta}'\x_{1,T^*-j}) - \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i',T^*-j}) \right\vert\mu_{\phi}^j \\
-  &\qquad\leq 2\gamma + 2\gamma\frac{\max(\mu_\delta)}{(1 - \mu_{\tilde\phi_{1}})(1 - \mu_{\tilde\phi_{i'}})} + \gamma\frac{\mu_{\eta}}{1 - \mu_{\phi}} + \gamma\frac{\max(\mu_\theta) + 1}{1 - \mu_\phi}, 
-\end{align*}  
-where the last inequality follows from Lemma~\ref{lem:absdiff}. We can choose $\gamma$ small enough so that $|\E(y_{1,t} - y_{i',t})| < \varepsilon$. A similar recursion for the variance yields 
-\begin{align*}
- &\left\vert \Var(y_{1,t}) - \Var(y_{i',t})\right\vert 
-   = \left\vert \x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1} + \x_{1,t}'\Sigma_{\tilde\theta_i}\x_{1,t} -   \x_{i',t}'\Sigma_{\tilde\theta_{i'}}\x_{i',t} \right. \\
-   &\qquad\left. + \mu_{\tilde\phi_1}^2\Var(y_{1,t-1}) - \mu_{\tilde\phi_{i'}}^2\Var(y_{i',t-1}) \right\vert \\
-   &\leq \left\vert \x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1} + \x_{1,t}'\Sigma_{\tilde\theta_i}\x_{1,t} -   \x_{i',t}'\Sigma_{\tilde\theta_{i'}}\x_{i',t}\right\vert \\
-   &\qquad + \left\vert\mu_{\tilde\phi_1}^2\Var(y_{1,t-1}) - \mu_{\tilde\phi_{i'}}^2\Var(y_{i',t-1})\right\vert \\
-   &= \left\vert \x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1} + \x_{1,t}'\Sigma_{\tilde\theta_1}\x_{1,t} -   \x_{i',t}'\Sigma_{\tilde\theta_{i'}}\x_{i',t}\right\vert \\
-   &\qquad + \left\vert \mu_{\tilde\phi_1}^2\left(\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2 + \x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} + \x_{1,t-1}'\Sigma_{\tilde\theta_1}\x_{1,t-1} + \mu_{\tilde\phi_1}^2\Var(y_{1,t-2})\right) \right.\\
-   &\qquad\qquad\left.- \mu_{\tilde\phi_{i'}}^2\left(\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2 + \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1} + \x_{i',t-1}'\Sigma_{\tilde\theta_{i'}}\x_{i',t-1} + \mu_{\tilde\phi_{i'}}^2\Var(y_{i',t-2})\right) \right\vert \\
-   &\leq \left\vert \x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1}\right\vert + \left\vert\x_{1,t}'\Sigma_{\tilde\theta_1}\x_{1,t} -   \x_{i',t}'\Sigma_{\tilde\theta_{i'}}\x_{i',t}\right\vert \\ 
-   &\qquad+ \left\vert \mu_{\tilde\phi_1}^2\left(\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2 + \x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} + \x_{1,t-1}'\Sigma_{\tilde\theta_1}\x_{1,t-1}\right) \right.\\
-   &\qquad\qquad\left.- \mu_{\tilde\phi_{i'}}^2\left(\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2 + \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1} + \x_{i',t-1}'\Sigma_{\tilde\theta_{i'}}\x_{i',t-1}\right) \right\vert \\
-   &\qquad + \left\vert \mu_{\tilde\phi_1}^4\Var(y_{1,t-2}) - \mu_{\tilde\phi_{i'}}^4\Var(y_{i',t-2}) \right\vert \\
-   &\leq \sum_{j=0}^{t - (T^* + 1)}\left[ \left\vert \mu_{\tilde\phi_1}^{2j}\x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \mu_{\tilde\phi_{i'}}^{2j}\x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1}\right\vert \right. \\
-   &\qquad\left. + \left\vert \mu_{\tilde\phi_1}^{2j}\x_{1,t-j}'\Sigma_{\tilde\theta_1}\x_{1,t-j} - \mu_{\tilde\phi_{i'}}^{2j}\x_{i',t-j}'\Sigma_{\tilde\theta_{i'}}\x_{i',t-j} \right\vert + \left\vert\mu_{\tilde\phi_1}^{2j} - \mu_{\tilde\phi_{i'}}^{2j}\right\vert(\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2)\right] \\
-   &\qquad + \left\vert \mu_{\tilde\phi_1}^{2(t - T^*)}\Var(y_{1,t - T^*}) - \mu_{\tilde\phi_{i'}}^{2(t - T^*)}\Var(y_{i',t - T^*}) \right\vert \\
-   &\leq \sum_{j=0}^{t - (T^* + 1)}\left[ \left\vert \mu_{\tilde\phi_1}^{2j} - \mu_{\tilde\phi_{i'}}^{2j}\right\vert \lambda_{\text{max}} +  \left\vert\x_{1,T^*+1}'\Sigma_\delta\x_{1,T^*+1} - \x_{i',T^*+1}'\Sigma_\delta\x_{i',T^*+1}\right\vert\mu_{\tilde\phi_1}^{2j} \right. \\
-   &\qquad\left. + \left\vert \mu_{\tilde\phi_1}^{2j} - \mu_{\tilde\phi_{i'}}^{2j}\right\vert \lambda_{\text{max}} +  \left\vert\x_{1,t-j}'\Sigma_{\tilde\theta_1}\x_{1,t-j} - \x_{i',t-j}'\Sigma_{\tilde\theta_{i'}}\x_{i',t-j}\right\vert\mu_{\tilde\phi_1}^{2j} + \left\vert\mu_{\tilde\phi_1}^{2j} - \mu_{\tilde\phi_{i'}}^{2j}\right\vert(\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2)\right] \\
-   &\qquad + \left\vert \mu_{\tilde\phi_1}^{2(t - T^*)}\sum_{j=0}^{T^*-1}\left(\sigma^2_\eta + \sigma^2 + \x_{1,T^*-j}'\Sigma_\theta\x_{1,T^*-j}\right)\mu_{\phi}^{2j} \right. \\ 
-   &\qquad\qquad\left. - \mu_{\tilde\phi_{i'}}^{2(t - T^*)}\sum_{j=0}^{T^*-1}\left(\sigma^2_\eta + \sigma^2 + \x_{i',T^*-j}'\Sigma_\theta\x_{i',T^*-j}\right)\mu_{\phi}^{2j} \right\vert \\
-   &\leq 2\gamma\frac{\lambda_{\max}}{(1 - \mu_{\tilde\phi_1}^{2})(1 - \mu_{\tilde\phi_{i'}}^{2})} + 2\gamma\frac{1}{1 - \mu_{\tilde\phi_1}^2} + \gamma\frac{\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2}{(1 - \mu_{\tilde\phi_1}^{2})(1 - \mu_{\tilde\phi_{i'}}^{2})} \\
-   &\qquad+ (\sigma^2_\eta + \sigma^2)\left\vert \mu_{\tilde\phi_1}^{2(t - T^*)} - \mu_{\tilde\phi_{i'}}^{2(t - T^*)} \right\vert\sum_{j=0}^{T^*-1}\mu_{\phi}^{2j} \\
-   &\qquad+ \sum_{j=0}^{2(t - T^*)}\left\vert \mu_{\tilde\phi_1}^{2(t - T^*)}\x_{1,T^*-j}'\Sigma_\theta\x_{1,T^*-j} - \mu_{\tilde\phi_{i'}}^{2(t - T^*)}\x_{i',T^*-j}'\Sigma_\theta\x_{i',T^*-j} \right\vert \mu_{\phi}^{2j} \\
-   &\leq 2\gamma\frac{\lambda_{\max}}{(1 - \mu_{\tilde\phi_1}^{2})(1 - \mu_{\tilde\phi_{i'}}^{2})} + 2\gamma\frac{1}{1 - \mu_{\tilde\phi_1}^2} + \gamma\frac{\sigma^2_\eta + \sigma^2_{\alpha}+ \sigma^2}{(1 - \mu_{\tilde\phi_1}^{2})(1 - \mu_{\tilde\phi_{i'}}^{2})} \\ 
-   &\qquad + \gamma\frac{\sigma^2_\eta + \sigma^2}{1 - \mu_\phi^2} + \gamma\frac{\lambda_{\max}}{1 - \mu_\phi^2} + \gamma\frac{1}{1 - \mu_\phi^2}
-   \end{align*}
-We can choose $\gamma$ small enough so that $|\Var(y_{1,t}) - \Var(y_{i',t})| < \varepsilon$.
-\end{proof}
-
-\begin{lem}[Technical Lemma 2] \label{lem:diffsig2noise}
-Let $a_j, b_j \in \R$, $j = 1,2$. Suppose that $b_j > b > 0$ for $j = 1,2$. Then for any $\varepsilon > 0$ we have 
-$$
-  \left\vert\frac{a_1}{b_1} - \frac{a_2}{b_2}\right\vert \leq \varepsilon,
-$$
-provided that $|a_1-a_2|$,$|b_1-b_2| < \delta$ for some chosen $\delta > 0$.
-\end{lem}
-
-\begin{proof}
-\begin{align*}
-  \left\vert\frac{a_1}{b_1} - \frac{a_2}{b_2}\right\vert 
-    &= \left\vert\frac{a_1b_2 - a_2b_1}{b_1b_2}\right\vert 
-    = \left\vert\frac{(a_1 - a_2 + a_2)(b_2 - b_1 + b_1) - a_2b_1}{b_1b_2}\right\vert \\
-    &= \left\vert \frac{a_1(b_2 - b_1) + a_2b_1 + (a_1 - a_2)b_1 - a_2b_1}{b_1b_2} \right\vert \leq \frac{2\delta}{b^2} \\
-    &\leq \frac{|a_1|\delta + |b_1|\delta}{b^2} \leq \varepsilon, 
-\end{align*}
-where $\delta \leq \varepsilon b^2/(|a_1| + |b_1|)$.
-\end{proof}
-
-
-
-\noindent\textbf{This needs some work (ignore for now)} Now consider a case where there exists a $2 \leq i' < n + 1$ where $\x_{1,t} = \x_{i',t}$. Now suppose for simplicity that $T^*_{j'} = T^*_1$ and that $T_{i'} = T_1$ where $T_1 > T^*_1 + q_1 + q_2 + 2$. This assumes that we have data for the first time series beyond the shock point. We will show that when there is a covariate clone of the time series under study, then estimation in this series will approximate estimation in the time series under study provided that the underlying variability is very small relative to the signal. To see this, consider $t > T^*_1$, where 
-\begin{align*}
-y_{1,t} &= \eta_1 + \mu_\alpha + \delta_1'\x_{1,T^*_1+1} + \sum_{j=1}^{q_1} (\phi_{1,j} + \tilde{\phi}_{1,j})y_{1,t-j} + \sum_{j=0}^{q_2-1}(\theta_{1,j+1} + \tilde{\theta}_{1,j+1})'\x_{1,t-j} + \tilde{\varepsilon}_{1} + \varepsilon_{1,t}, \\
-y_{i',t} &= \eta_{i'} + \mu_\alpha + \delta_{i'}'\x_{1,T^*_1+1} + \sum_{j=1}^{q_1} (\phi_{i',j} + \tilde{\phi}_{i',j})y_{i',t-j} + \sum_{j=0}^{q_2-1}(\theta_{i',j+1} + \tilde{\theta}_{i',j+1})'\x_{1,t-j} + \tilde{\varepsilon}_{i'} + \varepsilon_{i',t}, \\
-\hat y_{1,t} &= \hat \eta_1 + \hat{\alpha}_1(\x_{1,T^*_1+1}) + \sum_{j=1}^{q_1} (\hat{\phi}_{1,j} + \hat{\tilde{\phi}}_{1,j})\hat y_{1,t-j} + \sum_{j=0}^{q_2-1}(\hat\theta_{1,j+1} + \hat{\tilde{\theta}}_{1,j+1})'\hat\x_{1,t-j}, \\
-\hat y_{i',t} &= \hat\eta_{i'} + \hat{\alpha}_{i'}(\x_{1,T^*_1+1}) + \sum_{j=1}^{q_1} (\hat{\phi}_{i',j} + \hat{\tilde{\phi}}_{i',j})\hat y_{i',t-j} + \sum_{j=0}^{q_2-1}(\hat\theta_{i',j+1} + \hat{\tilde{\theta}}_{i',j+1})'\hat\x_{1,t-j}, 
-\end{align*}
-where $\alpha_j(\x) = \mu_\alpha + \delta_j'\x$, and we have 
-\begin{align*}
-  |y_{1,t} - \hat y_{1,t}| &= \Bigg\vert (\eta_1 - \hat\eta_1) + (\alpha_1 - \hat{\alpha}_1(\x_{1,T^*_1+1})) + \sum_{j=1}^{q_1}\left[(\phi_{1,j} + \tilde{\phi}_{1,j})y_{1,t-j} - (\hat\phi_{1,j} + \hat{\tilde{\phi}}_{1,j})\hat{y}_{1,t-j}\right] \\ 
-  &\qquad+ \sum_{j=0}^{q_2-1}\left[(\theta_{1,j+1} + \tilde{\theta}_{1,j+1})'\x_{1,t-j} - (\hat\theta_{1,j+1} + \hat{\tilde{\theta}}_{1,j+1})'\hat\x_{1,t-j}\right] + \varepsilon_{1,t} \Bigg\vert \\
-  |y_{i',t} - \hat y_{i',t}| &= \Bigg\vert (\eta_{i'} - \hat\eta_{i'}) + (\alpha_{i'} - \hat{\alpha}_{i'}(\x_{1,T^*_1+1})) + \sum_{j=1}^{q_1}\left[(\phi_{i',j} + \tilde{\phi}_{i',j})y_{i',t-j} - (\hat\phi_{i',j} + \hat{\tilde{\phi}}_{i',j})\hat{y}_{i',t-j}\right] \\ 
-  &\qquad+ \sum_{j=0}^{q_2-1}\left[(\theta_{i',j+1} + \tilde{\theta}_{i',j+1})'\x_{1,t-j} - (\hat\theta_{i',j+1} + \hat{\tilde{\theta}}_{i',j+1})'\hat\x_{1,t-j}\right] + \varepsilon_{i',t} \Bigg\vert.
-\end{align*}
-\textbf{Needs finishing, but the argument is simple: estimation uncertainty declines as error variance decreases. And differences in the random effects decrease as variability decreases.} \vspace*{0.5cm}
-
-
-
-%\begin{lem}[Technical Lemma 2] \label{lem1}
-%	Let $a_j, b_j \in \R$, $j = 1,2$, and $C > 0$ be such that $C \leq a_j/b_j \leq 2C$, $j = 1,2$. Further suppose that 
-%	$$
-%	  \frac{|a_1 - a_2|}{a_1 + a_2} < \frac{\varepsilon}{2C},
-%	$$
-%	for some $\varepsilon > 0$. Then 
-%	$$
-%	  \frac{|a_1 - a_2|}{b_1 + b_2} < \varepsilon.
-%	$$
-%\end{lem}
-
-%\begin{proof}
-%Observe that 
-%$$
-%  |a_1 - a_2| < \frac{\varepsilon(a_1 + a_2)}{2C} 
-%	  = \frac{\varepsilon(b_1(a_1/b_1) + b_2(a_2/b_2))}{2C} 
-%	  \leq \frac{\varepsilon(2b_1C + 2b_2C)}{2C} 
-%	  = \varepsilon(b_1 + b_2).
-%$$
-%The conclusion immediately follows from the above.
-%\end{proof}
-
-%\begin{prop} \label{prop:signaltonoisediff}
-%	Suppose the conditions of Proposition~\ref{prop:signaltonoise} where $C$ is chosen so that 
-%	\begin{equation} \label{signal-to-noise2}
-%	  C \leq \frac{\E(y_{i,t})}{\Var(y_{i,t})} \leq 2C,
-%	\end{equation}
-%	for all $i$ and $1 \leq t \leq T$. Let $2 < i' < n + 1$ be the index of a time series in the donor pool for which CONDITIONS then for some $\varepsilon > 0$ we have 
-%	$$
-%	  \frac{\left|\E(y_{i,t} - y_{i',t})\right|}{\Var(y_{i,t} - y_{i',t})} < \varepsilon
-%	$$
-%\end{prop}
-
-%\begin{proof}
-%	First suppose that we have 
-%	\begin{equation} \label{prop:cond}
-%	  \frac{\left|\E(y_{i,t} - y_{i',t})\right|}{\E(y_{i,t} + y_{i',t})} \leq \frac{\varepsilon}{2C}.		
-%	\end{equation}
-%	Then Lemma~\ref{lem:absdiff} combined with the assumed conditions imply the conclusion of this proposition. We now verify that \eqref{prop:cond} holds.
-%Suppose that:
+%Similarly, on $E$, we have 
 %\begin{align*}
-%  |\mu_\delta'\x_{1,T^*+1} - \mu_\delta'\x_{i',T^*+1}| &< \gamma \\
-%  |\mu_{\tilde\theta_1}'\x_{1,T^*+1} - \mu_{\tilde\theta_{i'}}'\x_{i',T^*+1}| &< \gamma \\
-%  \left\vert\mu_{\tilde\theta_{1}}'\x_{1,t} - \mu_{\tilde\theta_{i'}}'\x_{i',t}\right\vert &< \gamma, \qquad \text{for all} \; t \\
-%  |\mu_{\tilde\phi_1}^j - \mu_{\tilde\phi_{i'}}^j| &< \gamma, \qquad \text{for all} \; j \\
-%  \mu_\delta'\x_{1,T^*+1} + \mu_\delta'\x_{i',T^*+1} &> D
+%	|y_{1,T^*} - y_{i',T^*}| &= |()|
 %\end{align*}
-%Similarly, 
-%\begin{align*}
-%	&\E(y_{i,t} + y_{i',t}) = \sum_{j=0}^{t - (T^*+1)}\left[\left(\mu_{\tilde\phi_{i}}^j(\mu_\delta'\x_{i,T^*+1}) + \mu_{\tilde\phi_{i'}}^j(\mu_\delta'\x_{i',T^*+1})\right) + \mu_{\tilde\phi_{i}}^j(\mu_{\tilde\theta_{i}}'\x_{i,T^*+1}) + \mu_{\tilde\phi_{i'}}^j(\mu_{\tilde\theta_{i'}}'\x_{i',T^*+1})\right] \\
-%		&\qquad + \sum_{j=0}^{T^* - 1}\left[\mu_\eta(\mu_{\tilde\phi_{i}}^{t - T^*} + \mu_{\tilde\phi_{i'}}^{t - T^*})\mu_{\phi}^j + \left(\mu_{\tilde\phi_{i}}^{t - T^*}(\mu_{\theta}'\x_{i,t-j}) + \mu_{\tilde\phi_{i'}}^{t - T^*}(\mu_{\theta}'\x_{i,t-j})\right)\mu_{\phi}^j\right].
-%\end{align*}
-%\end{proof}
+\textcolor{red}{We should consider differencing, then the difference $|y_{1,t} - y_{1,t-1}|$ should be close to the difference $|y_{i',t} - y_{i',t-1}|$ for all $t > T^*$}
+
+
+
+\vspace*{0.5cm}\noindent Get: $|y_{1,t} - y_{i',t}| < \varepsilon_1$ where we have $\|\x_{1,t} - \x_{i',t}\| < \varepsilon_1$
+
+\vspace*{0.5cm}\noindent Next: OLS solution for post-shock dynamics $(X_{i'}'X_{i'})^{-1}X_{i'}'Y_{i'}$ is just a perturbation of OLS solution for post-shock dynamics $(X_1'X_1)^{-1}X_1'Y_1$ 
+
+\vspace*{0.5cm}\noindent Next: $|\hat{y}_{1,t}^h - \hat{y}_{i',t}^h|$ should be small for $t > T^*$
+
+\vspace*{0.5cm}\noindent Next: loss differential $\|\dbf_{1,t} - \dbf_{i',t}\|$ should be small for $t > T^*$.
+
+\vspace*{0.5cm}\noindent Finally: bootstrapping $\dbf_{i',t}$ in place of $\dbf_{1,t}$ should yield the same conclusions. \\
 
 
 
 
-%Let 
-%$$
-%  \rho_\text{min} = \min\left\{
-%    \frac{\mu_\eta}{\sigma^2_\eta}, 
-%    \frac{\|\mu_{\delta}\|}{\|\Sigma_\delta\|},
-%    \frac{\|\mu_{\theta}\|}{\|\Sigma_\theta\|},
-%    \frac{\|\mu_{\phi}\|}{\|\Sigma_\phi\|},
-%    \frac{\|\mu_{\tilde\theta}\|}{\|\Sigma_{\tilde{\theta}}\|},
-%    \frac{\|\mu_{\tilde\phi}\|}{\|\Sigma_{\tilde{\phi}}\|}             
-%  \right\},
-%$$
-%and let
-%$$
-%  \rho_\text{max} = \max\left\{
-%    \frac{\mu_\eta}{\sigma^2_\eta}, 
-%    \frac{\|\mu_{\delta}\|}{\|\Sigma_\delta\|},
-%    \frac{\|\mu_{\theta}\|}{\|\Sigma_\theta\|},
-%    \frac{\|\mu_{\phi}\|}{\|\Sigma_\phi\|},
-%    \frac{\|\mu_{\tilde\theta}\|}{\|\Sigma_{\tilde{\theta}}\|},
-%    \frac{\|\mu_{\tilde\phi}\|}{\|\Sigma_{\tilde{\phi}}\|}             
-%  \right\}.
-%$$
 
 
 
+\textbf{Notes}:
+$$
+\begin{pmatrix}
+	0 & t & T^* + (t-T^*) \\
+	1 & t-1 & T^* + (t-T^*-1) \\
+	2 & t-2 & T^* + (t-T^*-2) \\
+	 \vdots & \vdots \\
+	t-T^*-1 & t- (t-T^*-1) = T^*+1 & T^* + (t-T^*- (t-T^*-1) )	\\ 
+	t-T^* & t- (t-T^*) = T^* & T^* + (t-T^*- (t-T^*) )
+\end{pmatrix}
+$$
 
+$$
+D_{t} = I(t \geq T^*+1)
+$$
+
+\begin{align*}
+	&|(y_{1,t+1} - y_{1,t}) - (y_{i',t+1} - y_{i',t})| \\ 
+	&= |(\delta_1'\x_{1,T^*+1} + \tilde\phi_1 y_{1,t} + \tilde\theta'\x_{1,t+1} - y_{1,t} + \varepsilon_{1,t+1}) - (\delta_{i'}'\x_{i',T^*+1} + \tilde\phi_{i'} y_{i',t} + \tilde\theta'\x_{i',t+1} - y_{i',t} + \varepsilon_{i',t+1})| \\
+	&= |(\delta_1'\x_{1,T^*+1} - \delta_{i'}'\x_{i',T^*+1}) 
+	  + (\tilde\theta'\x_{1,t+1} - \tilde\theta'\x_{i',t+1}) 
+	  + (\varepsilon_{1,t+1} - \varepsilon_{i',t+1}) + ((\tilde\phi_1 - 1) y_{1,t} - (\tilde\phi_{i'} - 1) y_{i',t})|
+\end{align*}
+
+
+\begin{align*}
+	&|(y_{1,t+1} - y_{1,t}) - (y_{1,t} - y_{1,t-1})| \\ 
+	&= |(\delta_1'\x_{1,T^*+1} + \tilde\phi_1 y_{1,t} + \tilde\theta'\x_{1,t+1} - y_{1,t} + \varepsilon_{1,t+1}) - (\delta_{i'}'\x_{i',T^*+1} + \tilde\phi_{i'} y_{i',t} + \tilde\theta'\x_{i',t+1} - y_{i',t} + \varepsilon_{i',t+1})| \\
+	&= |(\delta_1'\x_{1,T^*+1} - \delta_{i'}'\x_{i',T^*+1}) 
+	  + (\tilde\theta'\x_{1,t+1} - \tilde\theta'\x_{i',t+1}) 
+	  + (\varepsilon_{1,t+1} - \varepsilon_{i',t+1}) + ((\tilde\phi_1 - 1) y_{1,t} - (\tilde\phi_{i'} - 1) y_{i',t})|
+\end{align*}
 
 
 
