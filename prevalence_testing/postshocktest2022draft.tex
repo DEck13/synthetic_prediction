@@ -281,7 +281,7 @@ We see that model \eqref{model-gen} with its accompanying random effects structu
 
 The post-shock dynamic changes depend heavily on the value of $\mbf{x}_{i,T_i^*+1}$, the covariates recorded right before the first post-shock response is observed. Under this setup any two series $i,j$ with small $\|\mbf{x}_{i,T_i^*+1} - \mbf{x}_{j,T_i^*+1}\|_2$ are expected to experience similar structural changes. This makes distance based weighting an attractive avenue.
 
-\textcolor{red}{Next, we define the $h$-step forecast for $\mc{M}$, which plays an essential role in the framework of \citet{quaedvlieg2021multi}. Denote $h$-step forecast for $y_{i,t}$ by $\hat{y}_{i,t}^h$. Let the ordinary least squares (OLS) estimate for
+Next, we define the $h$-step forecast for $\mc{M}$, which plays an essential role in the framework of \citet{quaedvlieg2021multi}. Denote $h$-step forecast for $y_{i,t}$ by $\hat{y}_{i,t}^h$. Let the ordinary least squares (OLS) estimate for
 \begin{align*}
 	\{(\eta_i, \alpha_i, \phi_{i,j_1}, \bs{\theta}_{i,j_2}, \tilde{\phi}_{i,j_1}, \tilde{\bs{\theta}}_{i,j_2}) \colon i = 2, \ldots, n+1, j_1 = 1, \ldots, q_1, j_2 = 1, \ldots, q_2\}
 \end{align*}
@@ -294,7 +294,7 @@ Based on the training data $\{(\mbf{x}_{i, t}, y_{i,t}) \colon i = 2, \ldots, n+
  	\hat{y}_{i,t}^h &= \left(\hat{\eta}_i + \sum_{j=1}^{q_1}\hat{\phi}_{i,j}\hat{y}^{h-j}_{i, t-j} + \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}\hat{\bs{\theta}}_{i,j+1}\right)(1 - D_{i,t}) + f(\hat{\mathcal{F}}_{i,t},\hat{\alpha}_i)D_{i,t} ,\\[.2cm]
   \; f(\hat{\mc{F}}_{i,t},\hat{\alpha}_i ) &= \hat{\alpha}_i +  \sum_{j=1}^{q_{1}}\hat{\tilde{\phi}}_{i,j} \hat{y}^{h-j}_{i, t-j}+ \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}\hat{\tilde{\bs{\theta}}}_{i,j+1},
  \end{align*}
- where it is allowed that $t> T_i$, and we set $\hat{y}^{s}_{i, t}=y_{i,t}$ for $t \leq T_i$ and $s\leq 0$. This definition is in line with  that of  the iterated $h$-step ahead forecast  in the time series literature.}
+ where it is allowed that $t> T_i$, and we set $\hat{y}^{s}_{i, t}=y_{i,t}$ for $t \leq T_i$ and $s\leq 0$. This definition is in line with  that of  the iterated $h$-step ahead forecast  in the time series literature (\textcolor{red}{either provide a citation or remove this sentence}).
  
 
 
@@ -569,20 +569,25 @@ $
 $
 for all $T^* < t \leq T $. 
 
-Now let $\varepsilon_3 = \max(\varepsilon_1,\varepsilon_2)$ so that $|y_{1,t} - \tilde{y}_{i',t}| < \varepsilon_3$ and $\|\x_{1,t} - \x_{i',t}\| < \varepsilon_3$. Let $\tilde{\beta}$ be the OLS solution of model parameters with respect to the $\tilde{y}_{i',t}$ series, and let $\hat{\beta}$ be the OLS solution of model parameters with respect to the $y_{1,t}$ series. On $E$, these estimates will be very close to each other. We use Theorem 2.7.2 in \cite{golub1996matrix} to construct an explicit bound on $\|\tilde{\beta} - \hat{\beta}\|$. Following the notation of Section 2.7 in \cite{golub1996matrix} we will let $A$ be the design matrix with respect to the $y_{1,t}$ series so that $A\hat{\beta} = \mathbf{y}_1$ where $\mathbf{y}_1 = (y_{1,1}, \ldots, y_{1,T})'$, $\kappa(A) = \|A\|\|A^{-1}\|$ be the condition number of $A$ where $\|\cdot\|$ is a matrix norm, and we will specify that $r = \varepsilon_4 \kappa(A)$ where $\varepsilon_4$ can be chosen so that $r < 1$. We will also specify that $\varepsilon_3$ is chosen so that $\|\Delta A\| \leq \varepsilon_4\|A\|$ where $\Delta A = \widetilde{A} - A$ and $\widetilde{A}$ is the design matrix with respect to the $\tilde{y}_{i',t}$ series. Theorem 2.7.2 in \cite{golub1996matrix} states that 
+Now let $\varepsilon_3 = \max(\varepsilon_1,\varepsilon_2)$ so that 
+\begin{equation} \label{bounds}
+	|y_{1,t} - \tilde{y}_{i',t}| < \varepsilon_3, \; \text{and} \; \|\x_{1,t} - \x_{i',t}\| < \varepsilon_3.
+\end{equation}
+
+Let $\tilde{\beta}$ be the OLS solution of model parameters with respect to the $\tilde{y}_{i',t}$ series, and let $\hat{\beta}$ be the OLS solution of model parameters with respect to the $y_{1,t}$ series. On $E$, these estimates will be very close to each other. We use Theorem 2.7.2 in \cite{golub1996matrix} to construct an explicit bound on $\|\tilde{\beta} - \hat{\beta}\|$. Following the notation of Section 2.7 in \cite{golub1996matrix} we will let $A$ be the design matrix with respect to the $y_{1,t}$ series so that $A\hat{\beta} = \mathbf{y}_1$ where $\mathbf{y}_1 = (y_{1,1}, \ldots, y_{1,T})'$, $\kappa(A) = \|A\|\|A^{-1}\|$ be the condition number of $A$ where $\|\cdot\|$ is a matrix norm, and we will specify that $r = \varepsilon_4 \kappa(A)$ where $\varepsilon_4$ can be chosen so that $r < 1$. We will also specify that $\varepsilon_3$ is chosen so that $\|\Delta A\| \leq \varepsilon_4\|A\|$ where $\Delta A = \widetilde{A} - A$ and $\widetilde{A}$ is the design matrix with respect to the $\tilde{y}_{i',t}$ series. Theorem 2.7.2 in \cite{golub1996matrix} states that 
 \begin{equation}\label{OLSbound}
   \|\tilde{\beta} - \hat{\beta}\| \leq \frac{2\varepsilon_4}{1-r}\kappa(A)\|\hat{\beta}\|.	
 \end{equation}
 We can bound $\kappa(A)$ and $\hat{\beta}$ on $E$ which allows one to choose $\varepsilon_5$ so that \eqref{OLSbound} is $\|\tilde{\beta} - \hat{\beta}\| < \varepsilon_5$. 
 
-We now show that we can bound $|\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}|$ for $t+h > T^*$. We restrict attention to the case where $t+h > T^*$ because when $t+h \leq T^*$ the two competing forecasts $\hat{y}_{i,t}^{1,h}$ and $\hat{y}_{i,t}^{2,h}$ are the same in our setting for all $i$. Let $t+h > T^*$, then
+We now show that we can bound $|\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}|$ for $t+h > T^*$. We restrict attention to the case where $t+h > T^*$ because when $t+h \leq T^*$ the two competing forecasts $\hat{y}_{i,t}^{1,h}$ and $\hat{y}_{i,t}^{2,h}$ are the same in our setting for all $i$. Let $t+h > T^*$, then, when $t > T^*$,
 \begin{align*}
   &|\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}| = |(\hat\eta_1 - \hat{\eta}_{i'}) + (\hat\alpha_1 - \hat\alpha_{i'}) + (\hat{\tilde{\phi}}_1 \hat{y}_{1,t-1}^{1,h-1} -  \hat{\tilde{\phi}}_{i'} \hat{y}_{i',t-1}^{1,h-1}) + (\hat{\tilde{\theta}}_1' \x_{1,t} - \hat{\tilde{\theta}}_{i'}' \x_{i',t})| \\
   &\qquad \leq 2\varepsilon_5 + |\hat{\tilde{\theta}}_1' \x_{1,t} - \hat{\tilde{\theta}}_{i'}' \x_{i',t}| + |\hat{\tilde{\phi}}_1 \hat{y}_{1,t-1}^{1,h-1} -  \hat{\tilde{\phi}}_{i'} \hat{y}_{i',t-1}^{1,h-1}| \\
   &\qquad \leq 2\varepsilon_5 + \|\x_{1,t}\|\|\hat{\tilde{\theta}}_1 - \hat{\tilde{\theta}}_{i'}\| + \|\hat{\tilde{\theta}}_{i'}\| \|\x_{1,t} - \x_{i',t}\| + \|\hat{y}_{1,t-1}^{1,h-1}\| |\hat{\tilde{\phi}}_1 - \hat{\tilde{\phi}}_{i'}\| + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1} | \\
   &\qquad \leq 2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + \|\hat{y}_{1,t-1}^{1,h-1}\|\varepsilon_5 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1} |.
 \end{align*}
-On $E$ we can bound $|\hat{y}_{1,t-1}^{1,h-1}|$ for all $h=1,\ldots,H$ and $t=1,\ldots,T$, call this bound $M_1$. Let $\varepsilon_6 = (2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + M_1\varepsilon_5)$. Then, 
+On $E$ we can bound $|\hat{y}_{1,t-1}^{1,h-1}|$ for all $h=1,\ldots,H$ and $t=1,\ldots,T$, call this bound $M_1$. Let $\varepsilon_6 = (2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + M_1\varepsilon_5)$. Then,
 \begin{align*}
   &|\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}| \leq 2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + |\hat{y}_{1,t-1}^{1,h-1}|\varepsilon_5 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1}| \\
   &\qquad \leq (2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + M_1\varepsilon_5) + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1}| \\
@@ -595,20 +600,19 @@ On $E$ we can bound $|\hat{y}_{1,t-1}^{1,h-1}|$ for all $h=1,\ldots,H$ and $t=1,
 Let $\varepsilon_7 = \max_{h = 1,\ldots,H}\left(\varepsilon_6 \sum_{j=0}^h |\hat{\tilde{\phi}}_{i'}|^j + |\hat{\tilde{\phi}}_{i'}|^h\varepsilon_3\right)$ 
 and conclude that 
 \begin{equation} \label{forecastbounds}
-  |\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}| < \varepsilon_7	
+  |\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}| < \varepsilon_7,	
 \end{equation}
-for all $t = 1,\ldots,T$ and all $h=1,\ldots,H$ such that $t+h > T^*$ on the event $E$. A similar argument with similar bounding choices can be made so that $|\hat{y}_{1,t}^{2,h} - \hat{\tilde{y}}_{i',t}^{2,h}| < \varepsilon_7$.
+for all $t = 1,\ldots,T$ and all $h=1,\ldots,H$ such that $t+h > T^*$ on the event $E$. A similar argument with similar bounding choices to those which yielded \eqref{forecastbounds} can be made when $t+h > T^*$ and $t \leq T^*$. A similar argument with similar bounding choices to those which yielded \eqref{forecastbounds} can be made so that $|\hat{y}_{1,t}^{2,h} - \hat{\tilde{y}}_{i',t}^{2,h}| < \varepsilon_7$.
+
+We now bound the difference in loss differential vectors $\|\dbf_{1,t} - \dbf_{i',t}\|$ for $t > T^*$ when we specify the loss $L(a,b) = |a-b|$. The loss differential vector $\dbf_{1,t} \in \R^H$ has elements $|y_{1,t} - \hat{y}^{1,h}_{1,t}| - |y_{1,t} - \hat{y}^{2,h}_{1,t}|$. What we have showed so far in \eqref{bounds} and \eqref{forecastbounds} allows us to write
+$$
+  |y_{1,t} - \hat{y}^{1,h}_{1,t}| - |y_{1,t} - \hat{y}^{2,h}_{1,t}| \leq |\tilde{y}_{i',t} - \hat{\tilde{y}}^{i',h}_{1,t}| - |\tilde{y}_{i',t} - \hat{\tilde{y}}^{2,h}_{1,t}| + 2(\varepsilon_3 + \varepsilon_7).
+$$
+Let $\varepsilon_8 = 2(\varepsilon_3 + \varepsilon_7)$ and conclude that $\|\dbf_{1,t} - \dbf_{i',t}\| \leq \varepsilon_8$ on $E$.
 
 
-\vspace*{0.5cm}\textcolor{red}{Based on the training data $\{(\mbf{x}_{i, t}, y_{i,t}) \colon i = 2, \ldots, n+1, t = 1, \ldots, T_i\}$, for $h = 1, \ldots, H$, the $h$-step forecast $\hat{y}_{i,t}^h$ is defined as
- \begin{align*}
- 	\hat{y}_{i,t}^h &= \left(\hat{\eta}_i + \sum_{j=1}^{q_1}\hat{\phi}_{i,j}\hat{y}^{h-j}_{i, t-j} + \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}\hat{\bs{\theta}}_{i,j+1}\right)(1 - D_{i,t}) + f(\hat{\mathcal{F}}_{i,t},\hat{\alpha}_i)D_{i,t} ,\\[.2cm]
-  \; f(\hat{\mc{F}}_{i,t},\hat{\alpha}_i ) &= \hat{\alpha}_i +  \sum_{j=1}^{q_{1}}\hat{\tilde{\phi}}_{i,j} \hat{y}^{h-j}_{i, t-j}+ \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}\hat{\tilde{\bs{\theta}}}_{i,j+1},
- \end{align*}
- where it is allowed that $t> T_i$, and we set $\hat{y}^{s}_{i, t}=y_{i,t}$ for $t \leq T_i$ and $s\leq 0$. This definition is in line with  that of  the iterated $h$-step ahead forecast  in the time series literature.}
 
 
-\vspace*{0.5cm}\noindent Next: loss differential $\|\dbf_{1,t} - \dbf_{i',t}\|$ should be small for $t > T^*$.
 
 \vspace*{0.5cm}\noindent Finally: bootstrapping $\dbf_{i',t}$ in place of $\dbf_{1,t}$ should yield the same conclusions. \\
 
@@ -618,17 +622,17 @@ for all $t = 1,\ldots,T$ and all $h=1,\ldots,H$ such that $t+h > T^*$ on the eve
 
 
 
-\textbf{Notes}:
-$$
-\begin{pmatrix}
-	0 & t & T^* + (t-T^*) \\
-	1 & t-1 & T^* + (t-T^*-1) \\
-	2 & t-2 & T^* + (t-T^*-2) \\
-	 \vdots & \vdots \\
-	t-T^*-1 & t- (t-T^*-1) = T^*+1 & T^* + (t-T^*- (t-T^*-1) )	\\ 
-	t-T^* & t- (t-T^*) = T^* & T^* + (t-T^*- (t-T^*) )
-\end{pmatrix}
-$$
+%\textbf{Notes}:
+%$$
+%\begin{pmatrix}
+%	0 & t & T^* + (t-T^*) \\
+%	1 & t-1 & T^* + (t-T^*-1) \\
+%	2 & t-2 & T^* + (t-T^*-2) \\
+%	 \vdots & \vdots \\
+%	t-T^*-1 & t- (t-T^*-1) = T^*+1 & T^* + (t-T^*- (t-T^*-1) )	\\ 
+%	t-T^* & t- (t-T^*) = T^* & T^* + (t-T^*- (t-T^*) )
+%\end{pmatrix}
+%$$
 
 
 
