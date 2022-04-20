@@ -245,7 +245,7 @@ where $\hat p_i = \Prob(t_{i,\alpha} < t_{i,\text{aSPA}})$ and $t_{i,\alpha}$ is
 We now describe the assumed autoregressive models with random effects for which post-shock aggregated estimators are provided. The model $\mc{M}$ is defined as
 \begin{align}
 \mc{M} \colon \begin{array}{l}
-  y_{i,t} = \left(\eta_i + \sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j}\right)(1 - D_{i,t}) + f(\mathcal{F}_{i,t},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
+  y_{i,t} = \eta_i + \left(\sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j}\right)(1 - D_{i,t}) + f(\mathcal{F}_{i,t},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
   \; f(\mc{F}_{i,t},\alpha_i) = \alpha_i +  \sum_{j=1}^{q_{1}}\t\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\t\theta_{i,j+1}'\mbf{x}_{i,t-j}, \\[.2cm]
   \; \alpha_i = \mu_{\alpha} + \delta_i'\mbf{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
   %\sum_{j=1}^{q_3}\delta_{i,j}'\mbf{x}_{i, T_i^*-j+1}+ \t{\varepsilon}_{i}, 
@@ -281,7 +281,7 @@ We see that model \eqref{model-gen} with its accompanying random effects structu
 
 The post-shock dynamic changes depend heavily on the value of $\mbf{x}_{i,T_i^*+1}$, the covariates recorded right before the first post-shock response is observed. Under this setup any two series $i,j$ with small $\|\mbf{x}_{i,T_i^*+1} - \mbf{x}_{j,T_i^*+1}\|_2$ are expected to experience similar structural changes. This makes distance based weighting an attractive avenue.
 
-\textcolor{red}{Next, we define the $h$-step forecast for $\mc{M}$, which plays an essential role in the framework of \citet{quaedvlieg2021multi}. Denote $h$-step forecast for $y_{i,t}$ by $\hat{y}_{i,t}^h$. Let the OLS estimate for
+\textcolor{red}{Next, we define the $h$-step forecast for $\mc{M}$, which plays an essential role in the framework of \citet{quaedvlieg2021multi}. Denote $h$-step forecast for $y_{i,t}$ by $\hat{y}_{i,t}^h$. Let the ordinary least squares (OLS) estimate for
 \begin{align*}
 	\{(\eta_i, \alpha_i, \phi_{i,j_1}, \bs{\theta}_{i,j_2}, \tilde{\phi}_{i,j_1}, \tilde{\bs{\theta}}_{i,j_2}) \colon i = 2, \ldots, n+1, j_1 = 1, \ldots, q_1, j_2 = 1, \ldots, q_2\}
 \end{align*}
@@ -477,7 +477,7 @@ For each donor $\mc{T}_i$, $i = 2, \ldots, n+1$, to compare adjusted and unadjus
  
  Even if the data contain shock information for each donor, it is impossible to compute the adjusted conditional mean forecast based on $\mathcal{F}_{i, t-h}$ when $t -h \leq T_i^*$, i.e., we only have training data that do no have any shock information. Note that this is not a big problem when $t-h \geq T_i^* +1$ because  $\mathcal{F}_{i, t-h}$ starts to incorporate shock information. In the literature, \cite{lin2021minimizing} utilizes donor pool information to provide an consistent estimator of the shock effect such that the adjusted  conditional mean forecast is the unadjusted one plus the shock effect estimate. However, the consistent estimation comes with the cost of assuming certain models (in terms of first and second moments) for the shock effect across the donor pool and the method only works for additive shock effect model.  To our best knowledge, there  is no other available methods that can accommodate the case when the shock model is nonlinear. However, even if the model is misspecified, using additive shock effect model to approximate the scalar shock effect that occurs at $t=T_i^*+1$ may still help as opposed to doing nothing. 
  
- With the presence of autoregressive parameters in some models, unbiased estimation with OLS  is not feasible but the bias is $O(T^{-1})$, where $T$ is the time series length \citep{shaman1988bias}. In this paper, we use the OLS estimates to approximate the adjusted conditional mean forecast and unadjusted one. The bias decades away as $T\to \infty$.
+ With the presence of autoregressive parameters in some models, unbiased estimation with OLS is not feasible but the bias is $O(T^{-1})$, where $T$ is the time series length \citep{shaman1988bias}. In this paper, we use the OLS estimates to approximate the adjusted conditional mean forecast and unadjusted one. The bias decades away as $T\to \infty$.
 
 
 
@@ -487,7 +487,7 @@ For each donor $\mc{T}_i$, $i = 2, \ldots, n+1$, to compare adjusted and unadjus
 \textbf{Repeating for reference}:
 \begin{align}
 \mc{M} \colon \begin{array}{l}
-  y_{i,t} = \left(\eta_i + \sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j}\right)(1 - D_{i,t}) + f(\mathcal{F}_{i,t},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
+  y_{i,t} = \eta_i + \left(\sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j}\right)(1 - D_{i,t}) + f(\mathcal{F}_{i,t},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
   \; f(\mc{F}_{i,t},\alpha_i) = \alpha_i +  \sum_{j=1}^{q_{1}}\t\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\t\theta_{i,j+1}'\mbf{x}_{i,t-j}, \\[.2cm]
   \; \alpha_i = \mu_{\alpha} + \delta_i'\mbf{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
   %\sum_{j=1}^{q_3}\delta_{i,j}'\mbf{x}_{i, T_i^*-j+1}+ \t{\varepsilon}_{i}, 
@@ -526,43 +526,87 @@ We first present some intermediary technical results and definitions. Let $\lamb
   \lambda_{\max} &= \max\left(\lambda_{\text{max},\theta_k}, \lambda_{\text{max},\theta_\delta}, \lambda_{\text{max},\gamma}; k = 1,\ldots,q_2\right), \\
   \sigma^2_{\max} &= \max\left(\sigma^2_{\eta},\sigma^2_{\phi_j},\sigma^2_i,\sigma^2_{\alpha},\sigma^2_{\tilde{\phi}_j}; i = 1,\ldots,n+1, j = 1,\ldots,q_1\right),
 \end{align*}
-and let $\sigma^2 = \max(\lambda_{\max}, \sigma^2_{\max})$. Now arbitrarily choose $\varepsilon > 0$ and fix $i'$ where we suppose that $\|\x_{1,t} - \x_{i',t}\| < \varepsilon_1$ for all $t$ where $\varepsilon_1$ will be selected later. Pick some large $M > 0$. Fix $T = T_1 = T_{i'}$ and $T^* = T^*_1 = T^*_{i'}$. Define the events 
+and let $\sigma^2 = \max(\lambda_{\max}, \sigma^2_{\max})$. Now fix $i'$ where we suppose that $\|\x_{1,t} - \x_{i',t}\| < \varepsilon_1$ for all $t$ and some choice of $\varepsilon_1$. Pick some large $M > 0$. Fix $T = T_1 = T_{i'}$ and $T^* = T^*_1 = T^*_{i'}$. Define the events 
 \begin{align*}
-  E_1 := &\left\{\max\left(|\eta_1 - \eta_{i'}|,|\phi_{1,j}-\phi_{i',j}|,\|\theta_{1,k} - \theta_{i',k}\|,\|\delta_1 - \delta_{i'}\|,|\tilde\phi_{1,j}-\tilde\phi_{i',j}|,\|\tilde\theta_{1,k}-\tilde\theta_{i',k}\|,|\tilde\varepsilon_t|\right) < \varepsilon_1:\right. \\
+  E_1 := &\left\{\max\left(|\|\delta_1 - \delta_{i'}\|,|\tilde\phi_{1,j}-\tilde\phi_{i',j}|,\|\tilde\theta_{1,k}-\tilde\theta_{i',k}\|,|\tilde\varepsilon_t|\right) < \varepsilon_1:\right. \\
   &\qquad j = 1,\ldots,q_1, k = 1,\ldots,q_2, t = 1,\ldots,T \left.\right\}, \\
-  E_2 := &\{\|(\bm{\eta}',\bm{\phi}',\bm{\theta}',\bm{\delta}',\tilde{\bm{\phi}}',\tilde{\bm{\theta}}')\|_\infty < M\},
+  E_2 := &\{\|(\bm{\eta}',\bm{\phi}',\bm{\theta}',\bm{\delta}',\tilde{\bm{\phi}}',\tilde{\bm{\theta}}')\|_\infty < M\},  
 \end{align*}
 where $\tilde\varepsilon_t = \varepsilon_{1,t} - \varepsilon_{i',t} + D_{i,t}(\varepsilon_{\alpha,1} - \varepsilon_{\alpha,i'})$ and $\bm{\eta},\bm{\phi},\bm{\theta},\bm{\delta},\tilde{\bm{\phi}}$, and $\tilde{\bm{\theta}}$ are vectors containing the random effects in \eqref{random-effects} for indices $1$ and $i'$, and we take $\|\bm{a}\|_\infty = \max_j(|a_j|)$ . We will also suppose that $\|\x_{j,t}\|_\infty < M$ for $j \in \{1,i'\}$ and all $t = 1,\ldots,T$. Note that both $\Prob(E_1^C) \to 0$ and $\Prob(E_2^C) \to 0$  as $\sigma^2 \to 0$ with $T$ and $n$ fixed. For simplicity we will set $q_1 = q_2 = 1$. 
 
-Conditional on $E = E_1 \cup E_2$, we first consider the recursion of $|y_{1,t} - y_{i',t}|$ for $t > T^*$,
+For all $t > T^*$ let $\tilde y_{i',t}$ possess the same dynamics as $y_{i',t}$ except that this process is shifted in a manner to reflect how $y_{i,t}$ changes for all $t > T^*$. More formally, we will let 
+$$
+  \tilde y_{i',t} = \left\{\begin{array}{cc}
+  y_{i,t} & \text{when} \; t < T^*+1; \\ 
+  \eta_1 + \mu_\alpha + \delta_{i'}' \x_{i',T^*+1} + \tilde\phi_{i',t}y_{1,t} + \tilde\theta_{i'}'\x_{i',t} + \varepsilon_{i',t} + \varepsilon_{\alpha,i'} & \text{when} \; t = T^* + 1; \\
+  \eta_1 + \mu_\alpha + \delta_{i'}' \x_{i',T^*+1} + \tilde\phi_{i',t}\tilde y_{i',t} + \tilde\theta_{i'}'\x_{i',t} + \varepsilon_{i',t} + \varepsilon_{\alpha,i'} & \text{when} \; t > T^* + 1.
+\end{array}\right.	
+$$
+The purpose of $\tilde y_{i',t}$ is to place the post-shock responses at the same starting point which allows us to avoid strong parametric specifications on the pre-shock dynamics. This series also contains terms which are estimable from the data. Define the event 
+$$
+  E_3 := \{\max\left(y_{1,t},\tilde y_{i',t}\right) < M : t = 1,\ldots,T\}, 
+$$
+where $M$ is chosen large enough so that $\Prob(E_3^c) \to 0$ as $\sigma^2 \to 0$. We now consider the recursion of $|y_{1,t} - \tilde{y}_{i',t}|$ for $t > T^*$ conditional on $E = E_1 \cup E_2 \cup E_3$, 
 \begin{align*}
-	&|y_{1,t} - y_{i',t}| 
+	&|y_{1,t} - \tilde{y}_{i',t}| 
 		= |(\delta_1'\x_{1,T^*+1} - \delta_{i'}'\x_{i',T^*+1})
-		+ (\tilde\phi_{1}y_{1,t-1} - \tilde\phi_{i'}y_{i',t-1}) 
+		+ (\tilde\phi_{1}y_{1,t-1} - \tilde\phi_{i'}\tilde{y}_{i',t-1}) 
 		+ (\tilde\theta_{1}'\x_{1,t} - \tilde\theta_{i'}'\x_{i',t}) + \tilde\varepsilon_t| \\
 	&\qquad \leq |\delta_1'\x_{1,T^*+1} - \delta_{i'}'\x_{i',T^*+1}|
-		+ |\tilde\phi_{1}y_{1,t-1} - \tilde\phi_{i'}y_{i',t-1}| 
+		+ |\tilde\phi_{1}y_{1,t-1} - \tilde\phi_{i'}\tilde{y}_{i',t-1}| 
 		+ |\tilde\theta_{1}'\x_{1,t} - \tilde\theta_{i'}'\x_{i',t})| 
 		+ \varepsilon_1 \\
-	&\qquad\leq (8M + 1)\varepsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||y_{i',t-1}| + |\tilde\phi_1||y_{1,t-1} - y_{i',t-1}| \\
+	&\qquad\leq (8M + 1)\varepsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||y_{i',t-1}| + |\tilde\phi_1||y_{1,t-1} - \tilde{y}_{i',t-1}| \\
 	&\qquad\leq (8M + 1)\varepsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||y_{i',t-1}| \\ 
-	&\qquad\qquad+ |\tilde\phi_1|\left\{(8M + 1)\varepsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||y_{i',t-2}| + |\tilde\phi_1||y_{1,t-2} - y_{i',t-2}|\right\} \\
-	&\qquad= \varepsilon_1(8M + 1)(1 + |\tilde\phi_1|) + |\tilde\phi_1||\tilde\phi_{1} - \tilde\phi_{i'}|(|y_{i',t-1}| + |y_{i',t-2}|) + |\tilde\phi_1|^2|y_{1,t-2} - y_{i',t-2}| \\
-	&\qquad \leq \varepsilon_1(8M + 1)\sum_{j=0}^{t-T^*-1}|\tilde\phi_1|^j + |\tilde\phi_{1} - \tilde\phi_{i'}|\sum_{j=1}^{t-T^*}|\tilde\phi_1|^{j-1}|y_{i',t-j}| + |\tilde\phi_1|^{t-T^*}|y_{1,T^*} - y_{i',T^*}|.
+	&\qquad\qquad+ |\tilde\phi_1|\left\{(8M + 1)\varepsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||\tilde{y}_{i',t-2}| + |\tilde\phi_1||y_{1,t-2} - \tilde{y}_{i',t-2}|\right\} \\
+	&\qquad= \varepsilon_1(8M + 1)(1 + |\tilde\phi_1|) + |\tilde\phi_1||\tilde\phi_{1} - \tilde\phi_{i'}|(|\tilde{y}_{i',t-1}| + |y_{i',t-2}|) + |\tilde\phi_1|^2|y_{1,t-2} - \tilde{y}_{i',t-2}| \\
+	&\qquad \leq \varepsilon_1(8M + 1)\sum_{j=0}^{t-T^*-1}|\tilde\phi_1|^j + |\tilde\phi_{1} - \tilde\phi_{i'}|\sum_{j=1}^{t-T^*}|\tilde\phi_1|^{j-1}|\tilde{y}_{i',t-j}| + |\tilde\phi_1|^{t-T^*}|y_{1,T^*} - \tilde{y}_{i',T^*}| \\
+	&\qquad = \varepsilon_1(8M + 1)\sum_{j=0}^{t-T^*-1}|\tilde\phi_1|^j + |\tilde\phi_{1} - \tilde\phi_{i'}|\sum_{j=1}^{t-T^*}|\tilde\phi_1|^{j-1}|\tilde{y}_{i',t-j}|.
 \end{align*}
-%Similarly, on $E$, we have 
-%\begin{align*}
-%	|y_{1,T^*} - y_{i',T^*}| &= |()|
-%\end{align*}
-\textcolor{red}{We should consider differencing, then the difference $|y_{1,t} - y_{1,t-1}|$ should be close to the difference $|y_{i',t} - y_{i',t-1}|$ for all $t > T^*$}
+With $T$ set, we can choose $\varepsilon_1$ small enough so that 
+$
+  |y_{1,t} - \tilde{y}_{i',t}| < \varepsilon_2
+$
+for all $T^* < t \leq T $. 
+
+Now let $\varepsilon_3 = \max(\varepsilon_1,\varepsilon_2)$ so that $|y_{1,t} - \tilde{y}_{i',t}| < \varepsilon_3$ and $\|\x_{1,t} - \x_{i',t}\| < \varepsilon_3$. Let $\tilde{\beta}$ be the OLS solution of model parameters with respect to the $\tilde{y}_{i',t}$ series, and let $\hat{\beta}$ be the OLS solution of model parameters with respect to the $y_{1,t}$ series. On $E$, these estimates will be very close to each other. We use Theorem 2.7.2 in \cite{golub1996matrix} to construct an explicit bound on $\|\tilde{\beta} - \hat{\beta}\|$. Following the notation of Section 2.7 in \cite{golub1996matrix} we will let $A$ be the design matrix with respect to the $y_{1,t}$ series so that $A\hat{\beta} = \mathbf{y}_1$ where $\mathbf{y}_1 = (y_{1,1}, \ldots, y_{1,T})'$, $\kappa(A) = \|A\|\|A^{-1}\|$ be the condition number of $A$ where $\|\cdot\|$ is a matrix norm, and we will specify that $r = \varepsilon_4 \kappa(A)$ where $\varepsilon_4$ can be chosen so that $r < 1$. We will also specify that $\varepsilon_3$ is chosen so that $\|\Delta A\| \leq \varepsilon_4\|A\|$ where $\Delta A = \widetilde{A} - A$ and $\widetilde{A}$ is the design matrix with respect to the $\tilde{y}_{i',t}$ series. Theorem 2.7.2 in \cite{golub1996matrix} states that 
+\begin{equation}\label{OLSbound}
+  \|\tilde{\beta} - \hat{\beta}\| \leq \frac{2\varepsilon_4}{1-r}\kappa(A)\|\hat{\beta}\|.	
+\end{equation}
+We can bound $\kappa(A)$ and $\hat{\beta}$ on $E$ which allows one to choose $\varepsilon_5$ so that \eqref{OLSbound} is $\|\tilde{\beta} - \hat{\beta}\| < \varepsilon_5$. 
+
+We now show that we can bound $|\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}|$ for $t+h > T^*$. We restrict attention to the case where $t+h > T^*$ because when $t+h \leq T^*$ the two competing forecasts $\hat{y}_{i,t}^{1,h}$ and $\hat{y}_{i,t}^{2,h}$ are the same in our setting for all $i$. Let $t+h > T^*$, then
+\begin{align*}
+  &|\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}| = |(\hat\eta_1 - \hat{\eta}_{i'}) + (\hat\alpha_1 - \hat\alpha_{i'}) + (\hat{\tilde{\phi}}_1 \hat{y}_{1,t-1}^{1,h-1} -  \hat{\tilde{\phi}}_{i'} \hat{y}_{i',t-1}^{1,h-1}) + (\hat{\tilde{\theta}}_1' \x_{1,t} - \hat{\tilde{\theta}}_{i'}' \x_{i',t})| \\
+  &\qquad \leq 2\varepsilon_5 + |\hat{\tilde{\theta}}_1' \x_{1,t} - \hat{\tilde{\theta}}_{i'}' \x_{i',t}| + |\hat{\tilde{\phi}}_1 \hat{y}_{1,t-1}^{1,h-1} -  \hat{\tilde{\phi}}_{i'} \hat{y}_{i',t-1}^{1,h-1}| \\
+  &\qquad \leq 2\varepsilon_5 + \|\x_{1,t}\|\|\hat{\tilde{\theta}}_1 - \hat{\tilde{\theta}}_{i'}\| + \|\hat{\tilde{\theta}}_{i'}\| \|\x_{1,t} - \x_{i',t}\| + \|\hat{y}_{1,t-1}^{1,h-1}\| |\hat{\tilde{\phi}}_1 - \hat{\tilde{\phi}}_{i'}\| + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1} | \\
+  &\qquad \leq 2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + \|\hat{y}_{1,t-1}^{1,h-1}\|\varepsilon_5 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1} |.
+\end{align*}
+On $E$ we can bound $|\hat{y}_{1,t-1}^{1,h-1}|$ for all $h=1,\ldots,H$ and $t=1,\ldots,T$, call this bound $M_1$. Let $\varepsilon_6 = (2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + M_1\varepsilon_5)$. Then, 
+\begin{align*}
+  &|\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}| \leq 2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + |\hat{y}_{1,t-1}^{1,h-1}|\varepsilon_5 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1}| \\
+  &\qquad \leq (2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + M_1\varepsilon_5) + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1}| \\
+  &\qquad \leq \varepsilon_6 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1}| \\
+  &\qquad \leq \varepsilon_6 + |\hat{\tilde{\phi}}_{i'}|\left(\varepsilon_6 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-2}^{1,h-2} - \hat{y}_{i',t-2}^{1,h-2}|\right) \\
+  &\qquad \leq \varepsilon_6(1 + |\hat{\tilde{\phi}}_{i'}|) + |\hat{\tilde{\phi}}_{i'}|^2|\hat{y}_{1,t-2}^{1,h-2} - \hat{y}_{i',t-2}^{1,h-2}| \\  
+  &\qquad \leq \varepsilon_6 \sum_{j=0}^h |\hat{\tilde{\phi}}_{i'}|^j + |\hat{\tilde{\phi}}_{i'}|^h|\hat{y}_{1,t-h} - \hat{y}_{i',t-h}| \\
+  &\qquad \leq \varepsilon_6 \sum_{j=0}^h |\hat{\tilde{\phi}}_{i'}|^j + |\hat{\tilde{\phi}}_{i'}|^h\varepsilon_3.  
+\end{align*}
+Let $\varepsilon_7 = \max_{h = 1,\ldots,H}\left(\varepsilon_6 \sum_{j=0}^h |\hat{\tilde{\phi}}_{i'}|^j + |\hat{\tilde{\phi}}_{i'}|^h\varepsilon_3\right)$ 
+and conclude that 
+\begin{equation} \label{forecastbounds}
+  |\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}| < \varepsilon_7	
+\end{equation}
+for all $t = 1,\ldots,T$ and all $h=1,\ldots,H$ such that $t+h > T^*$ on the event $E$. A similar argument with similar bounding choices can be made so that $|\hat{y}_{1,t}^{2,h} - \hat{\tilde{y}}_{i',t}^{2,h}| < \varepsilon_7$.
 
 
+\vspace*{0.5cm}\textcolor{red}{Based on the training data $\{(\mbf{x}_{i, t}, y_{i,t}) \colon i = 2, \ldots, n+1, t = 1, \ldots, T_i\}$, for $h = 1, \ldots, H$, the $h$-step forecast $\hat{y}_{i,t}^h$ is defined as
+ \begin{align*}
+ 	\hat{y}_{i,t}^h &= \left(\hat{\eta}_i + \sum_{j=1}^{q_1}\hat{\phi}_{i,j}\hat{y}^{h-j}_{i, t-j} + \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}\hat{\bs{\theta}}_{i,j+1}\right)(1 - D_{i,t}) + f(\hat{\mathcal{F}}_{i,t},\hat{\alpha}_i)D_{i,t} ,\\[.2cm]
+  \; f(\hat{\mc{F}}_{i,t},\hat{\alpha}_i ) &= \hat{\alpha}_i +  \sum_{j=1}^{q_{1}}\hat{\tilde{\phi}}_{i,j} \hat{y}^{h-j}_{i, t-j}+ \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}\hat{\tilde{\bs{\theta}}}_{i,j+1},
+ \end{align*}
+ where it is allowed that $t> T_i$, and we set $\hat{y}^{s}_{i, t}=y_{i,t}$ for $t \leq T_i$ and $s\leq 0$. This definition is in line with  that of  the iterated $h$-step ahead forecast  in the time series literature.}
 
-\vspace*{0.5cm}\noindent Get: $|y_{1,t} - y_{i',t}| < \varepsilon_1$ where we have $\|\x_{1,t} - \x_{i',t}\| < \varepsilon_1$
-
-\vspace*{0.5cm}\noindent Next: OLS solution for post-shock dynamics $(X_{i'}'X_{i'})^{-1}X_{i'}'Y_{i'}$ is just a perturbation of OLS solution for post-shock dynamics $(X_1'X_1)^{-1}X_1'Y_1$ 
-
-\vspace*{0.5cm}\noindent Next: $|\hat{y}_{1,t}^h - \hat{y}_{i',t}^h|$ should be small for $t > T^*$
 
 \vspace*{0.5cm}\noindent Next: loss differential $\|\dbf_{1,t} - \dbf_{i',t}\|$ should be small for $t > T^*$.
 
@@ -586,26 +630,6 @@ $$
 \end{pmatrix}
 $$
 
-$$
-D_{t} = I(t \geq T^*+1)
-$$
-
-\begin{align*}
-	&|(y_{1,t+1} - y_{1,t}) - (y_{i',t+1} - y_{i',t})| \\ 
-	&= |(\delta_1'\x_{1,T^*+1} + \tilde\phi_1 y_{1,t} + \tilde\theta'\x_{1,t+1} - y_{1,t} + \varepsilon_{1,t+1}) - (\delta_{i'}'\x_{i',T^*+1} + \tilde\phi_{i'} y_{i',t} + \tilde\theta'\x_{i',t+1} - y_{i',t} + \varepsilon_{i',t+1})| \\
-	&= |(\delta_1'\x_{1,T^*+1} - \delta_{i'}'\x_{i',T^*+1}) 
-	  + (\tilde\theta'\x_{1,t+1} - \tilde\theta'\x_{i',t+1}) 
-	  + (\varepsilon_{1,t+1} - \varepsilon_{i',t+1}) + ((\tilde\phi_1 - 1) y_{1,t} - (\tilde\phi_{i'} - 1) y_{i',t})|
-\end{align*}
-
-
-\begin{align*}
-	&|(y_{1,t+1} - y_{1,t}) - (y_{1,t} - y_{1,t-1})| \\ 
-	&= |(\delta_1'\x_{1,T^*+1} + \tilde\phi_1 y_{1,t} + \tilde\theta'\x_{1,t+1} - y_{1,t} + \varepsilon_{1,t+1}) - (\delta_{i'}'\x_{i',T^*+1} + \tilde\phi_{i'} y_{i',t} + \tilde\theta'\x_{i',t+1} - y_{i',t} + \varepsilon_{i',t+1})| \\
-	&= |(\delta_1'\x_{1,T^*+1} - \delta_{i'}'\x_{i',T^*+1}) 
-	  + (\tilde\theta'\x_{1,t+1} - \tilde\theta'\x_{i',t+1}) 
-	  + (\varepsilon_{1,t+1} - \varepsilon_{i',t+1}) + ((\tilde\phi_1 - 1) y_{1,t} - (\tilde\phi_{i'} - 1) y_{i',t})|
-\end{align*}
 
 
 
