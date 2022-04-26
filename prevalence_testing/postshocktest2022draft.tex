@@ -174,9 +174,71 @@ where $y^{1,h}_{i,t}$ is the forecast for $y_{i,t}$ that accounts for the yet-to
 
 Our methodology involves first comparing the performance of $\hat y^{1,h}_{i,t}$ and $\hat y^{2,h}_{i,t}$ for each time series in the donor pool ($i = 2,\ldots,n+1$). We then aggregate the decisions made in the donor pool by the similarity of the underlying time series to the time series under study. The first step in the process employs the recent multi-horizon forecast comparison methodology of \cite{quaedvlieg2021multi} for comparing the predictive abilitiy of forecasts jointly across all horizons of a forecast path, $h = 1,\ldots, H$. The second steps involves aggregation techniques motivated by the supposed data-generating process. These aggregation strategies are motivated by the post-shock aggregation techniques in \cite{lin2021minimizing}. We then report whether an anticipated shock is expected to be transient over the horizon $H$ by using an aggregated decision from the donor pool.
 
-(\textcolor{red}{this needs work}) In Section \ref{sec:multhor} we discuss the background in \cite{quaedvlieg2021multi} that is necessary for our post-shock testing procedure. In Section \ref{modelsetup} we motivate time series models that we consider. In Section \ref{sec:aggmeth} we present aggregation strategies that we consider which inform our decision about the expected shock behavior.
+(\textcolor{red}{this needs work}) In Section \ref{modelsetup} we motivate time series models that we consider. In Section \ref{sec:multhor} we discuss the background in \cite{quaedvlieg2021multi} that is necessary for our post-shock testing procedure. In Section \ref{sec:aggmeth} we present aggregation strategies that we consider which inform our decision about the expected shock behavior.
 
 \section{Methodological details}
+
+
+\subsection{Model setup}
+\label{modelsetup}
+
+We now describe the assumed autoregressive models with random effects for which post-shock aggregated estimators are provided. The model $\mc{M}$ is defined as
+\begin{align}
+\mc{M} \colon \begin{array}{l}
+  y_{i,t} = \eta_i + \left(\sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j}\right)(1 - D_{i,t}) + f(\mathcal{F}_{i,t},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
+  \; f(\mc{F}_{i,t},\alpha_i) = \alpha_i +  \sum_{j=1}^{q_{1}}\t\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\t\theta_{i,j+1}'\mbf{x}_{i,t-j}, \\[.2cm]
+  \; \alpha_i = \mu_{\alpha} + \delta_i'\mbf{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
+  %\sum_{j=1}^{q_3}\delta_{i,j}'\mbf{x}_{i, T_i^*-j+1}+ \t{\varepsilon}_{i}, 
+\end{array}\label{model-gen}
+\end{align}
+where $D_{i,t} = I(t \geq T_i^* + 1)$, $I(\cdot)$ is the indicator function, $\x_{i,t} \in \R^{p}$ are fixed with $p \geq 1$. Let 
+$\mathbf{\phi}_i = (\phi_{i,1},\ldots,\phi_{i,q_1})'$, 
+$\mathbf{\theta}_i = (\theta_{i,1},\ldots,\theta_{i,q_2})'$, 
+$\tilde{\mathbf{\phi}}_i = (\t\phi_{i,1},\ldots,\t\phi_{i,q_{1}})'$, 
+$\tilde{\mathbf{\theta}}_i = (\t\theta_{i,1},\ldots,\t\theta_{i, q_{2}})'$, 
+$\mathbf{\delta}_i = (\delta_{i,1},\ldots,\delta_{i,p})'$, 
+and suppose that the regression coefficients in \eqref{model-gen} have the following hierarchical random effects structure: 
+\begin{equation} \label{random-effects}
+\begin{split}
+  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = \mu_\eta, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}, \\
+  \mathbf{\phi}_{i,j} &\simiid \mc{F}_{\mathbf{\phi}_j} \text{ where } |\phi_{i,j}| < 1, \\
+  \mathbf{\theta}_{i,j} &\simiid \mc{F}_{\mathbf{\theta}_j} \text{ with }  \; \mrm{E}_{\mc{F}_{\mathbf{\theta}_j}}(\theta_{i,j}) = \mu_{\mathbf{\theta}_j}, \mrm{Var}_{\mc{F}_{\mathbf{\theta}_j}}(\mathbf{\theta}_{i,j})  = \Sigma^2_{\mathbf{\theta}_j}, \\
+  \mathbf{\delta}_i &\simiid  \mc{F}_{\mathbf{\delta}} \text{ with } \mrm{E}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\mu_{\mathbf{\delta}}, \mrm{Var}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\Sigma_{\mathbf{\delta}}, \\
+\varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i,  \\
+\varepsilon_{\alpha, i} &\simiid  \mc{F}_{\varepsilon_\alpha} \text{ with }\mrm{E}_{\mc{F}_{\varepsilon_\alpha}}(\varepsilon_{\alpha, i})=0, \mrm{Var}_{\mc{F}_{\varepsilon_{\alpha}}}(\varepsilon_{\alpha, i})=\sigma^2_{\alpha}, \\
+  \tilde{\mathbf{\phi}}_{i,j} &\overset{ind}{\sim} \mathcal{F}_{\tilde{\mathbf{\phi}_j}}(\x_{i,T_i^*+1}) \; \text{where} \; |\tilde{\mathbf{\phi}}_{i,j}| < 1,  \\
+  \tilde{\mathbf{\theta}}_{i,j} &\overset{ind}{\sim} \mathcal{F}_{\tilde{\mathbf{\theta}_j}}(\x_{i,T_i^*+1}),  \\  
+ % \t q_{i,k} &\overset{ind}{\sim} \mathcal{F}_k(\x_{i,T_i^*}), \; k = 1,2, \\
+&\eta_i \indep \mathbf{\phi}_{i,j} \indep \mathbf{\theta}_{i,j} \indep 
+\tilde{\mathbf{\phi}}_{i,j} \indep \lambda_{i,j} \indep \mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i}, 
+\end{split}
+\end{equation}
+where the distributions $\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1})$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}_{i'}}(\x_{i,T_i^*+1})$ satisfy 
+$\|\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1}) - \mathcal{F}_{\tilde{\mathbf{\phi}}_{j}}(\x_{i',T_i^*+1})\|_p \to 0$ and $\|\mathcal{F}_{\tilde{\mathbf{\theta}}_j}(\x_{i,T_i^*+1}) - \mathcal{F}_{\tilde{\mathbf{\theta}}_{j}}(\x_{i',T_i^*+1})\|_p \to 0$ as $\|\x_{i,T_i^*+1} - \x_{i',T_i^*+1}\| \to 0$ where $\|\cdot\|_p$ is a distance metric for distributions and $\|\cdot\|$ is a norm for elements in Euclidean space. Note that for model \eqref{model-gen} to be of use for post-shock forecasting, the variation in $\mathcal{F}_{\tilde{\mathbf{\phi}}}$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}}$ must be small relative to the signal strength which is captured in $\x_{i,T^*_i+1}$.
+
+
+We see that model \eqref{model-gen} with its accompanying random effects structure \eqref{random-effects} is flexible enough to capture changing structural dynamics as well as a mean-shift, and is a generalization of the models mentioned in \cite{lin2021minimizing}. Note that the flexibility of allowing for changing structural dynamics is useful for fitting purposes, but it does not necessarily reflect the state of the world in the post-shock setting. It is of course possible that there is no shock or a simple mean-shift. In fact, the simple mean shift model can be fit and one can test whether the additional flexibility of model \eqref{model-gen} is warranted for series in the donor pool. A general testing procedure is discussed in Section \ref{sec:aggmeth} (\textcolor{red}{need to discuss that model selection is aggregated, the primary goal concerns the series under study}).
+
+The post-shock dynamic changes depend heavily on the value of $\mbf{x}_{i,T_i^*+1}$, the covariates recorded right before the first post-shock response is observed. Under this setup any two series $i,j$ with small $\|\mbf{x}_{i,T_i^*+1} - \mbf{x}_{j,T_i^*+1}\|$ are expected to experience similar structural changes. This makes distance based weighting an attractive avenue.
+
+Next, we define the $h$-step forecast for $\mc{M}$ which plays an essential role in the framework of \citet{quaedvlieg2021multi}. Denote $h$-step forecast for $y_{i,t}$ by $\hat{y}_{i,t}^{1,h}$. Let the ordinary least squares (OLS) estimate for
+\begin{align*}
+	\{(\eta_i, \alpha_i, \phi_{i,j_1}, \bs{\theta}_{i,j_2}', \tilde{\phi}_{i,j_1}, \tilde{\bs{\theta}}_{i,j_2}')' \colon i = 2, \ldots, n+1, j_1 = 1, \ldots, q_1, j_2 = 1, \ldots, q_2\}
+\end{align*}
+ be 
+ \begin{align*}
+ 	\{(\hat{\eta}_i, \hat{\alpha}_i, \hat{\phi}_{i,j_1}, \hat{\bs{\theta}}_{i,j_2}', \hat{\tilde{\phi}}_{i,j_1}, \hat{\tilde{\bs{\theta}}}_{i,j_2}')' \colon i = 2, \ldots, n+1, j_1 = 1, \ldots, q_1, j_2 = 1, \ldots, q_2\}.
+ \end{align*}
+Based on the training data $\{(\mbf{x}_{i, t}, y_{i,t}) \colon i = 2, \ldots, n+1, t = 1, \ldots, T_i\}$, for $h = 1, \ldots, H$, the $h$-step forecast $\hat{y}_{i,t}^{1,h}$ is defined as
+ \begin{align*}
+ 	\hat{y}_{i,t}^{1,h} &= \hat{\eta}_i + \left(\sum_{j=1}^{q_1}\hat{\phi}_{i,j}\hat{y}^{1,h-j}_{i, t-j} + \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}'\hat{\bs{\theta}}_{i,j+1}\right)(1 - D_{i,t}) + f(\hat{\mathcal{F}}_{i,t},\hat{\alpha}_i)D_{i,t} ,\\[.2cm]
+  \; f(\hat{\mc{F}}_{i,t},\hat{\alpha}_i ) &= \hat{\alpha}_i +  \sum_{j=1}^{q_{1}}\hat{\tilde{\phi}}_{i,j} \hat{y}^{1,h-j}_{i, t-j}+ \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}'\hat{\tilde{\bs{\theta}}}_{i,j+1},
+ \end{align*}
+ where it is allowed that $t> T_i$, and we set $\hat{y}^{s}_{i, t}=y_{i,t}$ for $t \leq T_i$ and $s\leq 0$. This definition is in line with  that of  the iterated $h$-step ahead forecast  in the time series literature (\textcolor{red}{either provide a citation or remove this sentence}). The $h$-step forecast corresponding to the model that does include any post-shock changes $\hat{y}_{i,t}^{2,h}$ is defined similarly,
+\begin{equation*}
+ 	\hat{y}_{i,t}^{2,h} = \hat{\eta}_i + \left(\sum_{j=1}^{q_1}\hat{\phi}_{i,j}\hat{y}^{2,h-j}_{i, t-j} + \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}'\hat{\bs{\theta}}_{i,j+1}\right).
+\end{equation*}
+
 
 \subsection{Multi-horizon forecasting procedure}
 \label{sec:multhor}
@@ -236,66 +298,6 @@ $$
 where $\hat p_i = \Prob(t_{i,\alpha} < t_{i,\text{aSPA}})$ and $t_{i,\alpha}$ is a critical value corresponding to the distribution of $t_{i,\text{aSPA}}$. Therefore bootstrap inference in the donor pool is a good approximation. %We now consider how bootstrap inference in the donor pool is used to test whether a shock is prevalent or transient for the time series under study.
 
 
-
-
-
-\subsection{Model setup}
-\label{modelsetup}
-
-We now describe the assumed autoregressive models with random effects for which post-shock aggregated estimators are provided. The model $\mc{M}$ is defined as
-\begin{align}
-\mc{M} \colon \begin{array}{l}
-  y_{i,t} = \eta_i + \left(\sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j}\right)(1 - D_{i,t}) + f(\mathcal{F}_{i,t},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
-  \; f(\mc{F}_{i,t},\alpha_i) = \alpha_i +  \sum_{j=1}^{q_{1}}\t\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\t\theta_{i,j+1}'\mbf{x}_{i,t-j}, \\[.2cm]
-  \; \alpha_i = \mu_{\alpha} + \delta_i'\mbf{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
-  %\sum_{j=1}^{q_3}\delta_{i,j}'\mbf{x}_{i, T_i^*-j+1}+ \t{\varepsilon}_{i}, 
-\end{array}\label{model-gen}
-\end{align}
-where $D_{i,t} = I(t \geq T_i^* + 1)$, $I(\cdot)$ is the indicator function, $\x_{i,t} \in \R^{p}$ are fixed with $p \geq 1$. Let 
-$\mathbf{\phi}_i = (\phi_{i,1},\ldots,\phi_{i,q_1})'$, 
-$\mathbf{\theta}_i = (\theta_{i,1},\ldots,\theta_{i,q_2})'$, 
-$\tilde{\mathbf{\phi}}_i = (\t\phi_{i,1},\ldots,\t\phi_{i,q_{1}})'$, 
-$\tilde{\mathbf{\theta}}_i = (\t\theta_{i,1},\ldots,\t\theta_{i, q_{2}})'$, 
-$\mathbf{\delta}_i = (\delta_{i,1},\ldots,\delta_{i,p})'$, 
-and suppose that the regression coefficients in \eqref{model-gen} have the following hierarchical random effects structure: 
-\begin{equation} \label{random-effects}
-\begin{split}
-  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = \mu_\eta, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}, \\
-  \mathbf{\phi}_{i,j} &\simiid \mc{F}_{\mathbf{\phi}_j} \text{ where } |\phi_{i,j}| < 1, \\
-  \mathbf{\theta}_{i,j} &\simiid \mc{F}_{\mathbf{\theta}_j} \text{ with }  \; \mrm{E}_{\mc{F}_{\mathbf{\theta}_j}}(\theta_{i,j}) = \mu_{\mathbf{\theta}_j}, \mrm{Var}_{\mc{F}_{\mathbf{\theta}_j}}(\mathbf{\theta}_{i,j})  = \Sigma^2_{\mathbf{\theta}_j}, \\
-  \mathbf{\delta}_i &\simiid  \mc{F}_{\mathbf{\delta}} \text{ with } \mrm{E}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\mu_{\mathbf{\delta}}, \mrm{Var}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\Sigma_{\mathbf{\delta}}, \\
-\varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i,  \\
-\varepsilon_{\alpha, i} &\simiid  \mc{F}_{\varepsilon_\alpha} \text{ with }\mrm{E}_{\mc{F}_{\varepsilon_\alpha}}(\varepsilon_{\alpha, i})=0, \mrm{Var}_{\mc{F}_{\varepsilon_{\alpha}}}(\varepsilon_{\alpha, i})=\sigma^2_{\alpha}, \\
-  \tilde{\mathbf{\phi}}_{i,j} &\overset{ind}{\sim} \mathcal{F}_{\tilde{\mathbf{\phi}_j}}(\x_{i,T_i^*+1}) \; \text{where} \; |\tilde{\mathbf{\phi}}_{i,j}| < 1,  \\
-  \tilde{\mathbf{\theta}}_{i,j} &\overset{ind}{\sim} \mathcal{F}_{\tilde{\mathbf{\theta}_j}}(\x_{i,T_i^*+1}),  \\  
- % \t q_{i,k} &\overset{ind}{\sim} \mathcal{F}_k(\x_{i,T_i^*}), \; k = 1,2, \\
-&\eta_i \indep \mathbf{\phi}_{i,j} \indep \mathbf{\theta}_{i,j} \indep 
-\tilde{\mathbf{\phi}}_{i,j} \indep \lambda_{i,j} \indep \mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i}, 
-\end{split}
-\end{equation}
-where the distributions $\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1})$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}_{i'}}(\x_{i,T_i^*+1})$ satisfy 
-$\|\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1}) - \mathcal{F}_{\tilde{\mathbf{\phi}}_{j}}(\x_{i',T_i^*+1})\|_p \to 0$ and $\|\mathcal{F}_{\tilde{\mathbf{\theta}}_j}(\x_{i,T_i^*+1}) - \mathcal{F}_{\tilde{\mathbf{\theta}}_{j}}(\x_{i',T_i^*+1})\|_p \to 0$ as $\|\x_{i,T_i^*+1} - \x_{i',T_i^*+1}\| \to 0$ where $\|\cdot\|_p$ is a distance metric for distributions and $\|\cdot\|$ is a norm for elements in Euclidean space. Note that for model \eqref{model-gen} to be of use for post-shock forecasting, the variation in $\mathcal{F}_{\tilde{\mathbf{\phi}}}$ and $\mathcal{F}_{\tilde{\mathbf{\theta}}}$ must be small relative to the signal strength which is captured in $\x_{i,T^*_i+1}$.
-
-
-We see that model \eqref{model-gen} with its accompanying random effects structure \eqref{random-effects} is flexible enough to capture changing structural dynamics as well as a mean-shift, and is a generalization of the models mentioned in \cite{lin2021minimizing}. Note that the flexibility of allowing for changing structural dynamics is useful for fitting purposes, but it does not necessarily reflect the state of the world in the post-shock setting. It is of course possible that there is no shock or a simple mean-shift. In fact, the simple mean shift model can be fit and one can test whether the additional flexibility of model \eqref{model-gen} is warranted for series in the donor pool. A general testing procedure is discussed in Section \ref{sec:aggmeth} (\textcolor{red}{need to discuss that model selection is aggregated, the primary goal concerns the series under study}).
-
-The post-shock dynamic changes depend heavily on the value of $\mbf{x}_{i,T_i^*+1}$, the covariates recorded right before the first post-shock response is observed. Under this setup any two series $i,j$ with small $\|\mbf{x}_{i,T_i^*+1} - \mbf{x}_{j,T_i^*+1}\|_2$ are expected to experience similar structural changes. This makes distance based weighting an attractive avenue.
-
-Next, we define the $h$-step forecast for $\mc{M}$, which plays an essential role in the framework of \citet{quaedvlieg2021multi}. Denote $h$-step forecast for $y_{i,t}$ by $\hat{y}_{i,t}^h$. Let the ordinary least squares (OLS) estimate for
-\begin{align*}
-	\{(\eta_i, \alpha_i, \phi_{i,j_1}, \bs{\theta}_{i,j_2}, \tilde{\phi}_{i,j_1}, \tilde{\bs{\theta}}_{i,j_2}) \colon i = 2, \ldots, n+1, j_1 = 1, \ldots, q_1, j_2 = 1, \ldots, q_2\}
-\end{align*}
- be 
- \begin{align*}
- 	\{(\hat{\eta}_i, \hat{\alpha}_i, \hat{\phi}_{i,j_1}, \hat{\bs{\theta}}_{i,j_2}, \hat{\tilde{\phi}}_{i,j_1}, \hat{\tilde{\bs{\theta}}}_{i,j_2}) \colon i = 2, \ldots, n+1, j_1 = 1, \ldots, q_1, j_2 = 1, \ldots, q_2\}.
- \end{align*}
-Based on the training data $\{(\mbf{x}_{i, t}, y_{i,t}) \colon i = 2, \ldots, n+1, t = 1, \ldots, T_i\}$, for $h = 1, \ldots, H$, the $h$-step forecast $\hat{y}_{i,t}^h$ is defined as
- \begin{align*}
- 	\hat{y}_{i,t}^h &= \left(\hat{\eta}_i + \sum_{j=1}^{q_1}\hat{\phi}_{i,j}\hat{y}^{h-j}_{i, t-j} + \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}\hat{\bs{\theta}}_{i,j+1}\right)(1 - D_{i,t}) + f(\hat{\mathcal{F}}_{i,t},\hat{\alpha}_i)D_{i,t} ,\\[.2cm]
-  \; f(\hat{\mc{F}}_{i,t},\hat{\alpha}_i ) &= \hat{\alpha}_i +  \sum_{j=1}^{q_{1}}\hat{\tilde{\phi}}_{i,j} \hat{y}^{h-j}_{i, t-j}+ \sum_{j=0}^{q_2-1}\mbf{x}_{i,t-j}\hat{\tilde{\bs{\theta}}}_{i,j+1},
- \end{align*}
- where it is allowed that $t> T_i$, and we set $\hat{y}^{s}_{i, t}=y_{i,t}$ for $t \leq T_i$ and $s\leq 0$. This definition is in line with  that of  the iterated $h$-step ahead forecast  in the time series literature (\textcolor{red}{either provide a citation or remove this sentence}).
- 
 
 
 
@@ -484,37 +486,6 @@ For each donor $\mc{T}_i$, $i = 2, \ldots, n+1$, to compare adjusted and unadjus
 
 
 \newpage
-\textbf{Repeating for reference}:
-\begin{align}
-\mc{M} \colon \begin{array}{l}
-  y_{i,t} = \eta_i + \left(\sum_{j=1}^{q_1}\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\theta_{i,j+1}'\mbf{x}_{i,t-j}\right)(1 - D_{i,t}) + f(\mathcal{F}_{i,t},\alpha_i)D_{i,t} + \varepsilon_{i,t},\\[.2cm]
-  \; f(\mc{F}_{i,t},\alpha_i) = \alpha_i +  \sum_{j=1}^{q_{1}}\t\phi_{i,j}y_{i, t-j} + \sum_{j=0}^{q_2-1}\t\theta_{i,j+1}'\mbf{x}_{i,t-j}, \\[.2cm]
-  \; \alpha_i = \mu_{\alpha} + \delta_i'\mbf{x}_{i, T_i^*+1} + \varepsilon_{\alpha, i},
-  %\sum_{j=1}^{q_3}\delta_{i,j}'\mbf{x}_{i, T_i^*-j+1}+ \t{\varepsilon}_{i}, 
-\end{array}\label{model-gen2}
-\end{align}
-where $D_{i,t} = I(t \geq T_i^* + 1)$, $I(\cdot)$ is the indicator function, $\x_{i,t} \in \R^{p}$ are fixed with $p \geq 1$. Let 
-$\mathbf{\phi}_i = (\phi_{i,1},\ldots,\phi_{i,q_1})'$, 
-$\mathbf{\theta}_i = (\theta_{i,1},\ldots,\theta_{i,q_2})'$, 
-$\tilde{\mathbf{\phi}}_i = (\t\phi_{i,1},\ldots,\t\phi_{i,q_{1}})'$, 
-$\tilde{\mathbf{\theta}}_i = (\t\theta_{i,1},\ldots,\t\theta_{i, q_{2}})'$, 
-$\mathbf{\delta}_i = (\delta_{i,1},\ldots,\delta_{i,p})'$, 
-and suppose that the regression coefficients in \eqref{model-gen2} have the following hierarchical random effects structure: 
-\begin{equation} \label{random-effects2}
-\begin{split}
-  \eta_i &\simiid \mc{F}_{\eta} \text{ with }  \; \mrm{E}_{\mc{F}_{\eta}}(\eta_i) = \mu_\eta, \mrm{Var}_{\mc{F}_{\eta}}(\eta_i)  = \sigma^2_{\eta}, \\
-  \mathbf{\phi}_{i,j} &\simiid \mc{F}_{\mathbf{\phi}_j} \text{ where } |\phi_{i,j}| < 1, \\
-  \mathbf{\theta}_{i,j} &\simiid \mc{F}_{\mathbf{\theta}_j} \text{ with }  \; \mrm{E}_{\mc{F}_{\mathbf{\theta}_j}}(\theta_{i,j}) = \mu_{\mathbf{\theta}_j}, \mrm{Var}_{\mc{F}_{\mathbf{\theta}_j}}(\mathbf{\theta}_{i,j})  = \Sigma^2_{\mathbf{\theta}_j}, \\
-  \mathbf{\delta}_i &\simiid  \mc{F}_{\mathbf{\delta}} \text{ with } \mrm{E}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\mu_{\mathbf{\delta}}, \mrm{Var}_{\mc{F}_{\mathbf{\delta}}}(\mathbf{\delta}_i)=\Sigma_{\mathbf{\delta}}, \\
-\varepsilon_{i,t} & \simiid  \mc{F}_{\varepsilon_i} \text{ with }  \; \mrm{E}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t}) = 0, \mrm{Var}_{\mc{F}_{\varepsilon_i}}(\varepsilon_{i,t})  = \sigma^2_i,  \\
-\varepsilon_{\alpha, i} &\simiid  \mc{F}_{\varepsilon_\alpha} \text{ with }\mrm{E}_{\mc{F}_{\varepsilon_\alpha}}(\varepsilon_{\alpha, i})=0, \mrm{Var}_{\mc{F}_{\varepsilon_{\alpha}}}(\varepsilon_{\alpha, i})=\sigma^2_{\alpha}, \\
-  \tilde{\mathbf{\phi}}_{i,j} &\overset{ind}{\sim} \mathcal{F}_{\tilde{\mathbf{\phi}_j}}(\x_{i,T_i^*+1}) \; \text{where} \; |\tilde{\mathbf{\phi}}_{i,j}| < 1,  \\
-  \tilde{\mathbf{\theta}}_{i,j} &\overset{ind}{\sim} \mathcal{F}_{\tilde{\mathbf{\theta}_j}}(\x_{i,T_i^*+1}),  \\  
- % \t q_{i,k} &\overset{ind}{\sim} \mathcal{F}_k(\x_{i,T_i^*}), \; k = 1,2, \\
-&\eta_i \indep \mathbf{\phi}_{i,j} \indep \mathbf{\theta}_{i,j} \indep 
-\tilde{\mathbf{\phi}}_{i,j} \indep \lambda_{i,j} \indep \mathbf{\delta}_i \indep \varepsilon_{i,t} \indep \tilde\varepsilon_{i}, 
-\end{split}
-\end{equation}
 
 
 We now demonstrate an idealized theoretical setting for which our post-shock testing methodology involving a distance based weighted average of p-values works well. The idea is that inferences based on distance based weighted nearly recovers the time series under study when there exists a time series in the donor pool, indexed by $i'$, such that $\x_{1,t} \approx \x_{i',t}$ and the signal strength in our modeling setup \eqref{model-gen} and \eqref{random-effects} is large relative to variation. 
@@ -530,9 +501,9 @@ and let $\sigma^2 = \max(\lambda_{\max}, \sigma^2_{\max})$. Now fix $i'$ where w
 \begin{align*}
   E_1 := &\left\{\max\left(|\|\delta_1 - \delta_{i'}\|,|\tilde\phi_{1,j}-\tilde\phi_{i',j}|,\|\tilde\theta_{1,k}-\tilde\theta_{i',k}\|,|\tilde\varepsilon_t|\right) < \varepsilon_1:\right. \\
   &\qquad j = 1,\ldots,q_1, k = 1,\ldots,q_2, t = 1,\ldots,T \left.\right\}, \\
-  E_2 := &\{\|(\bm{\eta}',\bm{\phi}',\bm{\theta}',\bm{\delta}',\tilde{\bm{\phi}}',\tilde{\bm{\theta}}')\|_\infty < M\},  
+  E_2 := &\{\|(\bm{\eta}',\bm{\phi}',\bm{\theta}',\bm{\delta}',\tilde{\bm{\phi}}',\tilde{\bm{\theta}}')'\|_\infty < M_1\},  
 \end{align*}
-where $\tilde\varepsilon_t = \varepsilon_{1,t} - \varepsilon_{i',t} + D_{i,t}(\varepsilon_{\alpha,1} - \varepsilon_{\alpha,i'})$ and $\bm{\eta},\bm{\phi},\bm{\theta},\bm{\delta},\tilde{\bm{\phi}}$, and $\tilde{\bm{\theta}}$ are vectors containing the random effects in \eqref{random-effects} for indices $1$ and $i'$, and we take $\|\bm{a}\|_\infty = \max_j(|a_j|)$ . We will also suppose that $\|\x_{j,t}\|_\infty < M$ for $j \in \{1,i'\}$ and all $t = 1,\ldots,T$. Note that both $\Prob(E_1^C) \to 0$ and $\Prob(E_2^C) \to 0$  as $\sigma^2 \to 0$ with $T$ and $n$ fixed. For simplicity we will set $q_1 = q_2 = 1$. 
+where $\tilde\varepsilon_t = \varepsilon_{1,t} - \varepsilon_{i',t} + D_{i,t}(\varepsilon_{\alpha,1} - \varepsilon_{\alpha,i'})$ and $\bm{\eta},\bm{\phi},\bm{\theta},\bm{\delta},\tilde{\bm{\phi}}$, and $\tilde{\bm{\theta}}$ are vectors containing the random effects in \eqref{random-effects} for indices $1$ and $i'$, and we take $\|\bm{a}\|_\infty = \max_j(|a_j|)$ . We will also suppose that $\|\x_{j,t}\|_\infty < M_1$ for $j \in \{1,i'\}$ and all $t = 1,\ldots,T$. Note that both $\Prob(E_1^C) \to 0$ and $\Prob(E_2^C) \to 0$  as $\sigma^2 \to 0$ with $T$ and $n$ fixed. For simplicity we will set $q_1 = q_2 = 1$. 
 
 For all $t > T^*$ let $\tilde y_{i',t}$ possess the same dynamics as $y_{i',t}$ except that this process is shifted in a manner to reflect how $y_{i,t}$ changes for all $t > T^*$. More formally, we will let 
 $$
@@ -544,9 +515,9 @@ $$
 $$
 The purpose of $\tilde y_{i',t}$ is to place the post-shock responses at the same starting point which allows us to avoid strong parametric specifications on the pre-shock dynamics. This series also contains terms which are estimable from the data. Define the event 
 $$
-  E_3 := \{\max\left(y_{1,t},\tilde y_{i',t}\right) < M : t = 1,\ldots,T\}, 
+  E_3 := \{\max\left(y_{1,t},\tilde y_{i',t}\right) < M_2 : t = 1,\ldots,T\}, 
 $$
-where $M$ is chosen large enough so that $\Prob(E_3^c) \to 0$ as $\sigma^2 \to 0$. We now consider the recursion of $|y_{1,t} - \tilde{y}_{i',t}|$ for $t > T^*$ conditional on $E = E_1 \cup E_2 \cup E_3$, 
+where $M_2$ is chosen large enough so that $\Prob(E_3^c) \to 0$ as $\sigma^2 \to 0$. Let $M = \max(M_1,M_2).$ We now consider the recursion of $|y_{1,t} - \tilde{y}_{i',t}|$ for $t > T^*$ conditional on $E = E_1 \cup E_2 \cup E_3$, 
 \begin{align*}
 	&|y_{1,t} - \tilde{y}_{i',t}| 
 		= |(\delta_1'\x_{1,T^*+1} - \delta_{i'}'\x_{i',T^*+1})
@@ -608,7 +579,7 @@ We now bound the difference in loss differential vectors $\|\dbf_{1,t} - \dbf_{i
 $$
   |y_{1,t} - \hat{y}^{1,h}_{1,t}| - |y_{1,t} - \hat{y}^{2,h}_{1,t}| \leq |\tilde{y}_{i',t} - \hat{\tilde{y}}^{i',h}_{1,t}| - |\tilde{y}_{i',t} - \hat{\tilde{y}}^{2,h}_{1,t}| + 2(\varepsilon_3 + \varepsilon_7).
 $$
-Let $\varepsilon_8 = 2(\varepsilon_3 + \varepsilon_7)$ and conclude that $\|\dbf_{1,t} - \dbf_{i',t}\| \leq \varepsilon_8$ on $E$.
+Let $\varepsilon_8 = 2(\varepsilon_3 + \varepsilon_7)$ and conclude that $\|\dbf_{1,t} - \dbf_{i',t}\| \leq \varepsilon_8$ on $E$ for all $t > T^*$.
 
 
 
@@ -702,7 +673,7 @@ Let $a_i^1$ and $a_i^2$ denote the AICs of $\mc{M}_0$ and $\mc{M}$ for $i$th tim
 
 
 
-Recall from Section \ref{forecast}, voting procedure suggests shock transience (shock prevalence) if the majority of the tests  suggests shock transience (shock prevalence, respectively). We record 0 if the voting procedure suggests shock transience and 1 if shock prevalence. The weighted voting procedure weight those testing indicators using $\mbf{W}^*$; and returns shock prevalence if the output exceeds 0.5 and shock transience if the output is smaller than 0.5. As we observe $\{y_{1,t} \colon 1, \ldots, T_1\}$, we are able to check whether the decision of voting and weighted voting is correct. From the sixth column of Table \ref{coptable}, we can see that voting procedure suggests shock transience for $\mc{M}_0$ and $\mc{M}$ for different $L$. However, weighted voting suggests shock transience for $\mc{M}$ for different $L$ but shock prevalence for $\mc{M}_0$ and $L=15, 30$ and shock transience for $\mc{M}_0$ and $L = 7$. As $p_1$ is uniformly 1, it is reasonable to expect $\P(p_1\leq .05)$ be small. Note that Proposition \ref{votprop} and Corollary \ref{coro1} show that the decisions made by voting and weighted voting procedures should be correct with very high probability if we assume the asymptotic approximation of the expected absolute error works well for  $n = 3$. Note that the interpretation and meaning of $p_1$ is closely connected with models. For example, $\mc{M}_0$ would imply a persistent shock whereas $\mc{M}$ is more general in suggesting changing dynamics. Thus, even if  this theoretical statement  may be correct, it makes practical sense only when model is identified well. This comment corresponds to the possibility that $\mc{M}_0$ may ``misunderstand'' the wrong signal of changing dynamics that are instead captured by $\mc{M}$.
+Recall from Section \ref{forecast}, voting procedure suggests shock transience (shock prevalence) if the majority of the tests  suggests shock transience (shock prevalence, respectively). We record 0 if the voting procedure suggests shock transience and 1 if shock prevalence. The weighted voting procedure weight those testing indicators using $\mbf{W}^*$; and returns shock prevalence if the output exceeds 0.5 and shock transience if the output is smaller than 0.5. As we observe $\{y_{1,t} \colon 1, \ldots, T_1\}$, we are able to check whether the decision of voting and weighted voting is correct. From the sixth column of Table \ref{coptable}, we can see that voting procedure suggests shock transience for $\mc{M}_0$ and $\mc{M}$ for different $L$. However, weighted voting suggests shock transience for $\mc{M}$ for different $L$ but shock prevalence for $\mc{M}_0$ and $L=15, 30$ and shock transience for $\mc{M}_0$ and $L = 7$. As $p_1$ is uniformly 1, it is reasonable to expect $\P(p_1\leq .05)$ be small. Note that Proposition \ref{votprop} and Corollary \ref{coro2} show that the decisions made by voting and weighted voting procedures should be correct with very high probability if we assume the asymptotic approximation of the expected absolute error works well for  $n = 3$. Note that the interpretation and meaning of $p_1$ is closely connected with models. For example, $\mc{M}_0$ would imply a persistent shock whereas $\mc{M}$ is more general in suggesting changing dynamics. Thus, even if  this theoretical statement  may be correct, it makes practical sense only when model is identified well. This comment corresponds to the possibility that $\mc{M}_0$ may ``misunderstand'' the wrong signal of changing dynamics that are instead captured by $\mc{M}$.
 
 To verify our results, we plot $\{y_{1,t} \colon 1, \ldots, T_1\}$ in Figure \ref{copshocktransience}. Two dashed vertical lines are plotted in Figure \ref{copshocktransience}, where the left one corresponds to $t = T_1^*$ and the right one  corresponds to $t = T_1^*+1$. As shown by \cite{lin2021minimizing}, $y_{1,t}$ experienced a substantial shock at  $t = T_1^*+1$ and it is evident from $y_{1, T_1^*}-y_{1, T_1^*+1}$ shown in Figure 1. We also graphed a benchmark horizontal dashed line for comparison, which corresponds to the stock price $y_{1, T_1^*}$. However, notice that even if $y_{1,t}$ first experienced a considerable drop at $t = T_1^*+1$,   it started to revert back and became closer to the benchmark horizontal line as $t$ increases for $t > T_1^*$. This observation confirms our results as the reverting behavior implies that the impact of the shock starts to diminish as $t$ increases and that the shock is very likely to be transient.
 
