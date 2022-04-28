@@ -130,21 +130,50 @@ In this article we provide forecasting methodology for assessing the transient o
 This is a general problem facing many real life applications. For example, one may acquire terrible or great news about a company and desire to determine whether that news is bound to impact the stock price of that company over a relevant time period.  Companies may be interested in forecasting the demand of their products after they were involved in a brand crisis, but they only have recent sales data from pre-crises times. Policy makers, economists, and citizens alike may be interested in the expected future behavior of the unemployment rate in the upcoming quarter or year. %Policy makers, economists, and citizens alike may be interested in determining whether inflation will dissipate or persist for the foreseeable future
 Standard forecasting methods may not yield any guidance on the post-shock trajectories \citep{baumeister2014real}. That being said, one may be able to construct credible forecasts in this setting \citep{lin2021minimizing}. The procedure of \cite{lin2021minimizing} works by supplementing the present forecast with past data borrowed from other time series which contain post-shock trajectories arising from materially similar structural shocks.
 
-The method of \cite{lin2021minimizing} showed success in the nowcasting setting in which one is interested in predicting the value of the first post-shock response. As it currently stands this method is not appropriate for more nuanced forecasts involving $h$-ahead time points. In this article we develop a  hypothesis testing procedure motivated by the methodology of \cite{lin2021minimizing} and the multi-horizon forecast testing procedure of \cite{quaedvlieg2021multi} in order to test whether or not time series which incorporate shock information exhibit superior predictive performance over forecasts which do not over a set time horizon. This effectively tests whether a shock is transient or permanent over a set time horizon.
+The method of \cite{lin2021minimizing} showed success in the nowcasting setting in which one is interested in predicting the value of the first post-shock response. As it currently stands this method is not appropriate for more nuanced forecasts involving $h$-ahead time points. In this article we develop a  hypothesis testing procedure for determining whether or not time series which incorporate shock information exhibit superior predictive performance over forecasts which do not incorporate such information over a set time horizon. This effectively tests whether a shock is transient or permanent over a set time horizon.
 
 
-\textcolor{red}{This needs work} The core idea of our methodology is to sensibly aggregate similar past realized shock effects which arose from other time series, and then incorporate the aggregated shock effect estimator into the present forecast. Our testing method embraces ideas from 
-forecast aggregation in the post-shock setting \citep{lin2021minimizing}, 
-forecast comparison \citep{diebold1995comparing, quaedvlieg2021multi}, 
-and p-value combination. 
-It also has similarities with 
+\textcolor{red}{This needs work} The core idea of our methodology is to first form a donor pool of time series that have undergone similar shocks, then perform the multi-horizon forecast testing procedure of \cite{quaedvlieg2021multi}  with respect to each of these donors to determine whether the shock is prevalent or transient, and then aggregate the decisions from the donors to make a final decision of transience or prevalence for the time series under study for which no post-shock observations are observed. The multi-horizon forecast testing procedure of \cite{quaedvlieg2021multi} is a natural  extension of \cite{diebold1995comparing}. The post-shock setting follows similar logic as that in \cite{lin2021minimizing}.
+%Our testing method embraces ideas from forecast aggregation in the post-shock setting \citep{lin2021minimizing}, forecast comparison \citep{diebold1995comparing, quaedvlieg2021multi}, and p-value combination. 
+Our procedure has conceptual similarities with 
 conditional forecasting \citep{baumeister2014real, kilian2017structural}, 
-time series pooling using cross-sectional panel data \citep{ramaswamy1993empirical, pesaran1999pooled, hoogstrate2000pooling, baltagi2008forecasting, koop2012forecasting, liu2020forecasting},
+time series pooling using cross-sectional panel data \citep{ramaswamy1993empirical, pesaran1999pooled, hoogstrate2000pooling, baltagi2008forecasting, koop2012forecasting, liu2020forecasting}, 
 forecasting with judgement and models \citep{svensson2005monetary, monti2008forecast}, 
-synthetic control methodology \citep{abadie2010synthetic, agarwal2020two},  
-expectation shocks \citep{croushore2006data, baumeister2014general, clements2019measuring}.
+synthetic control methodology \citep{abadie2010synthetic}, 
+synthetic interventions \citep{agarwal2020synthetic, agarwal2020two}, 
+and expectation shocks \citep{croushore2006data, baumeister2014general, clements2019measuring}. The synthetic intervention approach in \cite{agarwal2020two} is particularly relevant to our method. These authors construct a panel of countries undergoing a variety of interventions and use it to estimate what COVID case trajectories for a particular country would have looked like under different chosen courses of action. They then demonstrate that the method well replicates the observed trajectories of countries under the chosen intervention. This method works well because there are multiple countries undergoing similar interventions in response to a common shock which occurs at a similar past time for each country. In our setting, we do not specify that the time series in the donor pool be temporally similar to the time series under study, but we require that the shocks to those time series be similar to the shock of the time series under study. In \cite{lin2021minimizing} this similarity was stated in the form of a shock-effect distribution. In the present work, we parameterize similarity into post-shock dynamics for an autoregressive process. 
 
-\vspace*{0.5cm}\noindent\textcolor{red}{Need more pointed references on similar methods. Need to discuss how this method extends \cite{lin2021minimizing} and is an application of \cite{quaedvlieg2021multi}.}
+As alluded to above, the success of our approach hinges on the construction of a suitable donor pool that possess similar post-shock dynamics to the time series under study. We develop a pragmatic parametric time series model which parameterizes such a structure. Without such a parameterization there is no avenue for connecting decisions made regarding the post-shock information in the donor pool with the yet-to-be observed post-shock information corresponding to the time series under study. The parameterization that we use states that the post-shock dynamics are determined in part by observed covariates collected right before the first post-shock response is observed. Such a parameterization will not be known in practice. That being said, one can demonstrate the effectiveness and appropriateness of such a parameterization via a leave one out cross validation approach applied to the donor pool in which all post-shock information is observed \textcolor{red}{need LOOCV approach}. A similar prospective approach was discussed in \cite{lin2021minimizing}. We demonstrate the utility of our prevalence testing approach on two real data examples forecasting daily Conoco Phillips stock prices and monthly employment data as well as several simulation examples. Our simulation examples show settings in which our method is expected to work well and demonstrate that the appropriateness of the method decreases as the parametric specifications break down. In the real data examples, we show that the decisions obtained from the donor pool match those that would be observed in the future.
+
+
+
+%\vspace*{0.5cm}\noindent\textcolor{red}{Need more pointed references on similar methods. Need to discuss how this method extends \cite{lin2021minimizing} and is an application of \cite{quaedvlieg2021multi}.}
+
+%\subsection{Forecasting and testing for shock persistence}
+%\label{forecast}
+
+
+%In this section, we motivates the relation between shock persistence testing and forecasting comparison. In time series literature, under a squared error loss $L(\cdot)$, the forecast using the conditional mean is the best point forecast that minimizes the expected loss if the model is specified correctly. That being said, even if the time series does experience a shock but the shock is not persistent, the expected loss of the conditional mean forecast should converge to the minimum expected loss that any forecast can achieve as sample size increases. On the other hand, if the shock is persistent, the conditional mean forecast that incorporates the shock information and makes good use of it should enjoy a smaller expected loss than any conditional mean forecast without such information does. In other words, the problem of testing for shock persistence boils down into comparing the conditional mean forecast that is adjusted by shock information and the one that is unadjusted. To deal with this problem, we applied the forecast comparison procedure of  \cite{quaedvlieg2021multi} to conduct shock persistence testing.
+
+%In this paper, we extend the framework of post-shock forecast \citep{lin2021minimizing}, which aggregates outside information by constructing a donor pool, to post-shock persistence testing. The donor pool consists of time series called  ``donors'' that are similar to the time series of interest. As we do not observe the future data, information from donors can aid our decision making and forecasts. Note that what  similarity exactly means here can be vague but the donors and the time series of interest should come from a common population in principle; see more details of how to select donors in \cite{lin2021minimizing}. In this paper, we also proposed several theoretical results with some detailed conditions on the donor pool, which may alleviate the difficulty of dealing with similarity when choosing donors.
+
+
+%In this paper, we propose a new way of aggregating information from donor pool to conduct post-shock persistence testing, which is quite different from \cite{lin2021minimizing}. The general structure of this aggregation technique is illustrated as below. Suppose we are given a nonempty donor pool with size $n$ that consists of donors $\mc{T}_2, \ldots, \mc{T}_{n+1}$, whose data, including shock information, are observed. With shock information, we are able to compute unadjusted forecast that does not incorporate shock information and adjusted forecast that does.  The forecast comparison using methodology of \cite{quaedvlieg2021multi} for each donor yields a $p$-value, $p_{i+1}$ for $i$th donor in the donor pool. Given $\{p_i \colon i = 2, \ldots, n+1\}$, we propose a methodology for judging whether the shock of the time series of interest is persistent or not. Next, we illustrate the details of our methodology as below.
+
+
+
+%For each donor $\mc{T}_i$, $i = 2, \ldots, n+1$, to compare adjusted and unadjusted forecasts,  a model needs to be specified. The model should describe how the shock impacts the time series at and after a certain time point $t= T_i^* + 1$. For clarity, we refers the unadjusted forecast to the conditional mean forecast based on the part of the model that ignores shock effect; and the adjusted forecast refers to the conditional mean forecast based on the full model. Note that the model needs not to be the same for every donor in the donor pool. However, certain conditions need to be imposed as discussed previously. 
+
+% Given a model for each donor pool, we compute the unadjusted conditional mean forecast and adjusted conditional mean forecast in the framework of \cite{quaedvlieg2021multi}. As introduced in the beginning of Section \ref{section2}, for a given horizon $h$, to forecast $y_{i, t}$, we compute the two forecasts based on the information set $\mathcal{F}_{i, t-h}$ of each donor pool (i.e., the data before $t-h$) for $i = 2, \ldots, n+1$. Note that in practice, a training sample size $K_i$ should be specified for $i = 2, \ldots, n+1$ such that we use the information set $\mathcal{F}_{i, t-h-K_i + 1:t-h}$. 
+ 
+% Even if the data contain shock information for each donor, it is impossible to compute the adjusted conditional mean forecast based on $\mathcal{F}_{i, t-h}$ when $t -h \leq T_i^*$, i.e., we only have training data that do no have any shock information. Note that this is not a big problem when $t-h \geq T_i^* +1$ because  $\mathcal{F}_{i, t-h}$ starts to incorporate shock information. In the literature, \cite{lin2021minimizing} utilizes donor pool information to provide an consistent estimator of the shock effect such that the adjusted  conditional mean forecast is the unadjusted one plus the shock effect estimate. However, the consistent estimation comes with the cost of assuming certain models (in terms of first and second moments) for the shock effect across the donor pool and the method only works for additive shock effect model.  To our best knowledge, there  is no other available methods that can accommodate the case when the shock model is nonlinear. However, even if the model is misspecified, using additive shock effect model to approximate the scalar shock effect that occurs at $t=T_i^*+1$ may still help as opposed to doing nothing. 
+ 
+% With the presence of autoregressive parameters in some models, unbiased estimation with OLS is not feasible but the bias is $O(T^{-1})$, where $T$ is the time series length \citep{shaman1988bias}. In this paper, we use the OLS estimates to approximate the adjusted conditional mean forecast and unadjusted one. The bias decades away as $T\to \infty$.
+
+
+
+
+
 
 
 
@@ -174,7 +203,15 @@ where $y^{1,h}_{i,t}$ is the forecast for $y_{i,t}$ that accounts for the yet-to
 
 Our methodology involves first comparing the performance of $\hat y^{1,h}_{i,t}$ and $\hat y^{2,h}_{i,t}$ for each time series in the donor pool ($i = 2,\ldots,n+1$). We then aggregate the decisions made in the donor pool by the similarity of the underlying time series to the time series under study. The first step in the process employs the recent multi-horizon forecast comparison methodology of \cite{quaedvlieg2021multi} for comparing the predictive abilitiy of forecasts jointly across all horizons of a forecast path, $h = 1,\ldots, H$. The second steps involves aggregation techniques motivated by the supposed data-generating process. These aggregation strategies are motivated by the post-shock aggregation techniques in \cite{lin2021minimizing}. We then report whether an anticipated shock is expected to be transient over the horizon $H$ by using an aggregated decision from the donor pool.
 
-(\textcolor{red}{this needs work}) In Section \ref{modelsetup} we motivate time series models that we consider. In Section \ref{sec:multhor} we discuss the background in \cite{quaedvlieg2021multi} that is necessary for our post-shock testing procedure. In Section \ref{sec:aggmeth} we present aggregation strategies that we consider which inform our decision about the expected shock behavior.
+(\textcolor{red}{this needs work}) In Section \ref{modelsetup} we motivate time series models that we consider. In Section \ref{sec:multhor} we discuss the background in \cite{quaedvlieg2021multi} that is necessary for our post-shock testing procedure. In Section \ref{sec:aggmeth} we present aggregation strategies that we consider which inform our decision about the expected shock behavior. In Section \ref{mathdemo} we provide a heuristic setting that demonstrates when our proposed procedure is expected to work well.
+
+
+
+
+
+
+
+
 
 \section{Methodological details}
 
@@ -323,10 +360,18 @@ The reason for including $\bs{x}_{i, T_i^*-q_2+1}$ is that the dynamic model \eq
 \end{equation}
 where $\hat{p}_i^B$ is given as \eqref{bootp} and $w_i^*$ is the weight corresponding to the similarity between the first and $(i+1)$th row of $\mbf{X}^*$.
 
-We now motivate a voting method and a weighted voting method based on the p-values computed in the donor pool and \textcolor{red}{the algorithms are described in Algorithm \ref{voting}. There are a couple of details that are worth noting. First, for $t = T_i+1$ and $i \geq 2$, we used to the methodology of \cite{lin2021minimizing} to compute point forecast for $\hat{y}_{i,t}^{2,h}$. Note that for $t = T_i+1$, using ordinary least square conditional forecast yields $\hat{y}_{i,t}^{2,h}=  \hat{y}_{i,t}^{1,h}$ as those two forecast just differ by shock information, which is not available at this time point. We make such adjustment for the reason that  the method of  \cite{lin2021minimizing} is generally more likely to perform better than the ordinary forecast under certain conditions. Second, notice that we evaluate forecast comparison for $t = K_i + H+ \max\{q_1, q_2-1\} + 1, \ldots, T_i$ with time length smaller than $T_i$. It is because the framework of \cite{quaedvlieg2021multi} needs training sample, which implicitly requires users to feed the algorithm with moderately large dataset for a more credible analysis. }
+We now motivate a voting method and a weighted voting method based on the p-values computed in the donor pool. \\
+
+\textcolor{red}{Jilei, I want you to just describe what the voting method is in plain writing as I have done above with the weighted average p-value. The propositions can then follow.} \\
+
+\textcolor{red}{Jilei, the algorithm needs to make explicit that a moving block bootstrap is performed.} \\
+
+
+
+\textcolor{red}{the algorithms are described in Algorithm \ref{voting}. There are a couple of details that are worth noting. First, for $t = T_i+1$ and $i \geq 2$, we used to the methodology of \cite{lin2021minimizing} to compute point forecast for $\hat{y}_{i,t}^{2,h}$. Note that for $t = T_i+1$, using ordinary least square conditional forecast yields $\hat{y}_{i,t}^{2,h}=  \hat{y}_{i,t}^{1,h}$ as those two forecast just differ by shock information, which is not available at this time point. We make such adjustment for the reason that  the method of  \cite{lin2021minimizing} is generally more likely to perform better than the ordinary forecast under certain conditions. Second, notice that we evaluate forecast comparison for $t = K_i + H+ \max\{q_1, q_2-1\} + 1, \ldots, T_i$ with time length smaller than $T_i$. It is because the framework of \cite{quaedvlieg2021multi} needs training sample, which implicitly requires users to feed the algorithm with moderately large dataset for a more credible analysis. }
 
 \vspace{.5cm}
-\begin{algorithm}[H]
+\begin{algorithm}
 \SetAlgoLined \label{voting}
 
 \SetKwInOut{Input}{Input}
@@ -421,9 +466,7 @@ where the last second step assumes that $\{I(p_i\leq \alpha)\colon i\in \mc{I}_n
 
 
 
-We now motivate a model selection framework for comparing different models in the donor pool with a goal of inferring which model is most appropriate for the time series under study.
-
-Suppose we are interested in comparing two models $\mc{M}_0$ and $\mc{M}$ using AIC for forecasting the response in the time series of interest. However, direct comparison is not feasible as the data are not observed. Instead, we can conduct such inference based on the donor pool. Let the AIC of $\mc{M}_j$ for $i$th time series be $a_i^j$ for $i = 1, \ldots, n+1$ and $j = 1, 2$. Let $\xi_i = \P(a_i^1 < a_i^2)$. Note that if the data generating process is based on $\mc{M}_0$ and is true for all the donors and time series of interest, $\xi_i$ is expected to be high. Additionally, it is reasonable to assume $\xi_i =\xi $ for $\xi \in [0,1]$ and $i = 1, \ldots, n+1$.  Notice that this setup is similar to the setup of weighted voting or voting we discussed before. So, under similar arguments, we propose the following corollary for synthetic pairwise model selection.
+We now motivate a model selection framework for comparing different models in the donor pool with a goal of inferring which model is most appropriate for the time series under study. Suppose we are interested in comparing two models $\mc{M}_0$ and $\mc{M}$ using AIC for forecasting the response in the time series of interest. However, direct comparison is not feasible as the data are not observed. Instead, we can conduct such inference based on the donor pool. Let the AIC of $\mc{M}_j$ for $i$th time series be $a_i^j$ for $i = 1, \ldots, n+1$ and $j = 1, 2$. Let $\xi_i = \P(a_i^1 < a_i^2)$. Note that if the data generating process is based on $\mc{M}_0$ and is true for all the donors and time series of interest, $\xi_i$ is expected to be high. Additionally, it is reasonable to assume $\xi_i =\xi $ for $\xi \in [0,1]$ and $i = 1, \ldots, n+1$.  Notice that this setup is similar to the setup of weighted voting or voting we discussed before. So, under similar arguments, we propose the following corollary for synthetic pairwise model selection.
 
 
 \begin{corollary}[Synthetic pairwise model selection]
@@ -460,33 +503,8 @@ Note that Corollary \ref{coro2} gives an asymptotic upper bound for the misclass
 
 
 
-\subsection{Forecasting and testing for shock persistence}
-\label{forecast}
-
-
-In this section, we motivates the relation between shock persistence testing and forecasting comparison. In time series literature, under a squared error loss $L(\cdot)$, the forecast using the conditional mean is the best point forecast that minimizes the expected loss if the model is specified correctly. That being said, even if the time series does experience a shock but the shock is not persistent, the expected loss of the conditional mean forecast should converge to the minimum expected loss that any forecast can achieve as sample size increases. On the other hand, if the shock is persistent, the conditional mean forecast that incorporates the shock information and makes good use of it should enjoy a smaller expected loss than any conditional mean forecast without such information does. In other words, the problem of testing for shock persistence boils down into comparing the conditional mean forecast that is adjusted by shock information and the one that is unadjusted. To deal with this problem, we applied the forecast comparison procedure of  \cite{quaedvlieg2021multi} to conduct shock persistence testing.
-
-In this paper, we extend the framework of post-shock forecast \citep{lin2021minimizing}, which aggregates outside information by constructing a donor pool, to post-shock persistence testing. The donor pool consists of time series called  ``donors'' that are similar to the time series of interest. As we do not observe the future data, information from donors can aid our decision making and forecasts. Note that what  similarity exactly means here can be vague but the donors and the time series of interest should come from a common population in principle; see more details of how to select donors in \cite{lin2021minimizing}. In this paper, we also proposed several theoretical results with some detailed conditions on the donor pool, which may alleviate the difficulty of dealing with similarity when choosing donors.
-
-
-In this paper, we propose a new way of aggregating information from donor pool to conduct post-shock persistence testing, which is quite different from \cite{lin2021minimizing}. The general structure of this aggregation technique is illustrated as below. Suppose we are given a nonempty donor pool with size $n$ that consists of donors $\mc{T}_2, \ldots, \mc{T}_{n+1}$, whose data, including shock information, are observed. With shock information, we are able to compute unadjusted forecast that does not incorporate shock information and adjusted forecast that does.  The forecast comparison using methodology of \cite{quaedvlieg2021multi} for each donor yields a $p$-value, $p_{i+1}$ for $i$th donor in the donor pool. Given $\{p_i \colon i = 2, \ldots, n+1\}$, we propose a methodology for judging whether the shock of the time series of interest is persistent or not. Next, we illustrate the details of our methodology as below.
-
-
-
-For each donor $\mc{T}_i$, $i = 2, \ldots, n+1$, to compare adjusted and unadjusted forecasts,  a model needs to be specified. The model should describe how the shock impacts the time series at and after a certain time point $t= T_i^* + 1$. For clarity, we refers the unadjusted forecast to the conditional mean forecast based on the part of the model that ignores shock effect; and the adjusted forecast refers to the conditional mean forecast based on the full model. Note that the model needs not to be the same for every donor in the donor pool. However, certain conditions need to be imposed as discussed previously. 
-
- Given a model for each donor pool, we compute the unadjusted conditional mean forecast and adjusted conditional mean forecast in the framework of \cite{quaedvlieg2021multi}. As introduced in the beginning of Section \ref{section2}, for a given horizon $h$, to forecast $y_{i, t}$, we compute the two forecasts based on the information set $\mathcal{F}_{i, t-h}$ of each donor pool (i.e., the data before $t-h$) for $i = 2, \ldots, n+1$. Note that in practice, a training sample size $K_i$ should be specified for $i = 2, \ldots, n+1$ such that we use the information set $\mathcal{F}_{i, t-h-K_i + 1:t-h}$. 
- 
- Even if the data contain shock information for each donor, it is impossible to compute the adjusted conditional mean forecast based on $\mathcal{F}_{i, t-h}$ when $t -h \leq T_i^*$, i.e., we only have training data that do no have any shock information. Note that this is not a big problem when $t-h \geq T_i^* +1$ because  $\mathcal{F}_{i, t-h}$ starts to incorporate shock information. In the literature, \cite{lin2021minimizing} utilizes donor pool information to provide an consistent estimator of the shock effect such that the adjusted  conditional mean forecast is the unadjusted one plus the shock effect estimate. However, the consistent estimation comes with the cost of assuming certain models (in terms of first and second moments) for the shock effect across the donor pool and the method only works for additive shock effect model.  To our best knowledge, there  is no other available methods that can accommodate the case when the shock model is nonlinear. However, even if the model is misspecified, using additive shock effect model to approximate the scalar shock effect that occurs at $t=T_i^*+1$ may still help as opposed to doing nothing. 
- 
- With the presence of autoregressive parameters in some models, unbiased estimation with OLS is not feasible but the bias is $O(T^{-1})$, where $T$ is the time series length \citep{shaman1988bias}. In this paper, we use the OLS estimates to approximate the adjusted conditional mean forecast and unadjusted one. The bias decades away as $T\to \infty$.
-
-
-
-
-
-\newpage
-
+\subsection{Heuristic setting demonstrating when prevalence testing works well}
+\label{mathdemo}
 
 We now demonstrate an idealized theoretical setting for which our post-shock testing methodology involving a distance based weighted average of p-values works well. The idea is that inferences based on distance based weighted nearly recovers the time series under study when there exists a time series in the donor pool, indexed by $i'$, such that $\x_{1,t} \approx \x_{i',t}$ and the signal strength in our modeling setup \eqref{model-gen} and \eqref{random-effects} is large relative to variation. 
 
@@ -579,13 +597,13 @@ We now bound the difference in loss differential vectors $\|\dbf_{1,t} - \dbf_{i
 $$
   |y_{1,t} - \hat{y}^{1,h}_{1,t}| - |y_{1,t} - \hat{y}^{2,h}_{1,t}| \leq |\tilde{y}_{i',t} - \hat{\tilde{y}}^{i',h}_{1,t}| - |\tilde{y}_{i',t} - \hat{\tilde{y}}^{2,h}_{1,t}| + 2(\varepsilon_3 + \varepsilon_7).
 $$
-Let $\varepsilon_8 = 2(\varepsilon_3 + \varepsilon_7)$ and conclude that $\|\dbf_{1,t} - \dbf_{i',t}\| \leq \varepsilon_8$ on $E$ for all $t > T^*$.
+Let $\varepsilon_8 = 2(\varepsilon_3 + \varepsilon_7)$ and conclude that $\|\dbf_{1,t} - \dbf_{i',t}\| \leq \varepsilon_8$ on $E$ for all $t > T^*$. Putting this all together, we can pick $\varepsilon_8$ small enough so that for some fixed $\varepsilon > 0$,
+\begin{equation} \label{testbounds}
+   \left|\sqrt{T}\frac{\textbf{w}_1'\bar{\dbf}_1^b - \textbf{w}_1'\bar{\dbf}_1}{\hat{\zeta}^b_1} - \sqrt{T}\frac{\textbf{w}_{i'}'\bar{\dbf}_{i'}^b - \textbf{w}_{i'}'\bar{\dbf}_{i'}}{\hat{\zeta}^b_{i'}}\right| < \varepsilon	
+\end{equation}
+on the set $E$ where we specify that $\textbf{w}_1 = \textbf{w}_{i'}$ and that the MBB procedures samples the same indices of blocks from $\dbf_{1,t}$ and $\dbf_{i',t}$, $t = T^*+1,\ldots, T$ when forming the test statistics in \eqref{testbounds}. Thus for any fixed small $\varepsilon < 0$ there exists a choice of $\sigma^2$ and $\varepsilon_1$ such that inferences involving the $i'$ series for which post-shock behavior is observed can be substituted in place of the $i = 1$ series under study with high probability of a correspondence in inferences. 
 
 
-
-
-
-\vspace*{0.5cm}\noindent Finally: bootstrapping $\dbf_{i',t}$ in place of $\dbf_{1,t}$ should yield the same conclusions. \\
 
 
 
@@ -780,9 +798,11 @@ In Table 2, using the synthetic pairwise model selection procedures specified in
 
 \section{Discussion}
 
-Talk about post-shock forecasting as parameterizing exogeniety and using hindsight in the donor pool to explicitly estimate exogeneity apriori. This framing has its limits, we are not able to perform post-shock forecasts when we are temporarily removed from the known shock time. For example, in the Conoco Philips analysis it is hard to imagine a successful post-shock forecast being made in the days prior to the weekend preceding Monday, March 9th 2020 as the OPEC-Russia oil supply increases and Covid-19 fears had not yet taken shape.
+\textcolor{red}{needs work} Talk about post-shock forecasting as parameterizing exogeniety and using hindsight in the donor pool to explicitly estimate exogeneity apriori. This framing has its limits, we are not able to perform post-shock forecasts when we are temporarily removed from the known shock time. For example, in the Conoco Philips analysis it is hard to imagine a successful post-shock forecast being made in the days prior to the weekend preceding Monday, March 9th 2020 as the OPEC-Russia oil supply increases and Covid-19 fears had not yet taken shape.
 
-The post-shock forecasting methodology presented here and in \cite{lin2021minimizing} is heavily dependent on the construction of a suitable donor pool which will exhibit a degree of subjectivity. This is a limitation of our approach, but we argue that this limitation is not a deal breaker.  
+\textcolor{red}{needs work} The post-shock forecasting methodology presented here and in \cite{lin2021minimizing} is heavily dependent on the construction of a suitable donor pool which will exhibit a degree of subjectivity. This is a limitation of our approach, but we argue that this limitation is far from a deal breaker and has its virtues. Our approach allows for subject matter experts to obtain answers in a tractable manner from donor pool to model to answers. Subject matter experts can therefore investigate and debate the appropriateness and effect that particular donors have on the conclusions which are obtained from the method. This invites a robustness possibility in which the inclusion/exclusion of specific donors do not materially effect the decision that are obtained.
+
+\textcolor{red}{needs work} One hand, \cite{agarwal2020two} do not require such a parametric specification. On the other hand, the success of their approach is retrospective and its success is demonstrated in panel settings in which multiple donors are needed to inform hypothetical trajectories concerning the exact same shock.
 
 
 
