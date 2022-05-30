@@ -188,7 +188,7 @@ ols.est.alphahat <- function(Tstar, Y, X) {
 
 # functions that return alpha.hat and synthetic weights
 ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, 
-                                 sig.levl = .05, q1, 
+                                 sig.levl = .05, q1, subset = FALSE, 
                                  retro = TRUE, selfW = NA, scale = FALSE) {
   
   n <- length(Y) - 1
@@ -241,8 +241,8 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw,
         yhat.unadj <- Y[[i]][(t + Ki + H - h + 1 - q1):(t + Ki + H - h)]
         
         for (j in 1:h) {
-          yhat.adj.h <- matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
-                                 yhat.adj[j:(j + q1 - 1)], X[[i]][-(1:q1), ][t + Ki + H - h + j, ]))
+          yhat.adj.h <- beta.hat.adj %*% matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
+                                                  yhat.adj[j:(j + q1 - 1)], X[[i]][-(1:q1), ][t + Ki + H - h + j, ]))
           yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.adj[j:(j + q1 - 1)], X[[i]][-(1:q1), ][t + Ki + H - h + j, ]))
           
           if (t + Ki + H - h == Tstari & i >= 3 & h == 1) {
@@ -260,7 +260,13 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw,
     }
     # loss differential
     d <- m2.L.i - m1.L.i
-    ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
+    if (subset == FALSE) {
+      ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw) 
+    } else {
+      sub.index <- (Ti - Ki - q1 - (Ti - Tstari) + H + 1):(Ti - Ki - H - q1)
+      d.subset <- d[sub.index,  ]
+      ps[i] <- taSPA.mhfc(ell = ell, d = d.subset, B = B, bw = bw)
+    }
   }
   
   # weights
@@ -286,7 +292,7 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw,
 
 # functions that return alpha.hat and synthetic weights for decaying shock effects
 ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
-                               q1, q2, 
+                               q1, q2, subset = FALSE, 
                                ell, B, bw, sig.levl = .05, retro = TRUE,
                                nolag.i.x = NA, selfW = NA, scale = FALSE) {
   
@@ -459,7 +465,13 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
     }
     # loss differential
     d <- m2.L.i - m1.L.i
-    ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
+    if (subset == FALSE) {
+      ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw) 
+    } else {
+      sub.index <- (Ti - Ki - max(q1, q2 - 1) - (Ti - Tstari) + H + 1):(Ti - Ki - H - max(q1, q2 - 1))
+      d.subset <- d[sub.index,  ]
+      ps[i] <- taSPA.mhfc(ell = ell, d = d.subset, B = B, bw = bw)
+    }
   }
   
   
@@ -482,6 +494,7 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
   # output
   return(list(ps = ps, W = W, Is = Is))
 }
+
 
 
 
@@ -620,9 +633,15 @@ dat <- complete_cases_merged
 dat <- dat[, c(1, 3, 2, 4, 6, 8, 10)]
 date <- rownames(dat)
 # setup
-H <- 12
 K <- 24
+# number of horizons
+Hs <- c(2, 3, 4, 5)
+# tab
+tab <- data.frame()
 L <- 18
+
+# result
+for (H in Hs) {
 
 # Time Series 2
 shock.t2 <- which(date == '1980-03-01') + 1
@@ -708,9 +727,9 @@ mod.t1.dynamic <- lm(TS1$PAYEMS ~ as.matrix(TS1[, 2:7]) + co.D + TS1$shock.t1)
 AICs.20200301 <- c(AIC(mod.t1.null), AIC(mod.t1.permanent), AIC(mod.t1.dynamic))
 
 # Ti
-Ts <- rep(68, 5)
+Ts <- rep(58, 5)
 # Tstar
-Tstar <- rep(49, 5)
+Tstar <- rep(39, 5)
 # Y
 Y <- c()
 X <- c()
@@ -723,26 +742,72 @@ for (i in 1:4) {
 
 # testing 
 res1 <- ps.indic.W.permanent(Tstar = Tstar, 
-                             q1 = 1, 
+                             q1 = 1, subset = TRUE,  
                              Y = Y, X = X, K = rep(K, 4), H = H,
                              Ts = Ts, ell = 4, B = 200, bw = 4, 
                              scale = TRUE)
 
 res2 <- ps.indic.W.dynamic(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), 
-                           q1 = 1, q2 = 1, 
+                           q1 = 1, q2 = 1, subset = TRUE,  
                            H = H, Ts = Ts, ell = 4, B = 200, bw = 4,
                            scale = TRUE)
 
-Wstar <- res1$W
-
-matrix(res2$ps[-1], nrow = 1) %*% matrix(res1$W)
-matrix(res2$Is[-1], nrow = 1) %*% matrix(res1$W)
-
-
-AICs <- rbind(AICs.19800301, AICs.20010901, AICs.20080301)
-I.AICs <- c(I.AIC.2, I.AIC.3, I.AIC.4)
-matrix(Wstar, nrow = 1) %*% AICs
-matrix(Wstar, nrow = 1) %*% I.AICs
+# p-values
+res1.ps <- res1$ps
+res2.ps <- res2$ps
+# phats
+res1.phat <- sum(res1$ps[-1] * res1$W)
+res2.phat <- sum(res2$ps[-1] * res2$W)
+# p-value distance
+res1.pd <- abs(res1$ps[1] - res1.phat)
+res2.pd <- abs(res2$ps[1] - res2.phat)
+# weighted indicators
+res1.wi <- sum(res1$Is[-1] * res1$W)
+res2.wi <- sum(res2$Is[-1] * res2$W)
+# voting
+res1.vote <- ifelse(mean(res1$Is[-1]) >= 0.5, yes = 1, no = 0)
+res2.vote <- ifelse(mean(res2$Is[-1]) >= 0.5, yes = 1, no = 0)
+# weighted voting
+res1.wvote <- ifelse(res1.wi >= 0.5, yes = 1, no = 0)
+res2.wvote <- ifelse(res2.wi >= 0.5, yes = 1, no = 0)
+# correctness
+res1.vote.c <-
+  ifelse(res1.vote == res1$Is[1], yes = 'Yes', no = 'No')
+res2.vote.c <-
+  ifelse(res2.vote == res2$Is[1], yes = 'Yes', no = 'No')
+res1.wvote.c <-
+  ifelse(res1.wvote == res1$Is[1], yes = 'Yes', no = 'No')
+res2.wvote.c <-
+  ifelse(res2.wvote == res2$Is[1], yes = 'Yes', no = 'No')
+# correctness output
+res1.vote.output <- paste0(res1.vote, ' (', res1.vote.c, ')')
+res2.vote.output <- paste0(res2.vote, ' (', res2.vote.c, ')')
+res1.wvote.output <- paste0(res1.wvote, ' (', res1.wvote.c, ')')
+res2.wvote.output <- paste0(res2.wvote, ' (', res2.wvote.c, ')')
+# table
+tab.i1 <-
+  data.frame(
+    H = H,
+    model = 'M0',
+    p1 = res1$ps[1],
+    phat = res1.phat,
+    pd = res1.pd,
+    vote.output = res1.vote.output,
+    wvote.output = res1.wvote.output
+  )
+tab.i2 <-
+  data.frame(
+    H = H,
+    model = 'M1',
+    p1 = res2$ps[1],
+    phat = res2.phat,
+    pd = res2.pd,
+    vote.output = res2.vote.output,
+    wvote.output = res2.wvote.output
+  )
+tab.i <- rbind(tab.i1, tab.i2)
+tab <- rbind(tab, tab.i)
+}
 
 # plot shock transience
 setwd('~/Desktop/Research/synthetic prediction/')
