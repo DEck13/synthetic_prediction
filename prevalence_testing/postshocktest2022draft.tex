@@ -736,10 +736,25 @@ Next, we discuss the performance of $\hat{p}_1$, voting and weighted voting. Fro
 %\end{table}
 
 
+\vspace*{0.5cm}\noindent\textbf{Note}\vspace*{0.5cm}
 
-\textcolor{red}{We now introduce a forecast scenarios \citep{baumeister2014real} approach to our prevalent testing framework. In \cite{lin2021minimizing} it was mentioned that Conoco Phillips possibly underwent a dual shock, which retrospectively, seems likely to be the case \citep{sharif2020covid}. In \cite{lin2021minimizing} the financial shocks and oil supply shocks were separated to form their own donor pools, the additive shock methodology was applied to each of these donor pools, and the results were added together. This approach did very well, almost perfectly recovering the yet-to-be post-shock response. We motivate a similar approach within our prevalence testing framework. The idea is to again separate out the financial and oil supply time series and add these series together.....  }
+\textcolor{red}{We now introduce a forecast scenarios \citep{baumeister2014real} approach to our prevalent testing framework. In \cite{lin2021minimizing} it was mentioned that Conoco Phillips possibly underwent a dual shock, which retrospectively, seems likely to be the case \citep{sharif2020covid}. There were also rumblings of a dual shock in real time \citep{fitch2020oil, stevens2020oil, westbrook2020forex}.  In \cite{lin2021minimizing} a dual shock formulation was provided in which supposed financial shocks and oil supply shocks were separated to form their own donor pools, the additive shock methodology was applied to each of these donor pools, and the results were added together. This approach did very well, almost perfectly recovering the yet-to-be post-shock response.} 
 
+\textcolor{red}{We motivate a similar approach within our prevalence testing framework. The idea is to again separate out the financial and oil supply time series and add these series together which will create a new donor pool consisting of series which incorporate a dual shock whose behavior can be assessed with our methodology. As in \cite{lin2021minimizing} the oil supply shock donor pool consists of the single November 27, 2014 series; and the financial shock donor pool consists of the remaining two series. These added series which account for a potential dual shock take the following form where the subscript $o$ refers to the single November 27, 2014, the subscript $j$ indexes the other series, and $T_o = T_j$ and $T^*_o = T^*_j$}
+\begin{equation} \label{eq:dualshock}
+\begin{split}
+  z_{j,t} &= y_{o,t} + y_{j,t} \\
+  	&= \bar{\eta}_j + (\phi_o y_{o,t-1} +\theta_{o,t-1}'\x_{o,t-1} + \phi_j y_{j,t-1} +\theta_{j,t-1}'\x_{j,t-1})(1 - \bar{D}_t) \\
+  	&\qquad + (\bar{\alpha}_j + \tilde{\phi}_o y_{o,t-1} + \tilde{\theta}_{o,t-1}'\x_{o,t-1} + \tilde{\phi}_j y_{j,t-1} + \tilde{\theta}_{j,t-1}'\x_{j,t-1})\bar{D}_t + \bar{\varepsilon}_t,
+\end{split}
+\end{equation}
+where $\bar{\eta}_j = \eta_o + \eta_j$, $\bar{\alpha}_j = \alpha_o + \alpha_j$, $D_t = D_{0,t} = D_{j,t}$, and $\bar{\varepsilon}_t = \varepsilon_{0,t} + \varepsilon_{j,t} + D_t(\varepsilon_{\alpha,o} + \varepsilon_{\alpha,j})$. The model \eqref{eq:dualshock} is then a regression model with a heterogeneous error structure, the error distribution post-shock differs from the error distribution pre-shock. All model parameters are estimable in \eqref{eq:dualshock}. However, aggregation strategies are slightly different for this model since covariates are included for two separate series. 
 
+We now examine distance-based weighting for model \eqref{eq:dualshock}. Consider a weight vector $\textbf{W}^d \in \R^{n-1}$ with elements $w_i \in [0,1]$ that satisfy $\sum_i w_i = 1$. Construct $\X_1^d = (\x_{1,T^*_1+1}', \; \x_{1,T^*_1+1}')$, $\X^d \in \R^{n-1 \times 2p}$ with rows $(\x_{o,T^*_o+1}', \; \x_{j,T^*_j+1}')$, and $\hat{\X}_1^d(\textbf{W}) = \textbf{W}^{d'}\X^d$. Then the optimal weights satisfy 
+$$
+  \textbf{W}^{d*} = \text{arg min}_{\textbf{W} \in \mathcal{W}} \|\X_1^d - \hat{\X}_1^d(\textbf{W})\|_{2p}
+$$
+where $\mathcal{W}$ is the set of all allowable weight vectors.
 
 
 \subsection{Testing shock prevalence for Month-on-Month Change in Log Nonfarm Payrolls (Seasonally Adjusted)}
