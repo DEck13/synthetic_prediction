@@ -676,36 +676,36 @@ We summarize our numerical results in Table \ref{coptable}. In the Table \ref{co
 
 
 \begin{table}[H]
-	\caption{Results for Conoco Philips ($n=3$), $\mbf{W}^* = (0.183, 0, 0.817)$ from scaled covariates} \label{coptable}
+	\caption{Results for Conoco Philips ($n=3$), $\mbf{W}^* = (0.221, 0, 0.779)$ from scaled covariates} \label{coptable}
 \begin{center}
   \begin{tabular}{cccccccccr}
      $H$  & Model &   $p_1$ & $\hat{p}_1$ & $|\hat{p}_1-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
      \hline 
-     \multirow{2}{*}{2} & $\mc{M}_0$  &   1 & 0.183  & 0.817 & 0 (Yes) & 1 (No)  \\      
+     \multirow{2}{*}{2} & $\mc{M}_0$  &   1 & 0.225  & 0.775 & 0 (Yes) & 1 (No)  \\      
       & $\mc{M}$  & 1 & 1 & $0$   & 0 (Yes) &0 (Yes)   \\[.2cm]
-     \multirow{2}{*}{4} & $\mc{M}_0$ &   0 & 0.519  & $0.519$ & 0 (No) &1 (No)    \\
+     \multirow{2}{*}{4} & $\mc{M}_0$ &   0 & 0.953  & $0.953$ & 0 (No) &0 (No)    \\
       &  $\mc{M}$ & 1& 1 & 0 &0 (Yes)  &0 (Yes)  \\[.2cm]
-     \multirow{2}{*}{6} &  $\mc{M}_0$ &   0   & $0.817$ & 0.817 & 0 (No) &1 (No)   \\
+     \multirow{2}{*}{6} &  $\mc{M}_0$ &   0   & $1$ & 1 & 0 (No) &0 (No)   \\
       &  $\mc{M}$ & 1 & 1  & 0 &0 (Yes) & 0 (Yes) \\[.2cm]
-     \multirow{2}{*}{8} & $\mc{M}_0$ & 0  & 0.817 & 0.817 & 0 (No) & 0 (No)\\
+     \multirow{2}{*}{8} & $\mc{M}_0$ & 0  & 1 & 1 & 0 (No) & 0 (No)\\
      & $\mc{M}$ & 1 & 1 & 0 & 0 (Yes) & 0 (Yes)
   \end{tabular}
 \end{center}	
 \end{table}
 
 
-We now discuss the numerical results. Note that the synthetic weight vector $\mbf{W}^*$ for the three donors is $(0.183, 0, 0.817)$. It suggests that the donor associated with the shock on November 27, 2014 is the most similar time series relative to the time series of interest, and the one on March 15, 2008 is the second. As pointed out by \cite{lin2021minimizing} in Section 5.1(3), the shocks experienced by the first and  third donor are related to recessions, and oil supply shock, respectively. The results are intuitive in the sense that from a retrospective perspective of a data analyst, the shock experienced by the series $\{y_{1,t}\colon t = 1, \ldots, T_1\}$ is due to oil supply shock and recessions caused by COVID-19 pandemic.
+We now discuss the numerical results. Note that the synthetic weight vector $\mbf{W}^*$ for the three donors is $(0.221, 0, 0.779)$. It suggests that the donor associated with the shock on November 27, 2014 is the most similar time series relative to the time series of interest, and the one on March 15, 2008 is the second. As pointed out by \cite{lin2021minimizing} in Section 5.1(3), the shocks experienced by the first and  third donor are related to recessions, and oil supply shock, respectively. The results are intuitive in the sense that from a retrospective perspective of a data analyst, the shock experienced by the series $\{y_{1,t}\colon t = 1, \ldots, T_1\}$ is due to oil supply shock and recessions caused by COVID-19 pandemic.
 
 
 
 
 
 
-Let $a_i^1$ and $a_i^2$ denote the AICs of $\mc{M}_0$ and $\mc{M}$ for $i$th time series, respectively. Based on \eqref{model-gen}, which describes $\mc{M}$ and the description of $\mc{M}$ in the beginning of Section \ref{sec::ne}, it may be inferred that $\mc{M}$ captures the post-shock dynamic change whereas $\mc{M}_0$ suggests a persistent post-shock additive location shift. Using the synthetic pairwise model selection procedures specified in Corollary \ref{coro2}, it turns out that $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)=1 >0.5$. Using this aggregated model selection approach, we prefer $\mc{M}$ over $\mc{M}_0$. \textcolor{red}{Add column for AIC results}
+Let $a_i^1$ and $a_i^2$ denote the AICs of $\mc{M}_0$ and $\mc{M}$ for $i$th time series, respectively. Based on \eqref{model-gen}, which describes $\mc{M}$ and the description of $\mc{M}$ in the beginning of Section \ref{sec::ne}, it may be inferred that $\mc{M}$ captures the post-shock dynamic change whereas $\mc{M}_0$ suggests a persistent post-shock additive location shift. Using the synthetic pairwise model selection procedures specified in Corollary \ref{coro2}, it turns out that $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)=1 >0.5$. Using this aggregated model selection approach, we prefer $\mc{M}$ over $\mc{M}_0$. \textcolor{red}{For reference, the AICs for $\mc{M}_0$ in the donors are $(297.410, 413.357, 295.174)$ whereas those for $\mc{M}$ in the donors are $(302.835, 409.544, 280.609)$. }
 
-From Table \ref{coptable}, we can see that $p_1$ for $\mc{M}$ is not sensitive to the changes of $H$ and is uniformly 1. Under any reasonable significance level, based on the features of $\mc{M}$, we infer that post-shock dynamics do not differ from the pre-shock one and the shock is not persistent. In contrast, $p_1$ of $\mc{M}_0$ equals 1 for $H = 2$ whereas equals 0 for $H = 4, 6, 8$. It is possible that $\mc{M}_0$ does not fit the data well. In practice, a simple additive post-shock location-shift is rare and more complicated structures cannot be explained using this. To support this claim, we plotted $\{y_{1,t} \colon 1, \ldots, T_1\}$ in Figure \ref{copshocktransience}.
+From Table \ref{coptable}, we can see that $p_1$ for $\mc{M}$ is not sensitive to the changes of $H$ and is uniformly 1. Under any reasonable significance level, based on the features of $\mc{M}$, we infer that post-shock dynamics do not differ from the pre-shock one and the shock is not persistent. In contrast, $p_1$ of $\mc{M}_0$ equals 1 for $H = 2$ whereas equals 0 for $H = 4, 6, 8$. It is possible that $\mc{M}_0$ does not fit the data well. In practice, a simple additive post-shock location-shift is rare and more complicated structures cannot be explained using this. 
 
-Two dashed vertical lines are plotted in Figure \ref{copshocktransience}, where the left one corresponds to $t = T_1^*$ and the right one  corresponds to $t = T_1^*+1$. As shown by \cite{lin2021minimizing}, $y_{1,t}$ experienced a substantial shock at  $t = T_1^*+1$ and it is evident from $y_{1, T_1^*}-y_{1, T_1^*+1}$ shown in Figure 1. We also graphed a benchmark horizontal dashed line for comparison, which corresponds to the stock price $y_{1, T_1^*}$. However, notice that even if $y_{1,t}$ first experienced a considerable drop at $t = T_1^*+1$,   it started to revert back and became closer to the benchmark horizontal line as $t$ increases for $t > T_1^*$. Note that this observation confirms our model selection and what $\mc{M}$ suggests for shock transience. It is also important to re-emphasize that  the test compares the forecasts from $t = T_1^* + H+1$ to $t=T_1$. In other words, the beginning dramatic drop as seen from Figure \ref{copshocktransience} around March is not considered in the forecast comparison. It is reasonable to our objective as we are interested in long-term persistence rather-than short-term substantial changes. It is   possible that the significance of $\mc{M}_0$ for $H = 2$ takes into account the short-term percussions of the substantial shock. It is because (1) for small $H$, the loss differential matrix incorporates some large loss differential elements corresponding to $t$ close to $T^*_1+1$ and (2) $\mc{M}_0$ can be very sensitive to substantial additive location shift around $t = T^*_1+1$. And this phenomenon disappears as $H$ increases.
+Two dashed vertical lines are plotted in Figure \ref{copshocktransience}, where the left one corresponds to $t = T_1^*$ and the right one  corresponds to $t = T_1^*+1$. As shown by \cite{lin2021minimizing}, $y_{1,t}$ experienced a substantial shock at  $t = T_1^*+1$ and it is evident from $y_{1, T_1^*}-y_{1, T_1^*+1}$ shown in Figure 1. We also graphed a benchmark horizontal dashed line for comparison, which corresponds to the stock price $y_{1, T_1^*}$. However, notice that even if $y_{1,t}$ first experienced a considerable drop at $t = T_1^*+1$,   it started to revert back and became closer to the benchmark horizontal line as $t$ increases for $t > T_1^*$. Note that this observation confirms our model selection and what $\mc{M}$ suggests for shock transience. It is also important to re-emphasize that  the test compares the forecasts from $t = T_1^* + H+1$ to $t=T_1$. In other words, the beginning dramatic drop as seen from Figure \ref{copshocktransience} around March is not considered in the forecast comparison. It is reasonable to our objective as we are interested in long-term persistence rather-than short-term substantial changes. 
 
 
 \begin{figure}[H]
@@ -718,6 +718,9 @@ Two dashed vertical lines are plotted in Figure \ref{copshocktransience}, where 
 Next, we discuss the performance of $\hat{p}_1$, voting and weighted voting. From Table \ref{coptable},  we can observe that $|\hat{p}_1-p_1|$ equals zero uniformly for $\mc{M}$ and $H = 2, 4, 6, 8$. It suggests that $\hat{p}_1$ under $\mc{M}$ serves as a favorable proxy for $p_1$ under $\mc{M}$. In contrast, $|\hat{p}_1-p_1|$ is quite large for $\mc{M}_0$ and different $H$. It is possible that $\mc{M}_0$  does not fit the data properly or the donors are not representative of the time series of interest in the context of $\mc{M}_0$. Here, it is important to note that  the comparability between donors and the time series of interest is model-dependent.
 
 \textcolor{red}{According to the last two columns of Table \ref{coptable}, the decisions yielded by voting and weighted voting are correct for $\mc{M}$ and $H = 2, 4, 6, 8$. However, the decisions for voting and weighted voting are incorrect for $\mc{M}_0$ and $H=2, 4, 6, 8$ except for voting for $\mc{M}_0$ at $H = 2$. The interpretations for this are similar to those when we analyze $|\hat{p}_1-p_1|$. Note that the decisions using $\hat{p}_1$ and weighted voting are similar. It is reasonable as they are functions of $\mbf{W}^*$. Because $p_1$ is uniformly 1 for $\mc{M}$, it is reasonable to expect $\P(p_1\leq .05)$ be small. Note that Proposition \ref{votprop} and Corollary \ref{coro2} show that the decisions made by voting and weighted voting procedures should be correct with very high probability if we assume the asymptotic approximation of the expected absolute error works well for  $n = 3$.}
+
+
+
 
 %\begin{table}[H]
 	%\caption{Results for Conoco Philips ($n=5$), $\mbf{W}^* = (0, 0, 0, 0.363, 0.637)$ from scaled covariates}
@@ -744,8 +747,8 @@ Next, we discuss the performance of $\hat{p}_1$, voting and weighted voting. Fro
 \begin{equation} \label{eq:dualshock}
 \begin{split}
   z_{j,t} &= y_{o,t} + y_{j,t} \\
-  	&= \bar{\eta}_j + (\phi_o y_{o,t-1} +\theta_{o,t-1}'\x_{o,t-1} + \phi_j y_{j,t-1} +\theta_{j,t-1}'\x_{j,t-1})(1 - \bar{D}_t) \\
-  	&\qquad + (\bar{\alpha}_j + \tilde{\phi}_o y_{o,t-1} + \tilde{\theta}_{o,t-1}'\x_{o,t-1} + \tilde{\phi}_j y_{j,t-1} + \tilde{\theta}_{j,t-1}'\x_{j,t-1})\bar{D}_t + \bar{\varepsilon}_t,
+  	&= \bar{\eta}_j + (\phi z_{j,t-1} +\theta_{o,t-1}'\x_{o,t-1} +\theta_{j,t-1}'\x_{j,t-1})(1 - \bar{D}_t) \\
+  	&\qquad + (\bar{\alpha}_j + \tilde{\phi} z_{j,t-1} + \tilde{\theta}_{o,t-1}'\x_{o,t-1}   + \tilde{\theta}_{j,t-1}'\x_{j,t-1})\bar{D}_t + \bar{\varepsilon}_t,
 \end{split}
 \end{equation}
 where $\bar{\eta}_j = \eta_o + \eta_j$, $\bar{\alpha}_j = \alpha_o + \alpha_j$, $D_t = D_{0,t} = D_{j,t}$, and $\bar{\varepsilon}_t = \varepsilon_{0,t} + \varepsilon_{j,t} + D_t(\varepsilon_{\alpha,o} + \varepsilon_{\alpha,j})$. The model \eqref{eq:dualshock} is then a regression model with a heterogeneous error structure, the error distribution post-shock differs from the error distribution pre-shock. All model parameters are estimable in \eqref{eq:dualshock}. However, aggregation strategies are slightly different for this model since covariates are included for two separate series. 
@@ -755,6 +758,21 @@ $$
   \textbf{W}^{d*} = \text{arg min}_{\textbf{W} \in \mathcal{W}} \|\X_1^d - \hat{\X}_1^d(\textbf{W})\|_{2p}
 $$
 where $\mathcal{W}$ is the set of all allowable weight vectors.
+
+\begin{table}[H]
+	\caption{Results for Conoco Philips dual shock ($n=2$), $\mbf{W}^* = (0.756, 0.244)$ from scaled covariates} \label{coptable}
+\begin{center}
+  \begin{tabular}{cccccccccr}
+     $H$   &  $\hat{p}_1$ &   Vote (Correct?) & weighted Vote (Correct?)   \\
+     \hline 
+     2  & 1    & 0 (Yes) &0 (Yes)   \\ 
+     4  & 1 & 0(Yes)  &0 (Yes)  \\ 
+     6   & 1  &0 (Yes) & 0 (Yes) \\ 
+     8   & 1  & 0 (Yes) & 0 (Yes)
+  \end{tabular}
+\end{center}	
+\end{table}
+
 
 
 \subsection{Testing shock prevalence for Month-on-Month Change in Log Nonfarm Payrolls (Seasonally Adjusted)}
@@ -800,24 +818,28 @@ In Table 2, using the synthetic pairwise model selection procedures specified in
 
 
 \begin{table}[H]
-	\caption{Results for Month-on-Month Change in Log Nonfarm Payrolls (Seasonally Adjusted) ($n=3$), $\mbf{W}^* = (0, 0.278, 0.722)$ from scaled covariates}   \label{uemtable}
+	\caption{Results for Month-on-Month Change in Log Nonfarm Payrolls (Seasonally Adjusted) ($n=3$), $\mbf{W}^* = (0.196, 0.804, 0.000)$ from scaled covariates}   \label{uemtable}
 \begin{center}
   \begin{tabular}{cccccccccr}
      $H$  & Model &   $p_1$ & $\hat{p}_1$ & $|\hat{p}_1-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
      \hline 
-     \multirow{2}{*}{2} & $\mc{M}_0$  &   0.190 & 0.436  & 0.246 & 0 (Yes) & 0 (Yes)\\      
-      & $\mc{M}$  & 0.520 & 0.556 & $0.036$   & 0 (Yes) &0 (Yes)   \\[.2cm]
-     \multirow{2}{*}{3} & $\mc{M}_0$ &   0.140 & 0.413  & $0.273$ & 0 (Yes) & 0 (Yes)    \\
-      &  $\mc{M}$ & 0.495 & 0.656 & 0.161 & 0 (Yes) & 0 (Yes)  \\[.2cm]
-     \multirow{2}{*}{4} &  $\mc{M}_0$ &   0.275   & $0.464$ & 0.189 & 0 (Yes) & 0 (Yes)  \\
-      &  $\mc{M}$ & 0.350 & 0.559  & 0.209 & 0 (Yes) & 0 (Yes) \\[.2cm]
-     \multirow{2}{*}{5} & $\mc{M}_0$ & 0.380  & 0.275 & 0.105 & 0 (Yes) & 0 (Yes)\\
-     & $\mc{M}$ & 0.665 & 0.763 & 0.098 & 0 (Yes) & 0 (Yes)
+     \multirow{2}{*}{2} & $\mc{M}_0$  &   0.450 & 0.511  & 0.061 & 0 (Yes) & 0 (Yes)\\      
+      & $\mc{M}$  & 0.240 & 0.583 & $0.343$   & 0 (Yes) &0 (Yes)   \\[.2cm]
+     \multirow{2}{*}{3} & $\mc{M}_0$ &   0.500 & 0.469  & $0.031$ & 0 (Yes) & 0 (Yes)    \\
+      &  $\mc{M}$ & 1 & 0.576 & 0.424 & 0 (Yes) & 0 (Yes)  \\[.2cm]
+     \multirow{2}{*}{4} &  $\mc{M}_0$ &   0.660   & $0.443$ & 0.217 & 0 (Yes) & 0 (Yes)  \\
+      &  $\mc{M}$ & 1.000 & 0.494  & 0.506 & 0 (Yes) & 0 (Yes) \\[.2cm]
+     \multirow{2}{*}{5} & $\mc{M}_0$ & 0.700  & 0.556 & 0.144 & 0 (Yes) & 0 (Yes)\\
+     & $\mc{M}$ & 0.470 & 1.000 & 0.530 & 0 (Yes) & 0 (Yes)
   \end{tabular}
 \end{center}	
 \end{table}
 
-$\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)=0.722$
+$\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)=0$. 
+
+AICs for $\mc{M}_0$ in the donor pool are $(-609.173, -657.146,-678.949)$
+
+AICs for $\mc{M}$ in the donor pool are $(-601.743,-649.484,-684.147)$
 
 
 \begin{figure}[H]

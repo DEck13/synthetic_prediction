@@ -185,9 +185,8 @@ ols.est.alphahat <- function(Tstar, Y, X) {
   
 }
 
-# functions that return alpha.hat and synthetic weights
 ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, 
-                                 sig.levl = .05, q1, 
+                                 sig.levl = .05, q1, subset = FALSE, 
                                  retro = TRUE, selfW = NA, scale = FALSE) {
   
   n <- length(Y) - 1
@@ -240,8 +239,8 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw,
         yhat.unadj <- Y[[i]][(t + Ki + H - h + 1 - q1):(t + Ki + H - h)]
         
         for (j in 1:h) {
-          yhat.adj.h <- matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
-                                 yhat.adj[j:(j + q1 - 1)], X[[i]][-(1:q1), ][t + Ki + H - h + j, ]))
+          yhat.adj.h <- beta.hat.adj %*% matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
+                                                  yhat.adj[j:(j + q1 - 1)], X[[i]][-(1:q1), ][t + Ki + H - h + j, ]))
           yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.adj[j:(j + q1 - 1)], X[[i]][-(1:q1), ][t + Ki + H - h + j, ]))
           
           if (t + Ki + H - h == Tstari & i >= 3 & h == 1) {
@@ -259,7 +258,13 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw,
     }
     # loss differential
     d <- m2.L.i - m1.L.i
-    ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
+    if (subset == FALSE) {
+      ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw) 
+    } else {
+      sub.index <- (Ti - Ki - q1 - (Ti - Tstari) + 1):(Ti - Ki - H - q1)
+      d.subset <- d[sub.index,  ]
+      ps[i] <- taSPA.mhfc(ell = ell, d = d.subset, B = B, bw = bw)
+    }
   }
   
   # weights
@@ -279,13 +284,13 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw,
   Is <- ifelse(ps <= .05, yes = 1, no = 0)
   
   # output
-  return(list(ps = ps, W = W, Is = Is))
+  return(list(ps = ps, W = W, Is = Is, dim = dim(d.subset)))
 }
 
 
 # functions that return alpha.hat and synthetic weights for decaying shock effects
 ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
-                               q1, q2, 
+                               q1, q2, subset = FALSE, 
                                ell, B, bw, sig.levl = .05, retro = TRUE,
                                nolag.i.x = NA, selfW = NA, scale = FALSE) {
   
@@ -458,7 +463,13 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
     }
     # loss differential
     d <- m2.L.i - m1.L.i
-    ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw)
+    if (subset == FALSE) {
+      ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw) 
+    } else {
+      sub.index <- (Ti - Ki - max(q1, q2 - 1) - (Ti - Tstari) + 1):(Ti - Ki - H - max(q1, q2 - 1))
+      d.subset <- d[sub.index,  ]
+      ps[i] <- taSPA.mhfc(ell = ell, d = d.subset, B = B, bw = bw)
+    }
   }
   
   
@@ -479,11 +490,11 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
   Is <- ifelse(ps <= .05, yes = 1, no = 0)
   
   # output
-  return(list(ps = ps, W = W, Is = Is))
+  return(list(ps = ps, W = W, Is = Is, dim = dim(d.subset)))
 }
 
 # set working directory
-setwd("~/Library/Mobile Documents/com~apple~CloudDocs/Desktop/Research/Post-Shock Prediction/")
+setwd("~/Desktop/Research/Post-Shock Prediction/")
 
 
 ## Conoco Phillips
@@ -560,13 +571,14 @@ COP_close <- data.frame(COP_close[-1, ], COP_close[-nrow(COP_close), -c(1,8)])
 
 colnames(COP_close)[9:14] <- c('ylag2', paste0(colnames(COP_close)[3:7], '.lag'))
 
-
-# number of horizons
-H <- 10
+set.seed(666)
+Hs <- c(2, 4, 6, 8)
+tab <- c()
+for (H in Hs) {
 # training sample size
 K <- 30
 # number of days after shock date
-L <- 7
+L <- 29
 
 #### Monday, March 17th, 2008
 
@@ -718,30 +730,104 @@ Tstar <- c(which(TS1$Date == "2020-03-05"),
            which(TS2$Date == "2008-03-13"),
            which(TS3$Date == "2008-09-05"), 
            which(TS4$Date == "2014-11-25"))
+
 # Y
+TS <- list(TS1, TS2, TS3, TS4)
+
+
+X <- c()
+# weights
+for (i in 1:4) {
+  X[[i]] <- as.matrix(TS[[i]][, c(3:7)])
+}
+n <- 3
+# weights
+if (is.matrix(X[[1]]) == FALSE) {
+  for (i in 1:(n + 1)) {
+    X[[i]] <- as.matrix(X[[i]])
+  }
+}
+# Weights
+W <- round(scm(X = X, Tstar = Tstar, scale = TRUE)$par, digits = 3)
+
+
 Y <- c()
 X <- c()
-TS <- list(TS1, TS2, TS3, TS4)
 for (i in 1:4) {
   Y[[i]] <- TS[[i]]$Y
   X[[i]] <- as.matrix(TS[[i]][, c(3:7, 10:14)])
 }
 
-res1 <- ps.indic.W.permanent(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), H = H,
-                             q1 = 2, 
-                             Ts = Ts, ell = 4, B = 200, bw = 4, scale = TRUE)
+
+# testing 
+res1 <- ps.indic.W.permanent(Tstar = Tstar, 
+                             q1 = 2, subset = TRUE,  selfW = W,
+                             Y = Y, X = X, K = rep(K, 4), H = H,
+                             Ts = Ts, ell = 4, B = 200, bw = 4, 
+                             scale = TRUE)
+
 res2 <- ps.indic.W.dynamic(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), 
-                              q1 = 2, q2 = 2, 
-                              H = H, Ts = Ts, ell = 4, B = 200, bw = 4,
+                           q1 = 2, q2 = 2, subset = TRUE, selfW = W,
+                           H = H, Ts = Ts, ell = 4, B = 200, bw = 4,
                            scale = TRUE)
 
-res1$ps
-sum(res1$ps[-1] * res1$W)
-sum(res1$Is[-1] * res1$W)
+# p-values
+res1.ps <- res1$ps
+res2.ps <- res2$ps
+# phats
+res1.phat <- sum(res1$ps[-1] * res1$W)
+res2.phat <- sum(res2$ps[-1] * res2$W)
+# p-value distance
+res1.pd <- abs(res1$ps[1] - res1.phat)
+res2.pd <- abs(res2$ps[1] - res2.phat)
+# weighted indicators
+res1.wi <- sum(res1$Is[-1] * res1$W)
+res2.wi <- sum(res2$Is[-1] * res2$W)
+# voting
+res1.vote <- ifelse(mean(res1$Is[-1]) >= 0.5, yes = 1, no = 0)
+res2.vote <- ifelse(mean(res2$Is[-1]) >= 0.5, yes = 1, no = 0)
+# weighted voting
+res1.wvote <- ifelse(res1.wi >= 0.5, yes = 1, no = 0)
+res2.wvote <- ifelse(res2.wi >= 0.5, yes = 1, no = 0)
+# correctness
+res1.vote.c <-
+  ifelse(res1.vote == res1$Is[1], yes = 'Yes', no = 'No')
+res2.vote.c <-
+  ifelse(res2.vote == res2$Is[1], yes = 'Yes', no = 'No')
+res1.wvote.c <-
+  ifelse(res1.wvote == res1$Is[1], yes = 'Yes', no = 'No')
+res2.wvote.c <-
+  ifelse(res2.wvote == res2$Is[1], yes = 'Yes', no = 'No')
+# correctness output
+res1.vote.output <- paste0(res1.vote, ' (', res1.vote.c, ')')
+res2.vote.output <- paste0(res2.vote, ' (', res2.vote.c, ')')
+res1.wvote.output <- paste0(res1.wvote, ' (', res1.wvote.c, ')')
+res2.wvote.output <- paste0(res2.wvote, ' (', res2.wvote.c, ')')
+# table
+tab.i1 <-
+  data.frame(
+    H = H,
+    model = 'M0',
+    p1 = res1$ps[1],
+    phat = res1.phat,
+    pd = res1.pd,
+    vote.output = res1.vote.output,
+    wvote.output = res1.wvote.output
+  )
+tab.i2 <-
+  data.frame(
+    H = H,
+    model = 'M1',
+    p1 = res2$ps[1],
+    phat = res2.phat,
+    pd = res2.pd,
+    vote.output = res2.vote.output,
+    wvote.output = res2.wvote.output
+  )
+tab.i <- rbind(tab.i1, tab.i2)
+tab <- rbind(tab, tab.i)
+}
 
-res2$ps
-sum(res2$ps[-1] * res2$W)
-sum(res2$Is[-1] * res2$W)
 
 AICs <- rbind(AIC.20080314, AIC.20080908,  AIC.20141127)
 
