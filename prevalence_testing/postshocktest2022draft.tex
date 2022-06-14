@@ -739,7 +739,8 @@ Next, we discuss the performance of $\hat{p}_1$, voting and weighted voting. Fro
 %\end{table}
 
 
-\vspace*{0.5cm}\noindent\textbf{Note}\vspace*{0.5cm}
+\subsubsection{Dual shock prevalence testing}
+
 
 \textcolor{red}{We now introduce a forecast scenarios \citep{baumeister2014real} approach to our prevalent testing framework. In \cite{lin2021minimizing} it was mentioned that Conoco Phillips possibly underwent a dual shock, which retrospectively, seems likely to be the case \citep{sharif2020covid}. There were also rumblings of a dual shock in real time \citep{fitch2020oil, stevens2020oil, westbrook2020forex}.  In \cite{lin2021minimizing} a dual shock formulation was provided in which supposed financial shocks and oil supply shocks were separated to form their own donor pools, the additive shock methodology was applied to each of these donor pools, and the results were added together. This approach did very well, almost perfectly recovering the yet-to-be post-shock response.} 
 
@@ -751,27 +752,31 @@ Next, we discuss the performance of $\hat{p}_1$, voting and weighted voting. Fro
   	&\qquad + (\bar{\alpha}_j + \tilde{\phi} z_{j,t-1} + \tilde{\theta}_{o,t-1}'\x_{o,t-1}   + \tilde{\theta}_{j,t-1}'\x_{j,t-1})\bar{D}_t + \bar{\varepsilon}_t,
 \end{split}
 \end{equation}
-where $\bar{\eta}_j = \eta_o + \eta_j$, $\bar{\alpha}_j = \alpha_o + \alpha_j$, $D_t = D_{0,t} = D_{j,t}$, and $\bar{\varepsilon}_t = \varepsilon_{0,t} + \varepsilon_{j,t} + D_t(\varepsilon_{\alpha,o} + \varepsilon_{\alpha,j})$. The model \eqref{eq:dualshock} is then a regression model with a heterogeneous error structure, the error distribution post-shock differs from the error distribution pre-shock. All model parameters are estimable in \eqref{eq:dualshock}. However, aggregation strategies are slightly different for this model since covariates are included for two separate series. 
+where $\bar{\eta}_j = \eta_o + \eta_j$, $\bar{\alpha}_j = \alpha_o + \alpha_j$, $D_t = D_{0,t} = D_{j,t}$, and $\bar{\varepsilon}_t = \varepsilon_{0,t} + \varepsilon_{j,t} + D_t(\varepsilon_{\alpha,o} + \varepsilon_{\alpha,j})$. The model \eqref{eq:dualshock} is then a regression model with a heterogeneous error structure, the error distribution post-shock differs from the error distribution pre-shock. All model parameters are estimable in \eqref{eq:dualshock}. \textcolor{red}{Shock prevalence testing for $z_{j,t}$ is still conducted by comparing forecasts between adjusted and unadjusted conditional mean forecasts as illustrated in Section \ref{sec:multhor}}. However, aggregation strategies are slightly different for this model since covariates are included for two separate series. 
 
 We now examine distance-based weighting for model \eqref{eq:dualshock}. Consider a weight vector $\textbf{W}^d \in \R^{n-1}$ with elements $w_i \in [0,1]$ that satisfy $\sum_i w_i = 1$. Construct $\X_1^d = (\x_{1,T^*_1+1}', \; \x_{1,T^*_1+1}')$, $\X^d \in \R^{n-1 \times 2p}$ with rows $(\x_{o,T^*_o+1}', \; \x_{j,T^*_j+1}')$, and $\hat{\X}_1^d(\textbf{W}) = \textbf{W}^{d'}\X^d$. Then the optimal weights satisfy 
 $$
   \textbf{W}^{d*} = \text{arg min}_{\textbf{W} \in \mathcal{W}} \|\X_1^d - \hat{\X}_1^d(\textbf{W})\|_{2p}
 $$
-where $\mathcal{W}$ is the set of all allowable weight vectors.
+where $\mathcal{W}$ is the set of all allowable weight vectors. \textcolor{red}{Note that if the model is correctly specified,   inference under this dual shock setup should work well if $\{y_{o,t}\colon t= 1, \ldots, T_0\}$ and $\{y_{j, t} \colon j = 2, \ldots, n, t = 1, \ldots, T_j\}$ are independent. We assume this is approximately satisfied because these time series are sufficiently separated out in time as introduced in the beginning of this section. We provide corresponding numerical results   in Table \ref{dualshock}.}
+
+\textcolor{red}{Under the dual shock setup, the donor pool size of this dataset is $n=2$. The fitted synthetic weight vector $\mbf{W}^*$ turns out to be $(0.756, 0.244)$. It implies that the March 15, 2008 time series is more similar to the time series of interest than the September 2008 time series. Similarly, we conducted sensitivity analysis using   $H = 2, 4, 6, 8$; and the results appear insensitive to $H$ from Table \ref{dualshock}. Based on Table \ref{dualshock}, $\hat{p}_1$ is uniformly 1 so that we fail to detect shock persistence. The results of voting and weighted voting are consistent to this with both voting for shock transience.}
 
 \begin{table}[H]
-	\caption{Results for Conoco Philips dual shock ($n=2$), $\mbf{W}^* = (0.756, 0.244)$ from scaled covariates} \label{coptable}
+	\caption{Results for Conoco Philips dual shock ($n=2$), $\mbf{W}^* = (0.756, 0.244)$ from scaled covariates} \label{dualshock}
 \begin{center}
   \begin{tabular}{cccccccccr}
-     $H$   &  $\hat{p}_1$ &   Vote (Correct?) & weighted Vote (Correct?)   \\
+     $H$   &  $\hat{p}_1$ &   Vote   & weighted Vote  \\
      \hline 
-     2  & 1    & 0 (Yes) &0 (Yes)   \\ 
-     4  & 1 & 0(Yes)  &0 (Yes)  \\ 
-     6   & 1  &0 (Yes) & 0 (Yes) \\ 
-     8   & 1  & 0 (Yes) & 0 (Yes)
+     2  & 1    & 0  &0   \\ 
+     4  & 1 & 0   &0   \\ 
+     6   & 1  &0  & 0  \\ 
+     8   & 1  & 0   & 0  
   \end{tabular}
 \end{center}	
 \end{table}
+
+\textcolor{red}{ Unlike the results presented Table \ref{coptable}, we cannot know  the underlying $p_1$ and evaluate whether the voting and weighted voting are correct. This is due to the fact that the time series of interest experience financial and oil shocks at the same time. As a result,   the model is unidentifiable given the available  data. Nevertheless, the shock transience evident in Figure \ref{copshocktransience} provides a reference and supports our claim. This result confirms what we obtained in Section \ref{sptcop} and sucessfully generalizes the dual shock in post-shock prediction \citep{lin2021minimizing} to prevalence testing.}
 
 
 
