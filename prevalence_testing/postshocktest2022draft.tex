@@ -784,42 +784,30 @@ where $\mathcal{W}$ is the set of all allowable weight vectors. \textcolor{red}{
 
 \label{sptuem}
 
-Arguably the most watched macroeconomic indicator for the US economy is the monthly release of the total nonfarm payrolls, which reflects the gains or losses of persons employed.  However, its reputation as a lagging indicator of macroeconomic health constrains its usefulness.  This makes it ripe for forecasting under the method herein.  To this end, we examine the March 2020 lockdown measures as a shock to the US economy and labor market, enlisting previous macroeconomic shocks to the US economy as donors.  The donor pool assembled notably contains no cases of lockdowns or even pandemics or epidemics.  Instead, the common thread running through the time series under study and the donors is the element of a sudden and considerable surprise visited upon the economy from source previously judged to be marginal.
+\textbf{What I'm trying to hit here}
+\begin{enumerate}
+\item Why did I choose the donors I chose? 
+\item Why did I use the columns I did in OLS? 
+\item Why did I use the columns I did in the estimation of the points on the simplex? 
+\item Discuss the two models, M1, M2 
+\item Weighted AIC just as in previous example?  
+\item By weighted AIC, M1 is the preferred model 
+\end{enumerate}
+
+Arguably the most watched macroeconomic indicator for the US economy is the monthly release of the total nonfarm payrolls, which reflects the gains or losses of persons employed.  However, its reputation as a lagging indicator of macroeconomic health constrains its usefulness.  This makes it ripe for forecasting under the method herein.  To this end, we examine the March 2020 lockdown measures as a shock to the US economy and labor market, enlisting previous macroeconomic shocks to the US economy as donors.  The donor pool assembled notably contains no cases of lockdowns or even pandemics or epidemics.  Instead, the common thread running through the time series under study and the donors is the element of a sudden and considerable negative surprise visited upon the economy from a source previously judged to be marginal.  
+
+The pandemic-induced recession of 2020 coincided with a one-month drop in US nonfarm payrolls in excess of 20 million people, or $13.57\%$, between March and April 2020.  This decline exceeds all other monthly declines by many orders of magnitude, and hence then distance-based weighting employed in \citep{lin2021minimizing} could not hope to recover the full shock effect.  However, the test developed herein does not rely as heavily upon the assumption of a common shock distribution for donors or the assumption that the donors represent a rich and diverse sampling from that distribution (\textcolor{red}{Think about this}).  Instead, what is needed is that the donor pool serve as an information source about the persistence of a shock effect in the time series under study, an information source based on the covariates that are posited to underlie the post-shock model dynamics (?).  
+
+We assemble a donor pool of substantial shocks to the US economy in the last four decades: the recessions of 1981-82, 2001-2003, and 2007-2009.  The recession of 1981-82 resulted from Fed Chairman Volcker's unprecedented and controversial bid to halt persistently high inflation that had reigned for more than decade in the US.  The economic shock that followed the September 11th terrorist both damaged consumer confidence and accelerated a contraction already in progress owing to the dot-com bubble.  Third and finally, the spring 2008 collapse of the investment bank Bear Stearns dealt a serious blow to confidence in the US financial system, which at the time was predicted by many to withstand the unprecedented declines in major US metro real estate markets.  These events bear similarity to the broad, seismic shock dealt to the US economy in March 2020 -- and the labor market in particular --  not only due to their unprecedented nature but also because of their potential to cause deep and lasting damage.  
+
+We employ a suite of monthly macroeconomic indicators as covariates for the linear model as for arriving at an optimal weighting of the donor pool.  These indicators are all transformed to their month-on-month change in log values, so as to be consistent with the time series under study and to capture the signal inherent in changes, not raw levels, of macroeconomic variables.  These indicators are the US unemployment insurance transfers, real personal income, personal consumption expenditures, industrial production, consumer price index, Federal Reserve funds rate, and the count of black Americans age 20 and over on US nonfarm payrolls.
 
 \textcolor{red}{A lot is needed here. We need to say that we are assuming that government lockdowns are temporary or rather that the effect of government lockdowns will be temporary. We need to mention that none of the time series in the donor pool involve lockdowns. We should consider a few time horizons. Something like 2, 3, or 4 months ahead might be interesting (we may need to consider a less complex dynamic model for fitting purposes). I would guess that a shorter window may exhibit disagreement between the donor pool and the series under study or may show different decisions being reported. However, don't we want to match the time series under study with donors based on only pre-shock features, data, variables, etc?  It might be good to think of donor selection as a two-stage matching procedure: first, a donor is judged worthy based on some qualitative or quantitative analysis (the latter of which can be simply the correlation of their covariate vectors at $T^{*}$); second, the matches are aggregated using distanced-based weighting.}
 
 
-Arguably the most watched macroeconomic indicator for the US economy is the monthly release of the total nonfarm payrolls, which reflects the gains or losses of persons employed. The pandemic-induced recession of 2020 coincided with a one-month drop in US nonfarm payrolls in excess of 20 million people, or $13.57\%$, between March and April 2020.  This decline exceeds all other monthly declines by many orders of magnitude, and hence then distance-based weighting employed in \citep{lin2021minimizing} could not hope to recover the full shock effect.  However, the test developed herein does not rely as heavily upon the assumption of a common shock distribution for donors or the assumption that the donors represent a rich and diverse sampling from that distribution (\textcolor{red}{Think about this}).  Instead, what is needed is that the donor pool serve as an information source about the persistence of a shock effect in the time series under study.  
+\textcolor{red}{If the selection technique is the same as in the case of ConocoPhillips, then we can cut this.} The variable selection steps are outlined as follows. At first, we have the same set of covariates $\{\mc{X}_1, \ldots, \mc{X}_p\}$ for each donor, where $\mc{X}_1$ corresponds to the name of the covariate. Next, for each donor, we conduct stepwise variable selection based on AIC so that for each donor, we end up with a model with covariates that may differ across  donors, say $\{\mc{X}_j \colon j\in \mc{I}_i\}$ for $i = 2, \ldots, n+1$, where $\mc{I}_j$ is the collection of the indices corresponding to which covariate is selected. Next, we  take the union $\cup_{i=2}^{n+1}\{\mc{X}_j \colon j\in \mc{I}_i\}$ to obtain the final set of covariates that are present in the model of every donor and the time series of interest.
 
-To that end, we assemble a donor pool of US recessions induced by large shocks in the last three decades: the recessions of 1981-82, 2001-2003, and 2007-2009 (\textcolor{red}{Justification needed for these shocks; the March 2020 lockdown was an unprecedented halting of economic activity}).  We employ a suite of monthly macroeconomic indicators as covariates for the linear model as for arriving at an optimal weighting of the donor pool.  These indicators are all transformed to their month-on-month change in log values, so as to be consistent with the time series under study and to capture the signal inherent in changes, not raw levels, of macroeconomic variables.  These indicators are the US unemployment insurance transfers, real personal income, personal consumption expenditures, industrial production, consumer price index, Federal Reserve funds rate, and the count of black Americans age 20 and over on US nonfarm payrolls.
-
-
-The variable selection steps are outlined as follows. At first, we have the same set of covariates $\{\mc{X}_1, \ldots, \mc{X}_p\}$ for each donor, where $\mc{X}_1$ corresponds to the name of the covariate. Next, for each donor, we conduct stepwise variable selection based on AIC so that for each donor, we end up with a model with covariates that may differ across  donors, say $\{\mc{X}_j \colon j\in \mc{I}_i\}$ for $i = 2, \ldots, n+1$, where $\mc{I}_j$ is the collection of the indices corresponding to which covariate is selected. Next, we  take the union $\cup_{i=2}^{n+1}\{\mc{X}_j \colon j\in \mc{I}_i\}$ to obtain the final set of covariates that are present in the model of every donor and the time series of interest.
-
-In Table 2, using the synthetic pairwise model selection procedures specified in Corollary \ref{coro2}, because $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)>0.5$,  we conclude that  $\mc{M}$ is preferred. Thus, we turn our interest to that model.  Since $p_{1}$ is far above the rejection threshold, we lack the evidence to reject the null of a transient shock in the time series under study, the month-on-month change in log employment in the span 2019-2022.  The weighted p-value, $\hat p $, misses the ground truth p-value by .146 in absolute value, yet renders the correct decision.
-
-
-
-
-\textbf{Questions to answer and points to hit}
-\begin{enumerate}
-\item Why did I choose the donors I chose? X 
-\item Why did I use the columns I did in OLS? X
-\item Why did I use the columns I did in the estimation of the points on the simplex? X
-\item Discuss the two models, M1, M2 X
-\item Weighted AIC just as in previous example?  X
-\item By weighted AIC, M2 is the preferred model Yes
-\item We can see that $p_{1}$ is far larger than the rejection threshold, indicating that we lack the evidence to reject the null of a transiet shock
-\item The weighted pvalue, $\hat p $, misses the ground truth p-value by .146 in absolute value
-\item The method of voting renders the correct decision
-\item The method of weighted voting renders the correct decision
-\item Ask Jilei to correct y-axis X
-\item Ask Jilei whether AIC was used in the same way as first example X
-\item Ask Jilei whether covariate set $\textbf{X}$ is same as simplex optimization $\textbf{X}$ 
-\item Ask Jilei to drop RPI as a covariate in OLS (but not necessarily for optimization) (needs checking)
-\item Ask Jilei to include chart with data stopping at March 2020 to better visualize how payrolls change by month X
-
-\end{enumerate}
+In Table 3, using the synthetic pairwise model selection procedures specified in Corollary \ref{coro2}, because $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2) = 0$,  we conclude that  $\mc{M}_{0}$ is preferred. Thus, we turn our interest to that model.  Since $p_{1}$ is far above the rejection threshold for horizons H=1,2,3,4, we lack the evidence to reject the null of a transient shock in the time series under study at any horizon.  The weighted p-value, $\hat p $, misses the ground truth p-value by no more than a modest amount at almost all horizons, and at some horizons is impressively close to the ground truth.  Last, it is worth remarking the for the preferred model $\mc{M}_{0}$, we observe a monotone increasing sequence of ground-truth p-values as H increases.  Such a phenomenon can be taken as evidence that as more data is harnessed, the decision is stable.  The estimated p-value $\hat p_{1}$ do an adequate job at tracking this phenomenon as H increases.
 
 
 \begin{table}[H]
