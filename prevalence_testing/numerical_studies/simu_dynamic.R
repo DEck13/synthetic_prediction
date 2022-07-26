@@ -450,22 +450,25 @@ nsim <- 200
 paras <- c(1 / 5 ^ 2, 1 / 5, 1, 5, 5 ^ 2)
 
 # simulation time
-system.time(
-  output <- lapply(1:length(paras), FUN = function(j) {
-    # %do% evaluates sequentially
-    # %dopar% evaluates in parallel
-    # .combine results
-    lambda2.j <- paras[j]
-    out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
-      # result
-      study <- sim(mu.delta = 1, mu.alpha = 10, sigma = 1, 
-                   sigma.alpha = 2, sigma.delta = 0.05, 
-                   p = 4, B = 200, H = 10, ell = 4, bw = 4,
-                   q1 = 2, q2 = 2, c = 2, lambda1 = 50, lambda2 = lambda2.j,
-                   L = 30, n = 10, tshape = 15, tscale = 10)
-      return(study)
-    }
-    # return results
-    out
-  })
-)
+suppressMessages({
+  system.time(
+    output <- lapply(1:length(paras), FUN = function(j) {
+      # %do% evaluates sequentially
+      # %dopar% evaluates in parallel
+      # .combine results
+      lambda2.j <- paras[j]
+      out <- foreach(k = 1:nsim, .combine = rbind) %dopar% {
+        # result
+        study <- sim(mu.delta = 1, mu.alpha = 10, sigma = 1, 
+                     sigma.alpha = 2, sigma.delta = 0.05, 
+                     p = 4, B = 200, H = 10, ell = 4, bw = 4,
+                     q1 = 2, q2 = 2, c = 2, lambda1 = 50, lambda2 = lambda2.j,
+                     L = 30, n = 10, tshape = 15, tscale = 10)
+        return(study)
+      }
+      # return results
+      out
+    })
+  )  
+})
+traceback()

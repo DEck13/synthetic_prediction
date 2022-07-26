@@ -520,9 +520,9 @@ We first present some intermediary technical results and definitions. Let $\lamb
   \lambda_{\max} &= \max\left(\lambda_{\text{max},\theta_k}, \lambda_{\text{max},\theta_\delta}, \lambda_{\text{max},\gamma}; k = 1,\ldots,q_2\right), \\
   \sigma^2_{\max} &= \max\left(\sigma^2_{\eta},\sigma^2_{\phi_j},\sigma^2_i,\sigma^2_{\alpha},\sigma^2_{\tilde{\phi}_j}; i = 1,\ldots,n+1, j = 1,\ldots,q_1\right),
 \end{align*}
-and let $\sigma^2 = \max(\lambda_{\max}, \sigma^2_{\max})$. Now fix $i'$ where we suppose that $\|\x_{1,t} - \x_{i',t}\| < \varepsilon_1$ for all $t$ and some choice of $\varepsilon_1$. Pick some large $M > 0$. Fix $T = T_1 = T_{i'}$ and $T^* = T^*_1 = T^*_{i'}$. Define the events 
+and let $\sigma^2 = \max(\lambda_{\max}, \sigma^2_{\max})$. Now fix $i'$ where we suppose that $\|\x_{1,t} - \x_{i',t}\| < \epsilon_1$ for all $t$ and some choice of $\epsilon_1$. Pick some large $M > 0$. Fix $T = T_1 = T_{i'}$ and $T^* = T^*_1 = T^*_{i'}$. Define the events 
 \begin{align*}
-  E_1 := &\left\{\max\left(|\|\delta_1 - \delta_{i'}\|,|\tilde\phi_{1,j}-\tilde\phi_{i',j}|,\|\tilde\theta_{1,k}-\tilde\theta_{i',k}\|,|\tilde\varepsilon_t|\right) < \varepsilon_1:\right. \\
+  E_1 := &\left\{\max\left(|\|\delta_1 - \delta_{i'}\|,|\tilde\phi_{1,j}-\tilde\phi_{i',j}|,\|\tilde\theta_{1,k}-\tilde\theta_{i',k}\|,|\tilde\varepsilon_t|\right) < \epsilon_1:\right. \\
   &\qquad j = 1,\ldots,q_1, k = 1,\ldots,q_2, t = 1,\ldots,T \left.\right\}, \\
   E_2 := &\{\|(\bm{\eta}',\bm{\phi}',\bm{\theta}',\bm{\delta}',\tilde{\bm{\phi}}',\tilde{\bm{\theta}}')'\|_\infty < M_1\},  
 \end{align*}
@@ -549,70 +549,70 @@ where $M_2$ is chosen large enough so that $\Prob(E_3^c) \to 0$ as $\sigma^2 \to
 	&\qquad \leq |\delta_1'\x_{1,T^*+1} - \delta_{i'}'\x_{i',T^*+1}|
 		+ |\tilde\phi_{1}y_{1,t-1} - \tilde\phi_{i'}\tilde{y}_{i',t-1}| 
 		+ |\tilde\theta_{1}'\x_{1,t} - \tilde\theta_{i'}'\x_{i',t})| 
-		+ \varepsilon_1 \\
-	&\qquad\leq (8M + 1)\varepsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||y_{i',t-1}| + |\tilde\phi_1||y_{1,t-1} - \tilde{y}_{i',t-1}| \\
-	&\qquad\leq (8M + 1)\varepsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||y_{i',t-1}| \\ 
-	&\qquad\qquad+ |\tilde\phi_1|\left\{(8M + 1)\varepsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||\tilde{y}_{i',t-2}| + |\tilde\phi_1||y_{1,t-2} - \tilde{y}_{i',t-2}|\right\} \\
-	&\qquad= \varepsilon_1(8M + 1)(1 + |\tilde\phi_1|) + |\tilde\phi_1||\tilde\phi_{1} - \tilde\phi_{i'}|(|\tilde{y}_{i',t-1}| + |y_{i',t-2}|) + |\tilde\phi_1|^2|y_{1,t-2} - \tilde{y}_{i',t-2}| \\
-	&\qquad \leq \varepsilon_1(8M + 1)\sum_{j=0}^{t-T^*-1}|\tilde\phi_1|^j + |\tilde\phi_{1} - \tilde\phi_{i'}|\sum_{j=1}^{t-T^*}|\tilde\phi_1|^{j-1}|\tilde{y}_{i',t-j}| + |\tilde\phi_1|^{t-T^*}|y_{1,T^*} - \tilde{y}_{i',T^*}| \\
-	&\qquad = \varepsilon_1(8M + 1)\sum_{j=0}^{t-T^*-1}|\tilde\phi_1|^j + |\tilde\phi_{1} - \tilde\phi_{i'}|\sum_{j=1}^{t-T^*}|\tilde\phi_1|^{j-1}|\tilde{y}_{i',t-j}|.
+		+ \epsilon_1 \\
+	&\qquad\leq (8M + 1)\epsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||y_{i',t-1}| + |\tilde\phi_1||y_{1,t-1} - \tilde{y}_{i',t-1}| \\
+	&\qquad\leq (8M + 1)\epsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||y_{i',t-1}| \\ 
+	&\qquad\qquad+ |\tilde\phi_1|\left\{(8M + 1)\epsilon_1 + |\tilde\phi_{1} - \tilde\phi_{i'}||\tilde{y}_{i',t-2}| + |\tilde\phi_1||y_{1,t-2} - \tilde{y}_{i',t-2}|\right\} \\
+	&\qquad= \epsilon_1(8M + 1)(1 + |\tilde\phi_1|) + |\tilde\phi_1||\tilde\phi_{1} - \tilde\phi_{i'}|(|\tilde{y}_{i',t-1}| + |y_{i',t-2}|) + |\tilde\phi_1|^2|y_{1,t-2} - \tilde{y}_{i',t-2}| \\
+	&\qquad \leq \epsilon_1(8M + 1)\sum_{j=0}^{t-T^*-1}|\tilde\phi_1|^j + |\tilde\phi_{1} - \tilde\phi_{i'}|\sum_{j=1}^{t-T^*}|\tilde\phi_1|^{j-1}|\tilde{y}_{i',t-j}| + |\tilde\phi_1|^{t-T^*}|y_{1,T^*} - \tilde{y}_{i',T^*}| \\
+	&\qquad = \epsilon_1(8M + 1)\sum_{j=0}^{t-T^*-1}|\tilde\phi_1|^j + |\tilde\phi_{1} - \tilde\phi_{i'}|\sum_{j=1}^{t-T^*}|\tilde\phi_1|^{j-1}|\tilde{y}_{i',t-j}|.
 \end{align*}
-With $T$ set, we can choose $\varepsilon_1$ small enough so that 
+With $T$ set, we can choose $\epsilon_1$ small enough so that 
 $
-  |y_{1,t} - \tilde{y}_{i',t}| < \varepsilon_2
+  |y_{1,t} - \tilde{y}_{i',t}| < \epsilon_2
 $
 for all $T^* < t \leq T $. 
 
-Now let $\varepsilon_3 = \max(\varepsilon_1,\varepsilon_2)$ so that 
+Now let $\epsilon_3 = \max(\epsilon_1,\epsilon_2)$ so that 
 \begin{equation} \label{bounds}
-	|y_{1,t} - \tilde{y}_{i',t}| < \varepsilon_3, \; \text{and} \; \|\x_{1,t} - \x_{i',t}\| < \varepsilon_3.
+	|y_{1,t} - \tilde{y}_{i',t}| < \epsilon_3, \; \text{and} \; \|\x_{1,t} - \x_{i',t}\| < \epsilon_3.
 \end{equation}
 
-Let $\tilde{\beta}$ be the OLS solution of model parameters with respect to the $\tilde{y}_{i',t}$ series, and let $\hat{\beta}$ be the OLS solution of model parameters with respect to the $y_{1,t}$ series. On $E$, these estimates will be very close to each other. We use Theorem 2.7.2 in \cite{golub1996matrix} to construct an explicit bound on $\|\tilde{\beta} - \hat{\beta}\|$. Following the notation of Section 2.7 in \cite{golub1996matrix} we will let $A$ be the design matrix with respect to the $y_{1,t}$ series so that $A\hat{\beta} = \mathbf{y}_1$ where $\mathbf{y}_1 = (y_{1,1}, \ldots, y_{1,T})'$, $\kappa(A) = \|A\|\|A^{-1}\|$ be the condition number of $A$ where $\|\cdot\|$ is a matrix norm, and we will specify that $r = \varepsilon_4 \kappa(A)$ where $\varepsilon_4$ can be chosen so that $r < 1$. We will also specify that $\varepsilon_3$ is chosen so that $\|\Delta A\| \leq \varepsilon_4\|A\|$ where $\Delta A = \widetilde{A} - A$ and $\widetilde{A}$ is the design matrix with respect to the $\tilde{y}_{i',t}$ series. Theorem 2.7.2 in \cite{golub1996matrix} states that 
+Let $\tilde{\beta}$ be the OLS solution of model parameters with respect to the $\tilde{y}_{i',t}$ series, and let $\hat{\beta}$ be the OLS solution of model parameters with respect to the $y_{1,t}$ series. On $E$, these estimates will be very close to each other. We use Theorem 2.7.2 in \cite{golub1996matrix} to construct an explicit bound on $\|\tilde{\beta} - \hat{\beta}\|$. Following the notation of Section 2.7 in \cite{golub1996matrix} we will let $A$ be the design matrix with respect to the $y_{1,t}$ series so that $A\hat{\beta} = \mathbf{y}_1$ where $\mathbf{y}_1 = (y_{1,1}, \ldots, y_{1,T})'$, $\kappa(A) = \|A\|\|A^{-1}\|$ be the condition number of $A$ where $\|\cdot\|$ is a matrix norm, and we will specify that $r = \epsilon_4 \kappa(A)$ where $\epsilon_4$ can be chosen so that $r < 1$. We will also specify that $\epsilon_3$ is chosen so that $\|\Delta A\| \leq \epsilon_4\|A\|$ where $\Delta A = \widetilde{A} - A$ and $\widetilde{A}$ is the design matrix with respect to the $\tilde{y}_{i',t}$ series. Theorem 2.7.2 in \cite{golub1996matrix} states that 
 \begin{equation}\label{OLSbound}
-  \|\tilde{\beta} - \hat{\beta}\| \leq \frac{2\varepsilon_4}{1-r}\kappa(A)\|\hat{\beta}\|.	
+  \|\tilde{\beta} - \hat{\beta}\| \leq \frac{2\epsilon_4}{1-r}\kappa(A)\|\hat{\beta}\|.	
 \end{equation}
-We can bound $\kappa(A)$ and $\hat{\beta}$ on $E$ which allows one to choose $\varepsilon_5$ so that \eqref{OLSbound} is $\|\tilde{\beta} - \hat{\beta}\| < \varepsilon_5$. 
+We can bound $\kappa(A)$ and $\hat{\beta}$ on $E$ which allows one to choose $\epsilon_5$ so that \eqref{OLSbound} is $\|\tilde{\beta} - \hat{\beta}\| < \epsilon_5$. 
 
 We now show that we can bound $|\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}|$ for $t+h > T^*$. We restrict attention to the case where $t+h > T^*$ because when $t+h \leq T^*$ the two competing forecasts $\hat{y}_{i,t}^{1,h}$ and $\hat{y}_{i,t}^{2,h}$ are the same in our setting for all $i$. Let $t+h > T^*$, then, when $t > T^*$,
 \begin{align*}
   &|\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}| = |(\hat\eta_1 - \hat{\eta}_{i'}) + (\hat\alpha_1 - \hat\alpha_{i'}) + (\hat{\tilde{\phi}}_1 \hat{y}_{1,t-1}^{1,h-1} -  \hat{\tilde{\phi}}_{i'} \hat{y}_{i',t-1}^{1,h-1}) + (\hat{\tilde{\theta}}_1' \x_{1,t} - \hat{\tilde{\theta}}_{i'}' \x_{i',t})| \\
-  &\qquad \leq 2\varepsilon_5 + |\hat{\tilde{\theta}}_1' \x_{1,t} - \hat{\tilde{\theta}}_{i'}' \x_{i',t}| + |\hat{\tilde{\phi}}_1 \hat{y}_{1,t-1}^{1,h-1} -  \hat{\tilde{\phi}}_{i'} \hat{y}_{i',t-1}^{1,h-1}| \\
-  &\qquad \leq 2\varepsilon_5 + \|\x_{1,t}\|\|\hat{\tilde{\theta}}_1 - \hat{\tilde{\theta}}_{i'}\| + \|\hat{\tilde{\theta}}_{i'}\| \|\x_{1,t} - \x_{i',t}\| + \|\hat{y}_{1,t-1}^{1,h-1}\| |\hat{\tilde{\phi}}_1 - \hat{\tilde{\phi}}_{i'}\| + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1} | \\
-  &\qquad \leq 2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + \|\hat{y}_{1,t-1}^{1,h-1}\|\varepsilon_5 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1} |.
+  &\qquad \leq 2\epsilon_5 + |\hat{\tilde{\theta}}_1' \x_{1,t} - \hat{\tilde{\theta}}_{i'}' \x_{i',t}| + |\hat{\tilde{\phi}}_1 \hat{y}_{1,t-1}^{1,h-1} -  \hat{\tilde{\phi}}_{i'} \hat{y}_{i',t-1}^{1,h-1}| \\
+  &\qquad \leq 2\epsilon_5 + \|\x_{1,t}\|\|\hat{\tilde{\theta}}_1 - \hat{\tilde{\theta}}_{i'}\| + \|\hat{\tilde{\theta}}_{i'}\| \|\x_{1,t} - \x_{i',t}\| + \|\hat{y}_{1,t-1}^{1,h-1}\| |\hat{\tilde{\phi}}_1 - \hat{\tilde{\phi}}_{i'}\| + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1} | \\
+  &\qquad \leq 2\epsilon_5 + M\epsilon_5 + \epsilon_3 + \|\hat{y}_{1,t-1}^{1,h-1}\|\epsilon_5 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1} |.
 \end{align*}
-On $E$ we can bound $|\hat{y}_{1,t-1}^{1,h-1}|$ for all $h=1,\ldots,H$ and $t=1,\ldots,T$, call this bound $M_1$. Let $\varepsilon_6 = (2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + M_1\varepsilon_5)$. Then,
+On $E$ we can bound $|\hat{y}_{1,t-1}^{1,h-1}|$ for all $h=1,\ldots,H$ and $t=1,\ldots,T$, call this bound $M_1$. Let $\epsilon_6 = (2\epsilon_5 + M\epsilon_5 + \epsilon_3 + M_1\epsilon_5)$. Then,
 \begin{align*}
-  &|\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}| \leq 2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + |\hat{y}_{1,t-1}^{1,h-1}|\varepsilon_5 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1}| \\
-  &\qquad \leq (2\varepsilon_5 + M\varepsilon_5 + \varepsilon_3 + M_1\varepsilon_5) + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1}| \\
-  &\qquad \leq \varepsilon_6 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1}| \\
-  &\qquad \leq \varepsilon_6 + |\hat{\tilde{\phi}}_{i'}|\left(\varepsilon_6 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-2}^{1,h-2} - \hat{y}_{i',t-2}^{1,h-2}|\right) \\
-  &\qquad \leq \varepsilon_6(1 + |\hat{\tilde{\phi}}_{i'}|) + |\hat{\tilde{\phi}}_{i'}|^2|\hat{y}_{1,t-2}^{1,h-2} - \hat{y}_{i',t-2}^{1,h-2}| \\  
-  &\qquad \leq \varepsilon_6 \sum_{j=0}^h |\hat{\tilde{\phi}}_{i'}|^j + |\hat{\tilde{\phi}}_{i'}|^h|\hat{y}_{1,t-h} - \hat{y}_{i',t-h}| \\
-  &\qquad \leq \varepsilon_6 \sum_{j=0}^h |\hat{\tilde{\phi}}_{i'}|^j + |\hat{\tilde{\phi}}_{i'}|^h\varepsilon_3.  
+  &|\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}| \leq 2\epsilon_5 + M\epsilon_5 + \epsilon_3 + |\hat{y}_{1,t-1}^{1,h-1}|\epsilon_5 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1}| \\
+  &\qquad \leq (2\epsilon_5 + M\epsilon_5 + \epsilon_3 + M_1\epsilon_5) + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1}| \\
+  &\qquad \leq \epsilon_6 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-1}^{1,h-1} - \hat{y}_{i',t-1}^{1,h-1}| \\
+  &\qquad \leq \epsilon_6 + |\hat{\tilde{\phi}}_{i'}|\left(\epsilon_6 + |\hat{\tilde{\phi}}_{i'}| |\hat{y}_{1,t-2}^{1,h-2} - \hat{y}_{i',t-2}^{1,h-2}|\right) \\
+  &\qquad \leq \epsilon_6(1 + |\hat{\tilde{\phi}}_{i'}|) + |\hat{\tilde{\phi}}_{i'}|^2|\hat{y}_{1,t-2}^{1,h-2} - \hat{y}_{i',t-2}^{1,h-2}| \\  
+  &\qquad \leq \epsilon_6 \sum_{j=0}^h |\hat{\tilde{\phi}}_{i'}|^j + |\hat{\tilde{\phi}}_{i'}|^h|\hat{y}_{1,t-h} - \hat{y}_{i',t-h}| \\
+  &\qquad \leq \epsilon_6 \sum_{j=0}^h |\hat{\tilde{\phi}}_{i'}|^j + |\hat{\tilde{\phi}}_{i'}|^h\epsilon_3.  
 \end{align*}
-Let $\varepsilon_7 = \max_{h = 1,\ldots,H}\left(\varepsilon_6 \sum_{j=0}^h |\hat{\tilde{\phi}}_{i'}|^j + |\hat{\tilde{\phi}}_{i'}|^h\varepsilon_3\right)$ 
+Let $\epsilon_7 = \max_{h = 1,\ldots,H}\left(\epsilon_6 \sum_{j=0}^h |\hat{\tilde{\phi}}_{i'}|^j + |\hat{\tilde{\phi}}_{i'}|^h\epsilon_3\right)$ 
 and conclude that 
 \begin{equation} \label{forecastbounds}
-  |\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}| < \varepsilon_7,	
+  |\hat{y}_{1,t}^{1,h} - \hat{\tilde{y}}_{i',t}^{1,h}| < \epsilon_7,	
 \end{equation}
-for all $t = 1,\ldots,T$ and all $h=1,\ldots,H$ such that $t+h > T^*$ on the event $E$. A similar argument with similar bounding choices to those which yielded \eqref{forecastbounds} can be made when $t+h > T^*$ and $t \leq T^*$. A similar argument with similar bounding choices to those which yielded \eqref{forecastbounds} can be made so that $|\hat{y}_{1,t}^{2,h} - \hat{\tilde{y}}_{i',t}^{2,h}| < \varepsilon_7$.
+for all $t = 1,\ldots,T$ and all $h=1,\ldots,H$ such that $t+h > T^*$ on the event $E$. A similar argument with similar bounding choices to those which yielded \eqref{forecastbounds} can be made when $t+h > T^*$ and $t \leq T^*$. A similar argument with similar bounding choices to those which yielded \eqref{forecastbounds} can be made so that $|\hat{y}_{1,t}^{2,h} - \hat{\tilde{y}}_{i',t}^{2,h}| < \epsilon_7$.
 
 We now bound the difference in loss differential vectors $\|\dbf_{1,t} - \dbf_{i',t}\|$ for $t > T^*$. What we have showed so far in \eqref{bounds} and \eqref{forecastbounds} allows us to write
 \begin{equation} \label{L1bound}
-  |y_{1,t} - \hat{y}^{1,h}_{1,t}| - |y_{1,t} - \hat{y}^{2,h}_{1,t}| \leq |\tilde{y}_{i',t} - \hat{\tilde{y}}^{1,h}_{i',t}| - |\tilde{y}_{i',t} - \hat{\tilde{y}}^{2,h}_{i',t}| + 2(\varepsilon_3 + \varepsilon_7).
+  |y_{1,t} - \hat{y}^{1,h}_{1,t}| - |y_{1,t} - \hat{y}^{2,h}_{1,t}| \leq |\tilde{y}_{i',t} - \hat{\tilde{y}}^{1,h}_{i',t}| - |\tilde{y}_{i',t} - \hat{\tilde{y}}^{2,h}_{i',t}| + 2(\epsilon_3 + \epsilon_7).
 \end{equation}
-We conclude that $\|\dbf_{1,t} - \dbf_{i',t}\| \leq \varepsilon_8$ on $E$ for all $t > T^*$ where $\varepsilon_8$ is chosen so that \eqref{L1bound} holds when $\|\dbf_{1,t} - \dbf_{i',t}\| \leq \varepsilon_8$ on $E$ for all $t > T^*$.
+We conclude that $\|\dbf_{1,t} - \dbf_{i',t}\| \leq \epsilon_8$ on $E$ for all $t > T^*$ where $\epsilon_8$ is chosen so that \eqref{L1bound} holds when $\|\dbf_{1,t} - \dbf_{i',t}\| \leq \epsilon_8$ on $E$ for all $t > T^*$.
 %when we specify the loss $L(a,b) = |a-b|$. The loss differential vector $\dbf_{1,t} \in \R^H$ has elements $|y_{1,t} - \hat{y}^{1,h}_{1,t}| - |y_{1,t} - \hat{y}^{2,h}_{1,t}|$. What we have showed so far in \eqref{bounds} and \eqref{forecastbounds} allows us to write
 %$$
 %  |y_{1,t} - \hat{y}^{1,h}_{1,t}| - |y_{1,t} - \hat{y}^{2,h}_{1,t}| \leq |\tilde{y}_{i',t} - \hat{\tilde{y}}^{1,h}_{i',t}| - |\tilde{y}_{i',t} - \hat{\tilde{y}}^{2,h}_{i',t}| + 2(\varepsilon_3 + \varepsilon_7).
 %$$
 %Let $\varepsilon_8 = 2(\varepsilon_3 + \varepsilon_7)$ and conclude that $\|\dbf_{1,t} - \dbf_{i',t}\| \leq \varepsilon_8$ on $E$ for all $t > T^*$.
-Putting this all together, we can pick $\varepsilon_8$ small enough so that for some fixed $\varepsilon > 0$,
+Putting this all together, we can pick $\epsilon_8$ small enough so that for some fixed $\epsilon > 0$,
 \begin{equation} \label{testbounds}
-   \left|\sqrt{T}\frac{\textbf{w}_1'\bar{\dbf}_1^b - \textbf{w}_1'\bar{\dbf}_1}{\hat{\zeta}^b_1} - \sqrt{T}\frac{\textbf{w}_{i'}'\bar{\dbf}_{i'}^b - \textbf{w}_{i'}'\bar{\dbf}_{i'}}{\hat{\zeta}^b_{i'}}\right| < \varepsilon	
+   \left|\sqrt{T}\frac{\textbf{w}_1'\bar{\dbf}_1^b - \textbf{w}_1'\bar{\dbf}_1}{\hat{\zeta}^b_1} - \sqrt{T}\frac{\textbf{w}_{i'}'\bar{\dbf}_{i'}^b - \textbf{w}_{i'}'\bar{\dbf}_{i'}}{\hat{\zeta}^b_{i'}}\right| < \epsilon	
 \end{equation}
-on the set $E$ where we specify that $\textbf{w}_1 = \textbf{w}_{i'}$ and that the MBB procedures samples the same indices of blocks from $\dbf_{1,t}$ and $\dbf_{i',t}$, $t = T^*+1,\ldots, T$ when forming the test statistics in \eqref{testbounds}. Thus for any fixed small $\varepsilon < 0$ there exists a choice of $\sigma^2$ and $\varepsilon_1$ such that inferences involving the $i'$ series for which post-shock behavior is observed can be substituted in place of the $i = 1$ series under study with high probability of a correspondence in inferences. 
+on the set $E$ where we specify that $\textbf{w}_1 = \textbf{w}_{i'}$ and that the MBB procedures samples the same indices of blocks from $\dbf_{1,t}$ and $\dbf_{i',t}$, $t = T^*+1,\ldots, T$ when forming the test statistics in \eqref{testbounds}. Thus for any fixed small $\epsilon < 0$ there exists a choice of $\sigma^2$ and $\epsilon_1$ such that inferences involving the $i'$ series for which post-shock behavior is observed can be substituted in place of the $i = 1$ series under study with high probability of a correspondence in inferences. 
 
 
 
