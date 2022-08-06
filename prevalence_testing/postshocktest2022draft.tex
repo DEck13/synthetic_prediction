@@ -670,7 +670,7 @@ As illustrated in Section 5.1 in \cite{lin2021minimizing}, it is found that Cono
 
 We considered the shock effects that occurred on March 15, 2008, September 2008, and November 27, 2014, where the rationale behind this selection is discussed in Section 5.1(3) in  \cite{lin2021minimizing}. However, we analyzed the multiple shock effects on September (September 8th, 2008; September 16th, 2008; and September 26, 2008) differently. Under the  setting of our methodology, it is possible that the occurrence of  those shocks can be modeled by one persistent shock effect or explained by that the model of $y_{i,t}$ changes after September 5th, 2008. In other words, we analyzed the three shock effects within one time series and considered three donors in our donor pool. 
 
-In this data example we set $T_i- T_i^* = 30$ and $K = 30$. Note that $K = 30$ is a sensible  training sample size, see discussions for example in  \cite{lin2021minimizing}. The quantity $T_i-T_i^*-H$ corresponds to the post-shock time length that analysts are interested in predicting whether the impact of the shock persists.  We set $T_i- T_i^* = 30$  in order to make the post-shock time length moderately large and also for illustration purpose. For sensitivity analysis, we implemented the analysis for different  $H= 2, 4, 6, 8$.
+In this data example we set $T_i- T_i^* = 50$ and $K = 30$. Note that $K = 30$ is a sensible  training sample size, see discussions for example in  \cite{lin2021minimizing}. The quantity $T_i-T_i^*-\ceil{1.5 \cdot \sqrt{T_i-T_i^*}}$ corresponds to the post-shock time length that analysts are interested in predicting whether the impact of the shock persists.  We set $T_i- T_i^* = 50$  in order to make the post-shock time length moderately large and also for illustration purpose. For sensitivity analysis, we implemented the analysis for different  $H= 2, 4, 6, 8$.
 
 We summarize our numerical results in Table \ref{coptable}. In the Table \ref{coptable}, $p_1$ stands for the forecast comparison test of \cite{quaedvlieg2021multi} applied for adjusted and unadjusted forecasts on the time series of interest. Note that in practice, it cannot be computed because  $y_{1, t}$ for $t > T_1^*$ is not observed. It is provided   for retrospective  analysis. Second, $\hat{p}_1$ is the  estimate for $p_1$ using $\mbf{W}^*$.  We recorded the voting and weighted voting results in the form of indicators with one being voting for persistence and zero for transience. See the methodological details for $\hat{p}_1$, voting, and weighted voting in Section \ref{sec:multhor}. In companion with the voting, the correctness of the voting is evaluated and provided  in the brackets. For example, ``0 (Yes)'' implies  that the procedure votes for transience and this decision is correct whereas ``1 (No)'' votes for persistence and it is incorrect. 
 
@@ -681,11 +681,11 @@ We summarize our numerical results in Table \ref{coptable}. In the Table \ref{co
   \begin{tabular}{cccccccccr}
      $H$  & Model &   $p_1$ & $\hat{p}_1$ & $|\hat{p}_1-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
      \hline 
-     \multirow{2}{*}{2} & $\mc{M}_0$  &   1 & 0.225  & 0.775 & 0 (Yes) & 1 (No)  \\      
+     \multirow{2}{*}{2} & $\mc{M}_0$  &   1 & 0.023  & 0.977 & 0 (Yes) & 1 (No)  \\      
       & $\mc{M}$  & 1 & 1 & $0$   & 0 (Yes) &0 (Yes)   \\[.2cm]
-     \multirow{2}{*}{4} & $\mc{M}_0$ &   0 & 0.953  & $0.953$ & 0 (No) &0 (No)    \\
+     \multirow{2}{*}{4} & $\mc{M}_0$ &   1 & 0.125 & $0.875$ & 0 (Yes) &1 (No)    \\
       &  $\mc{M}$ & 1& 1 & 0 &0 (Yes)  &0 (Yes)  \\[.2cm]
-     \multirow{2}{*}{6} &  $\mc{M}_0$ &   0   & $1$ & 1 & 0 (No) &0 (No)   \\
+     \multirow{2}{*}{6} &  $\mc{M}_0$ &   0   & $0.999$ & 0.999 & 0 (No) &0 (No)   \\
       &  $\mc{M}$ & 1 & 1  & 0 &0 (Yes) & 0 (Yes) \\[.2cm]
      \multirow{2}{*}{8} & $\mc{M}_0$ & 0  & 1 & 1 & 0 (No) & 0 (No)\\
      & $\mc{M}$ & 1 & 1 & 0 & 0 (Yes) & 0 (Yes)
@@ -701,11 +701,11 @@ We now discuss the numerical results. Note that the synthetic weight vector $\mb
 
 
 
-Let $a_i^1$ and $a_i^2$ denote the AICs of $\mc{M}_0$ and $\mc{M}$ for $i$th time series, respectively. Based on \eqref{model-gen}, which describes $\mc{M}$ and the description of $\mc{M}$ in the beginning of Section \ref{sec::ne}, it may be inferred that $\mc{M}$ captures the post-shock dynamic change whereas $\mc{M}_0$ suggests a persistent post-shock additive location shift. Using the synthetic pairwise model selection procedures specified in Corollary \ref{coro2}, it turns out that $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)=1 >0.5$. Using this aggregated model selection approach, we prefer $\mc{M}$ over $\mc{M}_0$. \textcolor{red}{For reference, the AICs for $\mc{M}_0$ in the donors are $(297.410, 413.357, 295.174)$ whereas those for $\mc{M}$ in the donors are $(302.835, 409.544, 280.609)$. }
+Let $a_i^1$ and $a_i^2$ denote the AICs of $\mc{M}_0$ and $\mc{M}$ for $i$th time series, respectively. Based on \eqref{model-gen}, which describes $\mc{M}$ and the description of $\mc{M}$ in the beginning of Section \ref{sec::ne}, it may be inferred that $\mc{M}$ captures the post-shock dynamic change whereas $\mc{M}_0$ suggests a persistent post-shock additive location shift. Using the synthetic pairwise model selection procedures specified in Corollary \ref{coro2}, it turns out that $\sum_{i=2}^4 w_i^* I(a_i^1 > a_i^2)=0.779 >0.5$. Using this aggregated model selection approach, we prefer $\mc{M}$ over $\mc{M}_0$. \textcolor{red}{For reference, the AICs for $\mc{M}_0$ in the donors are $(348.261, 504.887, 377.073)$ whereas those for $\mc{M}$ in the donors are $(349.784, 505.012, 364.108)$. }
 
-From Table \ref{coptable}, we can see that $p_1$ for $\mc{M}$ is not sensitive to the changes of $H$ and is uniformly 1. Under any reasonable significance level, based on the features of $\mc{M}$, we infer that post-shock dynamics do not differ from the pre-shock one and the shock is not persistent. In contrast, $p_1$ of $\mc{M}_0$ equals 1 for $H = 2$ whereas equals 0 for $H = 4, 6, 8$. It is possible that $\mc{M}_0$ does not fit the data well. In practice, a simple additive post-shock location-shift is rare and more complicated structures cannot be explained using this. 
+From Table \ref{coptable}, we can see that $p_1$ for $\mc{M}$ is not sensitive to the changes of $H$ and is uniformly 1. Under any reasonable significance level, based on the features of $\mc{M}$, we infer that post-shock dynamics do not differ from the pre-shock one and the shock is not persistent. In contrast, $p_1$ of $\mc{M}_0$ equals 1 for $H = 2, 4$ whereas equals 0 for $H = 6, 8$. It is possible that $\mc{M}_0$ does not fit the data well. In practice, a simple additive post-shock location-shift is rare and more complicated structures cannot be explained using this. 
 
-Two dashed vertical lines are plotted in Figure \ref{copshocktransience}, where the left one corresponds to $t = T_1^*$ and the right one  corresponds to $t = T_1^*+1$. As shown by \cite{lin2021minimizing}, $y_{1,t}$ experienced a substantial shock at  $t = T_1^*+1$ and it is evident from $y_{1, T_1^*}-y_{1, T_1^*+1}$ shown in Figure 1. We also graphed a benchmark horizontal dashed line for comparison, which corresponds to the stock price $y_{1, T_1^*}$. However, notice that even if $y_{1,t}$ first experienced a considerable drop at $t = T_1^*+1$,   it started to revert back and became closer to the benchmark horizontal line as $t$ increases for $t > T_1^*$. Note that this observation confirms our model selection and what $\mc{M}$ suggests for shock transience. It is also important to re-emphasize that  the test compares the forecasts from $t = T_1^* + H+1$ to $t=T_1$. In other words, the beginning dramatic drop as seen from Figure \ref{copshocktransience} around March is not considered in the forecast comparison. It is reasonable to our objective as we are interested in long-term persistence rather-than short-term substantial changes. 
+Two dashed vertical lines are plotted in Figure \ref{copshocktransience}, where the left one corresponds to $t = T_1^*$ and the right one  corresponds to $t = T_1^*+1$. As shown by \cite{lin2021minimizing}, $y_{1,t}$ experienced a substantial shock at  $t = T_1^*+1$ and it is evident from $y_{1, T_1^*}-y_{1, T_1^*+1}$ shown in Figure 1. We also graphed a benchmark horizontal dashed line for comparison, which corresponds to the stock price $y_{1, T_1^*}$. However, notice that even if $y_{1,t}$ first experienced a considerable drop at $t = T_1^*+1$,   it started to revert back and became closer to the benchmark horizontal line as $t$ increases for $t > T_1^*$. Note that this observation confirms our model selection and what $\mc{M}$ suggests for shock transience. It is also important to re-emphasize that  the test compares the forecasts from $t = T_1^* + H+\ceil{1.5 \cdot \sqrt{T_1-T_1^*}}$ to $t=T_1$. In other words, the beginning dramatic drop as seen from Figure \ref{copshocktransience} around March is not considered in the forecast comparison. It is reasonable to our objective as we are interested in long-term persistence rather-than short-term substantial changes. 
 
 
 \begin{figure}[H]
@@ -715,9 +715,9 @@ Two dashed vertical lines are plotted in Figure \ref{copshocktransience}, where 
 	\end{center}	
 \end{figure}
 
-Next, we discuss the performance of $\hat{p}_1$, voting and weighted voting. From Table \ref{coptable},  we can observe that $|\hat{p}_1-p_1|$ equals zero uniformly for $\mc{M}$ and $H = 2, 4, 6, 8$. It suggests that $\hat{p}_1$ under $\mc{M}$ serves as a favorable proxy for $p_1$ under $\mc{M}$. In contrast, $|\hat{p}_1-p_1|$ is quite large for $\mc{M}_0$ and different $H$. It is possible that $\mc{M}_0$  does not fit the data properly or the donors are not representative of the time series of interest in the context of $\mc{M}_0$. Here, it is important to note that  the comparability between donors and the time series of interest is model-dependent.
+Next, we discuss the performance of $\hat{p}_1$, voting and weighted voting. From Table \ref{coptable},  we can observe that $|\hat{p}_1-p_1|$ equals zero uniformly for $\mc{M}$ and $H = 2, 4, 6, 8$. It suggests that $\hat{p}_1$ under $\mc{M}$ serves as a favorable proxy for $p_1$ under $\mc{M}$. In contrast, $|\hat{p}_1-p_1|$ is quite large for $\mc{M}_0$ and different $H$. It is possible that $\mc{M}_0$  does not fit the data properly or the donors are not representative of the time series of interest in the context of $\mc{M}_0$. Here, it is important to note that  the comparability between donors and the time series of interest is model-dependent. 
 
-\textcolor{red}{According to the last two columns of Table \ref{coptable}, the decisions yielded by voting and weighted voting are correct for $\mc{M}$ and $H = 2, 4, 6, 8$. However, the decisions for voting and weighted voting are incorrect for $\mc{M}_0$ and $H=2, 4, 6, 8$ except for voting for $\mc{M}_0$ at $H = 2$. The interpretations for this are similar to those when we analyze $|\hat{p}_1-p_1|$. Note that the decisions using $\hat{p}_1$ and weighted voting are similar. It is reasonable as they are functions of $\mbf{W}^*$. Because $p_1$ is uniformly 1 for $\mc{M}$, it is reasonable to expect $\P(p_1\leq .05)$ be small. Note that Proposition \ref{votprop} and Corollary \ref{coro2} show that the decisions made by voting and weighted voting procedures should be correct with very high probability if we assume the asymptotic approximation of the expected absolute error works well for  $n = 3$.}
+\textcolor{red}{According to the last two columns of Table \ref{coptable}, the decisions yielded by voting and weighted voting are correct for $\mc{M}$ and $H = 2, 4, 6, 8$. However, the decisions for voting and weighted voting are incorrect for $\mc{M}_0$ and $H=2, 4, 6, 8$ except for voting for $\mc{M}_0$ at $H = 2,4$. Here, it is worth noting that weighted voting and voting may differ due to $\mbf{W}^*$. Such difference may be valuable if the weight is concentrated in one donor that does not tell a consistent story to that of time series of interest. Next, the interpretations for these results are similar to those when we analyze $|\hat{p}_1-p_1|$. Note that the decisions using $\hat{p}_1$ and weighted voting are similar. It is reasonable as they are functions of $\mbf{W}^*$. Because $p_1$ is uniformly 1 for $\mc{M}$, it is reasonable to expect $\P(p_1\leq .05)$ be small. Note that Proposition \ref{votprop} and Corollary \ref{coro2} show that the decisions made by voting and weighted voting procedures should be correct with very high probability if we assume the asymptotic approximation of the expected absolute error works well for  $n = 3$.}
 
 
 
@@ -811,14 +811,14 @@ In Table 3, using the synthetic pairwise model selection procedures specified in
   \begin{tabular}{cccccccccr}
      $H$  & Model &   $p_1$ & $\hat{p}_1$ & $|\hat{p}_1-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
      \hline 
-     \multirow{2}{*}{2} & $\mc{M}_0$  &   0.450 & 0.511  & 0.061 & 0 (Yes) & 0 (Yes)\\      
-      & $\mc{M}$  & 0.240 & 0.583 & $0.343$   & 0 (Yes) &0 (Yes)   \\[.2cm]
-     \multirow{2}{*}{3} & $\mc{M}_0$ &   0.500 & 0.469  & $0.031$ & 0 (Yes) & 0 (Yes)    \\
-      &  $\mc{M}$ & 1 & 0.576 & 0.424 & 0 (Yes) & 0 (Yes)  \\[.2cm]
-     \multirow{2}{*}{4} &  $\mc{M}_0$ &   0.660   & $0.443$ & 0.217 & 0 (Yes) & 0 (Yes)  \\
-      &  $\mc{M}$ & 1.000 & 0.494  & 0.506 & 0 (Yes) & 0 (Yes) \\[.2cm]
-     \multirow{2}{*}{5} & $\mc{M}_0$ & 0.700  & 0.556 & 0.144 & 0 (Yes) & 0 (Yes)\\
-     & $\mc{M}$ & 0.470 & 1.000 & 0.530 & 0 (Yes) & 0 (Yes)
+     \multirow{2}{*}{2} & $\mc{M}_0$  &   0.300 & 0.443  & 0.143 & 0 (Yes) & 0 (Yes)\\      
+      & $\mc{M}$  & 0.775 & 0.591 & $0.184$   & 0 (Yes) &0 (Yes)   \\[.2cm]
+     \multirow{2}{*}{3} & $\mc{M}_0$ &   0.215 & 0.477 & $0.262$ & 0 (Yes) & 0 (Yes)    \\
+      &  $\mc{M}$ & 0.740 & 0.600 & 0.140 & 0 (Yes) & 0 (Yes)  \\[.2cm]
+     \multirow{2}{*}{4} &  $\mc{M}_0$ &   0.615   & $0.343$ & 0.272 & 0 (Yes) & 0 (Yes)  \\
+      &  $\mc{M}$ & 0.780 & 0.464  & 0.316 & 0 (Yes) & 0 (Yes) \\[.2cm]
+     \multirow{2}{*}{5} & $\mc{M}_0$ & 0.030 & 0.377 & 0.347 & 0 (No) & 0 (No)\\
+     & $\mc{M}$ & 0.940 & 0.293 & 0.647 & 0 (Yes) & 0 (Yes)
   \end{tabular}
 \end{center}	
 \end{table}
@@ -846,17 +846,15 @@ The pandemic-induced recession of 2020 coincided with a one-month drop in US non
 
 
 \begin{align*}
-	\phi_{i,j}, \theta_{i,j}  & \simiid U(0,1) \\ 
+	\phi_{i,j}, \theta_{i,j}  & \simiid U(-0.4,0.4) \\ 
 	\delta_{i,j} & \simiid N(1,0.5^2) \\
 	\alpha_i & \simiid N(10, 2) \\
 	T_i^* & \simiid \min\Big(90, \big[Gamma(15,10)\big]\Big) \\
 	\varepsilon_{i,t} & \simiid N(0,1)\\
-	X_{i,j} & \simiid Gamma(1,2) \\
-	\tilde{\theta}_{i,j},\tilde{\phi}_{i,j} & \simiid Beta(\|\mbf{x}_{i,T_i^*+1}\|,1)
+	X_{i,j} & \simiid Gamma(1,c) \\
+	e_{i,j} & \simiid beta(\alpha, \beta) \\
+	\tilde{\theta}_{i,j}&= \theta_{i,j} + \frac{1}{5}\cdot \Big(e_{ij}-\frac{1}{2}\Big)
 \end{align*}
-Vary $L = 14, 30, 45,60$.
-
-
 
 \section{Discussion}
 

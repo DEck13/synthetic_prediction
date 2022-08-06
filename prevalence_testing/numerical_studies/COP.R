@@ -73,6 +73,53 @@ sel <- function(yhat, y) {
   (y - yhat) ^ 2
 }
 
+# tuSPA test for comparison of two models
+tuSPA.mhfc <- function(ell, d, B, bw = 4) {
+  # ell is the block length
+  # d is the matrix of loss differential
+  # B is the bootstrap size
+  # bw is the bandwidth parameter for computing HAC estimator
+  
+  # compute dbar
+  d.bar <- matrix(apply(d, 2, mean))
+  
+  # moving-block bootstrap
+  Tt <- nrow(d); H <- ncol(d)
+  # T = ell * K
+  K <- Tt / ell
+  # Bootstrap replication
+  t.uSPA.B <- c()
+  for (b in 1:B) { 
+    # uniform draw from 1,...,T - ell +1
+    Iks <- sample(1:(Tt - ell + 1), K, replace = TRUE)
+    tau <- matrix(sapply(Iks, function(x) x:(x + ell - 1)))
+    tau <- as.numeric(tau)
+    t.uSPA.b.H <- c()
+    for (h in 1:H) { 
+      # moving-block bootstrap
+      d.b.h <- d[tau, h]
+      d.b.bar.h <- mean(d.b.h)
+      # compute moving block bootstrap standard error
+      xi.b.h <- 0
+      for (k in 1:K) {
+        xi.b.h <- xi.b.h + (sum(d.b.h[(k - 1) * ell + 1:ell] - d.b.bar.h)) ^ 2 / ell
+      }
+      xi.b.h <- xi.b.h / K
+      # compute t.uSPA statistic
+      t.uSPA.b.H[h] <- sqrt(Tt) * (d.b.bar.h - d.bar[h]) / sqrt(xi.b.h)
+    }
+    t.uSPA.B[b] <- min(t.uSPA.b.H)
+  }
+  # compute t.aSPA statistic
+  ## compute Heteroskedasticity and autocorrelation Consistent (HAC) estimator
+  require('tsapp')
+  Omega <- HAC(d, method = 'Quadratic Spectral', bw = bw)
+  t.uSPA <- min(as.numeric(sqrt(Tt) * d.bar / sqrt(diag(Omega))))
+  p <- mean(t.uSPA < t.uSPA.B)
+  # return output
+  return(p)
+}
+
 # taSPA test for comparison of two models
 taSPA.mhfc <- function(ell, d, B, bw = 4) {
   # ell is the block length
@@ -101,11 +148,11 @@ taSPA.mhfc <- function(ell, d, B, bw = 4) {
     d.b.w <- apply(d.b, 1, mean)
     xi.b <- 0
     for (k in 1:K) {
-      xi.b <- xi.b + (sum(d.b.w[(k - 1) * ell + 1:ell]) - mean(d.b.w)) ^ 2 / ell
+      xi.b <- xi.b + (sum(d.b.w[(k - 1) * ell + 1:ell] - mean(d.b.w))) ^ 2 / ell
     }
     xi.b <- xi.b / K
     # compute t.aSPA statistic
-    t.aSPA.B[b] <- sqrt(Tt) * (d.b.bar - d.bar) / xi.b
+    t.aSPA.B[b] <- sqrt(Tt) * (d.b.bar - d.bar) / sqrt(xi.b)
   }
   # compute t.aSPA statistic
   ## compute Heteroskedasticity and autocorrelation Consistent (HAC) estimator
@@ -113,80 +160,29 @@ taSPA.mhfc <- function(ell, d, B, bw = 4) {
   Omega <- HAC(d, method = 'Quadratic Spectral', bw = bw)
   w <- matrix(1 / H, nrow = H)
   xi.hat <- sqrt(t(w) %*% Omega %*% w)
-  t.aSPA <- as.numeric(sqrt(Tt) * d.bar / xi.hat)
+  t.aSPA <- as.numeric(sqrt(Tt) * d.bar / sqrt(xi.hat))
   p <- mean(t.aSPA < t.aSPA.B)
   # return output
   return(p)
 }
 
-ols.est.alphahat <- function(Tstar, Y, X) {
-  
-  n <- length(Y) - 1
-  T <- c()
-  for (i in 1:(n + 1)) {
-    T <- c(T, length(Y[[i]]) - 1)
+# voting
+vote <- function(ps, sig = 0.05, weight = FALSE, W) {
+  indic.p <- ifelse(ps < 0.05, yes = 1, no = 0)
+  if (weight == FALSE) {
+    mean <- mean(indic.p)
+  } else {
+    mean <- crossprod(indic.p, W)
   }
-  
-  # empty
-  alphahat <- c()
-  se <- c()
-  res <- c()
-  lmod <- c()
-  
-  
-  for (i in 2:(n + 1)) {
-    
-    # set up
-    Ti <- T[i]
-    Tstari <- Tstar[i]
-    yi <- Y[[i]][-1]
-    xi <- X[[i]][-1, ]
-    
-    # lag
-    yilag <- Y[[i]][-Ti]
-    
-    # OLS
-    lmodi <- lm(yi ~ 1 + ifelse(1:Ti == Tstari + 1, yes = 1, no = 0) + 
-                  yilag + xi)
-    
-    # find estimates
-    alphahat <- c(alphahat, coef(lmodi)[2])
-    se <- c(se, summary(lmodi)$coef[2, 2])
-    res[[i - 1]] <- residuals(lmodi)
-    lmod[[i - 1]] <- lmodi
-  }
-  
-  # uname
-  names(alphahat) <- names(se) <- NULL
-  
-  # adjustment estimator
-  alphahat.adj <- mean(alphahat)
-  
-  # weighted adjustment estimator
-  if (is.matrix(X[[1]]) == FALSE) {
-    for (i in 1:(n + 1)) {
-      X[[i]] <- as.matrix(X[[i]])
-    }
-  }
-  # Weights
-  W <- round(scm(X = X, Tstar = Tstar)$par, digits = 3)
-  # Computation
-  alphahat.wadj <- as.numeric(crossprod(W, alphahat))
-  
-  # Inverse-Variance Estimator
-  alphahat.IVW <- sum(alphahat / se ^ 2) /  (sum(1 / se ^ 2))
-  
-  est <- c(alphahat.adj, alphahat.wadj, alphahat.IVW)
-  names(est) <- c('adj', 'wadj', 'IVW')
-  
-  # output
-  return(list(alphahat = alphahat, est = est, Tstar = Tstar, X = X, Y = Y, 
-              lmod = lmod, res = res, Wstar = W, se = se))
-  
+  if (mean > 0.5) output <- 1
+  else if (mean == 0.5) output <- sample(c(1, 0), size = 1)
+  else output <- 0
+  return(output)
 }
 
+# functions that return alpha.hat and synthetic weights
 ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw, 
-                                 sig.levl = .05, q1, subset = FALSE, 
+                                 sig.levl = .05, q1, q2, subset = FALSE, 
                                  retro = TRUE, selfW = NA, scale = FALSE) {
   
   n <- length(Y) - 1
@@ -203,11 +199,6 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw,
     Ki <- K[i]
     Tstari <- Tstar[i]
     
-    if (i > 2) {
-      sym <- ols.est.alphahat(Tstar = Tstar[c(i, 2:(i - 1))], X = X[c(i, 2:(i - 1))], Y = Y[c(i, 2:(i - 1))])
-      alpha.wadj <- sym$est[2]
-    }
-    
     m1.L.i <- matrix(NA, nrow = Ti - Ki - H - q1, ncol = H)
     m2.L.i <- matrix(NA, nrow = Ti - Ki - H - q1, ncol = H)
     
@@ -221,31 +212,45 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw,
         # yi lags
         yilags <- c()
         for (j in 1:q1) {
-          yijlag <- lag(Y[[i]][-(1:q1)], n = j)[(t + H - h + 1):(t + Ki + H - h)]
+          yijlag <- dplyr::lag(Y[[i]][-(1:q1)], n = j)[(t + H - h + 1):(t + Ki + H - h)]
           yilags <- cbind(yilags, yijlag)
+        }
+        
+        # x and x lags
+        x.xlags <- xi
+        if (q2 > 1) {
+          
+          for (j in 1:(q2 - 1)) {
+            xj.xlags <- dplyr::lag(X[[i]][-(1:max(q1, q2 - 1)), ], n = j)[(t + H - h + 1):(t + Ki + H - h), ]
+            x.xlags <- cbind(x.xlags, xj.xlags)
+          }
         }
         
         # OLS
         lmodi.adj <- lm(yi ~ 1 + ifelse((t + H - h + 1):(t + Ki + H - h) >= Tstari + 1, yes = 1, no = 0) + 
-                          yilags + xi)
-        lmodi.unadj <- lm(yi ~ 1 + yilags + xi)
+                          yilags + x.xlags)
+        lmodi.unadj <- lm(yi ~ 1 + yilags + x.xlags)
         
         # beta.hat
         beta.hat.adj <- matrix(coef(lmodi.adj), nrow = 1)
         beta.hat.adj[which(is.na(beta.hat.adj) == TRUE)] <- 0
         beta.hat.unadj <- matrix(coef(lmodi.unadj), nrow = 1)
+        beta.hat.unadj[which(is.na(beta.hat.unadj) == TRUE)] <- 0
         
         yhat.adj <- Y[[i]][(t + Ki + H - h + 1 - q1):(t + Ki + H - h)]
         yhat.unadj <- Y[[i]][(t + Ki + H - h + 1 - q1):(t + Ki + H - h)]
         
         for (j in 1:h) {
-          yhat.adj.h <- beta.hat.adj %*% matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
-                                                  yhat.adj[j:(j + q1 - 1)], X[[i]][-(1:q1), ][t + Ki + H - h + j, ]))
-          yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.adj[j:(j + q1 - 1)], X[[i]][-(1:q1), ][t + Ki + H - h + j, ]))
-          
-          if (t + Ki + H - h == Tstari & i >= 3 & h == 1) {
-            yhat.adj.h <- yhat.adj.h + alpha.wadj
+          x.xlags.for.pred <- X[[i]][-(1:q1), ][t + Ki + H - h + j, ]
+          if (q2 > 1) {
+            for (k in 1:(q2 - 1)) {
+              x.xlags.for.pred <- cbind(x.xlags.for.pred, 
+                                        X[[i]][-(1:q1), ][t + Ki + H - h + j - k, ])
+            }
           }
+          yhat.adj.h <- beta.hat.adj %*% matrix(c(1, ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0),
+                                                  yhat.adj[j:(j + q1 - 1)], x.xlags.for.pred))
+          yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.adj[j:(j + q1 - 1)], x.xlags.for.pred))
           
           yhat.adj <- c(yhat.adj, yhat.adj.h)
           yhat.unadj <- c(yhat.unadj, yhat.unadj.h)
@@ -261,7 +266,7 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw,
     if (subset == FALSE) {
       ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw) 
     } else {
-      sub.index <- (Ti - Ki - q1 - (Ti - Tstari) + 1):(Ti - Ki - H - q1)
+      sub.index <- (Ti - Ki - max(q1, q2 - 1) - (Ti - Tstari) + ceiling(1.5 * sqrt(Ti - Tstari))):(Ti - Ki - H - max(q1, q2 - 1))
       d.subset <- d[sub.index,  ]
       ps[i] <- taSPA.mhfc(ell = ell, d = d.subset, B = B, bw = bw)
     }
@@ -290,7 +295,7 @@ ps.indic.W.permanent <- function(Tstar, Y, X, K, H, Ts, ell, B, bw,
 
 # functions that return alpha.hat and synthetic weights for decaying shock effects
 ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
-                               q1, q2, subset = FALSE, 
+                               q1, q2, subset = TRUE, 
                                ell, B, bw, sig.levl = .05, retro = TRUE,
                                nolag.i.x = NA, selfW = NA, scale = FALSE) {
   
@@ -308,11 +313,6 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
     Ki <- K[i]
     Tstari <- Tstar[i]
     
-    if (i > 2) {
-      sym <- ols.est.alphahat(Tstar = Tstar[c(i, 2:(i - 1))], X = X[c(i, 2:(i - 1))], Y = Y[c(i, 2:(i - 1))])
-      alpha.wadj <- sym$est[2]
-    }
-    
     m1.L.i <- matrix(NA, nrow = Ti - Ki - H - max(q1, q2 - 1), ncol = H)
     m2.L.i <- matrix(NA, nrow = Ti - Ki - H - max(q1, q2 - 1), ncol = H)
     
@@ -326,7 +326,7 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
         # yi lags
         yilags <- c()
         for (j in 1:q1) {
-          yijlag <- lag(Y[[i]][-(1:max(q1, q2 - 1))], n = j)[(t + H - h + 1):(t + Ki + H - h)]
+          yijlag <- dplyr::lag(Y[[i]][-(1:max(q1, q2 - 1))], n = j)[(t + H - h + 1):(t + Ki + H - h)]
           yilags <- cbind(yilags, yijlag)
         }
         
@@ -335,7 +335,7 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
         if (q2 > 1) {
           
           for (j in 1:(q2 - 1)) {
-            xj.xlags <- lag(X[[i]][-(1:max(q1, q2 - 1)), ], n = j)[(t + H - h + 1):(t + Ki + H - h), ]
+            xj.xlags <- dplyr::lag(X[[i]][-(1:max(q1, q2 - 1)), ], n = j)[(t + H - h + 1):(t + Ki + H - h), ]
             x.xlags <- cbind(x.xlags, xj.xlags)
           }
         }
@@ -345,8 +345,8 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
         yilags.D.i.t <- yilags
         x.xlags.D.i.t <- x.xlags
         for (d in 1:nrow(yilags)) {
-          yilags.D.i.t[d, ] <- yilags[d, ] * D.i.t[d]
-          x.xlags.D.i.t[d, ] <- x.xlags[d, ] * D.i.t[d]
+          yilags.D.i.t[d, ] <- yilags[d, ] * D.i.t[d] 
+          x.xlags.D.i.t[d, ] <- x.xlags[d, ] * D.i.t[d]  
         }
         
         # OLS
@@ -384,7 +384,7 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
             if (q2 > 1) {
               for (k in 1:(q2 - 1)) {
                 x.xlags.for.pred <- cbind(x.xlags.for.pred, 
-                                          X[[i]][-1, ][t + Ki + H - h + j - k, ])
+                                          X[[i]][-(1:q1), ][t + Ki + H - h + j - k, ])
               }
             }
             D.i.t <- ifelse(t + Ki + H - h + j >= Tstari + 1, yes = 1, no = 0) 
@@ -396,12 +396,8 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
                                                     yilags.for.pred.D.i.t,
                                                     x.xlags.for.pred.D.i.t,
                                                     D.i.t))
-            yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.adj[j:(j + q1 - 1)], 
+            yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.unadj[j:(j + q1 - 1)], 
                                                         x.xlags.for.pred))
-            
-            if (t + Ki + H - h == Tstari & i >= 3 & h == 1) {
-              yhat.adj.h <- yhat.adj.h + alpha.wadj
-            }
             
             yhat.adj <- c(yhat.adj, yhat.adj.h)
             yhat.unadj <- c(yhat.unadj, yhat.unadj.h)
@@ -442,12 +438,8 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
                                                     yilags.for.pred.D.i.t,
                                                     x.xlags.for.pred.D.i.t,
                                                     D.i.t, nolag.i.x[[2]][[which(nolag.i.x[[1]] == i)]][-(1:max(q1, q2 - 1))][t + Ki + H - h + j - k]))
-            yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.adj[j:(j + q1 - 1)], 
+            yhat.unadj.h <- beta.hat.unadj %*% matrix(c(1, yhat.unadj[j:(j + q1 - 1)], 
                                                         x.xlags.for.pred, nolag.i.x[[2]][[which(nolag.i.x[[1]] == i)]][-(1:max(q1, q2 - 1))][t + Ki + H - h + j - k]))
-            
-            if (t + Ki + H - h == Tstari & i >= 3 & h == 1) {
-              yhat.adj.h <- yhat.adj.h + alpha.wadj
-            }
             
             yhat.adj <- c(yhat.adj, yhat.adj.h)
             yhat.unadj <- c(yhat.unadj, yhat.unadj.h)
@@ -466,7 +458,7 @@ ps.indic.W.dynamic <- function(Tstar, Y, X, K, H, Ts,
     if (subset == FALSE) {
       ps[i] <- taSPA.mhfc(ell = ell, d = d, B = B, bw = bw) 
     } else {
-      sub.index <- (Ti - Ki - max(q1, q2 - 1) - (Ti - Tstari) + 1):(Ti - Ki - H - max(q1, q2 - 1))
+      sub.index <- (Ti - Ki - max(q1, q2 - 1) - (Ti - Tstari) + ceiling(1.5 * sqrt(Ti - Tstari))):(Ti - Ki - H - max(q1, q2 - 1))
       d.subset <- d[sub.index,  ]
       ps[i] <- taSPA.mhfc(ell = ell, d = d.subset, B = B, bw = bw)
     }
@@ -578,7 +570,7 @@ for (H in Hs) {
 # training sample size
 K <- 30
 # number of days after shock date
-L <- 29
+L <- 49
 
 #### Monday, March 17th, 2008
 
@@ -760,8 +752,8 @@ for (i in 1:4) {
 
 
 # testing 
-res1 <- ps.indic.W.permanent(Tstar = Tstar, 
-                             q1 = 2, subset = TRUE,  selfW = W,
+res1 <- ps.indic.W.permanent(Tstar = Tstar, selfW = W, q1 = 2, q2 = 2, 
+                             subset = TRUE,
                              Y = Y, X = X, K = rep(K, 4), H = H,
                              Ts = Ts, ell = 4, B = 200, bw = 4, 
                              scale = TRUE)
