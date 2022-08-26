@@ -626,10 +626,10 @@ date <- rownames(dat)
 # setup
 K <- 24
 # number of horizons
-Hs <- c(2, 3, 4, 5)
+Hs <- c(2, 3, 4, 5, 6, 7, 8, 9, 10)
 # tab
 tab <- data.frame()
-L <- 18
+L <- 15
 
 # result
 for (H in Hs) {
@@ -697,6 +697,7 @@ mod.t4.dynamic <- lm(TS4$PAYEMS ~ as.matrix(TS4[, 2:7]) + co.D + TS4$shock.t4)
 AICs.20080301 <- c(AIC(mod.t4.null), AIC(mod.t4.permanent), AIC(mod.t4.dynamic))
 I.AIC.4 <- ifelse(AIC(mod.t4.permanent) > AIC(mod.t4.dynamic), yes = 1, no = 0)
 
+
 # Time Series 1
 shock.t1 <- which(date == '2020-03-01') + 1
 TS1 <- dat[(shock.t1 - (1 + 12 + K + H)):(shock.t1 + L),]
@@ -718,7 +719,7 @@ mod.t1.dynamic <- lm(TS1$PAYEMS ~ as.matrix(TS1[, 2:7]) + co.D + TS1$shock.t1)
 AICs.20200301 <- c(AIC(mod.t1.null), AIC(mod.t1.permanent), AIC(mod.t1.dynamic))
 
 # Ti
-Ts <- rep(58, 5)
+Ts <- rep(nrow(TS1), 5)
 # Tstar
 Tstar <- rep(39, 5)
 # Y
@@ -734,12 +735,12 @@ for (i in 1:4) {
 # testing 
 res1 <- ps.indic.W.permanent(Tstar = Tstar, q1 = 1, q2 = 1, subset = TRUE, 
                              Y = Y, X = X, K = rep(K, 4), H = H,
-                             Ts = Ts, ell = 4, B = 200, bw = 4, 
+                             Ts = Ts, ell = 4, B = 500, bw = 4, 
                              scale = TRUE)
 
 res2 <- ps.indic.W.dynamic(Tstar = Tstar, Y = Y, X = X, K = rep(K, 4), 
                            q1 = 1, q2 = 1, subset = TRUE,  
-                           H = H, Ts = Ts, ell = 4, B = 200, bw = 4,
+                           H = H, Ts = Ts, ell = 4, B = 500, bw = 4,
                            scale = TRUE)
 
 # p-values
@@ -798,6 +799,16 @@ tab.i2 <-
 tab.i <- rbind(tab.i1, tab.i2)
 tab <- rbind(tab, tab.i)
 }
+
+res <- c()
+for (t in H:(nrow(dat) - shock.t1)) {
+   TS1 <- dat[(shock.t1 - (1 + 12 + K + t - H)):(shock.t1 + t - H),]
+   TS1$shock.t1 <- as.numeric((shock.t1 - (1 + 12 + K + t - H)):(shock.t1 + t - H) %in% shock.t1:(shock.t1 + t - H))
+   mod.t1.permanent <- lm(PAYEMS ~ PAYEMS_lag_1 + FEDFUNDS + W825RC1_lag_1 + 
+                               +                            PCE_lag_1 + CPIAUCSL_lag_1 + LNS12000031_lag_1 + shock.t1, data = TS1)
+   res <- rbind(res, coef(summary(mod.t1.permanent))[8, c(1, 2, 4)])
+}
+
 
 # plot shock transience
 setwd('~/Desktop/Research/synthetic prediction/')

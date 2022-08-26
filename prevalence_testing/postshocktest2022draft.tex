@@ -806,19 +806,12 @@ In Table 3, using the synthetic pairwise model selection procedures specified in
 
 
 \begin{table}[H]
-	\caption{Results for Month-on-Month Change in Log Nonfarm Payrolls (Seasonally Adjusted) ($n=3$), $\mbf{W}^* = (0.196, 0.804, 0.000)$ from scaled covariates}   \label{uemtable}
+	\caption{Results for Month-on-Month Change in Log Nonfarm Payrolls for $\mc{M}_0$ (Seasonally Adjusted) ($n=3$), $\mbf{W}^* = (0.196, 0.804, 0.000)$ from scaled covariates}   \label{uemtable}
 \begin{center}
   \begin{tabular}{cccccccccr}
-     $H$  & Model &   $p_1$ & $\hat{p}_1$ & $|\hat{p}_1-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
+     $H$   &   $p_1$ & $\hat{p}_1$ & $|\hat{p}_1-p_1|$ & Vote (Correct?) & weighted Vote (Correct?)   \\
      \hline 
-     \multirow{2}{*}{2} & $\mc{M}_0$  &   0.300 & 0.443  & 0.143 & 0 (Yes) & 0 (Yes)\\      
-      & $\mc{M}$  & 0.775 & 0.591 & $0.184$   & 0 (Yes) &0 (Yes)   \\[.2cm]
-     \multirow{2}{*}{3} & $\mc{M}_0$ &   0.215 & 0.477 & $0.262$ & 0 (Yes) & 0 (Yes)    \\
-      &  $\mc{M}$ & 0.740 & 0.600 & 0.140 & 0 (Yes) & 0 (Yes)  \\[.2cm]
-     \multirow{2}{*}{4} &  $\mc{M}_0$ &   0.615   & $0.343$ & 0.272 & 0 (Yes) & 0 (Yes)  \\
-      &  $\mc{M}$ & 0.780 & 0.464  & 0.316 & 0 (Yes) & 0 (Yes) \\[.2cm]
-     \multirow{2}{*}{5} & $\mc{M}_0$ & 0.030 & 0.377 & 0.347 & 0 (No) & 0 (No)\\
-     & $\mc{M}$ & 0.940 & 0.293 & 0.647 & 0 (Yes) & 0 (Yes)
+ 2   & 0.33 & 0.21 & 0.12 & 0 (Yes) & 0 (Yes) \\    3   & 0.11 & 0.51 & 0.40 & 0 (Yes) & 0 (Yes) \\    4   & 0.43 & 0.52 & 0.09 & 0 (Yes) & 0 (Yes) \\    5   & 0.02 & 0.36 & 0.34 & 0 (No) & 0 (No) \\     6   & 0.04 & 0.62 & 0.58 & 0 (No) & 0 (No) \\    7   & 0.03 & 0.40 & 0.37 & 0 (No) & 0 (No) \\    8  & 0.27 & 0.46 & 0.19 & 0 (Yes) & 0 (Yes) \\    9   & 0.49 & 0.27 & 0.22 & 0 (Yes) & 0 (Yes) \\    10  & 0.76 & 0.67 & 0.10 & 0 (Yes) & 0 (Yes) \\ 
   \end{tabular}
 \end{center}	
 \end{table}
@@ -840,7 +833,18 @@ AICs for $\mc{M}$ in the donor pool are $(-601.743,-649.484,-684.147)$
 
 The pandemic-induced recession of 2020 coincided with a one-month drop in US nonfarm payrolls in excess of 20 million people, or $13.57\%$, between March and April 2020.  This decline exceeds all other monthly declines by orders of magnitude.  The distance-based weighting  in \citep{lin2021minimizing}, employing a convex combination of donor shocks, is known to be unable to extrapolate and thus recover the full shock effect.  However, the procedure developed herein does not rely as heavily upon the full or partial recovery of the shock effect.  What is potentially as important or more important is that the donor pool serve as an information source about the persistence of a shock effect in the time series under study, an information source based on the covariates that are posited to underlie the post-shock model dynamics.  It is therefore the latter that may best explain the performance of the decision-making method developed here.
 
-\vspace*{0.5cm}\textcolor{red}{A naive test for the presence of a mean-shift shock effect predictably decays very quickly as more and more post-shock data is added for fitting purposes when, in truth, the shock is transient. However, the Quaedvlieg method runs $h = 1,...,H$ ahead forecasts that will not necessarily indicate a quickly decaying shock due to the training data for the model including post-shock responses that have yet to decay. Thus the unadjusted and adjusted forecasts can deviate sharply when their underlying models are fit to a small amount of post-shock data. When $H$ is small, there is a lot of post-shock data under consideration, and the shock decays quickly, the initial shock   may not be detected by the Quaedvlieg method due to a loss-difference matrix evaluating several differences that are negligible far away from the initial shock. The same can be true when $H$ is large. However, for medium size $H$, the influence of fitting the initial post-shock data may not yet accommodate the sharply decayed shock. The result of this is that the Quaedvlieg method can indicate a shifted significant difference between the adjusted and un-adjusted forecasts.  (loss-difference matrix has dimensions $(T - T^* - \max(\lceil1.5\sqrt{T - T^*}\rceil, H))  \times H$) When we have limited sample size, we should not consider large $H$.}
+
+\textcolor{red}{From Table \ref{uemtable}, $p_1$ is insignificant for $H = 2, 3, 4$ and $H = 8, 9, 10$ but is significant for $H = 5, 6, 7$. Notice that weighted voting, vote, and $\hat{p}_1$ also does not perform well for $H = 5, 6, 7$.  This implies something undetected and unique  to the time series of interest occur.  For this reason, we investigated the point estimates of the shock effects using data from $t = T_1^*+r-37$ to $t = T_1^* + r$.  Note that for different $r$, the training sample size is fixed and thus prevents training sample size to affect inference results. The results are presented in Table \ref{pesr} with point estimates of the shock effects denoted by $\hat{\alpha}_{1, r}$ and corresponding standard error and $p$-value from $t$-test. Note that the $t$-test is significant for $r = 1, 2, 3, 4$ but insignificant for $r\geq 5$.}
+
+\vspace*{0.5cm}\textcolor{red}{ This naive test implies that  the presence of a mean-shift shock effect predictably decays very quickly as more and more post-shock data is added for fitting purposes when, in truth, the shock is transient. However, the Quaedvlieg method runs $h = 1,...,H$ ahead forecasts that will not necessarily indicate a quickly decaying shock due to the training data for the model including post-shock responses that have yet to decay. Thus the unadjusted and adjusted forecasts can deviate sharply when their underlying models are fit to a small amount of post-shock data. When $H$ is small, there is a lot of post-shock data under consideration, and the shock decays quickly, the initial shock   may not be detected by the Quaedvlieg method due to a loss-difference matrix evaluating several differences that are negligible far away from the initial shock. The same can be true when $H$ is large. However, for medium size $H$, the influence of fitting the initial post-shock data may not yet accommodate the sharply decayed shock. The result of this is that the Quaedvlieg method can indicate a shifted significant difference between the adjusted and un-adjusted forecasts.  (loss-difference matrix has dimensions $(T - T^* - \max(\lceil1.5\sqrt{T - T^*}\rceil, H))  \times H$) When we have limited sample size, we should not consider large $H$.}
+
+\begin{table}[H]
+	\caption{Point estimates of shock effects under $\mc{M}_0$ using data from $t = T_1^* + r-37$ to $T^*_1 + r$} \label{pesr}
+	\begin{center}
+		\begin{tabular}{rrcr}  $r$& $\hat{\alpha}_{1,r}$ & $\sqrt{\hat{\mathbf{Var}}(\hat{\alpha}_{1,r})}$ & $p$-value \\   \hline 1 & $-$0.1344 & 0.0134 & 0.0000 \\   2 & $-$0.1379 & 0.0138 & 0.0000 \\   3 & $-$0.1921 & 0.0469 & 0.0002 \\   4 & $-$0.0055 & 0.0065 & 0.4056 \\   5 & 0.0054 & 0.0041 & 0.1950 \\   6 & $-$0.0013 & 0.0025 & 0.6213 \\   7 & $-$0.0042 & 0.0025 & 0.1003 \\   8 & $-$0.0028 & 0.0022 & 0.2109 \\   9 & $-$0.0010 & 0.0020 & 0.6203 \\   10 & 0.0005 & 0.0019 & 0.7788 \\   11 & 0.0006 & 0.0018 & 0.7636 \\   12 & 0.0029 & 0.0019 & 0.1368 \\   13 & 0.0024 & 0.0022 & 0.2823 \\   14 & 0.0025 & 0.0021 & 0.2442 \\   15 & 0.0015 & 0.0021 & 0.4883 \\   16 & 0.0008 & 0.0023 & 0.7245 \\   17 & 0.0013 & 0.0022 & 0.5693 \\   18 & 0.0015 & 0.0022 & 0.4907 \\    \hline\end{tabular}
+	\end{center}	
+\end{table}
+
 
 
 \subsection{Simulations}
