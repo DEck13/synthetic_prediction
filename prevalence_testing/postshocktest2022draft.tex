@@ -850,17 +850,58 @@ The pandemic-induced recession of 2020 coincided with a one-month drop in US non
 \subsection{Simulations}
 \label{simulation}
 
-
+In this section, we propose  several simulation setups to illustrate the performance of our methods and find when they work well and when do not. The parameter setup is shown as follows.
 \begin{align*}
 	\phi_{i,j}, \theta_{i,j}  & \simiid U(-0.4,0.4) \\ 
 	\delta_{i,j} & \simiid N(1,0.5^2) \\
-	\alpha_i & \simiid N(10, 2) \\
+	\varepsilon_{\alpha, i} & \simiid N(0, 2) \\
 	T_i^* & \simiid \min\Big(90, \big[Gamma(15,10)\big]\Big) \\
-	\varepsilon_{i,t} & \simiid N(0,1)\\
-	X_{i,j} & \simiid Gamma(1,c) \\
-	e_{i,j} & \simiid beta(\alpha, \beta) \\
-	\tilde{\theta}_{i,j}&= \theta_{i,j} + \frac{1}{5}\cdot \Big(e_{ij}-\frac{1}{2}\Big)
+	\varepsilon_{i,t} & \simiid N(0,\sigma)\\
+	X_{i,j} & \simiid Gamma(1,2) \\
+	e_{i,j}, e_{i,j}^* & \simiid beta(\alpha_i^*, \beta_i^*) \\
+	\alpha_i^* &= a_1 \|\mbf{x}_{i, T_i^*+1}\|+b_1 \\
+	\beta_i^* &= a_2 \|\mbf{x}_{i, T_i^*+1}\|+b_2 \\
+	\tilde{\theta}_{i,j}&= \theta_{i,j} + \frac{1}{5}\cdot \Big(e_{ij}-\frac{1}{2}\Big)\\
+	\tilde{\phi}_{i,j}&= \phi_{i,j} + \frac{1}{5}\cdot \Big(e_{ij}^*-\frac{1}{2}\Big)
 \end{align*}
+Note that  $\phi_{i,j}, \theta_{i,j} \simiid U(-0.4,0.4)$ are designed to prevent non-stationarity. The reason for the design of $T_i^*$ is similar to that in Section 4 of \cite{lin2021minimizing}. In particular, we focus on varying $\mu_{\alpha}$, $\sigma$, and $a_1$ under the design of $\mc{M}$ as specified in Section \ref{modelsetup}. Note that $\mu_{\alpha}$ controls the signal of the shock whereas $\sigma$ manages the noise of the response. $a_1, a_2$ is related to the magnitude of $\alpha_i^*$, which depends also on $\|\mbf{x}_{i, T_i^*+1}\|$. This simulation design allows for the situations when the post-shock dynamics depends on the covariates at the time points the shock occur. For simplicity, we set $a_2=0$ and fix $b_1=b_2=1$. By varying $a_1$, we know how our methods perform as $\E(e_{i,j})$ ranges from 0 to 1. 
+
+For illustration purpose, we keep other parameters simple and friendly for easier computation with bootstrap sample size $B=200$, maximum horizon $H=10$, autoregressive parameter order $q_1=q_2=2$,  donor pool sample size $n=10$, and covariate dimension $p=2$. Note that we set the block size in the moving block bootstrap to be $\ell=4$ and the bandwidth for HAC estimator of the covariance matrix  to be 4 (see Section \ref{sec:multhor}).
+
+In the first simulation, we vary $\mu_{\alpha}$ and $a_1$ with results presented in Table \ref{tablemualpha}. First, fixing $a_1$, we see that the  $\hat{\E}(\hat{p})$ and the misclassification rate (MCR) of voting and weighted voting get improved as $\mu_{\alpha}$ increases. When $\mu_{\alpha}=0$, the misclassification rates are close to 0.5. It makes sense by Proposition \ref{votprop} and \ref{votprop2} since $\hat{\E}(p_1)$ is close to 0.5 in this scenario.  Under this design, the shock signal is neither strong enough or weak enough for the method to classify it as being persistent or transient so that the results may be poor. However, as $\mu_{\alpha}$ increases, the shock signal strength gets large. Table \ref{tablemualpha} shows that the results appear satisfactory when $\mu_{\alpha}=100$. 
+
+Second, fixing $\mu_{\alpha}$, varying $a_1$ lead to a better fitting results though the improvement is marginal and does not hold for some combinations of $\mu_{\alpha}$ and $a_1$.  Note that as $a_1$ increases from $10^{-3}$ to $10^3$, $\E(e_{ij})$ tends from 0 to $\infty$. According to $\mc{M}$ (see Section \ref{modelsetup}), this change make the post-shock dynamics more different than the pre-shock dynamics so that the shock signal strength gets larger. 
+
+
+
+
+\begin{table}[H]
+	\caption{Monte Carlo Simulation of $\mc{M}$ with varying $\mu_{\alpha}$ and $a_1$ } \label{tablemualpha}
+	\begin{center}
+\begin{tabular}{rrrccccc}  \hline  $\mu_{\alpha}$ & $a_1$ & $\hat{\E}(\hat{p})$ & $\hat{\E}(p_1)$ & $\hat{\E}\big(|\hat{p}-p_1|\big)$ & MCR of voting & MCR of weighted voting \\   \hline 0 & \multirow{3}{*}{$10^{-3}$} & 0.458 (0.025) & 0.420 (0.033) & 0.420 (0.024) & 0.495 (0.035) & 0.440 (0.035) \\    10 &   & 0.206 (0.022) & 0.195 (0.027) & 0.278 (0.025) & 0.250 (0.031) & 0.345 (0.034) \\    100 &  & 0.037 (0.010) & 0.010 (0.007) & 0.047 (0.012) & 0.010 (0.007) & 0.035 (0.013) \\[.2cm] 
+   \hline   0 & \multirow{3}{*}{$1$} & 0.382 (0.025) & 0.343 (0.031) & 0.423 (0.025) & 0.470 (0.035) & 0.520 (0.035) \\    10 &   & 0.185 (0.020) & 0.141 (0.024) & 0.267 (0.025) & 0.175 (0.027) & 0.285 (0.032) \\    100 &  & 0.014 (0.006) & 0.025 (0.011) & 0.039 (0.013) & 0.025 (0.011) & 0.035 (0.013) \\[.2cm] 
+   \hline   0 & \multirow{3}{*}{$10^3$} & 0.365 (0.024) & 0.268 (0.029) & 0.401 (0.023) & 0.430 (0.035) & 0.450 (0.035) \\    10 &  & 0.130 (0.017) & 0.139 (0.024) & 0.235 (0.024) & 0.160 (0.026) & 0.250 (0.031) \\    100 &   & 0.022 (0.007) & 0.010 (0.007) & 0.032 (0.010) & 0.010 (0.007) & 0.030 (0.012) \\    \hline\end{tabular}
+	\end{center}	
+\end{table}
+
+
+
+\begin{table}[H]
+\caption{Monte Carlo Simulation with varying $\sigma$ and $a_1$ ($B = 200$, $\mu_{\alpha}=20$, $H = 10$, $\ell=4$, bandwidth 4, $q_1=q_2=2$, $b_1=b_2=1$, $a_2=0$,   $n = 10$, $p= 2$, $\sigma_{\alpha}=2$, $\sigma_{\delta}=0.05$, $\mu_{\delta}=1$)} \label{tablesigma}
+	\begin{center}
+		\begin{tabular}{rrcccccc}  \hline  $\sigma$ & $a_1$ & $\hat{\E}(\hat{p})$ & $\hat{\E}(p_1)$ & $\hat{\E}\big(|\hat{p}-p_1|\big)$ & MCR of voting & MCR of weighted voting \\   \hline 0.01 & \multirow{5}{*}{$10^{-3}$} & 0 (0) & 0 (0) & 0 (0) & 0 (0) & 0 (0) \\    1 &   & 0.116 (0.016) & 0.117 (0.022) & 0.191 (0.023) & 0.120 (0.023) & 0.170 (0.027) \\    5 &   & 0.545 (0.026) & 0.581 (0.034) & 0.471 (0.026) & 0.440 (0.035) & 0.475 (0.035) \\    10 & & 0.685 (0.023) & 0.713 (0.031) & 0.431 (0.026) & 0.330 (0.033) & 0.415 (0.035) \\    50 &  & 0.935 (0.013) & 0.935 (0.017) & 0.119 (0.020) & 0.065 (0.017) & 0.095 (0.021) \\[.2cm] 
+   \hline   0.01 & \multirow{5}{*}{$1$} & 0 (0) & 0 (0) & 0 (0) & 0 (0) & 0 (0) \\    1 &   & 0.112 (0.016) & 0.090 (0.020) & 0.192 (0.023) & 0.105 (0.022) & 0.195 (0.028) \\    5 &   & 0.493 (0.026) & 0.424 (0.034) & 0.499 (0.025) & 0.460 (0.035) & 0.520 (0.035) \\    10 &   & 0.626 (0.025) & 0.610 (0.034) & 0.430 (0.026) & 0.400 (0.035) & 0.380 (0.034) \\    50 &   & 0.961 (0.009) & 0.891 (0.022) & 0.136 (0.022) & 0.105 (0.022) & 0.125 (0.023) \\[.2cm]
+   \hline   0.01 & \multirow{5}{*}{$10^3$} & 0 (0) & 0 (0) & 0 (0) & 0 (0) & 0 (0) \\    1 &  & 0.078 (0.013) & 0.085 (0.020) & 0.149 (0.021) & 0.090 (0.020) & 0.145 (0.025) \\    5 &  & 0.461 (0.025) & 0.481 (0.035) & 0.530 (0.025) & 0.480 (0.035) & 0.570 (0.035) \\    10 &  & 0.684 (0.023) & 0.546 (0.035) & 0.473 (0.026) & 0.430 (0.035) & 0.480 (0.035) \\    50 &   & 0.921 (0.014) & 0.894 (0.022) & 0.172 (0.023) & 0.105 (0.022) & 0.155 (0.026) \\    \hline\end{tabular}
+	\end{center}	
+\end{table}
+
+In the second simulation, we fix $\mu_{\alpha}$ to be 20 and try to vary $\sigma$ and $a_1$.  The results are presented in Table \ref{tablesigma}. Fixing $a_1$, we can observe that the results become worse and then better as $\sigma$ increases. Notably, when $\sigma=0.01$, which is almost close to zero as compared to $\mu_{\alpha}=20$, $\hat{\E}\big(|\hat{p}-p_1|\big)$ and misclassification rates of voting and weighted voting are almost zero.  This implies that when the donors are nearly replicates of the time series of interest, our method is almost perfect.  When $\sigma$ is small, the shock signal from $\mu_{\alpha}$ is relatively large and can be easily captured as a persistent shock. In contrast, when $\sigma$ is large, as $\mu_{\alpha}$ is fixed, the shock signal is relatively small so that it is understood as a transient shock. In terms of the $U$ shaped performance of our results, we posit that when $\sigma$ is moderately large, the shock signal can be easily understood as persistent or transient because under this configuration, it is very possible that the response $y_{i,t}$ can attain a magnitude greater than the shock $\alpha_{i,t}$ or smaller.
+
+
+In Table \ref{tablesigma}, fixing $\sigma$, we do not observe a clear trend about how $a_1$ interacts with $\hat{\E}\big(|\hat{p}-p_1|\big)$ and the misclassification rates of voting and weighted voting. Note that $a_1$ controls  the mean and variance of the noise for  the post-shock autoregressive parameters of $\tilde{\theta}_{i,j}, \tilde{\phi}_{i,j}$.  It appears that $a_1$ does not affect the results, suggesting that our method is not sensitive to the noise of the unobserved parameter distribution.
+
+
+In conclusion, via the simulation, we find that our method works well when the shock signal is either very strong or weak compared to the noise of the response. However, the signal may mislead our method when the shock signal strength is similar to that of the noise. Note that both $\tilde{\theta}_{i,j}, \tilde{\phi}_{i,j}$ and $\mu_{\alpha}$ play a role in the post-shock dynamics but  $\tilde{\theta}_{i,j}, \tilde{\phi}_{i,j}$ controls the structure. Based on our results, we find that our method is not sensitive to the change of structure but instead the mean shift due to $\mu_{\alpha}$.
 
 \section{Discussion}
 
@@ -869,6 +910,7 @@ The pandemic-induced recession of 2020 coincided with a one-month drop in US non
 \textcolor{red}{needs work} The post-shock forecasting methodology presented here and in \cite{lin2021minimizing} is heavily dependent on the construction of a suitable donor pool which will exhibit a degree of subjectivity. This is a limitation of our approach, but we argue that this limitation is far from a deal breaker and has its virtues. Our approach allows for subject matter experts to obtain answers in a tractable manner from donor pool to model to answers. Subject matter experts can therefore investigate and debate the appropriateness and effect that particular donors have on the conclusions which are obtained from the method. This invites a robustness possibility in which the inclusion/exclusion of specific donors do not materially effect the decision that are obtained.
 
 \textcolor{red}{needs work} One hand, \cite{agarwal2020two} do not require such a parametric specification. On the other hand, the success of their approach is retrospective and its success is demonstrated in panel settings in which multiple donors are needed to inform hypothetical trajectories concerning the exact same shock.
+
 
 
 
