@@ -257,7 +257,7 @@ $\|\mathcal{F}_{\tilde{\mathbf{\phi}}_j}(\x_{i,T_i^*+1}) - \mathcal{F}_{\tilde{\
 
 We see that model \eqref{model-gen} with its accompanying random effects structure \eqref{random-effects} is flexible enough to capture changing structural dynamics as well as a mean-shift, and is a generalization of the models mentioned in \cite{lin2021minimizing}. Note that the flexibility of allowing for changing structural dynamics is useful for fitting purposes, but it does not necessarily reflect the state of the world in the post-shock setting. It is of course possible that there is no shock or a simple mean-shift. In fact, the simple mean shift model can be fit and one can test whether the additional flexibility of model \eqref{model-gen} is warranted for series in the donor pool. A general testing procedure is discussed in Section \ref{sec:aggmeth} (\textcolor{red}{need to discuss that model selection is aggregated, the primary goal concerns the series under study}).
 
-The post-shock dynamic changes depend heavily on the value of $\mbf{x}_{i,T_i^*+1}$, the covariates recorded right before the first post-shock response is observed. Under this setup any two series $i,j$ with small $\|\mbf{x}_{i,T_i^*+1} - \mbf{x}_{j,T_i^*+1}\|$ are expected to experience similar structural changes. This makes distance based weighting an attractive avenue.
+The post-shock dynamic changes depend heavily on the value of $\mbf{x}_{i,T_i^*+1}$, the covariates recorded right before the first post-shock response is observed. Under this setup any two series $i,j$ with small $\|\mbf{x}_{i,T_i^*+1} - \mbf{x}_{j,T_i^*+1}\|$ are expected to experience similar structural changes. This makes distance-based weighting an attractive avenue.
 
 Next, we define the $h$-step forecast for $\mc{M}$ which plays an essential role in the framework of \citet{quaedvlieg2021multi}. Denote $h$-step forecast for $y_{i,t}$ by $\hat{y}_{i,t}^{1,h}$. Let the ordinary least squares (OLS) estimate for
 \begin{align*}
@@ -310,7 +310,7 @@ A studentized test statistic corresponding to the null hypothesis \eqref{test} i
 \end{equation}
 where $\bar{d}_{i} = \textbf{w}_i'\textbf{d}_{i}$ and we choose to estimate $\zeta_{i} = \sqrt{\textbf{w}_i'\Omega_{i}\textbf{w}_i}$ directly based on $\textbf{w}_i'\textbf{d}_{i,t}$ using the HAC estimator \citep{giacomini2006tests} where $\Omega_{i} = \text{avar}\left(\sqrt{T}_i(\bar{d}_{i} - \mbf{\mu}_{i})\right)$. 
 
-A p-value corresponding to the hypothesis test \eqref{test} is computed using a moving block bootstrap (MBB) of of \cite{kunsch1989jackknife} and \cite{liu1992moving}. In the moving block bootstrap (MBB), a pseudo time-series is constructed by resampling blocks of length $\ell$ from the original data.
+A p-value corresponding to the hypothesis test \eqref{test} is computed using a moving block bootstrap (MBB) of \cite{kunsch1989jackknife} and \cite{liu1992moving}. In the moving block bootstrap (MBB), a pseudo time-series is constructed by resampling blocks of length $\ell$ from the original data.
 
 %We now demonstrate that computing p-values corresponding to the hypothesis test \eqref{test} using the moving block bootstrap (MBB) is a good approximation.
 Let $l = o(T^{1/2})$ be the block length of the MBB where we assume that $T_i = lU_i$. Let $I_1$,\ldots,$I_{K_i}$ be iid random variables uniformly distributed on $\{1,\ldots,T_i-l+1\}$, and define the array 
@@ -368,7 +368,7 @@ where $\hat{p}_i^B$ is given as \eqref{bootp} and $w_i^*$ is the weight correspo
 \begin{align*}
 	V = I\Big\{\frac{1}{n} \sum_{i=2}^{n+1} I (\hat{p}_i^B\leq \alpha) \geq 0.5\Big\},
 \end{align*}
-where $I(\cdot)$ is an indicator function. The idea of voting is very intuitive in the sense that donors vote for the shock persistence or transience  using a hypothesis testing approach and the one receiving more votes is returned.  Second, the weighted voting generalizes this idea by making using of  the similarity weights $\mbf{W}^*$. It is defined as 
+where $I(\cdot)$ is an indicator function. The idea of voting is very intuitive in the sense that donors vote for the shock persistence or transience  using a hypothesis testing approach and the one receiving more votes is returned.  Second, the weighted voting generalizes this idea by making using of the similarity weights $\mbf{W}^*$. It is defined as 
 \begin{align*}
 	V^* = I\Big\{ \sum_{i=2}^{n+1} w_i^* I (\hat{p}_i^B\leq \alpha) \geq 0.5\Big\}.
 \end{align*}
@@ -511,7 +511,7 @@ Note that Corollary \ref{coro2} gives an asymptotic upper bound for the misclass
 \subsection{Heuristic setting demonstrating when prevalence testing works well}
 \label{mathdemo}
 
-We now demonstrate an idealized theoretical setting for which our post-shock testing methodology involving a distance based weighted average of p-values works well. The idea is that inferences based on distance based weighted nearly recovers the time series under study when there exists a time series in the donor pool, indexed by $i'$, such that $\x_{1,t} \approx \x_{i',t}$ and the signal strength in our modeling setup \eqref{model-gen} and \eqref{random-effects} is large relative to variation. 
+We now demonstrate an idealized theoretical setting for which our post-shock testing methodology involving a distance-based weighted average of p-values works well. The idea is that inferences based on distance-based weighted nearly recovers the time series under study when there exists a time series in the donor pool, indexed by $i'$, such that $\x_{1,t} \approx \x_{i',t}$ and the signal strength in our modeling setup \eqref{model-gen} and \eqref{random-effects} is large relative to variation. 
 
 We first present some intermediary technical results and definitions. Let $\lambda_{\text{max},\theta_k}$, $\lambda_{\text{max},\theta_\delta}$, $\lambda_{\text{max},\gamma}$ respectively be the largest eigenvalues of $\Sigma_{\theta_k}$, $\Sigma_{\delta}$, and $\Sigma_{\gamma}$ for $k = 1,\ldots,q_2$. Define  
 \begin{align*}
