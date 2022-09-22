@@ -373,7 +373,7 @@ where $I(\cdot)$ is an indicator function. The idea of voting is very intuitive 
 	V^* = I\Big\{ \sum_{i=2}^{n+1} w_i^* I (\hat{p}_i^B\leq \alpha) \geq 0.5\Big\}.
 \end{align*}
 
-Algorithm \ref{Bu} describes the mechanics of computing $\mbf{W}^*, \hat{p}_1, V, V^*$ in more detail. There are a couple of details that are worth noting. First, for $t = T_i+1$ and $i \geq 2$, we used to the methodology of \cite{lin2021minimizing} to compute point forecast for $\hat{y}_{i,t}^{2,h}$. Note that for $t = T_i+1$, using ordinary least square conditional forecast yields $\hat{y}_{i,t}^{2,h}=  \hat{y}_{i,t}^{1,h}$ as those two forecast just differ by shock information, which is not available at this time point. We make such adjustment for the reason that  the method of  \cite{lin2021minimizing} is generally more likely to perform better than the ordinary forecast under certain conditions. Second, notice that we evaluate forecast comparison for $t = K_i + H+ \max\{q_1, q_2-1\} + 1, \ldots, T_i$ with time length smaller than $T_i$. It is because the framework of \cite{quaedvlieg2021multi} needs training sample, which implicitly requires users to feed the algorithm with moderately large dataset for a more credible analysis. 
+Algorithm \ref{Bu} describes the mechanics of computing $\mbf{W}^*, \hat{p}_1, V, V^*$ in more detail. There are a couple of details that are worth noting. First, for $t = T_i+1$ and $i \geq 2$, we used to the methodology of \cite{lin2021minimizing} to compute point forecast for $\hat{y}_{i,t}^{2,h}$. Note that for $t = T_i+1$, using ordinary least square conditional forecast yields $\hat{y}_{i,t}^{2,h}=  \hat{y}_{i,t}^{1,h}$ as those two forecast just differ by shock information, which is not available at this time point. We make such adjustment for the reason that  the method of  \cite{lin2021minimizing} is generally more likely to perform better than the ordinary forecast under certain conditions. Second, notice that we evaluate forecast comparison for $t = T_i^*+\ceil{1.5 \cdot \sqrt{T_i-T_i^*}} + 1, \ldots, T_i$ with time length smaller than $T_i$. It is because the framework of \cite{quaedvlieg2021multi} needs training sample, which implicitly requires users to feed the algorithm with moderately large dataset for a more credible analysis. 
 
 \vspace{.5cm}
 \begin{algorithm}
@@ -397,12 +397,9 @@ $H$ -- maximum horizon
   	} 
  	 
  	\For{$h = 1, \ldots, H$}{
- 		\For{$t = K_i + H+ \max\{q_1, q_2-1\} + 1, \ldots, T_i$}{
+ 		\For{$t = T_i^*+\ceil{1.5 \cdot \sqrt{T_i-T_i^*}} + 1, \ldots, T_i$}{
  		Compute $\hat{y}_{i,t}^{1, h}$ and $\hat{y}_{i,t}^{2, h}$ based on OLS estimation of $\mc{M}$ with $\{T_i^* \colon i = 1, \ldots, n+1\}$ and   training data $\{(y_{i,t}, \mbf{x}_{i,t})\colon  t =  t-h- K_i +1, \ldots, t-h\}$, where we further need the set of lagged response $\{y_{i,t}\colon t = t-h-K_i- \max\{q_1, q_2-1\}+1, t-h-K_i\}$.
  		
- 		\If{$t-h = T_i^*$, $i\geq 3$, and $h =1$}{
- 		$\hat{y}_{i,t}^{2, h}= \hat{y}_{i,t}^{2, h} + \hat{\alpha}_{\rm wadj}$
- 		}
  		Compute the squared error loss $l_{i,t,h, 1}$ based on $y_{i, t}$
  		 and $\hat{y}_{i,t}^{1, h}$\\
  		 Compute the squared error loss $l_{i,t,h, 2}$ based on $y_{i, t}$
@@ -497,14 +494,6 @@ where $\xi_i =  \P(a_i^1 < a_i^2)\in [0,1]$ for $i \in \mc{I}_n$. If $\xi  \neq 
 Note that Corollary \ref{coro2} gives an asymptotic upper bound for the misclassification rate of synthetic pairwise model selection, which is small if $\xi_1$ is large.
 
 
-
-%We further define the parameter sets
-%\begin{align}
-%\begin{array}{l}
-% \;\, \Theta = \{(\eta_i, \mathbf{\phi}_i, \mathbf{\theta}_i, \mathbf{\delta}_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1})\colon    t= 1, \ldots, T_i, i = 2, \ldots, n +1\} \\
-%   \Theta_1 = \{(\eta_i, \mathbf{\phi}_i, \mathbf{\theta}_i, \mathbf{\delta}_i, \alpha_i, \mbf{x}_{i,t}, y_{i,t-1})\colon  t= 1, \ldots, T_i, i = 1\}
-%\end{array}\label{parameter} 
-%\end{align}
 
 
 
@@ -622,22 +611,6 @@ on the set $E$ where we specify that $\textbf{w}_1 = \textbf{w}_{i'}$ and that t
 
 
 
-%\textbf{Notes}:
-%$$
-%\begin{pmatrix}
-%	0 & t & T^* + (t-T^*) \\
-%	1 & t-1 & T^* + (t-T^*-1) \\
-%	2 & t-2 & T^* + (t-T^*-2) \\
-%	 \vdots & \vdots \\
-%	t-T^*-1 & t- (t-T^*-1) = T^*+1 & T^* + (t-T^*- (t-T^*-1) )	\\ 
-%	t-T^* & t- (t-T^*) = T^* & T^* + (t-T^*- (t-T^*) )
-%\end{pmatrix}
-%$$
-
-
-
-
-
 \section{Numerical Examples}
 
 \label{sec::ne}
@@ -662,8 +635,6 @@ where $D_{i,t} = I(t > T_i^*+1)$, $i = 1, \ldots, n+1$ and $t = 1, \ldots, T_i$.
 \subsection{Testing shock prevalence for Conoco Phillips stock price series}
 
 \label{sptcop}
-
-%Post-shock  prevalence testing is motivated by post-shock prediction  \citep{lin2021minimizing} and also an extension of it from the perspective of hypothesis testing. Applying our methodology  on one of the datasets demonstrated in \cite{lin2021minimizing} helps connect our work to \cite{lin2021minimizing} and spell out the differences between two methodologies.
 
 
 As illustrated in Section 5.1 in \cite{lin2021minimizing}, it is found that Conoco Phillips stock price experienced unprecedented shocks due to a Russia-OPEC oil supply control battle and increasing COVID-19 pandemic fear which were simultaneously realized on Monday, March 9th, 2020. In this data example, we are interested in investigating whether the shock studied in \cite{lin2021minimizing} is transient or prevalent. Denote the stock price of Conoco Phillips at time $t$ as $y_{i,t}$ for $i$th time series, where $i = 1, \ldots n+1$, the time series of interest is ordered as the 1st time series, and $n$ is the donor pool size. In the model of $y_{i,t}$, the covariates we consider are S\&P 500 index prices, West Texas Intermediate (WTI) crude oil prices, dollar index, 13-week treasury bill rates, and Chicago Board Options Exchange volatility index (VIX). 
@@ -721,22 +692,6 @@ Next, we discuss the performance of $\hat{p}_1$, voting and weighted voting. Fro
 
 
 
-
-%\begin{table}[H]
-	%\caption{Results for Conoco Philips ($n=5$), $\mbf{W}^* = (0, 0, 0, 0.363, 0.637)$ from scaled covariates}
-%\begin{center}
-  %\begin{tabular}{cccccccccr}
-     %$L$ ($T_i-T^*_i$) & Model & $p_1$  & $|\hat{p}-p_1|$ & Vote & weighted Vote  & weighted  AIC\\
-     %\hline 
-     %7 & Permanent & 1  & 0 & \textcolor{red}{0}  & \textcolor{red}{0} & $236.21$ \\
-     % 7 & Dynamic & 1 & $0$   &  \textcolor{red}{0} & \textcolor{red}{0}  & $324.91$ \\[.2cm]
-     %15 & Permanent & 1   & 0 & \textcolor{red}{0} &  \textcolor{red}{0}    & 273.95 \\
-     %15 & Dynamic & 1  & 0 & \textcolor{red}{0}  & \textcolor{red}{0}  & $370.83$\\[.2cm]
-     %30 & Permanent & 1   & $0$ &  \textcolor{red}{0} & \textcolor{red}{0}  &  346.17 \\
-     %30 & Dynamic & 1 & 0 & \textcolor{red}{0} &\textcolor{red}{0}  & 451.16
-  %\end{tabular}
-%\end{center}	
-%\end{table}
 
 
 \subsubsection{Dual shock prevalence testing}
