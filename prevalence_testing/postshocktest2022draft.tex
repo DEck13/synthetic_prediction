@@ -324,8 +324,8 @@ The pseudo time-series is therefore $\textbf{d}^b_{i,t} = \textbf{d}^b_{i,\tau_{
 \end{equation}
 where $\bar{d}^{hb}_{i} = \frac{1}{T_i}\sum_{t=1}^{T_i} d^{hb}_{i,t}$. From the conditions of Theorem 1 and Corollary 1 in \cite{quaedvlieg2021multi}  we have 
 \begin{equation} \label{boott}
-  \sup_{z\in\R}\Big\vert \Prob^b\left[\sqrt{T_i}\frac{\textbf{w}_i'\bar{\dbf}^b_{i} - \textbf{w}_i'\bar{\dbf}_{i} }{\hat{\zeta}^b_{i}}\right] 
-  - \Prob\left[\sqrt{T_i}\frac{\textbf{w}_i'\bar{\dbf}_{i} -  \textbf{w}_i'\mbf{\mu}_{i}}{\hat{\zeta}^b_{i}}\right]
+  \sup_{z\in\R}\Big\vert \Prob^b\left[\sqrt{T_i}\frac{\textbf{w}_i'\bar{\dbf}^b_{i} - \textbf{w}_i'\bar{\dbf}_{i} }{\hat{\zeta}^b_{i}} \leq z\right] 
+  - \Prob\left[\sqrt{T_i}\frac{\textbf{w}_i'\bar{\dbf}_{i} -  \textbf{w}_i'\mbf{\mu}_{i}}{\hat{\zeta}_{i}}  \leq z\right]
   \Big\vert \overset{P}{\longrightarrow} 0,
 \end{equation}
 as $T_i\to\infty$ where $l=l_{T_i}=o(\sqrt{T_i})$. We can compute a bootstrap $p$-value as 
@@ -362,9 +362,9 @@ In this paper, we consider this simple form of $\bs{X}$ for illustrative purpose
 \begin{equation} \label{wpval}
  \hat{p}_1 = \sum_{i=2}^{n+1} w_i^* \hat{p}_i^B,	
 \end{equation}
-where $\hat{p}_i^B$ is given as \eqref{bootp} and $w_i^*$ is the weight corresponding to the similarity between the first and $(i+1)$th row of $\mbf{X}^*$.
+where $\hat{p}_i^B$ is given as \eqref{bootp} and $w_i^*$ is the weight corresponding to the similarity between the first and $(i+1)$th row of $\mbf{X}^*$. \textcolor{red}{Need to explain why (8) is a good thing. This can be done by a quick explanation and referencing simulation results and the heuristic reasoning below.}
 
-\textcolor{red}{Need to make a decision about voting and weighted voting; not sure if it is more robust or efficient than the weighted p-value approach. If it is not superior than the weighted approach in any way then we should remove it.} We now motivate a voting method and a weighted voting method based on the p-values computed in the donor pool. Given a significance level $\alpha$ and estimates $\{\hat{p}_i^B \colon i = 2, \ldots, n+1\}$, we compute the vote
+We now motivate a voting method and a weighted voting method based on the p-values computed in the donor pool. Given a significance level $\alpha$ and estimates $\{\hat{p}_i^B \colon i = 2, \ldots, n+1\}$, we compute the vote
 \begin{align*}
 	V = I\Big\{\frac{1}{n} \sum_{i=2}^{n+1} I (\hat{p}_i^B\leq \alpha) \geq 0.5\Big\},
 \end{align*}
@@ -419,7 +419,7 @@ $H$ -- maximum horizon
 
 
 \begin{prop}
-\label{votprop}Suppose $p_2, \ldots, p_{n+1}$ is  a sequence of pairwise independent $p$-values  with $\P(p_i \leq \alpha)=\kappa$ for $i = 1, \ldots, n+1$, where $\alpha$ is the significance level, $\kappa$ is a real-valued constant in $[0,1]$, and  $p_1$ is the p-value of the time series of interest. If $\P(p_1 \leq \alpha) \neq 0.5$,  as $n\to \infty$, 
+\label{votprop}Suppose $p_1, \ldots, p_{n+1}$ is  a sequence of pairwise independent $p$-values  with $\P(p_i \leq \alpha)=\kappa$ for $i = 1, \ldots, n+1$, where $\alpha$ is the significance level, $\kappa$ is a real-valued constant in $[0,1]$, and  $p_1$ is the p-value of the time series of interest. If $\P(p_1 \leq \alpha) \neq 0.5$,  as $n\to \infty$, 
 \begin{align*}
   \E \bigg\{\left|I\left\{\frac{1}{n}\sum_{i=2}^{n+1}I(p_i \leq  \alpha) \geq 0.5\right\}
   - I( p_1 \leq  \alpha) \right|\bigg\}
